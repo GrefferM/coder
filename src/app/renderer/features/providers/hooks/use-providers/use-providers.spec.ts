@@ -1,0 +1,158 @@
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { useProviders } from "./use-providers";
+import { ASK_PROVIDER_CHANNEL, LIST_PROVIDERS_CHANNEL } from "../../../../../../contracts";
+import { PROVIDER_ASKED_EVERY_MS } from "../../constants";
+import type { ProviderState } from "../../../../interfaces";
+import { standInBridge } from "../../../../testing";
+
+const OLLAMA: ProviderState = {
+  id: "ollama",
+  name: "Ollama",
+  kind: "local",
+  customaryAddress: "http://localhost:11434",
+  keyHint: null,
+  address: null,
+};
+
+const OPENROUTER: ProviderState = {
+  id: "openrouter",
+  name: "OpenRouter",
+  kind: "remote",
+  customaryAddress: null,
+  keyHint: "sk-or",
+  address: null,
+};
+
+const INSTALLED = [
+  {
+    name: "qwen2.5-coder",
+    sizeBytes: null,
+  },
+];
+
+function held() {
+  const invoke = vi.fn(async (channel: string) => {
+    if (channel === LIST_PROVIDERS_CHANNEL) {
+      return [OLLAMA, OPENROUTER];
+    }
+
+    return channel === ASK_PROVIDER_CHANNEL
+      ? {
+          isAnswering: true,
+          models: INSTALLED,
+        }
+      : undefined;
+  });
+
+  standInBridge({
+    invoke: invoke,
+  });
+
+  return invoke;
+}
+
+/** A hook standing on the answer its one local provider gave when the list arrived. */
+async function asked() {
+  const invoke = held();
+  const { result } = renderHook(() => useProviders());
+
+  await waitFor(() => expect(result.current.answers[OLLAMA.id]?.isAnswering).toBe(true));
+
+  return {
+    invoke,
+    result,
+  };
+}
+
+describe("useProviders", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("asks every local provider again on its own beat, without saying it is asking", async () => {
+    // The clock is held before the hook mounts, since the beat is set going by the mount's own effect.
+    vi.useFakeTimers();
+
+    const invoke = held();
+    const { result } = renderHook(() => useProviders());
+
+    // The list arrives over the bridge, and the ask that comes with it goes first.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    invoke.mockClear();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(PROVIDER_ASKED_EVERY_MS);
+    });
+
+    expect(invoke).toHaveBeenCalledWith(ASK_PROVIDER_CHANNEL, {
+      providerId: OLLAMA.id,
+    });
+    expect(result.current.askingIds).toEqual([]);
+  });
+
+  it("asks every local provider the moment the list arrives, and no remote one", async () => {
+    const { invoke, result } = await asked();
+
+    expect(invoke.mock.calls.filter(([channel]) => channel === ASK_PROVIDER_CHANNEL)).toHaveLength(1);
+    expect(result.current.answers[OPENROUTER.id]).toBeUndefined();
+  });
+
+  it("writes down the silence a turn heard, keeping the list the provider last gave", async () => {
+    const { result } = await asked();
+
+    act(() => result.current.heard(OLLAMA.id, false));
+
+    expect(result.current.answers[OLLAMA.id]?.isAnswering).toBe(false);
+    expect(result.current.answers[OLLAMA.id]?.models).toEqual(INSTALLED);
+  });
+
+  it("asks the provider again when a turn heard it answer after a silence", async () => {
+    const { invoke, result } = await asked();
+
+    act(() => result.current.heard(OLLAMA.id, false));
+    invoke.mockClear();
+    act(() => result.current.heard(OLLAMA.id, true));
+
+    await waitFor(() =>
+      expect(invoke).toHaveBeenCalledWith(ASK_PROVIDER_CHANNEL, {
+        providerId: OLLAMA.id,
+      }),
+    );
+    await waitFor(() => expect(result.current.answers[OLLAMA.id]?.isAnswering).toBe(true));
+  });
+
+  it("asks nothing when a turn heard what the app already knows", async () => {
+    const { invoke, result } = await asked();
+
+    invoke.mockClear();
+    act(() => result.current.heard(OLLAMA.id, true));
+
+    expect(invoke).not.toHaveBeenCalled();
+  });
+
+  it("stays the one callback, so a turn asked before the list arrived still says what it heard", async () => {
+    const invoke = held();
+    const { result } = renderHook(() => useProviders());
+    // The providers are read over the bridge, so the first render of a chat has none — and it holds `heard` from it.
+    const first = result.current.heard;
+
+    await waitFor(() => expect(result.current.answers[OLLAMA.id]?.isAnswering).toBe(true));
+    expect(result.current.heard).toBe(first);
+
+    act(() => first(OLLAMA.id, false));
+
+    expect(result.current.answers[OLLAMA.id]?.isAnswering).toBe(false);
+    expect(invoke).toHaveBeenCalled();
+  });
+
+  it("says nothing about a remote provider, which is never asked at all", async () => {
+    const { result } = await asked();
+
+    act(() => result.current.heard(OPENROUTER.id, false));
+
+    expect(result.current.answers[OPENROUTER.id]).toBeUndefined();
+  });
+});

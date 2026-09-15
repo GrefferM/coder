@@ -1,0 +1,26 @@
+# A local provider to check the app against, at the address Ollama customarily answers at.
+#
+#   docker compose up -d                                  # start it
+#   docker compose exec ollama ollama pull qwen2.5-coder:0.5b   # take a model, 398 MB
+#   docker compose exec ollama ollama list                 # what it now has
+#   docker compose down                                    # stop it, keeping the models
+#
+# The model is the smallest Qwen there is, because this is here to prove the wiring, not to write code:
+# a turn goes out, comes back, and costs nothing. Anything it says is worth what half a gigabyte says.
+#
+# On macOS the container sees no GPU, so answers come slowly — enough to check that a turn goes out
+# and comes back, not to work in. The native app is the one to install for real use.
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      # The app's customary address for Ollama; changing this means changing it in the provider card too.
+      - "127.0.0.1:11434:11434"
+    volumes:
+      # Models are big — they are kept in a volume so `down` does not throw them away.
+      - ollama-models:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ollama-models:

@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["ES2022"],
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "sourceMap": true,
+    "incremental": true,
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
+  },
+  "include": ["src"],
+  // The renderer is the one part of src/ this config never compiles: it targets a browser, not
+  // Node, so it needs the DOM lib and ES modules instead of CommonJS. It has its own tsconfig.json
+  // beside its own sources. See FRONTEND.md.
+  "exclude": ["node_modules", "dist", "tests", "src/app/renderer"]
+}

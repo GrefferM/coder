@@ -1,0 +1,1381 @@
+import assert from "node:assert/strict";
+import { afterEach, beforeEach, describe, it } from "node:test";
+import { openTestDatabase } from "../../../utils/testing";
+import { RunKeeper } from "./run-keeper.service";
+import { RunReader } from "./run-reader.service";
+import { RunWriter } from "./run-writer.service";
+import { TypeormRunStore, runTablesOf } from "../stores";
+import { RunQuestionEntity } from "../entities";
+import { HISTORY_DAYS, HISTORY_DAY_MS } from "../constants";
+import type { AddCallDto, AddStepDto, OpenRunDto } from "../dto";
+import type { RunOpened } from "../interfaces";
+import type { TestDatabase } from "../../../utils/testing";
+
+const DIRECTORY = "/tmp/coder-project";
+const ASKED_AT = 1_700_000_000_000;
+const SEEKER = "22222222-2222-4222-8222-222222222222";
+const QUESTION = "44444444-4444-4444-8444-444444444444";
+const WALK = "77777777-7777-4777-8777-777777777777";
+/** A repeat is a walk of its own, and the row is read by the last walk and not the last step. */
+const REPEAT_WALK = "88888888-8888-4888-8888-888888888888";
+const TELLER = "33333333-3333-4333-8333-333333333333";
+
+/** The question each run was opened with — a step is written against one, and the record holds it. */
+const questionOf = new Map<string, string>();
+
+function ran(patch: Partial<AddCallDto> = {}): AddCallDto {
+  return {
+    // THE FIRST RULE: a call comes to the record under the id it already wears, and keeps it.
+    id: crypto.randomUUID(),
+    name: "find_deep",
+    arguments: {
+      depth: "2",
+      mask: "*.md",
+    },
+    pinned: ["mask"],
+    line: "find . -maxdepth 2 -type f -name '*.md'",
+    output: "report.md",
+    refusal: "",
+    exitCode: 0,
+    serverId: null,
+    serverName: "",
+    end: "ran",
+    startedAt: 1_000,
+    endedAt: 1_400,
+    ...patch,
+  };
+}
+
+function refused(): AddCallDto {
+  return ran({
+    arguments: {
+      depth: "швидко",
+    },
+    line: "",
+    output: "",
+    refusal: "find_deep НЕ ЗАПУСТИЛАСЬ · depth — МАЄ БУТИ ЧИСЛОМ",
+    exitCode: null,
+    end: "refused",
+  });
+}
+
+function step(runId: string, patch: Partial<AddStepDto> = {}): AddStepDto {
+  return {
+    runId,
+    questionId: questionOf.get(runId) ?? QUESTION,
+    walkId: WALK,
+    agentId: SEEKER,
+    agentName: "Шукач",
+    agentColor: "#6fd3d8",
+    modelId: "model-1",
+    model: "deepseek/deepseek-v4-flash-0731",
+    providerId: "openrouter",
+    inputPrice: 3,
+    outputPrice: 15,
+    contextCeiling: 700_000,
+    answerCeiling: 4096,
+    promptId: "prompt-1",
+    prompt: "Ти шукаєш файли.",
+    temperature: 0,
+    maxCalls: 8,
+    asked: "Знайди md-файли",
+    said: "ЗНАЙДЕНО\n- report.md",
+    state: "done",
+    inputTokens: 2_263,
+    outputTokens: 1_068,
+    money: 0.0031,
+    fromStepIds: [],
+    handoffs: [],
+    startedAt: 900,
+    endedAt: 2_000,
+    calls: [],
+    ...patch,
+  };
+}
+
+describe("the record", () => {
+  let record: TestDatabase;
+  let writer: RunWriter;
+  let reader: RunReader;
+  let keeper: RunKeeper;
+
+  /** Opens a run and keeps the question it was opened with, so a step of that run can be written against it. */
+  async function openRun(payload: OpenRunDto): Promise<RunOpened> {
+    const opened = await writer.open(payload);
+
+    questionOf.set(opened.runId, opened.questionId);
+
+    return opened;
+  }
+
+  beforeEach(async () => {
+    questionOf.clear();
+
+    // A real database of its own, made and thrown away for each test; the app's own is never touched.
+    record = await openTestDatabase();
+
+    // The three stand over one store: what the writer wrote is what the reader reads and the keeper sweeps.
+    const store = new TypeormRunStore(runTablesOf(record.dataSource));
+
+    writer = new RunWriter(store);
+    reader = new RunReader(store);
+    keeper = new RunKeeper(store);
+  });
+
+  afterEach(async () => {
+    await record.close();
+  });
+
+  it("names the row from the moment the question is written, before any step has landed", async () => {
+    await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000001",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    // The run keeps its own name, so a row whose first turn is still out is not a nameless one.
+    assert.equal(row.steps, 0);
+    assert.equal(row.startedByAgentName, "Шукач");
+    assert.equal(row.startedByAgentColor, "#6fd3d8");
+    // The addressee lies down with the question, so the head of the row is named before the first step.
+    assert.equal(row.askedAgentId, SEEKER);
+    assert.equal(row.askedAgentName, "Шукач");
+  });
+
+  it("names the row by whom the flow was asked last, and not by whom it was asked first", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000045",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.askAgain({
+      runId: id,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000046",
+      asked: "А тепер постав рев'ювера",
+      askedAgentId: TELLER,
+      askedAgentName: "Рев'юер",
+      askedAt: ASKED_AT + 1_000,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    // One flow, many agents — the head answers «with whom now», while the run keeps whom it began with.
+    assert.equal(row.askedAgentId, TELLER);
+    assert.equal(row.askedAgentName, "Рев'юер");
+    assert.equal(row.startedByAgentId, SEEKER);
+  });
+
+  it("holds the addressee of every question, so an older one is not overwritten by a newer", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000047",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.askAgain({
+      runId: id,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000048",
+      asked: "А тепер постав рев'ювера",
+      askedAgentId: TELLER,
+      askedAgentName: "Рев'юер",
+      askedAt: ASKED_AT + 1_000,
+    });
+
+    const whole = await reader.one(id);
+    const written = await record.dataSource.getRepository(RunQuestionEntity).find({
+      order: {
+        place: "ASC",
+      },
+    });
+
+    // A question is a thing of its own, and whom it went to is its own fact, kept beside it for good.
+    assert.equal(whole?.questions.length, 2);
+    assert.deepEqual(
+      written.map((question) => [question.place, question.askedAgentId, question.askedAgentName]),
+      [
+        [1, SEEKER, "Шукач"],
+        [2, TELLER, "Рев'юер"],
+      ],
+    );
+  });
+
+  it("opens a run that stands running until something ends it", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000002",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.id, id);
+    assert.equal(row.state, "running");
+    assert.equal(row.endedAt, null);
+    assert.equal(row.steps, 0);
+  });
+
+  it("keeps the steps in the order they ran, whatever order they were written in", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000003",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    const first = await writer.step(step(id));
+
+    await writer.step(
+      step(id, {
+        agentId: TELLER,
+        agentName: "Перелікар",
+        fromStepIds: [first],
+      }),
+    );
+
+    const whole = await reader.one(id);
+
+    assert.deepEqual(
+      whole?.walk.map((one) => [one.place, one.agentName]),
+      [
+        [1, "Шукач"],
+        [2, "Перелікар"],
+      ],
+    );
+    assert.deepEqual(whole?.walk[1].fromStepIds, [first]);
+  });
+
+  it("keeps the walk each step ran in, so a repeat can tell the last walk from the ones before it", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000004",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+    const again = "88888888-8888-4888-8888-888888888888";
+
+    await writer.step(step(id));
+    await writer.step(
+      step(id, {
+        walkId: again,
+        agentId: TELLER,
+        agentName: "Перелікар",
+      }),
+    );
+
+    const whole = await reader.one(id);
+
+    assert.deepEqual(
+      whole?.walk.map((one) => one.walkId),
+      [WALK, again],
+    );
+  });
+
+  it("keeps the agent as it stood when it ran, so renaming it later says nothing about the run", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000005",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(step(id));
+
+    const whole = await reader.one(id);
+
+    assert.equal(whole?.walk[0].agentName, "Шукач");
+    assert.equal(whole?.walk[0].agentColor, "#6fd3d8");
+    assert.equal(whole?.walk[0].model, "deepseek/deepseek-v4-flash-0731");
+  });
+
+  it("keeps a call whole: what it was given, the line that ran, what it printed and how it ended", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000006",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        calls: [ran()],
+      }),
+    );
+
+    const [call] = (await reader.one(id))?.walk[0].calls ?? [];
+
+    assert.equal(call.name, "find_deep");
+    assert.deepEqual(call.arguments, {
+      depth: "2",
+      mask: "*.md",
+    });
+    assert.equal(call.line, "find . -maxdepth 2 -type f -name '*.md'");
+    assert.equal(call.output, "report.md");
+    assert.equal(call.exitCode, 0);
+    assert.equal(call.end, "ran");
+    // A value the person pinned is not a value the model chose, and the record says which.
+    assert.deepEqual(call.pinned, ["mask"]);
+  });
+
+  it("says where a call stands, by the very id the call already wore", async () => {
+    // «ПОКАЗАТИ ВИКЛИК» has an id and nothing else, and the record must answer it with a place.
+    const opened = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-00000000000c",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+    const call = ran();
+    const stepId = await writer.step(
+      step(opened.runId, {
+        calls: [call],
+      }),
+    );
+
+    assert.deepEqual(await reader.placeOfCall(call.id), {
+      runId: opened.runId,
+      questionId: opened.questionId,
+      stepId,
+    });
+  });
+
+  it("says nothing of a call the record does not hold, so nothing leads anywhere", async () => {
+    assert.equal(await reader.placeOfCall("99999999-9999-4999-8999-999999999999"), null);
+  });
+
+  it("keeps a refused call with the words of the refusal and no code, since there was no process", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000007",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        calls: [refused(), ran()],
+      }),
+    );
+
+    const calls = (await reader.one(id))?.walk[0].calls ?? [];
+
+    assert.deepEqual(
+      calls.map((call) => [call.place, call.end, call.exitCode]),
+      [
+        [1, "refused", null],
+        [2, "ran", 0],
+      ],
+    );
+    assert.equal(calls[0].refusal, "find_deep НЕ ЗАПУСТИЛАСЬ · depth — МАЄ БУТИ ЧИСЛОМ");
+    assert.equal(calls[0].line, "");
+  });
+
+  it("says a run with no end is running, whatever its steps said", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000008",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        state: "failed",
+      }),
+    );
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.state, "running");
+  });
+
+  it("takes the state of the last walk, so an older walk's fall is not read again", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000009",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        state: "failed",
+      }),
+    );
+    // The repeat is a walk of its own, and it is the walk the row is read by now.
+    await writer.step(
+      step(id, {
+        walkId: REPEAT_WALK,
+        state: "stopped",
+      }),
+    );
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 4_000,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    // The state is counted from the steps every time, so nothing has to unsay a fall.
+    assert.equal(row.state, "stopped");
+    assert.notEqual(row.endedAt, null);
+    assert.equal(row.steps, 2);
+  });
+
+  it("says nothing was sent where the last turn never began, and never says it fell", async () => {
+    // The bug this guards: the row read any end word it did not know as «done», so a provider that never answered
+    // — a step the record keeps with its own word — left the history saying «ГОТОВО» over a walk that
+    // reached nobody. And it is not «УПАВ» either: red does not go on what the app never did.
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000051",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        state: "unreachable",
+      }),
+    );
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 4_000,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.state, "notSent");
+  });
+
+  it("says nothing was sent where the model answered with nothing, no answer having come of it", async () => {
+    // An empty answer is its own event in the stream — the turn ran whole, but nothing came back, and
+    // that is the same news for the row as a turn that never left.
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000052",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        state: "silent",
+      }),
+    );
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 4_000,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.state, "notSent");
+  });
+
+  it("says nothing was sent of a flow closed without a single step, since nothing ever left", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000053",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 4_000,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.steps, 0);
+    assert.equal(row.state, "notSent");
+  });
+
+  it("reads the whole last walk, so a branch that fell does not hide behind one that answered after it", async () => {
+    // The bug this guards: one agent hands to two, the turns come back in whatever order they finish in, and the
+    // row read only the one that came back last — so a fallen branch stood under «ГОТОВО».
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000055",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        state: "failed",
+      }),
+    );
+    // The other branch of the same walk answered, and answered later.
+    await writer.step(step(id));
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 4_000,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.state, "failed");
+  });
+
+  it("takes the worse word where the branches ended differently, a fall being worse than nothing sent", async () => {
+    // «УПАВ» stands before «НЕ ПІШОВ» — a turn that was sent and broke is news of a kind a turn that
+    // never left can never be, and the row says the worse of the two.
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000059",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        state: "unreachable",
+      }),
+    );
+    await writer.step(
+      step(id, {
+        state: "failed",
+      }),
+    );
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 4_000,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.state, "failed");
+  });
+
+  it("says nothing was sent where every branch that did not answer never left", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000060",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(step(id));
+    await writer.step(
+      step(id, {
+        state: "unreachable",
+      }),
+    );
+    await writer.step(
+      step(id, {
+        state: "silent",
+      }),
+    );
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 4_000,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.state, "notSent");
+  });
+
+  it("calls a walk done only where every one of its turns answered", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000056",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(step(id));
+    await writer.step(step(id));
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 4_000,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.state, "done");
+  });
+
+  it("says a hand where a hand stopped every turn that did not answer, and the other word where one did not", async () => {
+    // A stop is a person's act; but a hand explains only what it stopped, so a branch that ended some
+    // other way beside it is still the news of the row — here one that never left, and so «НЕ ПІШОВ».
+    const stopped = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000057",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Перше",
+    });
+    const notLeft = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000058",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Друге",
+    });
+
+    for (const runId of [stopped.runId, notLeft.runId]) {
+      await writer.step(step(runId));
+      await writer.step(
+        step(runId, {
+          state: "stopped",
+        }),
+      );
+    }
+
+    await writer.step(
+      step(notLeft.runId, {
+        state: "unreachable",
+      }),
+    );
+
+    for (const runId of [stopped.runId, notLeft.runId]) {
+      await writer.close({
+        runId,
+        endedAt: ASKED_AT + 4_000,
+      });
+    }
+
+    const rows = await reader.list(DIRECTORY);
+
+    assert.equal(rows.find((row) => row.id === stopped.runId)?.state, "stopped");
+    assert.equal(rows.find((row) => row.id === notLeft.runId)?.state, "notSent");
+  });
+
+  it("calls a flow done where the walk that fell was mended by a later one", async () => {
+    // The other side of the same rule: an answer that actually came is the only «ГОТОВО» there is, and a repeat
+    // is a walk of its own — so a fall that was already mended is not read again.
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000054",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        state: "failed",
+      }),
+    );
+    await writer.step(
+      step(id, {
+        walkId: REPEAT_WALK,
+      }),
+    );
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 4_000,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.state, "done");
+  });
+
+  it("hands back this project's runs and nobody else's, newest first", async () => {
+    const { runId: mine } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000010",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT - HISTORY_DAY_MS,
+      asked: "Перший",
+    });
+    const { runId: later } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000011",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Другий",
+    });
+
+    await openRun({
+      directory: "/tmp/somebody-else",
+      questionId: "aaaaaaaa-0000-4000-8000-000000000100",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Чужий",
+    });
+    assert.deepEqual(
+      (await reader.list(DIRECTORY)).map((row) => row.asked),
+      ["Другий", "Перший"],
+    );
+    assert.equal(later.length > 0, true);
+    assert.equal(mine.length > 0, true);
+  });
+
+  it("takes a deleted run's steps and calls with it, since there is no history over the history", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000012",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        calls: [ran()],
+      }),
+    );
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 4_000,
+    });
+    assert.equal(
+      await keeper.forget({
+        id,
+      }),
+      true,
+    );
+
+    assert.deepEqual(await reader.list(DIRECTORY), []);
+    assert.equal(await reader.one(id), null);
+  });
+
+  it("refuses to delete a run still going: the record is being written, and half a record is nobody's", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000013",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(step(id));
+
+    assert.equal(
+      await keeper.forget({
+        id,
+      }),
+      false,
+    );
+    assert.equal((await reader.list(DIRECTORY)).length, 1);
+  });
+
+  it("leaves a run still going where it is when the whole history is deleted by hand", async () => {
+    const { runId: going } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000014",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Іде",
+    });
+    const { runId: ended } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000015",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Скінчився",
+    });
+
+    await writer.close({
+      runId: ended,
+      endedAt: ASKED_AT + 4_000,
+    });
+
+    assert.equal(await keeper.forgetEnded(DIRECTORY), 1);
+    assert.deepEqual(
+      (await reader.list(DIRECTORY)).map((row) => row.id),
+      [going],
+    );
+  });
+
+  it("forgets every run of a project at once when the project itself is forgotten", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000016",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(step(id));
+    await openRun({
+      directory: "/tmp/somebody-else",
+      questionId: "aaaaaaaa-0000-4000-8000-000000000101",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Чужий",
+    });
+    await keeper.forgetProject(DIRECTORY);
+
+    assert.deepEqual(await reader.list(DIRECTORY), []);
+    assert.equal((await reader.list("/tmp/somebody-else")).length, 1);
+  });
+
+  it("goes on in the record a flow already has when it is asked again", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000017",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT - HISTORY_DAY_MS,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(step(id));
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT - HISTORY_DAY_MS + 4_000,
+    });
+    await writer.askAgain({
+      runId: id,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000034",
+      asked: "А тепер постав рев'ювера",
+      askedAgentId: SEEKER,
+      askedAgentName: "SEEKER",
+      askedAt: ASKED_AT,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    // One flow is one row — the text and the hour are the new question's, the day it began stays.
+    assert.equal(row.id, id);
+    assert.equal(row.asked, "А тепер постав рев'ювера");
+    assert.equal(row.startedAt.getTime(), ASKED_AT - HISTORY_DAY_MS);
+    assert.equal(row.askedAt.getTime(), ASKED_AT);
+    assert.equal(row.endedAt, null);
+    assert.equal(row.state, "running");
+  });
+
+  it("stands a flow asked again above one begun later, since the list follows the last word", async () => {
+    const { runId: older } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000018",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT - HISTORY_DAY_MS,
+      asked: "Давній",
+    });
+
+    await writer.close({
+      runId: older,
+      endedAt: ASKED_AT - HISTORY_DAY_MS + 4_000,
+    });
+    await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000019",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT - 9_000,
+      asked: "Пізніший",
+    });
+    await writer.askAgain({
+      runId: older,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000035",
+      asked: "Давній, спитаний знову",
+      askedAgentId: SEEKER,
+      askedAgentName: "SEEKER",
+      askedAt: ASKED_AT,
+    });
+
+    assert.deepEqual(
+      (await reader.list(DIRECTORY)).map((row) => row.asked),
+      ["Давній, спитаний знову", "Пізніший"],
+    );
+  });
+
+  it("adds up how long the agents worked over the whole flow, and not the wait between questions", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000020",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        startedAt: ASKED_AT,
+        endedAt: ASKED_AT + 4_000,
+      }),
+    );
+    await writer.step(
+      step(id, {
+        startedAt: ASKED_AT + 60_000,
+        endedAt: ASKED_AT + 61_500,
+      }),
+    );
+
+    const [row] = await reader.list(DIRECTORY);
+
+    // The minute between the two questions is nobody's work, and the row does not count it as any.
+    assert.equal(row.worked, 5_500);
+  });
+
+  it("names no question when the record it was asked to go on in is gone", async () => {
+    // The answer is the id of the question the walk is written against, and there is none.
+    assert.equal(
+      await writer.askAgain({
+        runId: "11111111-1111-4111-8111-111111111111",
+        questionId: "aaaaaaaa-0000-4000-8000-000000000036",
+        asked: "У порожнечу",
+        askedAgentId: SEEKER,
+        askedAgentName: "SEEKER",
+        askedAt: ASKED_AT,
+      }),
+      null,
+    );
+  });
+
+  it("counts the thirty days from the flow's last word, so one asked again yesterday stands", async () => {
+    const now = new Date(ASKED_AT);
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000021",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT - (HISTORY_DAYS + 1) * HISTORY_DAY_MS,
+      asked: "Давній, але живий",
+    });
+
+    await writer.askAgain({
+      runId: id,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000037",
+      asked: "Давній, але живий",
+      askedAgentId: SEEKER,
+      askedAgentName: "SEEKER",
+      askedAt: ASKED_AT - HISTORY_DAY_MS,
+    });
+
+    assert.equal(await keeper.sweep(now), 0);
+    assert.equal((await reader.list(DIRECTORY)).length, 1);
+  });
+
+  it("keeps who ran each step in a row of its own, one per step and none shared", async () => {
+    const { runId, questionId } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000022",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(runId, {
+        questionId,
+      }),
+    );
+    await writer.step(
+      step(runId, {
+        questionId,
+        agentName: "Шукач-2",
+        model: "hy-mt2",
+      }),
+    );
+
+    const whole = await reader.one(runId);
+
+    // The moment is what a snapshot is about, and two turns are two moments — so the second
+    // one carrying other words is not a contradiction to be settled but two rows to be read.
+    assert.deepEqual(
+      whole?.walk.map((one) => [one.agentName, one.model]),
+      [
+        ["Шукач", "deepseek/deepseek-v4-flash-0731"],
+        ["Шукач-2", "hy-mt2"],
+      ],
+    );
+    // The money on a step is a number; the prices it was counted from are what make it one that can
+    // be read back, since a catalogue is edited and the step is not.
+    assert.equal(whole?.walk[0].inputPrice, 3);
+    assert.equal(whole?.walk[0].outputPrice, 15);
+    assert.equal(whole?.walk[0].prompt, "Ти шукаєш файли.");
+    // A snapshot says what a thing was; the id says which thing, so «today» can be found.
+    assert.equal(whole?.walk[0].modelId, "model-1");
+    assert.equal(whole?.walk[0].promptId, "prompt-1");
+    // The row of the history wears the name the walk began under, not the latest one.
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.startedByAgentName, "Шукач");
+  });
+
+  it("keeps every question of a flow, and names the row by the last of them", async () => {
+    const { runId, questionId } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000023",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT - HISTORY_DAY_MS,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(runId, {
+        questionId,
+      }),
+    );
+    await writer.close({
+      runId,
+      endedAt: ASKED_AT - HISTORY_DAY_MS + 4_000,
+    });
+
+    const second = await writer.askAgain({
+      runId,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000102",
+      asked: "А тепер постав рев'ювера",
+      askedAgentId: SEEKER,
+      askedAgentName: "SEEKER",
+      askedAt: ASKED_AT,
+    });
+
+    assert.notEqual(second, null);
+    assert.notEqual(second, questionId);
+
+    const [row] = await reader.list(DIRECTORY);
+
+    // A flow is a sequence of questions, and the row of the history is the last of them.
+    assert.equal(row.asked, "А тепер постав рев'ювера");
+    assert.equal(row.askedAt.getTime(), ASKED_AT);
+    assert.equal(row.startedAt.getTime(), ASKED_AT - HISTORY_DAY_MS);
+
+    const whole = await reader.one(runId);
+
+    assert.equal(whole?.walk[0].questionId, questionId);
+  });
+
+  it("keeps a question's hour to the millisecond, since the repeat finds its question by that very number", async () => {
+    // Two questions of one breath are told apart by their hour alone, and «СПИТАТИ ЩЕ РАЗ» looks its
+    // question up by it — a second's worth of rounding would put the repeat under somebody else's words.
+    const first = ASKED_AT + 137;
+    const second = ASKED_AT + 892;
+    const { runId } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000024",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: first,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.askAgain({
+      runId,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000103",
+      asked: "А тепер постав рев'ювера",
+      askedAgentId: SEEKER,
+      askedAgentName: "SEEKER",
+      askedAt: second,
+    });
+
+    const whole = await reader.one(runId);
+    const hours = (whole?.questions ?? []).map((question) => question.askedAt.getTime());
+
+    assert.deepEqual(hours, [first, second]);
+  });
+
+  it("keeps the two edges of a walk as rows, and hands them back in the order they were named", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000025",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+    const first = await writer.step(step(id));
+    const second = await writer.step(
+      step(id, {
+        agentId: TELLER,
+        fromStepIds: [first],
+        handoffs: [
+          {
+            toAgentId: SEEKER,
+            stopReason: null,
+          },
+          {
+            toAgentId: TELLER,
+            stopReason: "busy",
+          },
+        ],
+      }),
+    );
+
+    const whole = await reader.one(id);
+    const read = whole?.walk.find((one) => one.id === second);
+
+    // A step names other rows, so the naming is a row of its own and not a word in a text
+    // column — the base can follow it, clear it away with the step, and be asked about it.
+    assert.deepEqual(read?.fromStepIds, [first]);
+    assert.deepEqual(read?.handoffs, [
+      {
+        toAgentId: SEEKER,
+        stopReason: null,
+      },
+      {
+        toAgentId: TELLER,
+        stopReason: "busy",
+      },
+    ]);
+  });
+
+  it("closes a run the app was shut on, at the last thing that actually happened", async () => {
+    const { runId: walked } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000026",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+    const { runId: mute } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000027",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Не дійшло до кроку",
+    });
+
+    await writer.step(
+      step(walked, {
+        startedAt: ASKED_AT,
+        endedAt: ASKED_AT + 4_000,
+      }),
+    );
+
+    assert.equal(await keeper.settleOpen(), 2);
+
+    const rows = await reader.list(DIRECTORY);
+    const one = rows.find((row) => row.id === walked);
+    const other = rows.find((row) => row.id === mute);
+
+    // A walk cannot outlive the window it ran in: nothing is out any more, so nothing says «іде».
+    assert.equal(one?.endedAt?.getTime(), ASKED_AT + 4_000);
+    assert.equal(other?.endedAt?.getTime(), ASKED_AT);
+    assert.equal(one?.state, "done");
+  });
+
+  it("sweeps out what is older than thirty days and leaves the thirtieth day standing", async () => {
+    const now = new Date(ASKED_AT);
+
+    await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000028",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT - (HISTORY_DAYS + 1) * HISTORY_DAY_MS,
+      asked: "Давній",
+    });
+    await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000029",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT - HISTORY_DAY_MS,
+      asked: "Вчорашній",
+    });
+
+    assert.equal(await keeper.sweep(now), 1);
+    assert.deepEqual(
+      (await reader.list(DIRECTORY)).map((row) => row.asked),
+      ["Вчорашній"],
+    );
+  });
+
+  it("keeps the times it was given: a run begins with the question and ends with the walk", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000030",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(step(id));
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 9_000,
+    });
+
+    const [row] = await reader.list(DIRECTORY);
+
+    // Not the moment the first step landed, and not the moment the last write finished.
+    assert.equal(row.startedAt.getTime(), ASKED_AT);
+    assert.equal(row.endedAt?.getTime(), ASKED_AT + 9_000);
+  });
+
+  it("adds up what the steps cost, and names the agent it started from as it stood then", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000031",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(step(id));
+    await writer.step(
+      step(id, {
+        agentId: TELLER,
+        agentName: "Перелікар",
+        agentColor: "#e8c46a",
+        money: 0.002,
+      }),
+    );
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(Math.round((row.money ?? 0) * 10_000) / 10_000, 0.0051);
+    assert.equal(row.startedByAgentName, "Шукач");
+    assert.equal(row.startedByAgentColor, "#6fd3d8");
+  });
+
+  it("hands a step back with the numbers it never carried still missing, not as zeros", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000032",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        inputPrice: null,
+        outputPrice: null,
+        contextCeiling: null,
+        answerCeiling: null,
+        money: null,
+      }),
+    );
+
+    const [whole] = (await reader.one(id))?.walk ?? [];
+
+    assert.equal(whole?.inputPrice, null);
+    assert.equal(whole?.contextCeiling, null);
+    assert.equal(whole?.answerCeiling, null);
+    assert.equal(whole?.money, null);
+  });
+
+  it("names no money for a run whose steps carried none, rather than a bill of nothing", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000033",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        money: null,
+      }),
+    );
+
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(row.money, null);
+  });
+});

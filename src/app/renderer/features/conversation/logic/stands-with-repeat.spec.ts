@@ -1,0 +1,80 @@
+import { describe, expect, it } from "vitest";
+import { standsWithRepeat } from "./stands-with-repeat";
+import { CHAT_FAILED_NOTE } from "../constants";
+import type { ChatMessage } from "../interfaces";
+
+function said(patch: Partial<ChatMessage> = {}): ChatMessage {
+  return {
+    id: "said-1",
+    agentId: "editor",
+    from: "agent",
+    text: "Готово",
+    at: "2026-09-02T15:41:00.000Z",
+    questionId: "question-1",
+    askedAt: 1,
+    cost: null,
+    answerCeiling: null,
+    otherAgentId: null,
+    stopReason: null,
+    isFailure: false,
+    notStarted: null,
+    wouldGo: null,
+    calls: [],
+    began: null,
+    stepId: null,
+    walkId: null,
+    note: null,
+    // Every answer carries what it was asked, so a repeat anywhere in the walk has the words.
+    asked: "Прогони тести",
+    fedBy: [],
+    ...patch,
+  };
+}
+
+describe("standsWithRepeat", () => {
+  it("stands under a turn the app had to say a word about", () => {
+    // «ВІДПОВІДЬ НЕ ПРИЙШЛА», «ЗУПИНЕНО», «ВИЧЕРПАНО МАКСИМУМ ВИКЛИКІВ» — one recipe for all of them.
+    expect(
+      standsWithRepeat(
+        said({
+          isFailure: true,
+          note: CHAT_FAILED_NOTE,
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("stands under a turn that never began, the ceiling's own among them", () => {
+    // No exception is left — the ceiling is raised by the card's own act and the same words go through.
+    expect(
+      standsWithRepeat(
+        said({
+          notStarted: "noKey",
+        }),
+      ),
+    ).toBe(true);
+    expect(
+      standsWithRepeat(
+        said({
+          notStarted: "tooLong",
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("stands under a link the work could not go down", () => {
+    // The walk ended at that link, and it is picked up by the same repeat.
+    expect(
+      standsWithRepeat(
+        said({
+          stopReason: "off",
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("stands under nothing where the turn answered", () => {
+    // The words it was asked are kept for a repeat further down the walk, not for one here.
+    expect(standsWithRepeat(said())).toBe(false);
+  });
+});

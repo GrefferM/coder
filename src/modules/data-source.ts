@@ -1,0 +1,44 @@
+import "reflect-metadata";
+import path from "node:path";
+import { DataSource } from "typeorm";
+import { DeletionEntity, ProjectEntryEntity } from "./projects";
+import { McpDroppedServerEntity, McpServerLookEntity } from "./mcp";
+import {
+  RunCallEntity,
+  RunEntity,
+  RunHandoffEntity,
+  RunQuestionEntity,
+  RunStepAgentEntity,
+  RunStepEntity,
+  RunStepModelEntity,
+  RunStepSettingEntity,
+  RunStepFeedEntity,
+} from "./runs";
+import { DATA_SOURCE_DATABASE_FILE_NAME } from "./constants";
+
+export const MODULES_ENTITIES = [
+  ProjectEntryEntity,
+  DeletionEntity,
+  McpServerLookEntity,
+  McpDroppedServerEntity,
+  RunEntity,
+  RunStepEntity,
+  RunCallEntity,
+  RunStepFeedEntity,
+  RunHandoffEntity,
+  RunQuestionEntity,
+  RunStepAgentEntity,
+  RunStepModelEntity,
+  RunStepSettingEntity,
+];
+
+/** The `DataSource` over every `modules` entity, its SQLite file inside `databaseDirectory`; not initialized. */
+export function createDataSource(databaseDirectory: string): DataSource {
+  return new DataSource({
+    type: "better-sqlite3",
+    database: path.join(databaseDirectory, DATA_SOURCE_DATABASE_FILE_NAME),
+    entities: MODULES_ENTITIES,
+    migrations: [path.join(__dirname, "migrations", "*.ts")],
+    synchronize: false,
+  });
+}

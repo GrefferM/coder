@@ -1,0 +1,52 @@
+import { BORDER_AT_REST_COLOR, BROKEN_COLOR, FALLEN_COLOR, FIRST_LEVEL_TEXT_COLOR } from "../../../constants";
+
+export const ACTION_BUTTON_BORDER_RADIUS_PX = 9;
+
+export const ACTION_BUTTON_FONT_SIZE_PX = 13;
+
+export const ACTION_BUTTON_FONT_WEIGHT = 600;
+
+export const ACTION_BUTTON_PADDING = "10px 0";
+
+/** Cancel variant border color. */
+export const ACTION_BUTTON_CANCEL_BORDER_COLOR = BORDER_AT_REST_COLOR;
+
+/** Cancel variant label color. */
+export const ACTION_BUTTON_CANCEL_TEXT_COLOR = "#aab3cc";
+
+/** The cancel button's colors while lit. */
+export const ACTION_BUTTON_CANCEL_LIT_BACKGROUND_COLOR = "#1b1f2c";
+export const ACTION_BUTTON_CANCEL_LIT_BORDER_COLOR = "#38a3ff";
+export const ACTION_BUTTON_CANCEL_LIT_TEXT_COLOR = FIRST_LEVEL_TEXT_COLOR;
+
+/** The outlined accent action — an act that carries the accent without claiming the eye. */
+export const ACTION_BUTTON_OUTLINED_BORDER_COLOR = BORDER_AT_REST_COLOR;
+export const ACTION_BUTTON_OUTLINED_TEXT_COLOR = "#38a3ff";
+export const ACTION_BUTTON_OUTLINED_LIT_BACKGROUND_COLOR = "#1b1f2c";
+export const ACTION_BUTTON_OUTLINED_LIT_BORDER_COLOR = "#2c3550";
+export const ACTION_BUTTON_OUTLINED_LIT_TEXT_COLOR = "#7cc4ff";
+export const ACTION_BUTTON_OUTLINED_PRESSED_BACKGROUND_COLOR = "#141824";
+
+/** Delete variant rest border and label colors. */
+export const ACTION_BUTTON_DELETE_BORDER_COLOR = "#2e2530";
+export const ACTION_BUTTON_DELETE_TEXT_COLOR = BROKEN_COLOR;
+
+/** Danger and delete variants' colors at rest, lit and pressed. */
+export const ACTION_BUTTON_DANGER_BACKGROUND_COLOR = "#2a1c20";
+export const ACTION_BUTTON_DANGER_BORDER_COLOR = "#4a2530";
+export const ACTION_BUTTON_DANGER_TEXT_COLOR = FALLEN_COLOR;
+export const ACTION_BUTTON_DANGER_LIT_BACKGROUND_COLOR = "#38222a";
+export const ACTION_BUTTON_DANGER_LIT_BORDER_COLOR = FALLEN_COLOR;
+export const ACTION_BUTTON_DANGER_LIT_TEXT_COLOR = "#ffc4c9";
+export const ACTION_BUTTON_DANGER_PRESSED_BACKGROUND_COLOR = "#241519";
+export const ACTION_BUTTON_DANGER_PRESSED_BORDER_COLOR = BROKEN_COLOR;
+
+/** Save variant colors at rest, lit and pressed. */
+export const ACTION_BUTTON_SAVE_BACKGROUND_COLOR = "#38a3ff";
+export const ACTION_BUTTON_SAVE_TEXT_COLOR = "#e6ecf7";
+export const ACTION_BUTTON_SAVE_LIT_BACKGROUND_COLOR = "#4aabff";
+export const ACTION_BUTTON_SAVE_LIT_BORDER_COLOR = "#57b4ff";
+export const ACTION_BUTTON_SAVE_LIT_TEXT_COLOR = "#ffffff";
+export const ACTION_BUTTON_SAVE_PRESSED_BACKGROUND_COLOR = "#2f8ddb";
+
+export const ACTION_BUTTON_DISABLED_OPACITY = 0.45;

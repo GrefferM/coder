@@ -1,0 +1,46 @@
+# Dependencies and everything a build makes
+node_modules/
+dist/
+dist-electron/
+out/
+build/
+release/
+coverage/
+.vite/
+.vitest/
+.eslintcache
+*.tsbuildinfo
+
+# What stays on this machine and travels nowhere: keys, the local database, the app's own logs
+.env
+.mcp.json
+.data/
+logs/
+*.log
+
+# Working notes and the tooling of whoever builds it — not part of what the project is
+.claude/
+.scratch/
+.tools/
+CLAUDE.md
+TODO.md
+DESIGN.md
+BACKEND.md
+FRONTEND.md
+REFACTORING.md
+
+# The frames: the canvases, their exports and the map of them live with the designer
+design/
+
+# Editors, and the systems they run on
+.idea/
+.vscode/
+.DS_Store
+._*
+.AppleDouble
+Thumbs.db
+*.local
+
+# A canvas exported as one standalone file, and whatever is parked for deletion
+*(standalone).html
+_to_delete/

@@ -1,0 +1,304 @@
+// The app's global stylesheet, imported once in main.tsx.
+
+:root {
+  // Without this a native scrollbar paints its light-page grey track against this app's dark one.
+  color-scheme: dark;
+}
+
+// A textured frame around the window in $app-frame-color, content in a rounded $app-content-bg box.
+// WINDOW_BACKGROUND_COLOR in app-window.constant.ts equals $app-content-bg, so Electron paints that
+// colour before the first frame.
+$app-frame-color: #262b3a;
+$app-content-bg: #0d0f16;
+$body-bg: $app-frame-color;
+$body-color: #dde1ee;
+
+// IBM Plex Sans for the interface, Mono for code and labels; set before the Bootstrap import so
+// $font-family-base and $font-family-monospace take them.
+$font-family-sans-serif:
+  "IBM Plex Sans",
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  Roboto,
+  Helvetica,
+  Arial,
+  sans-serif,
+  "Apple Color Emoji",
+  "Segoe UI Emoji";
+$font-family-monospace:
+  "IBM Plex Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+@import "bootstrap/scss/bootstrap";
+
+// Frame padding doubles as the window-drag handle — the inset title bar has no strip of its own;
+// #root opts out, `Template`'s own header opts in.
+// Selection is off everywhere and back on only where words are taken away: a field being edited, and
+// the words of a message — what a person asked, what a model answered, what a call printed. Everything
+// around them is the app talking, and the app's own marks are not text to carry off.
+body {
+  user-select: none;
+  height: 100vh;
+  display: flex;
+  padding: 35px;
+  overflow: hidden;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-size: 8px 8px;
+  background-position: 3px 3px;
+  -webkit-app-region: drag;
+}
+
+// The window's content box: rounded, $app-content-bg, filling what the frame's padding leaves, with
+// no minimum of its own.
+#root {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  border-radius: 12px;
+  background: $app-content-bg;
+  -webkit-app-region: no-drag;
+}
+
+// Where text is genuinely edited, and the only place selecting it means anything.
+input,
+textarea {
+  user-select: text;
+}
+
+// Whatever is selected, anywhere, is painted the same translucent blue — a field whose glyphs are
+// drawn on a backdrop under it needs what is selected to still read through it.
+::selection {
+  background: rgba(56, 163, 255, 0.32);
+}
+
+// What a field says while it is empty asks for something: it names what to write and to whom, and while the field is
+// empty it is the whole instruction. That is why it stands above the app's quiet marks — a chevron or a counter names
+// what is already visible, and this does not. Inline styles cannot reach ::placeholder, so it lives here.
+input::placeholder,
+textarea::placeholder {
+  color: #838ba6;
+}
+
+// Frames 4h and 23n: a stitched field is the one place the word goes quiet, because there is nothing to write in it
+// at all — nobody aimed at, or the agent switched off. Its ground and edge say the same, and the word agrees.
+.field-stitched::placeholder {
+  color: #4a5164;
+}
+
+// Frame 36c: a variable named with no value anywhere. The word in the empty field is not an instruction but a
+// promise — the server will not start at all — so it wears the muted red the app keeps for a hindrance, and not
+// the red of a fall. The form still gives «Підключити»: this is what the launch will say, not a refusal here.
+.field-warned::placeholder {
+  color: #a9808a;
+}
+
+// Frame 4h: a press that could not go through is answered where the hand already is — «ЗУПИНИТИ» says its own word
+// louder for a moment and quiets itself: 120ms up, 400ms down, each leg easing out. It takes no colour of its own,
+// and red least of all: red is the colour of a fall, and nothing has fallen. It is an answer to an event and not a
+// state, so a new press starts the blink over rather than adding to it.
+@keyframes stop-blink {
+  0% {
+    color: #a9808a;
+    animation-timing-function: ease-out;
+  }
+
+  23% {
+    color: #f0a5ac;
+    animation-timing-function: ease-out;
+  }
+
+  100% {
+    color: #a9808a;
+  }
+}
+
+.stop-blink {
+  animation: stop-blink 520ms;
+}
+
+// Frames 31b and 40a: a model's name is cut from the head — «…coder:1.5b»; no inline style moves an
+// ellipsis, so the box is turned right-to-left.
+.head-truncate {
+  direction: rtl;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Frame 8b: the dashes crawling along a link, one keyframes for the drift at rest and for live work.
+// Frame 7d: a line let go over nothing goes out rather than disappearing.
+@keyframes draft-cancel {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes edge-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+// A card opening inside a form rises one short step with the fade, in the app's own easing.
+@keyframes nested-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Frame 4b: three dots passing through three depths, over a bar that runs rather than fills — an
+// answer's share is unknown until it arrives.
+@keyframes work-dot {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes work-bar {
+  from {
+    transform: translateX(-110%);
+  }
+
+  to {
+    transform: translateX(400%);
+  }
+}
+
+.work-dot {
+  animation-name: work-dot;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+// Frame 4b: a call that is out says so by breathing and by nothing that travels or counts — the mark keeps its
+// place and its size, and only the light in it comes and goes.
+@keyframes call-breath {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.call-breath {
+  animation-name: call-breath;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+// Frame 36d: the same breath for a server being raised — «тим самим тактом, що ореол 9c, тільки швидшим», which
+// is 4b's take exactly. One rule, two marks: nothing in the app breathes at two speeds for the same reason.
+.mark-breath {
+  animation-name: call-breath;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+// Frame 9c: the one moving thing in this language that neither travels a contour nor counts —
+// which is why it reads as attention standing rather than as work running.
+@keyframes sphere-breathe {
+  0%,
+  100% {
+    opacity: 0.34;
+    transform: scale(0.94);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.sphere-breathe {
+  animation-name: sphere-breathe;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.work-bar {
+  animation-name: work-bar;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+// The scrollbar keeps its width always, so text never jumps sideways, and paints its thumb only
+// while `is-scrolling` is on the box (useScrollMark).
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  // A transparent 1px border with the paint clipped to the content box makes the thumb 4px wide
+  // inside a 6px gutter.
+  background: transparent;
+  border: 1px solid transparent;
+  background-clip: content-box;
+  border-radius: 3px;
+  transition: background 0.35s ease;
+}
+
+.is-scrolling::-webkit-scrollbar-thumb {
+  background: #2c3550;
+}
+
+.is-scrolling::-webkit-scrollbar-thumb:hover {
+  background: #3a4258;
+}
+
+// Frame 47a: the line along the bottom arrives with a rise from where it sits and leaves without
+// moving.
+@keyframes write-note-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes write-note-out {
+  to {
+    opacity: 0;
+  }
+}
+
+// Frame 53c: the same rise for a row the stack already centres, without the pill's own -50%.
+@keyframes undo-line-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
