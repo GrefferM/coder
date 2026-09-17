@@ -36,6 +36,8 @@ export function CanvasLayers({
   const { drag, draft, cancelled, target, chosenLinkId, markScale, isDrawnSmall } = drawing;
   const isDragged = drag !== null && agents.some((agent) => agent.id === drag.agentId);
   const selectedLink = links.find((link) => link.id === chosenLinkId) ?? null;
+  // A line the file holds is drawn as it is; the end that names nobody is a dead sphere in free space (50a).
+  const dead = deadEnds(agents, links);
   /** One end of the chosen line, whether an agent stands there or only the id the line carries. */
   const endOf = (agentId: string): LinkEnd | null => {
     const agent = agents.find((one) => one.id === agentId) ?? null;
@@ -55,8 +57,6 @@ export function CanvasLayers({
           from: endOf(selectedLink.from),
           to: endOf(selectedLink.to),
         };
-  // A line the file holds is drawn as it is; the end that names nobody is a dead sphere in free space (50a).
-  const dead = deadEnds(agents, links);
   const pastedAgent = pasted === null ? null : (agents.find((agent) => agent.id === pasted.agentId) ?? null);
   const draftAgent = draft === null ? null : (agents.find((agent) => agent.id === draft.agentId) ?? null);
   const cancelledAgent = cancelled === null ? null : (agents.find((agent) => agent.id === cancelled.agentId) ?? null);

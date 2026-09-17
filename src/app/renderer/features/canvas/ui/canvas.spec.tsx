@@ -1266,6 +1266,53 @@ describe("Canvas", () => {
     expect(screen.getByText(DEAD_SPHERE_NOTE_LABEL)).toBeInTheDocument();
   });
 
+  it("raises the pill for a line with a dead end, naming the agent and the id the line carries", async () => {
+    // Choosing it must draw, not throw: the canvas stood blank when the pill asked where the dead end was.
+    const { container } = renderCanvas({
+      links: [
+        ...LINKS,
+        aLink({
+          id: "link-2",
+          to: "agent-gone",
+        }),
+      ],
+    });
+    const lines = container.querySelectorAll("svg line");
+
+    await userEvent.click(lines[lines.length - 1] as SVGLineElement);
+
+    const pill = screen.getByRole("button", {
+      name: `${LINK_PILL_DELETE_SHORTCUT} ${LINK_PILL_DELETE_LABEL}`,
+    }).parentElement as HTMLElement;
+
+    expect(within(pill).getByText(AGENTS[0].name)).toBeInTheDocument();
+    expect(within(pill).getByText("AGENT-GO")).toBeInTheDocument();
+  });
+
+  it("takes away a line with a dead end like any other, since the file is what holds it", async () => {
+    const onDeleteLink = vi.fn();
+    const { container } = renderCanvas({
+      links: [
+        ...LINKS,
+        aLink({
+          id: "link-2",
+          to: "agent-gone",
+        }),
+      ],
+      onDeleteLink,
+    });
+    const lines = container.querySelectorAll("svg line");
+
+    await userEvent.click(lines[lines.length - 1] as SVGLineElement);
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: `${LINK_PILL_DELETE_SHORTCUT} ${LINK_PILL_DELETE_LABEL}`,
+      }),
+    );
+
+    expect(onDeleteLink).toHaveBeenCalledWith("link-2");
+  });
+
   it("stands no dead sphere where every line names agents the project has", () => {
     const { container } = renderCanvas({});
 
