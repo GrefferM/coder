@@ -48,6 +48,12 @@ export const SERVER_LAST_CALL_LABEL = "ОСТАННІЙ ВИКЛИК";
  */
 export const SERVER_SHOW_CALL_LABEL = "ПОКАЗАТИ ВИКЛИК";
 /**
+ * What stands in place of that way when it leads nowhere: the record cannot say where the call is, because the
+ * run was forgotten and took its calls with it, or the call was written before calls kept an id of their own.
+ * Said in place of the press rather than over it — the offer that cannot be kept stops being an offer.
+ */
+export const SERVER_CALL_LOST_LABEL = "ЗАПИС ДО ЦЬОГО ВИКЛИКУ НЕ ВЕДЕ";
+/**
  * The ceiling of the handshake, said out loud while the waiting goes on — «дві хвилини, і вона на
  * екрані». The minutes are not written here: they are read off `MCP_CONNECT_TIMEOUT_MS`, so the sentence cannot
  * go on promising two minutes after somebody has given the handshake three.

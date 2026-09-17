@@ -20,5 +20,5 @@ export interface ServerRowProps {
   /** «УВІЙТИ» and «ВПИСАТИ» both open the form, which is where a token and a value are typed. */
   onFill: () => void;
   /** «ПОКАЗАТИ ВИКЛИК» — hands the chat over to the call the row is talking about. */
-  onShowCall: (callId: string) => void;
+  onShowCall: (callId: string) => Promise<boolean>;
 }

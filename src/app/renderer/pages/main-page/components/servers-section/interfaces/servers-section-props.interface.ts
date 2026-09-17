@@ -10,5 +10,5 @@ export interface ServersSectionProps {
   section: ServerSection;
   /** Opening or leaving the form asks about unsaved work first, as every other section does. */
   wayOut: WayOut;
-  onShowCall: (callId: string) => void;
+  onShowCall: (callId: string) => Promise<boolean>;
 }

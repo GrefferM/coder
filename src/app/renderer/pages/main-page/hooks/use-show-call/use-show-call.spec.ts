@@ -1,4 +1,4 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { useShowCall } from "./use-show-call";
 import { callPlace } from "../../../../features/record";
@@ -59,10 +59,15 @@ describe("useShowCall", () => {
     const held = parts();
     const { result } = renderHook(() => useShowCall(held.stream, held.rail, held.openCalls));
 
-    act(() => result.current(CALL_ID));
+    let led = false;
 
-    await waitFor(() => expect(held.openRun).toHaveBeenCalledTimes(1));
+    await act(async () => {
+      led = await result.current(CALL_ID);
+    });
 
+    // The press is told the way was there, so the block goes on offering it.
+    expect(led).toBe(true);
+    expect(held.openRun).toHaveBeenCalledTimes(1);
     expect(held.openRun.mock.calls[0][0].id).toBe(RUN_ID);
     expect(held.openRun.mock.calls[0][1]).toMatchObject({
       questionId: "question-1",
@@ -81,10 +86,14 @@ describe("useShowCall", () => {
     const held = parts();
     const { result } = renderHook(() => useShowCall(held.stream, held.rail, held.openCalls));
 
-    act(() => result.current(CALL_ID));
+    let led = true;
 
-    await waitFor(() => expect(callPlace).toHaveBeenCalled());
+    await act(async () => {
+      led = await result.current(CALL_ID);
+    });
 
+    // Said out loud rather than swallowed: the block puts a word where the way was.
+    expect(led).toBe(false);
     expect(held.openRun).not.toHaveBeenCalled();
     expect(held.openChat).not.toHaveBeenCalled();
   });
@@ -99,10 +108,13 @@ describe("useShowCall", () => {
     const held = parts();
     const { result } = renderHook(() => useShowCall(held.stream, held.rail, held.openCalls));
 
-    act(() => result.current(CALL_ID));
+    let led = true;
 
-    await waitFor(() => expect(callPlace).toHaveBeenCalled());
+    await act(async () => {
+      led = await result.current(CALL_ID);
+    });
 
+    expect(led).toBe(false);
     expect(held.openRun).not.toHaveBeenCalled();
   });
 });

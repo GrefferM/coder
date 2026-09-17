@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { lastCallLine } from "../../../../../../words";
 import { timeLabel } from "../../../../../../../../utils/dates";
 import {
+  SERVER_CALL_LOST_LABEL,
   SERVER_FACTS_SEPARATOR,
   SERVER_FELL_COLOR,
   SERVER_LAST_CALL_FELL_LABEL,
@@ -37,6 +39,11 @@ import type { LastCallProps } from "./interfaces";
  */
 export function LastCall({ failure, isNews, onShow }: LastCallProps) {
   const label = isNews ? SERVER_LAST_CALL_FELL_LABEL : SERVER_LAST_CALL_LABEL;
+  /**
+   * Whether the way was tried and led nowhere. The word takes the place of the press rather than standing beside
+   * it: the record will not find this call on a second press either, so offering it again would be a lie.
+   */
+  const [isLost, setIsLost] = useState(false);
 
   return (
     <div
@@ -101,9 +108,25 @@ export function LastCall({ failure, isNews, onShow }: LastCallProps) {
           {lastCallLine(failure)}
         </span>
         {/* The sentence stands whole in the call's own card, and this hands the chat over to it. */}
-        <span className="align-self-start">
-          <TextAction label={SERVER_SHOW_CALL_LABEL} onClick={onShow} />
-        </span>
+        {isLost ? (
+          <span
+            className="font-monospace"
+            style={{
+              fontSize: LAST_CALL_LABEL_FONT_SIZE_PX,
+              letterSpacing: LAST_CALL_LABEL_LETTER_SPACING_PX,
+              color: SERVER_ROW_FACTS_COLOR,
+            }}
+          >
+            {SERVER_CALL_LOST_LABEL}
+          </span>
+        ) : (
+          <span className="align-self-start">
+            <TextAction
+              label={SERVER_SHOW_CALL_LABEL}
+              onClick={() => void onShow().then((shown) => setIsLost(!shown))}
+            />
+          </span>
+        )}
       </div>
     </div>
   );

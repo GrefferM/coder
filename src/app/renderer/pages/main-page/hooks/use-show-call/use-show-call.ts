@@ -10,41 +10,48 @@ import type { ShownStream } from "../use-shown-stream";
  * message the call was made from. Nothing opens over anything — «третя копія — третя правда».
  *
  * The row itself opens without a press, and it is the one place where that happens: the hand was there, just
- * in another room. A call the record can no longer place leads nowhere and nothing happens at all — the run may
- * have been forgotten, and a call written before the record kept the stream's own id has another one.
+ * in another room. A call the record can no longer place is answered with `false` and nothing is opened — the run
+ * may have been forgotten, and a call written before the record kept the stream's own id has another reason. The
+ * press is told so, because a way that leads nowhere has to say it and not stand there silent.
  */
-export function useShowCall(stream: ShownStream, rail: RailStanding, openCalls: OpenCalls): (callId: string) => void {
+export function useShowCall(
+  stream: ShownStream,
+  rail: RailStanding,
+  openCalls: OpenCalls,
+): (callId: string) => Promise<boolean> {
   const { openRun, runs } = stream;
   const { openChat } = rail;
   const { open } = openCalls;
 
   return useCallback(
-    (callId: string) => {
-      void callPlace(callId).then((place) => {
-        if (place === null) {
-          return;
-        }
+    async (callId: string) => {
+      const place = await callPlace(callId);
 
-        const row = runs.find((run) => run.id === place.runId) ?? null;
+      if (place === null) {
+        return false;
+      }
 
-        if (row === null) {
-          return;
-        }
+      const row = runs.find((run) => run.id === place.runId) ?? null;
 
-        openRun(row, {
-          runId: place.runId,
-          questionId: place.questionId,
-          stepId: place.stepId,
-          agentId: null,
-          agentName: null,
-          step: null,
-          at: new Date(),
-          found: "",
-          isCall: true,
-        });
-        openChat();
-        open(callId);
+      if (row === null) {
+        return false;
+      }
+
+      openRun(row, {
+        runId: place.runId,
+        questionId: place.questionId,
+        stepId: place.stepId,
+        agentId: null,
+        agentName: null,
+        step: null,
+        at: new Date(),
+        found: "",
+        isCall: true,
       });
+      openChat();
+      open(callId);
+
+      return true;
     },
     [runs, openRun, openChat, open],
   );

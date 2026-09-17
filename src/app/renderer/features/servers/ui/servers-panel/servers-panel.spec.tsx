@@ -6,6 +6,7 @@ import type { DeclaringActs, ServerActs, ServerCatalogue, ServerDeclaring, Serve
 import { SERVERS_PANEL_EMPTY_LABEL } from "./constants";
 import {
   NOTHING_HELD,
+  SERVER_CALL_LOST_LABEL,
   SERVER_FUNCTIONS_SEARCH_PLACEHOLDER,
   SERVER_RESTART_ALIVE_LABEL,
   SERVER_RESTART_LABEL,
@@ -92,7 +93,7 @@ function panelProps(says: Partial<PanelSays> = {}): ServersPanelProps {
     onCancel: () => {},
     onAskAgain: () => {},
     onSeen: () => {},
-    onShowCall: () => {},
+    onShowCall: async () => true,
     openServerId: null,
     form: null,
     held: NOTHING_HELD,
@@ -284,7 +285,7 @@ describe("ServersPanel", () => {
 
   it("hands the chat the call the row is talking about, by that call's own id", async () => {
     // «ПОКАЗАТИ ВИКЛИК» — передача, а не друга домівка.
-    const onShowCall = vi.fn();
+    const onShowCall = vi.fn().mockResolvedValue(true);
 
     panel({
       looks: {
@@ -307,6 +308,62 @@ describe("ServersPanel", () => {
     await userEvent.click(screen.getByText(SERVER_SHOW_CALL_LABEL));
 
     expect(onShowCall).toHaveBeenCalledWith("call-7");
+  });
+
+  it("says the record does not lead to the call, in place of offering the way, when the way led nowhere", async () => {
+    // A forgotten run took its calls with it, and a press that does nothing at all is owed a word.
+    const onShowCall = vi.fn().mockResolvedValue(false);
+
+    panel({
+      looks: {
+        [SERVER_ID]: aLook({
+          calls: {
+            failedInARow: 1,
+            hasWorked: true,
+            lastFailure: {
+              callId: "call-7",
+              functionName: "browser_navigate",
+              said: "Chromium distribution 'chrome' is not found",
+              at: new Date(2024, 0, 1, 14, 12).getTime(),
+            },
+          },
+        }),
+      },
+      onShowCall,
+    });
+
+    await userEvent.click(screen.getByText(SERVER_SHOW_CALL_LABEL));
+
+    expect(await screen.findByText(SERVER_CALL_LOST_LABEL)).toBeInTheDocument();
+    // The offer that cannot be kept stops being an offer: a second press would find the same nothing.
+    expect(screen.queryByText(SERVER_SHOW_CALL_LABEL)).not.toBeInTheDocument();
+  });
+
+  it("goes on offering the way where it led somewhere, since the call is still in the record", async () => {
+    const onShowCall = vi.fn().mockResolvedValue(true);
+
+    panel({
+      looks: {
+        [SERVER_ID]: aLook({
+          calls: {
+            failedInARow: 1,
+            hasWorked: true,
+            lastFailure: {
+              callId: "call-7",
+              functionName: "browser_navigate",
+              said: "Chromium distribution 'chrome' is not found",
+              at: new Date(2024, 0, 1, 14, 12).getTime(),
+            },
+          },
+        }),
+      },
+      onShowCall,
+    });
+
+    await userEvent.click(screen.getByText(SERVER_SHOW_CALL_LABEL));
+
+    expect(screen.getByText(SERVER_SHOW_CALL_LABEL)).toBeInTheDocument();
+    expect(screen.queryByText(SERVER_CALL_LOST_LABEL)).not.toBeInTheDocument();
   });
 
   it("a server nobody has called stands with no stripe at all", () => {
@@ -619,7 +676,7 @@ describe("ServersPanel", () => {
   it("«СКАСУВАТИ» gives the place back, and does not also walk into the server's page", async () => {
     // The press is the action's own; a wait with no way out of it is why a person opens the file.
     const onCancel = vi.fn();
-    const onShowCall = vi.fn();
+    const onShowCall = vi.fn().mockResolvedValue(true);
 
     panel({
       looks: {},

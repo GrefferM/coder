@@ -8,6 +8,9 @@ export interface LastCallProps {
    * the trouble ground and the sign. Where the row already says no function has answered, it stands quiet.
    */
   isNews: boolean;
-  /** Leads the chat to this very call; nothing where the record can no longer say where it stands. */
-  onShow: () => void;
+  /**
+   * Leads the chat to this very call, and says whether it led anywhere: the record can no longer place a call
+   * whose run was forgotten, and then the block says so in place of offering the way.
+   */
+  onShow: () => Promise<boolean>;
 }
