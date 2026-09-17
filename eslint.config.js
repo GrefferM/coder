@@ -297,6 +297,12 @@ export default tseslint.config(
       // Об'єктні літерали завжди багаторядкові, навіть з однією властивістю (не { x: 1 } в один рядок).
       // Імпорти й деструктуризацію (const { x } = y) не чіпаємо.
       "object-curly-newline": ["warn", { ObjectExpression: { minProperties: 1 } }],
+      // Нічого не читається вище за рядок, де воно створене: змінна, прочитана із замикання раніше за своє
+      // оголошення, кидає в мить малювання, і TypeScript такого не бачить.
+      "@typescript-eslint/no-use-before-define": [
+        "error",
+        { variables: true, functions: false, classes: false, enums: true, typedefs: false, ignoreTypeReferences: true },
+      ],
       // Деструктуризація масиву замість прямого індексу: const [item] = array, не array[0]
       "prefer-destructuring": [
         "warn",

@@ -78,6 +78,7 @@ const AGENTS: Agent[] = [
     temperature: 0.3,
   }),
 ];
+const LINKS: Link[] = [aLink()];
 
 /**
  * Every part of the canvas laid flat, so one case names only what it changes. The names of the acts are this
@@ -242,8 +243,6 @@ function undoOffer(overrides: Partial<UndoOffer> = {}): UndoOffer {
     ...overrides,
   };
 }
-
-const LINKS: Link[] = [aLink()];
 
 describe("Canvas", () => {
   it("takes the offer up on «Скасувати»", async () => {

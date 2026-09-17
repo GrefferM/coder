@@ -33,6 +33,13 @@ const COMMAND: ProjectCommand = aCommand({
 });
 
 /** One turn as it is asked, with what the case is about patched into it. */
+/** A project that declares this one command and no server at all. */
+const ONLY_COMMANDS = {
+  commands: [COMMAND],
+  servers: [],
+  looks: {},
+};
+
 function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
   return {
     turnId: "turn-1",
@@ -66,13 +73,6 @@ function wall(patch: Partial<Agent> = {}, model: ProjectModel | null = MODEL, pr
     }),
   );
 }
-
-/** A project that declares this one command and no server at all. */
-const ONLY_COMMANDS = {
-  commands: [COMMAND],
-  servers: [],
-  looks: {},
-};
 
 const SERVER_ID = "99999999-9999-4999-8999-999999999999";
 

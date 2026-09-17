@@ -461,25 +461,6 @@ export function useAgentChat(
     [dispatch],
   );
 
-  hands.current = {
-    askAgent,
-    stopMachine: ({ turnId }) => {
-      void stopTurn(turnId);
-    },
-    letDown,
-    sayHandoff,
-    sayAsked,
-    askMachine,
-    sayAnswer,
-    writeTurn,
-    turnBack,
-    openWalk,
-    takeWalk,
-    askAgain: (act) => {
-      void askAgain(act);
-    },
-  };
-
   /**
    * Reads the run back and picks the broken walk up where it stopped: every turn of the broken step runs again
    * word for word, and work that arrived and was never taken up is handed back to the point waiting for it.
@@ -498,6 +479,25 @@ export function useAgentChat(
     },
     [dispatch, writer],
   );
+
+  hands.current = {
+    askAgent,
+    stopMachine: ({ turnId }) => {
+      void stopTurn(turnId);
+    },
+    letDown,
+    sayHandoff,
+    sayAsked,
+    askMachine,
+    sayAnswer,
+    writeTurn,
+    turnBack,
+    openWalk,
+    takeWalk,
+    askAgain: (act) => {
+      void askAgain(act);
+    },
+  };
 
   /**
    * One walk of the line, from this question to the last step it reaches. The

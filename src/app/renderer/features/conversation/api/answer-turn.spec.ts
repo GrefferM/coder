@@ -70,6 +70,13 @@ function refusingMachine(failure: string) {
 }
 
 /** One turn as it is asked, with what the case is about patched into it. */
+/** A project that declares nothing: neither a command nor a server. */
+const NOTHING_DECLARED: TurnCatalogue = {
+  commands: [],
+  servers: [],
+  looks: {},
+};
+
 function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
   return {
     turnId: "turn-1",
@@ -95,13 +102,6 @@ function ask(asked = "Розбий текст на тези") {
     }),
   );
 }
-
-/** A project that declares nothing: neither a command nor a server. */
-const NOTHING_DECLARED: TurnCatalogue = {
-  commands: [],
-  servers: [],
-  looks: {},
-};
 
 describe("answerTurn · before the model is troubled", () => {
   it("does not ask the machine at all when a wall stands before the turn", async () => {

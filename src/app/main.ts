@@ -32,6 +32,9 @@ import {
 
 app.setName(APP_NAME);
 
+/** The one client every MCP server is reached through; nothing is up until a server is asked for. */
+let mcpClient: McpClient | null = null;
+
 /** Opens the app's SQLite database, applies any pending migration, and registers every domain's IPC channels. */
 async function initializeIpc(): Promise<void> {
   const dataSource = createDataSource(app.getPath("userData"));
@@ -106,9 +109,6 @@ function failToStart(failure: unknown): void {
   dialog.showErrorBox(STARTUP_FAILURE_TITLE, failure instanceof Error ? failure.message : String(failure));
   app.quit();
 }
-
-/** The one client every MCP server is reached through; nothing is up until a server is asked for. */
-let mcpClient: McpClient | null = null;
 
 app
   .whenReady()
