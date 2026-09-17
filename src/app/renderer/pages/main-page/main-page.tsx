@@ -6,7 +6,7 @@ import { useAgentClipboard, useAgentDraft, useAgentSelection } from "../../featu
 import { agentTrouble } from "../../features/agents";
 import { RunDebug } from "../../features/projection";
 import { useModelSection } from "../../features/models";
-import { ProjectSwitcher, useProjectFile } from "../../features/project";
+import { closeProject, ProjectSwitcher, useProjectFile } from "../../features/project";
 import { useCommandSection } from "../../features/commands";
 import { useServerSection } from "../../features/servers";
 import { usePromptSection } from "../../features/prompts";
@@ -96,7 +96,13 @@ export function MainPage({ project, setProject }: MainPageProps) {
         project={project}
         onProjectChange={(next) => wayOut.guard(() => setProject(next))}
         // With no project open the start screen is what stands; unsaved work asks first, as a switch does.
-        onClose={() => wayOut.guard(() => setProject(null))}
+        onClose={() =>
+          wayOut.guard(() => {
+            // The folder of a project nobody has open is nobody's to watch.
+            void closeProject();
+            setProject(null);
+          })
+        }
       />
       <Canvas
         ref={canvasRef}

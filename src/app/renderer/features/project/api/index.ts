@@ -1,4 +1,5 @@
 export * from "./choose-project-directory";
+export * from "./close-project";
 export * from "./create-project";
 export * from "./forget-deletion";
 export * from "./forget-project";

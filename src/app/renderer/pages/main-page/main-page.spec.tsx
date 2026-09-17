@@ -90,7 +90,13 @@ import {
   WRITE_NOTE_OUT_MS,
   WRITE_NOTE_RETRY_LABEL,
 } from "../../features/canvas/ui/components/write-note/constants";
-import { LIST_PROVIDERS_CHANNEL, LIST_RUNS_CHANNEL, READ_RUN_CHANNEL } from "../../../../contracts";
+import {
+  CLOSE_PROJECT_CHANNEL,
+  LIST_PROVIDERS_CHANNEL,
+  LIST_RUNS_CHANNEL,
+  READ_RUN_CHANNEL,
+} from "../../../../contracts";
+import { SWITCHER_CLOSE_LABEL } from "../../features/project/ui/project-switcher/constants";
 import { CHAT_TABS_HISTORY_LABEL, CHAT_TABS_STREAM_LABEL } from "../../features/conversation/ui/chat-tabs/constants";
 import { PROVIDER_PICKER_PLACEHOLDER } from "../../features/models/ui/models-panel/components/model-form/components/provider-picker/constants";
 import type { OpenProject, ProjectConfig, ProviderState } from "../../interfaces";
@@ -2339,5 +2345,22 @@ describe("MainPage", () => {
 
     expect(aim()).toHaveTextContent("EDITOR");
     expect(sphere("REVIEWER")).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("tells the main process the project is put down, so its folder stops being watched", async () => {
+    const user = userEvent.setup();
+
+    render(<OpenProjectHarness />);
+    await user.click(
+      screen.getByRole("button", {
+        name: CONFIG.name,
+      }),
+    );
+    await user.click(await screen.findByText(SWITCHER_CLOSE_LABEL));
+
+    // Nothing is handed over: one project is open at a time, and the main process knows which.
+    await waitFor(() => {
+      expect(window.electronApi.invoke).toHaveBeenCalledWith(CLOSE_PROJECT_CHANNEL);
+    });
   });
 });

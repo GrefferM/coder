@@ -1,10 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { chooseProjectDirectory } from "./choose-project-directory";
+import { closeProject } from "./close-project";
 import { createProject } from "./create-project";
 import { openProject } from "./open-project";
 import { projectView, rememberProjectView } from "./project-view";
 import { CHOOSE_DIRECTORY_CHANNEL } from "../../../../../contracts";
 import {
+  CLOSE_PROJECT_CHANNEL,
   CREATE_PROJECT_CHANNEL,
   OPEN_PROJECT_CHANNEL,
   PROJECT_VIEW_CHANNEL,
@@ -100,6 +102,14 @@ describe("project calls", () => {
     });
 
     expect(await projectView("/tmp/test")).toBeNull();
+  });
+
+  it("says the project has been put down, handing nothing over: one is open at a time", async () => {
+    const invoke = stubApi(undefined);
+
+    await closeProject();
+
+    expect(invoke).toHaveBeenCalledWith(CLOSE_PROJECT_CHANNEL);
   });
 
   it("writes the view down as one string, since nobody on the other side opens it", async () => {

@@ -8,6 +8,7 @@ import {
   SaveProjectDto,
 } from "../../../modules";
 import {
+  CLOSE_PROJECT_CHANNEL,
   CREATE_PROJECT_CHANNEL,
   LIST_RECENT_PROJECTS_CHANNEL,
   OPEN_PROJECT_CHANNEL,
@@ -28,6 +29,9 @@ function controllerRecording(received: unknown[]): ProjectController {
     },
     findRecent: async () => {
       received.push("findRecent");
+    },
+    close: async () => {
+      received.push("close");
     },
   });
 }
@@ -74,6 +78,14 @@ describe("PROJECTS_IPC_CHANNELS", () => {
 
     assert.ok(saved instanceof SaveProjectDto);
     assert.ok((<SaveProjectDto>saved).config instanceof ProjectConfigDto);
+  });
+
+  it("puts the open project down with no payload at all, since one is open at a time", async () => {
+    const received: unknown[] = [];
+
+    await PROJECTS_IPC_CHANNELS[CLOSE_PROJECT_CHANNEL](controllerRecording(received), undefined);
+
+    assert.deepEqual(received, ["close"]);
   });
 
   it("asks for the recent list with no payload at all", async () => {

@@ -34,6 +34,11 @@ export class ProjectController {
     return this.projectService.openOrCreate(payload);
   }
 
+  /** Nothing is handed over: the one open project is what is put down. */
+  async close(): Promise<void> {
+    this.projectService.close();
+  }
+
   @Validate()
   async forget(payload: ForgetProjectDto): Promise<void> {
     return this.projectService.forget(payload);

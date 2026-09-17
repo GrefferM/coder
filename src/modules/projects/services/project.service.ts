@@ -76,6 +76,14 @@ export class ProjectService {
     return config;
   }
 
+  /**
+   * The open project is put down: nothing is followed until a project is opened again. A folder nobody has open
+   * is a folder nobody is told about, so the watch goes down with the project rather than outliving it.
+   */
+  close(): void {
+    this.projectWatch.unfollow();
+  }
+
   /** Writes the whole config back to the project's folder; saves of one folder run one after another. */
   async save(payload: SaveProjectDto): Promise<void> {
     const { directory, config } = payload;

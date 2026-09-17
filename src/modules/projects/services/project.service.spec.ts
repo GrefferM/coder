@@ -358,6 +358,17 @@ describe("ProjectService", () => {
     assert.equal(projectWatch.remembered, "/tmp/one");
   });
 
+  it("puts the watch down when the project is closed, leaving no folder followed", async () => {
+    await projectService.create({
+      directory: "/tmp/one",
+      name: "Coder",
+    });
+
+    projectService.close();
+
+    assert.equal(projectWatch.followed, null);
+  });
+
   it("keeps this machine's view of a project and hands it back", async () => {
     await projectService.create({
       directory: "/tmp/one",

@@ -12,6 +12,7 @@ import type {
   FORGET_RUNS_CHANNEL,
   FORGET_RUN_CHANNEL,
   LIST_DELETIONS_CHANNEL,
+  CLOSE_PROJECT_CHANNEL,
   LIST_PROVIDERS_CHANNEL,
   LIST_RECENT_PROJECTS_CHANNEL,
   LIST_RUNS_CHANNEL,
@@ -76,6 +77,8 @@ export interface ChannelMap {
   [LOOK_PROJECT_CHANNEL]: { payload: OfProject; answer: FolderContents };
   [SAVE_PROJECT_CHANNEL]: { payload: SaveProject; answer: void };
   [FORGET_PROJECT_CHANNEL]: { payload: OfProject; answer: void };
+  /** Nothing is handed over: the main process watches one project at a time and knows which. */
+  [CLOSE_PROJECT_CHANNEL]: { payload: void; answer: void };
   [LIST_RECENT_PROJECTS_CHANNEL]: { payload: void; answer: ProjectEntry[] };
   /** The view is kept as text, so what comes back is text or nothing at all. */
   [PROJECT_VIEW_CHANNEL]: { payload: OfProject; answer: string | null };

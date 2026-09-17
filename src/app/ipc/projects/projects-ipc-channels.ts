@@ -9,6 +9,7 @@ import {
 } from "../../../modules";
 import type { IpcChannelMap } from "../register-ipc-channels";
 import {
+  CLOSE_PROJECT_CHANNEL,
   CREATE_PROJECT_CHANNEL,
   FORGET_PROJECT_CHANNEL,
   LIST_RECENT_PROJECTS_CHANNEL,
@@ -39,4 +40,5 @@ export const PROJECTS_IPC_CHANNELS: IpcChannelMap<ProjectController> = {
   [REMEMBER_PROJECT_VIEW_CHANNEL]: (controller, payload) =>
     controller.rememberView(Object.assign(new RememberProjectViewDto(), payload)),
   [LIST_RECENT_PROJECTS_CHANNEL]: (controller) => controller.findRecent(),
+  [CLOSE_PROJECT_CHANNEL]: (controller) => controller.close(),
 };
