@@ -2,7 +2,7 @@ import type { ServerFormValues } from "../interfaces";
 
 /**
  * The form as it opens on nothing. A new server is local until told otherwise — that is what
- * most of them are — and a remote one is signed in to by a token, because the browser's half is not built.
+ * most of them are — and a remote one is signed in to by a token, which is the one way in there is.
  */
 export const EMPTY_SERVER_FORM_VALUES: ServerFormValues = {
   name: "",
@@ -39,8 +39,3 @@ export const SERVER_FORM_TOKEN_LABEL = "ТОКЕН";
  * a token onto a server that never wanted one — then the catalogue says «ПОТРІБЕН ТОКЕН» about one simply open.
  */
 export const SERVER_FORM_NO_SIGN_IN_LABEL = "БЕЗ ВХОДУ";
-/**
- * Not one of the form's choices: a browser server cannot be declared here. The word stays because the file may
- * still hold `browser`, and the list of changes must be able to name what it is looking at.
- */
-export const SERVER_FORM_BROWSER_LABEL = "ЧЕРЕЗ БРАУЗЕР";

@@ -13,7 +13,7 @@ export interface ServerFormValues {
   run: string;
   /** The address a remote server answers at. */
   address: string;
-  /** A token typed in, or the system browser. */
+  /** Whether the server takes a token, or is open to anyone who reaches it. */
   signIn: McpSignIn;
   /** The names of the environment variables; every value of them stays in this machine's keychain. */
   env: string[];

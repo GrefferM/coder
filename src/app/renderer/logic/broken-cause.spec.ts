@@ -12,7 +12,7 @@ const SERVER: ProjectMcpServer = {
   isLocal: false,
   run: "",
   address: "https://mcp.example.com/mcp",
-  signIn: "browser",
+  signIn: "token",
   env: [],
 };
 

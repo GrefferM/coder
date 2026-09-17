@@ -1,9 +1,6 @@
 /** No line to start the server, and no address to reach it at. */
 export const MCP_SERVER_UNREACHABLE = "MCP_SERVER_UNREACHABLE";
 
-/** Signing in through the system browser is not built; a token typed into a field is. */
-export const MCP_REMOTE_NOT_BUILT = "MCP_REMOTE_NOT_BUILT";
-
 /**
  * The project declares an environment variable this machine holds no value for. The server is not started at
  * all: begun without it, the process fails later and further away. The variable's name travels with the refusal.

@@ -8,7 +8,6 @@ import {
   MCP_ENV_PREFIX,
   MCP_ENV_VALUE_MISSING,
   MCP_FAILED_PREFIX,
-  MCP_REMOTE_NOT_BUILT,
   MCP_SAID_JOIN,
   MCP_SAID_SEPARATOR,
   MCP_SERVER_UNREACHABLE,
@@ -228,14 +227,8 @@ export class McpClient {
   /**
    * A remote server is not started but reached, and the token that opens it is read from this machine's keychain
    * at the moment of reaching — never held here, never written near the project.
-   *
-   * Signing in through the system browser is not built, and says so rather than knocking without it.
    */
   private async reached(server: ProjectMcpServerDto): Promise<Client> {
-    if (server.signIn === "browser") {
-      throw new Refusal(MCP_REMOTE_NOT_BUILT);
-    }
-
     if (server.address === "") {
       throw new Refusal(MCP_SERVER_UNREACHABLE);
     }

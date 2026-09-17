@@ -8,7 +8,7 @@ function filled(patch: Partial<ServerFormValues> = {}): ServerFormValues {
     isLocal: true,
     run: "  npx @modelcontextprotocol/server-brave-search  ",
     address: "  https://mcp.linear.app/sse  ",
-    signIn: "browser",
+    signIn: "token",
     env: ["BRAVE_API_KEY"],
     ...patch,
   };
@@ -40,7 +40,7 @@ describe("declaredServer", () => {
       isLocal: false,
       run: "",
       address: "https://mcp.linear.app/sse",
-      signIn: "browser",
+      signIn: "token",
       env: [],
     });
   });

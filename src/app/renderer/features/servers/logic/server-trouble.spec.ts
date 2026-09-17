@@ -41,8 +41,7 @@ describe("serverTrouble", () => {
     expect(trouble?.name).toBe("BRAVE_API_KEY");
   });
 
-  it("takes a server with no address, and the way in that is not built, as unreachable", () => {
+  it("takes a server with no address as unreachable", () => {
     expect(serverTrouble(aLook("Error: MCP_SERVER_UNREACHABLE"))?.kind).toBe("unreachable");
-    expect(serverTrouble(aLook("Error: MCP_REMOTE_NOT_BUILT"))?.kind).toBe("unreachable");
   });
 });

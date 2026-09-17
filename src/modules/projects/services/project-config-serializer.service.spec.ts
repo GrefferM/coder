@@ -40,7 +40,7 @@ const REMOTE_SERVER_YAML = `  - id: ${OTHER_SERVER_ID}
     name: linear
     isLocal: false
     address: https://mcp.linear.app/sse
-    signIn: browser`;
+    signIn: token`;
 
 function agentYaml(id: string, name: string): string {
   return `  - id: ${id}
@@ -456,7 +456,7 @@ describe("ProjectConfigSerializer", () => {
 
     assert.equal(config.servers[0].isLocal, false);
     assert.equal(config.servers[0].address, "https://mcp.linear.app/sse");
-    assert.equal(config.servers[0].signIn, "browser");
+    assert.equal(config.servers[0].signIn, "token");
     assert.equal(config.servers[0].run, "");
   });
 
@@ -471,7 +471,7 @@ describe("ProjectConfigSerializer", () => {
 
   it("refuses a way into a server nobody knows", async () => {
     await assert.rejects(() =>
-      serializer.parse(VALID_YAML + serversYaml(REMOTE_SERVER_YAML.replace("browser", "by post"))),
+      serializer.parse(VALID_YAML + serversYaml(REMOTE_SERVER_YAML.replace("token", "by post"))),
     );
   });
 

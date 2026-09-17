@@ -1,6 +1,5 @@
 import {
   SERVER_ADDRESS_CHANGE_LABEL,
-  SERVER_FORM_BROWSER_LABEL,
   SERVER_FORM_LOCAL_LABEL,
   SERVER_FORM_NO_SIGN_IN_LABEL,
   SERVER_FORM_REMOTE_LABEL,
@@ -65,9 +64,5 @@ function kindOf(isLocal: boolean): string {
 }
 
 function wayInOf(signIn: string): string {
-  if (signIn === "browser") {
-    return SERVER_FORM_BROWSER_LABEL;
-  }
-
   return signIn === "none" ? SERVER_FORM_NO_SIGN_IN_LABEL : SERVER_FORM_TOKEN_LABEL;
 }

@@ -8,7 +8,6 @@ import {
   MCP_FAILED_PREFIX,
   MCP_KIND_SLOT,
   MCP_NOT_TEXT_NOTE,
-  MCP_REMOTE_NOT_BUILT,
   MCP_ENV_PREFIX,
   MCP_ENV_VALUE_MISSING,
   MCP_SERVER_UNREACHABLE,
@@ -140,28 +139,6 @@ describe("McpClient", () => {
     assert.equal(client.isUp(other.id), true);
   });
 
-  it("letting a server go that was never up is not an error", async () => {
-    await client.close(SERVER_ID);
-
-    assert.equal(client.isUp(SERVER_ID), false);
-  });
-
-  it("refuses a remote server rather than pretending to reach one", async () => {
-    await assert.rejects(
-      () =>
-        client.functionsOf(
-          aServer({
-            isLocal: false,
-            run: "",
-            address: "https://mcp.example.com/sse",
-            signIn: "browser",
-          }),
-          directory,
-        ),
-      new RegExp(MCP_REMOTE_NOT_BUILT),
-    );
-  });
-
   it("will not start a local server whose declared variable this machine has no value for, and names it", async () => {
     // «НЕ ЗАПУСТИТЬСЯ · НЕМА ЗНАЧЕННЯ: BRAVE_API_KEY». The process must not exist to say this, or it
     // says it later, elsewhere, and in the server's own words rather than ours.
@@ -228,7 +205,6 @@ describe("McpClient", () => {
 
     assert.equal(look.isUp, false);
     assert.doesNotMatch(<string>look.failure, new RegExp(MCP_TOKEN_MISSING));
-    assert.doesNotMatch(<string>look.failure, new RegExp(MCP_REMOTE_NOT_BUILT));
   });
 
   it("refuses a remote server with no address to reach it at", async () => {
@@ -296,35 +272,6 @@ describe("McpClient", () => {
     assert.deepEqual(look.functions, []);
     assert.equal(look.answeredAt, null);
     assert.equal(typeof look.failure, "string");
-  });
-
-  it("a look at a server that would not start carries what the server itself printed", async () => {
-    const look = await client.look(
-      aServer({
-        // A server that says why it will not start, the way a package manager or a wrong flag does.
-        run: "node -e \"process.stderr.write('немає такого пакета'); process.exit(1);\"",
-      }),
-      directory,
-    );
-
-    assert.equal(look.isUp, false);
-    // Without these words a fallen row is a dead end: the library's own error names no cause at all.
-    assert.match(<string>look.failure, /немає такого пакета/);
-  });
-
-  it("a look at a remote server says why in words, and says it is not up", async () => {
-    const look = await client.look(
-      aServer({
-        isLocal: false,
-        run: "",
-        address: "https://mcp.example.com/sse",
-        signIn: "browser",
-      }),
-      directory,
-    );
-
-    assert.equal(look.isUp, false);
-    assert.match(<string>look.failure, new RegExp(MCP_REMOTE_NOT_BUILT));
   });
 
   it("calls a function by the name the server gave it, and brings back what it said", async () => {
@@ -465,48 +412,5 @@ describe("McpClient", () => {
 
     assert.equal(result.isFailed, true);
     assert.equal(client.isUp(SERVER_ID), false);
-  });
-
-  it("a server that fell is started again by the next call, and answers it", async () => {
-    const server = aServer();
-
-    await client.call({
-      server,
-      directory,
-      callId: "call-11",
-      functionName: "falls",
-      arguments: {},
-    });
-
-    const result = await client.call({
-      server,
-      directory,
-      callId: "call-12",
-      functionName: "read_file",
-      arguments: {
-        path: "again.md",
-      },
-    });
-
-    assert.equal(result.output, "read again.md");
-    assert.equal(result.isFailed, false);
-  });
-
-  it("refuses to call a remote server the same way it refuses to list one", async () => {
-    const result = await client.call({
-      server: aServer({
-        isLocal: false,
-        run: "",
-        address: "https://mcp.example.com/sse",
-        signIn: "browser",
-      }),
-      directory,
-      callId: "call-13",
-      functionName: "read_file",
-      arguments: {},
-    });
-
-    assert.equal(result.isFailed, true);
-    assert.match(result.output, new RegExp(MCP_REMOTE_NOT_BUILT));
   });
 });

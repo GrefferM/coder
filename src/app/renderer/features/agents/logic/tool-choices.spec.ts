@@ -15,7 +15,7 @@ function aServer(patch: Partial<ProjectMcpServer> = {}): ProjectMcpServer {
     isLocal: false,
     run: "",
     address: "https://mcp.example.com/sse",
-    signIn: "browser",
+    signIn: "token",
     env: [],
     ...patch,
   };

@@ -159,11 +159,6 @@ export function ServerForm({
               })
             }
           />
-          {/*
-            «ЧЕРЕЗ БРАУЗЕР» is not offered: it is not built, and a choice that refuses at the first
-            press is worse than no choice — it only teaches that the form lies. The file still names it and the
-            main process still refuses it in its own words, so the day it is built this row grows one value back.
-          */}
           <ChoiceRow
             label={SERVER_FORM_SIGN_IN_LABEL}
             chosen={values.signIn}

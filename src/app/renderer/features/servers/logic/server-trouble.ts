@@ -1,9 +1,4 @@
-import {
-  MCP_ENV_VALUE_MISSING,
-  MCP_REMOTE_NOT_BUILT,
-  MCP_SERVER_UNREACHABLE,
-  MCP_TOKEN_MISSING,
-} from "../../../../../contracts";
+import { MCP_ENV_VALUE_MISSING, MCP_SERVER_UNREACHABLE, MCP_TOKEN_MISSING } from "../../../../../contracts";
 import type { McpLook } from "../../../interfaces";
 import type { ServerTrouble } from "../interfaces";
 
@@ -38,7 +33,7 @@ export function serverTrouble(look: McpLook | null): ServerTrouble {
     };
   }
 
-  if (said.includes(MCP_SERVER_UNREACHABLE) || said.includes(MCP_REMOTE_NOT_BUILT)) {
+  if (said.includes(MCP_SERVER_UNREACHABLE)) {
     return {
       kind: "unreachable",
       name: null,
