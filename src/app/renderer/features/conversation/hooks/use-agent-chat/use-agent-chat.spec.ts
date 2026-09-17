@@ -696,10 +696,10 @@ function turns(invoke: ReturnType<typeof voices>) {
   return invoke.mock.calls.filter(([channel]) => channel === ASK_AGENT_CHANNEL).length;
 }
 
-/** Lets every answer that can still arrive arrive. */
+/** Lets every answer that can still arrive arrive — a turn waits on the record for its thread before it goes. */
 async function stood() {
   await act(async () => {
-    for (let step = 0; step < 5; step += 1) {
+    for (let step = 0; step < 30; step += 1) {
       await Promise.resolve();
     }
   });

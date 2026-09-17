@@ -7,6 +7,7 @@ import { answerTurn, stopTurn } from "../../api";
 import { AGENT_CHUNK_CHANNEL } from "../../../../../../contracts";
 import {
   agentStands,
+  agentThread,
   answeredCard,
   askedCards,
   chatStream,
@@ -347,6 +348,27 @@ export function useAgentChat(
     [dispatch, writer],
   );
 
+  /**
+   * What this agent has answered in this conversation, read out of the row the conversation writes into.
+   * The record is the one place it lives, so the writes of every walk are let settle first — a pair written a
+   * moment ago must be in it. A conversation with no row yet has nothing behind it, and neither has an agent
+   * asked here for the first time.
+   */
+  const threadOf = useCallback(
+    async (runId: string | null, agentId: string) => {
+      if (runId === null) {
+        return [];
+      }
+
+      await writer.settled();
+
+      const run = await readRun(runId);
+
+      return run === null ? [] : agentThread(run.walk, agentId);
+    },
+    [writer],
+  );
+
   /** The turn the machine named goes out — the run counts it, and the provider is asked. */
   const askMachine = useCallback(
     ({ agent, turnId, incoming, startAgentId, runKey, startedAt, asked }: PutTurn) => {
@@ -358,39 +380,54 @@ export function useAgentChat(
       }
 
       const config = held.current.config;
-      const { model, provider, prompt } = agentStands(agent, config, machine.current);
+      const stands = agentStands(agent, config, machine.current);
+      const { model } = stands;
+      // A walk put away goes on writing into the row it began in; the stream's own row is every other walk's.
+      const row = ledger?.runId ?? record.standing();
 
-      void answerTurn(turnId, model, provider, prompt, asked, held.current.directory, agent, {
-        commands: config.commands,
-        servers: config.servers,
-        // What a server hands over is live: it is read now, and never from what the turn was set up with.
-        looks: said.current,
-      }).then((answered) => {
-        // The turn came back, so nothing arrives for it any more — its words are a card of their own now.
-        forgetLive(turnId);
+      void threadOf(row, agent.id)
+        .then((thread) =>
+          answerTurn({
+            turnId,
+            agent,
+            stands,
+            asked,
+            thread,
+            catalogue: {
+              commands: config.commands,
+              servers: config.servers,
+              // What a server hands over is live: it is read now, and never from what the turn was set up with.
+              looks: said.current,
+            },
+            directory: held.current.directory,
+          }),
+        )
+        .then((answered) => {
+          // The turn came back, so nothing arrives for it any more — its words are a card of their own now.
+          forgetLive(turnId);
 
-        // A turn that reached the address, or was refused by the silence there, says so — the dot follows
-        // the turn instead of waiting for the provider card's own asking. Every other refusal never got that far.
-        if (model !== null && (answered.notStarted === null || answered.notStarted === "silent")) {
-          heard(model.provider, answered.notStarted === null);
-        }
+          // A turn that reached the address, or was refused by the silence there, says so — the dot follows
+          // the turn instead of waiting for the provider card's own asking. Every other refusal never got that far.
+          if (model !== null && (answered.notStarted === null || answered.notStarted === "silent")) {
+            heard(model.provider, answered.notStarted === null);
+          }
 
-        dispatch({
-          kind: "answered",
-          agent,
-          turnId,
-          runKey,
-          incoming,
-          startAgentId,
-          asked,
-          answer: answered,
-          saidId: crypto.randomUUID(),
-          startedAt,
-          endedAt: Date.now(),
+          dispatch({
+            kind: "answered",
+            agent,
+            turnId,
+            runKey,
+            incoming,
+            startAgentId,
+            asked,
+            answer: answered,
+            saidId: crypto.randomUUID(),
+            startedAt,
+            endedAt: Date.now(),
+          });
         });
-      });
     },
-    [dispatch, writer],
+    [dispatch, record, threadOf, writer],
   );
 
   /** Work put to an agent — the machine says whether the turn goes out or the row says why not. */

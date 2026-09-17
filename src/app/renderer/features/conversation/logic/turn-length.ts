@@ -1,6 +1,6 @@
 import type { TurnLength } from "../interfaces";
 
-/** How long a turn is, in characters — the system prompt and the question, which is all that goes. */
+/** How long a turn is, in characters — the system prompt and the question. */
 export function turnLength(systemPrompt: string | null, asked: string, ceiling: number): TurnLength {
   const prompt = counted(systemPrompt ?? "");
   const question = counted(asked);

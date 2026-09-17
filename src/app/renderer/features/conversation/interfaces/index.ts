@@ -24,6 +24,7 @@ export * from "./turn-asked.interface";
 export * from "./turn-catalogue.interface";
 export * from "./turn-length.interface";
 export * from "./turn-out.interface";
+export * from "./turn-to-ask.interface";
 export * from "./waited-work.interface";
 export * from "./walk-act.interface";
 export * from "./walk-effect.interface";

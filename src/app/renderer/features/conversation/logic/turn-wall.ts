@@ -6,22 +6,17 @@ import { lostFunctionNote, lostPromptNote, notFilledAgentNote, notStartedNote, o
 import { unfilledField } from "../../../words";
 import { NO_MODEL_NOTE } from "../constants";
 import { hasBrokenGrant } from "../../../logic";
-import type { TurnAnswer, TurnAsked, TurnCatalogue } from "../interfaces";
-import type { Agent, ProjectModel, ProjectPrompt, ProviderState } from "../../../interfaces";
+import type { TurnAnswer, TurnAsked, TurnToAsk } from "../interfaces";
 
 /**
  * Every wall a turn can meet before it is asked: a lost function or prompt, a number missing from the agent or
  * its model, no model, words over the model's ceiling. The first wall met is the answer; where there is none,
  * what the turn carries to the model comes back instead.
  */
-export function turnWall(
-  agent: Agent,
-  model: ProjectModel | null,
-  provider: ProviderState | null,
-  prompt: ProjectPrompt | null,
-  catalogue: TurnCatalogue,
-  asked: string,
-): TurnAnswer | TurnAsked {
+export function turnWall(turn: TurnToAsk): TurnAnswer | TurnAsked {
+  const { agent, catalogue, asked } = turn;
+  const { model, provider, prompt } = turn.stands;
+
   // A grant that points at nothing would hand the model a tool that is not there, so the
   // turn waits until the person takes the grant away, declares the command again or brings the server back. Going
   // without it silently would be a different walk under the same question — «хід не йде без функції».

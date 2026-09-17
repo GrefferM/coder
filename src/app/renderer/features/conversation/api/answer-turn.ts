@@ -3,24 +3,18 @@ import { notStartedNote } from "../words";
 import { ASK_AGENT_CHANNEL, STOP_AGENT_CHANNEL } from "../../../../../contracts";
 import { RUN_STEP_DONE, RUN_STEP_FAILED } from "../../record";
 import { CHAT_FAILED_NOTE } from "../constants";
-import type { TurnAnswer, TurnCatalogue } from "../interfaces";
-import type { Agent, ProjectModel, ProjectPrompt, ProviderState } from "../../../interfaces";
+import type { TurnAnswer, TurnToAsk } from "../interfaces";
 
 /**
  * One turn asked of the machine. Every wall before the ask is the walk's own, so it is asked first and the
  * model is never troubled; an answer, a refusal at the door or a fall all come back as words with their cost.
+ *
+ * The agent's own thread of this conversation goes out ahead of the question, so the model is answering
+ * the latest of a conversation rather than a question out of nowhere.
  */
-export async function answerTurn(
-  turnId: string,
-  model: ProjectModel | null,
-  provider: ProviderState | null,
-  prompt: ProjectPrompt | null,
-  asked: string,
-  directory: string,
-  agent: Agent,
-  catalogue: TurnCatalogue,
-): Promise<TurnAnswer> {
-  const wall = turnWall(agent, model, provider, prompt, catalogue, asked);
+export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
+  const { turnId, asked, thread, catalogue, directory } = turn;
+  const wall = turnWall(turn);
 
   if ("notStarted" in wall) {
     return wall;
@@ -41,6 +35,7 @@ export async function answerTurn(
       servers: catalogue.servers,
       systemPrompt,
       messages: [
+        ...thread,
         {
           from: "person",
           text: asked,
@@ -69,7 +64,7 @@ export async function answerTurn(
 
     // Nothing was tried, so nothing failed.
     if (reason !== null) {
-      return notStartedTurn(notStartedNote(reason, held, provider), reason);
+      return notStartedTurn(notStartedNote(reason, held, turn.stands.provider), reason);
     }
 
     // The turn fell, and the agent wears «упав» until one of its own goes through.

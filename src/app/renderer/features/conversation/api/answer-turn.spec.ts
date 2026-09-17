@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { answerTurn, stopTurn } from "./answer-turn";
-import type { TurnCatalogue } from "../interfaces";
+import type { TurnCatalogue, TurnToAsk } from "../interfaces";
 import { ASK_AGENT_CHANNEL, STOP_AGENT_CHANNEL } from "../../../../../contracts";
 import { LLM_NO_KEY } from "../constants";
 import { RUN_STEP_DONE, RUN_STEP_FAILED } from "../../record";
@@ -69,9 +69,31 @@ function refusingMachine(failure: string) {
   return invoke;
 }
 
+/** One turn as it is asked, with what the case is about patched into it. */
+function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
+  return {
+    turnId: "turn-1",
+    agent: AGENT,
+    stands: {
+      model: MODEL,
+      provider: OPENROUTER,
+      prompt: null,
+    },
+    asked: "Розбий текст на тези",
+    thread: [],
+    catalogue: NOTHING_DECLARED,
+    directory: "/tmp/coder",
+    ...patch,
+  };
+}
+
 /** The turn as it is asked when nothing stands in its way. */
 function ask(asked = "Розбий текст на тези") {
-  return answerTurn("turn-1", MODEL, OPENROUTER, null, asked, "/tmp/coder", AGENT, NOTHING_DECLARED);
+  return answerTurn(
+    turn({
+      asked,
+    }),
+  );
 }
 
 /** A project that declares nothing: neither a command nor a server. */
@@ -86,16 +108,12 @@ describe("answerTurn · before the model is troubled", () => {
     // Every wall is the walk's own, so it is met here and the model never hears about it.
     const invoke = machine(said());
     const answer = await answerTurn(
-      "turn-1",
-      MODEL,
-      OPENROUTER,
-      null,
-      "Розбий текст",
-      "/tmp/coder",
-      anAgent({
-        promptId: "prompt-gone",
+      turn({
+        asked: "Розбий текст",
+        agent: anAgent({
+          promptId: "prompt-gone",
+        }),
       }),
-      NOTHING_DECLARED,
     );
 
     expect(invoke).not.toHaveBeenCalled();
@@ -106,7 +124,16 @@ describe("answerTurn · before the model is troubled", () => {
   it("carries the turn's own numbers and the person's words to the machine", async () => {
     const invoke = machine(said());
 
-    await answerTurn("turn-1", MODEL, OPENROUTER, aPrompt(), "Розбий текст", "/tmp/coder", AGENT, NOTHING_DECLARED);
+    await answerTurn(
+      turn({
+        asked: "Розбий текст",
+        stands: {
+          model: MODEL,
+          provider: OPENROUTER,
+          prompt: aPrompt(),
+        },
+      }),
+    );
 
     expect(invoke).toHaveBeenCalledWith(ASK_AGENT_CHANNEL, {
       turnId: "turn-1",

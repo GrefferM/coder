@@ -3,6 +3,7 @@ import { turnWall } from "./turn-wall";
 import type { Agent, ProjectCommand, ProjectModel, ProjectPrompt } from "../../../interfaces";
 import { NO_MCP_CALLS } from "../../../interfaces";
 import { aCommand, aModel, aPrompt, anAgent } from "../../../testing";
+import type { TurnToAsk } from "../interfaces";
 
 const AGENT: Agent = anAgent({
   name: "ТЕЗАР",
@@ -31,18 +32,38 @@ const COMMAND: ProjectCommand = aCommand({
   run: "find .",
 });
 
+/** One turn as it is asked, with what the case is about patched into it. */
+function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
+  return {
+    turnId: "turn-1",
+    agent: AGENT,
+    stands: {
+      model: MODEL,
+      provider: null,
+      prompt: null,
+    },
+    asked: "Прогони тести",
+    thread: [],
+    catalogue: ONLY_COMMANDS,
+    directory: "/tmp/coder",
+    ...patch,
+  };
+}
+
 /** What the wall said, named by the word it wears — a turn that never began, or the way through. */
 function wall(patch: Partial<Agent> = {}, model: ProjectModel | null = MODEL, prompt: ProjectPrompt | null = null) {
   return turnWall(
-    {
-      ...AGENT,
-      ...patch,
-    },
-    model,
-    null,
-    prompt,
-    ONLY_COMMANDS,
-    "Прогони тести",
+    turn({
+      agent: {
+        ...AGENT,
+        ...patch,
+      },
+      stands: {
+        model,
+        provider: null,
+        prompt,
+      },
+    }),
   );
 }
 
@@ -122,22 +143,20 @@ describe("turnWall", () => {
   it("stands the turn on a granted function the server no longer gives", () => {
     // «хід не йде без функції» — passing it over silently would be another walk under the same question.
     const stood = turnWall(
-      {
-        ...AGENT,
-        tools: [
-          {
-            id: "grant-1",
-            source: "mcp",
-            serverId: SERVER_ID,
-            functionName: "browser_navigate",
-          },
-        ],
-      },
-      MODEL,
-      null,
-      null,
-      WITH_SERVER,
-      "Прогони тести",
+      turn({
+        agent: {
+          ...AGENT,
+          tools: [
+            {
+              id: "grant-1",
+              source: "mcp",
+              serverId: SERVER_ID,
+              functionName: "browser_navigate",
+            },
+          ],
+        },
+        catalogue: WITH_SERVER,
+      }),
     );
 
     expect("notStarted" in stood && stood.notStarted).toBe("lostFunction");
@@ -145,22 +164,20 @@ describe("turnWall", () => {
 
   it("stands the turn on a grant whose server the project no longer names", () => {
     const stood = turnWall(
-      {
-        ...AGENT,
-        tools: [
-          {
-            id: "grant-1",
-            source: "mcp",
-            serverId: "server-gone",
-            functionName: "fs.write_file",
-          },
-        ],
-      },
-      MODEL,
-      null,
-      null,
-      WITH_SERVER,
-      "Прогони тести",
+      turn({
+        agent: {
+          ...AGENT,
+          tools: [
+            {
+              id: "grant-1",
+              source: "mcp",
+              serverId: "server-gone",
+              functionName: "fs.write_file",
+            },
+          ],
+        },
+        catalogue: WITH_SERVER,
+      }),
     );
 
     expect("notStarted" in stood && stood.notStarted).toBe("lostFunction");
@@ -169,25 +186,23 @@ describe("turnWall", () => {
   it("lets the turn through while the server has not answered yet", () => {
     // A starting server's functions are unknown this moment, not gone, and a grant on it is whole.
     const way = turnWall(
-      {
-        ...AGENT,
-        tools: [
-          {
-            id: "grant-1",
-            source: "mcp",
-            serverId: SERVER_ID,
-            functionName: "browser_navigate",
-          },
-        ],
-      },
-      MODEL,
-      null,
-      null,
-      {
-        ...WITH_SERVER,
-        looks: {},
-      },
-      "Прогони тести",
+      turn({
+        agent: {
+          ...AGENT,
+          tools: [
+            {
+              id: "grant-1",
+              source: "mcp",
+              serverId: SERVER_ID,
+              functionName: "browser_navigate",
+            },
+          ],
+        },
+        catalogue: {
+          ...WITH_SERVER,
+          looks: {},
+        },
+      }),
     );
 
     expect("notStarted" in way).toBe(false);
@@ -217,15 +232,16 @@ describe("turnWall", () => {
 
   it("stops a turn whose model is missing a number, the prices among them", () => {
     const stood = turnWall(
-      AGENT,
-      {
-        ...MODEL,
-        inputPrice: null,
-      },
-      null,
-      null,
-      ONLY_COMMANDS,
-      "Прогони тести",
+      turn({
+        stands: {
+          model: {
+            ...MODEL,
+            inputPrice: null,
+          },
+          provider: null,
+          prompt: null,
+        },
+      }),
     );
 
     expect("notStarted" in stood && stood.notStarted).toBe("notFilled");
@@ -234,15 +250,17 @@ describe("turnWall", () => {
   it("stops a turn longer than the model's own ceiling, and says how long it would have been", () => {
     // Over the ceiling nothing goes at all.
     const stood = turnWall(
-      AGENT,
-      {
-        ...MODEL,
-        contextCeiling: 10,
-      },
-      null,
-      null,
-      ONLY_COMMANDS,
-      "Прогони тести довго",
+      turn({
+        stands: {
+          model: {
+            ...MODEL,
+            contextCeiling: 10,
+          },
+          provider: null,
+          prompt: null,
+        },
+        asked: "Прогони тести довго",
+      }),
     );
 
     expect("notStarted" in stood && stood.notStarted).toBe("tooLong");
