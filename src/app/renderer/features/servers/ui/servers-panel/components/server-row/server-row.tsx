@@ -172,7 +172,12 @@ export function ServerRow({
                       : SERVER_ROW_FACTS_COLOR,
               }}
             >
-              {serverFacts(server, look, clock, look?.functions.length ?? 0, agentCount)}
+              {serverFacts(server, {
+                look,
+                clock,
+                functionCount: look?.functions.length ?? 0,
+                agentCount,
+              })}
             </span>
           </div>
           <svg

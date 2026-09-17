@@ -25,15 +25,8 @@ import {
   AGENT_MCP_CHANGE_LABEL,
   AGENT_MCP_DROPPED_LABEL,
 } from "../constants";
-import type {
-  FieldChange,
-  ProjectCommand,
-  ProjectMcpServer,
-  ProjectModel,
-  ProjectPrompt,
-  ToolGrant,
-} from "../../../interfaces";
-import type { AgentDraft } from "../interfaces";
+import type { FieldChange, ProjectModel, ProjectPrompt, ToolGrant } from "../../../interfaces";
+import type { AgentDraft, AgentNaming } from "../interfaces";
 
 /** A model as a diff line names it; a model no longer in the project stands as its id. */
 function modelTitle(models: ProjectModel[], modelId: string): string {
@@ -46,14 +39,9 @@ function promptTitle(prompts: ProjectPrompt[], promptId: string | null): string 
 }
 
 /** Moved fields, written as the question shows them. */
-export function agentChanges(
-  saved: AgentDraft,
-  draft: AgentDraft,
-  models: ProjectModel[],
-  prompts: ProjectPrompt[],
-  commands: ProjectCommand[],
-  servers: ProjectMcpServer[],
-): FieldChange[] {
+export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: AgentNaming): FieldChange[] {
+  const { models, prompts, commands, servers } = naming;
+
   /** Each field is asked about its own kind of grant alone, in the words that field shows. */
   const saidOf = (grants: ToolGrant[], isOfKind: (grant: ToolGrant) => boolean) =>
     grantedToolsLabel(grants.filter(isOfKind), commands, servers);

@@ -10,27 +10,20 @@ import {
   READ_RUN_CHANNEL,
   SEARCH_RUNS_CHANNEL,
 } from "../../../../../contracts";
-import type { Agent } from "../../../interfaces";
-import type { CallPlace, OpenedRecord, RunHit, RunRow, WholeRun, WrittenStep } from "../interfaces";
+import type { AskedQuestion, CallPlace, OpenedRecord, RunHit, RunRow, WholeRun, WrittenStep } from "../interfaces";
 
 /** Opens the record of a run; every write here swallows its failure and the run goes unremembered. */
-export async function openRun(
-  directory: string,
-  startedBy: Agent,
-  questionId: string,
-  asked: string,
-  startedAt: number,
-): Promise<OpenedRecord | null> {
+export async function openRun(directory: string, question: AskedQuestion): Promise<OpenedRecord | null> {
   const opened = await window.electronApi
     .invoke(OPEN_RUN_CHANNEL, {
       directory,
-      questionId,
-      startedByAgentId: startedBy.id,
+      questionId: question.questionId,
+      startedByAgentId: question.agent.id,
       // What the agent was called and coloured then, so the row is named before its first step lands.
-      startedByAgentName: startedBy.name,
-      startedByAgentColor: startedBy.color,
-      asked,
-      startedAt,
+      startedByAgentName: question.agent.name,
+      startedByAgentColor: question.agent.color,
+      asked: question.asked,
+      startedAt: question.askedAt,
     })
     .catch(() => null);
 
@@ -41,22 +34,16 @@ export async function openRun(
  * Asks again into a record that already stands, under the question's own id; says whether the row was
  * still there to take it.
  */
-export async function askAgain(
-  runId: string,
-  questionId: string,
-  askedTo: Agent,
-  asked: string,
-  askedAt: number,
-): Promise<boolean> {
+export async function askAgain(runId: string, question: AskedQuestion): Promise<boolean> {
   const id = await window.electronApi
     .invoke(ASK_AGAIN_CHANNEL, {
       runId,
-      questionId,
-      asked,
+      questionId: question.questionId,
+      asked: question.asked,
       // Whom this question goes to, said with it — the head of the row is named before the first step.
-      askedAgentId: askedTo.id,
-      askedAgentName: askedTo.name,
-      askedAt,
+      askedAgentId: question.agent.id,
+      askedAgentName: question.agent.name,
+      askedAt: question.askedAt,
     })
     .catch(() => null);
 

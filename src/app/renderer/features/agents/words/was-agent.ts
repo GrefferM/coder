@@ -7,22 +7,17 @@ import {
   AGENT_NO_PROMPT_LABEL,
   AGENT_TEMPERATURE_PLACES,
 } from "../constants";
-import type { ProjectCommand, ProjectMcpServer, ProjectModel, ProjectPrompt, ToolGrant } from "../../../interfaces";
-import type { AgentDraft, WasAgent } from "../interfaces";
+import type { ToolGrant } from "../../../interfaces";
+import type { AgentDraft, AgentNaming, WasAgent } from "../interfaces";
 
 /**
  * What every field of the agent was before the draft changed it, each in the words its own field shows —
  * a model and a prompt by their names, the numbers as they are written, the switch as its own word. A field standing
  * as it was saved says nothing, and nothing is said at all about an agent that has never been saved.
  */
-export function wasAgent(
-  draft: AgentDraft,
-  saved: AgentDraft | null,
-  models: ProjectModel[],
-  prompts: ProjectPrompt[],
-  commands: ProjectCommand[],
-  servers: ProjectMcpServer[],
-): WasAgent {
+export function wasAgent(draft: AgentDraft, saved: AgentDraft | null, naming: AgentNaming): WasAgent {
+  const { models, prompts, commands, servers } = naming;
+
   if (saved === null) {
     return {
       name: null,

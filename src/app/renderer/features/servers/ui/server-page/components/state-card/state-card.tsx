@@ -89,7 +89,12 @@ export function StateCard({ server, look, isAsking, agentCount, freshness, onRes
             minWidth: 0,
           }}
         >
-          {serverFacts(server, look, null, look?.functions.length ?? 0, agentCount)}
+          {serverFacts(server, {
+            look,
+            clock: null,
+            functionCount: look?.functions.length ?? 0,
+            agentCount,
+          })}
         </span>
         {action !== null && <BoxedAction label={action.label} onPress={action.onPress} />}
       </div>

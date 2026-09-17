@@ -240,14 +240,6 @@ export default tseslint.config(
     },
   },
   {
-    // Eight things in a row is where a caller stops being able to tell which is which; beyond that
-    // they are handed over as one named object, so nothing can be given in the wrong order.
-    files: ["src/**/*.{ts,tsx,mts,cts}"],
-    rules: {
-      "max-params": ["error", 8],
-    },
-  },
-  {
     // Type is the atoms' to say: `Mark`, `Words`, `Chip` and the rest carry their own, and a place
     // that needs its own writes a constant beside itself. A bare number here is type laid by hand.
     files: ["src/app/renderer/**/*.{ts,tsx}"],

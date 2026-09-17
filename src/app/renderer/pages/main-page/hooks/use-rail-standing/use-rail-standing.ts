@@ -1,23 +1,15 @@
 import { useState } from "react";
 
 import { AGENTS_SECTION_ID, CHAT_SECTION_ID, MODELS_SECTION_ID } from "../../constants";
-import type { OpenProject } from "../../../../interfaces";
-import type { AgentMend, AgentPress, AgentSelection, ToolsPress } from "../../../../features/agents";
-import type { ModelSection } from "../../../../features/models";
-import type { PromptSection } from "../../../../features/prompts";
+import type { AgentMend, AgentPress, ToolsPress } from "../../../../features/agents";
 import type { OpenedPassState } from "../../../../features/projection";
-import type { WayOut } from "../../../../hooks/use-way-out/interfaces";
+import type { PageSubjects } from "../../interfaces";
 import type { RailStanding } from "./interfaces";
 
 /** Which section of the rail stands open, and every way in and out of it — the panel's own standing, nothing else. */
-export function useRailStanding(
-  project: OpenProject,
-  agents: AgentSelection,
-  models: ModelSection,
-  prompts: PromptSection,
-  pass: OpenedPassState,
-  wayOut: WayOut,
-): RailStanding {
+export function useRailStanding(subjects: PageSubjects, pass: OpenedPassState): RailStanding {
+  const { project, agents, models, prompts, wayOut } = subjects;
+
   // Which section stands open is this machine's own note about this project, kept from last time.
   const [activeSectionId, setActiveSectionId] = useState(project.view?.sectionId ?? AGENTS_SECTION_ID);
   // Whether the panel stands open is the page's own state: the catalogues stay open with nothing selected.

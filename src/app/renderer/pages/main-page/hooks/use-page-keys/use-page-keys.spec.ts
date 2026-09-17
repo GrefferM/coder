@@ -74,7 +74,13 @@ function pageKeys(
     },
   });
 
-  renderHook(() => usePageKeys(subjects, parts, stands.chosenLinkId ?? null, requestDeleteAgent, putCopy));
+  renderHook(() =>
+    usePageKeys(subjects, parts, {
+      chosenLinkId: stands.chosenLinkId ?? null,
+      requestDeleteAgent,
+      putCopy,
+    }),
+  );
 
   return {
     copy,

@@ -1,18 +1,13 @@
 import { isSomethingOpen, isStepStanding, useWindowKeydown } from "../../../../hooks";
 import { isTypedIn } from "../../../../utils/keyboard";
 import { selectedText } from "../../../../utils/text";
-import type { PageSubjects } from "../../interfaces";
+import type { PageKeysHands, PageSubjects } from "../../interfaces";
 import type { PageParts } from "../use-page-parts/interfaces";
 
 /** The rank: the page's floors of the keyboard, each quiet while something above it stands. */
-export function usePageKeys(
-  subjects: PageSubjects,
-  parts: PageParts,
-  /** While a link stands chosen the key is the link's, so the sphere's floor is quiet. */
-  chosenLinkId: string | null,
-  requestDeleteAgent: (agentId: string) => void,
-  putCopy: (put: () => Promise<string | null>) => Promise<void>,
-): void {
+export function usePageKeys(subjects: PageSubjects, parts: PageParts, hands: PageKeysHands): void {
+  const { chosenLinkId, requestDeleteAgent, putCopy } = hands;
+
   const { actions, agents, clipboard, models, commands, prompts, wayOut } = subjects;
   // Whatever stands over the canvas answers Escape itself.
   const isSomethingStanding =

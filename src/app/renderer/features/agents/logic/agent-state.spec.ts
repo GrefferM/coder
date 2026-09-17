@@ -11,7 +11,15 @@ import {
   STATE_WONT_START_LABEL,
   STATE_WORKING_LABEL,
 } from "../constants";
-import type { Agent, ProjectConfig, ProviderAnswer, ProviderState } from "../../../interfaces";
+import type {
+  Agent,
+  ProjectConfig,
+  ProviderAnswer,
+  ProviderState,
+  WaitingAgent,
+  WorkingAgent,
+} from "../../../interfaces";
+import type { StateFacts } from "../interfaces";
 import { aConfig, aModel, aPrompt, anAgent } from "../../../testing";
 
 const OLLAMA: ProviderState = {
@@ -65,27 +73,85 @@ function machineHolds(names: string[], isAnswering = true): Record<string, Provi
   };
 }
 
+/** What a state is read against, with the case's own facts patched in. */
+function facts(patch: Partial<StateFacts> = {}): StateFacts {
+  return {
+    config: CONFIG,
+    providers: [OLLAMA],
+    answers: machineHolds(["qwen2.5-coder:0.5b"]),
+    looks: {},
+    working: [],
+    waiting: [],
+    fellAt: {},
+    ...patch,
+  };
+}
+
+/** A turn out, as the conversation lists it — the state is read off the list by the agent's own id. */
+function working(agentId: string): WorkingAgent {
+  return {
+    turnId: "turn-1",
+    agentId,
+    startedAt: 1_000,
+    questionId: "question-1",
+    askedAt: 900,
+  };
+}
+
+/** An agent holding work where lines converge, as the conversation lists it. */
+function waiting(agentId: string): WaitingAgent {
+  return {
+    agentId,
+    suppliers: [],
+    isAwaitingRepeat: false,
+  };
+}
+
 describe("agentState", () => {
   it("says an agent with nothing in its way is ready", () => {
-    expect(agentState(AGENT, CONFIG, [OLLAMA], machineHolds(["qwen2.5-coder:0.5b"]), false).label).toBe(
-      STATE_READY_LABEL,
-    );
+    expect(agentState(AGENT, facts()).label).toBe(STATE_READY_LABEL);
   });
 
   it("puts a turn that is out before everything else, and counts it from its start", () => {
-    const state = agentState(AGENT, CONFIG, [OLLAMA], machineHolds([], false), true);
+    const state = agentState(
+      AGENT,
+      facts({
+        answers: machineHolds([], false),
+        working: [working(AGENT.id)],
+      }),
+    );
 
     expect(state.label).toBe(STATE_WORKING_LABEL);
     expect(state.mark).toBe("clock");
   });
 
   it("says an agent holding work at a converging point is waiting, with a grey dot rather than green", () => {
-    const state = agentState(AGENT, CONFIG, [OLLAMA], machineHolds(["qwen2.5-coder:0.5b"]), false, null, true);
+    const state = agentState(
+      AGENT,
+      facts({
+        waiting: [waiting(AGENT.id)],
+      }),
+    );
 
     // Alive, but it is not the one working, so the dot does not read as live work.
     expect(state.label).toBe(STATE_WAITING_LABEL);
     expect(state.color).toBe(STATE_WAITING_COLOR);
     expect(state.mark).toBe("dot");
+  });
+
+  it("takes work and a fall by the agent's own id, and not by its neighbour's", () => {
+    // The canvas and the panel read this one answer, so a state landing on the wrong agent lands twice.
+    const state = agentState(
+      AGENT,
+      facts({
+        working: [working("agent-2")],
+        fellAt: {
+          "agent-2": "2026-08-19T14:26:00.000Z",
+        },
+      }),
+    );
+
+    expect(state.label).toBe(STATE_READY_LABEL);
   });
 
   it("says a switch somebody threw before anything the machine has to say", () => {
@@ -95,10 +161,9 @@ describe("agentState", () => {
           ...AGENT,
           isActive: false,
         },
-        CONFIG,
-        [OLLAMA],
-        machineHolds([], false),
-        false,
+        facts({
+          answers: machineHolds([], false),
+        }),
       ).label,
     ).toBe(STATE_OFF_LABEL);
   });
@@ -109,10 +174,9 @@ describe("agentState", () => {
         ...AGENT,
         modelId: "model-gone",
       },
-      CONFIG,
-      [OLLAMA],
-      {},
-      false,
+      facts({
+        answers: {},
+      }),
     );
 
     expect(state.label).toBe(STATE_WONT_START_LABEL);
@@ -120,26 +184,36 @@ describe("agentState", () => {
   });
 
   it("says a silent provider, with the moment it was asked at", () => {
-    const state = agentState(AGENT, CONFIG, [OLLAMA], machineHolds([], false), false);
+    const state = agentState(
+      AGENT,
+      facts({
+        answers: machineHolds([], false),
+      }),
+    );
 
     expect(state.label).toBe(STATE_PROVIDER_SILENT_LABEL);
     expect(state.at).toBe(ASKED_AT);
   });
 
   it("says a model the machine no longer holds", () => {
-    expect(agentState(AGENT, CONFIG, [OLLAMA], machineHolds(["qwen2.5-coder:1.5b"]), false).label).toBe(
-      STATE_MODEL_MISSING_LABEL,
-    );
+    expect(
+      agentState(
+        AGENT,
+        facts({
+          answers: machineHolds(["qwen2.5-coder:1.5b"]),
+        }),
+      ).label,
+    ).toBe(STATE_MODEL_MISSING_LABEL);
   });
 
   it("says an agent whose own last word was a fall has fallen, with the moment it fell at", () => {
     const state = agentState(
       AGENT,
-      CONFIG,
-      [OLLAMA],
-      machineHolds(["qwen2.5-coder:0.5b"]),
-      false,
-      "2026-08-19T14:26:00.000Z",
+      facts({
+        fellAt: {
+          [AGENT.id]: "2026-08-19T14:26:00.000Z",
+        },
+      }),
     );
 
     expect(state.label).toBe(STATE_FELL_LABEL);
@@ -147,12 +221,27 @@ describe("agentState", () => {
   });
 
   it("puts what the machine says now before a fall that already happened", () => {
-    expect(agentState(AGENT, CONFIG, [OLLAMA], machineHolds([], false), false, "2026-08-19T14:26:00.000Z").label).toBe(
-      STATE_PROVIDER_SILENT_LABEL,
-    );
+    expect(
+      agentState(
+        AGENT,
+        facts({
+          answers: machineHolds([], false),
+          fellAt: {
+            [AGENT.id]: "2026-08-19T14:26:00.000Z",
+          },
+        }),
+      ).label,
+    ).toBe(STATE_PROVIDER_SILENT_LABEL);
   });
 
   it("says nothing about the machine where nothing was asked of it", () => {
-    expect(agentState(AGENT, CONFIG, [OLLAMA], {}, false).label).toBe(STATE_READY_LABEL);
+    expect(
+      agentState(
+        AGENT,
+        facts({
+          answers: {},
+        }),
+      ).label,
+    ).toBe(STATE_READY_LABEL);
   });
 });

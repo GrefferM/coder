@@ -9,8 +9,8 @@ import { isWaitOver, settledWait } from "./settled-wait";
 import { forgotten } from "../../../utils/records";
 import { tidyAnswer } from "../../../utils/text";
 import { MS_IN_SECOND } from "../../../utils/dates/constants";
-import type { Agent, ProjectConfig } from "../../../interfaces";
-import type { IncomingWork, LinkOut, RunLedger, Walk } from "../interfaces";
+import type { ProjectConfig } from "../../../interfaces";
+import type { IncomingWork, LineNotTaken, LinkOut, RunLedger, Walk } from "../interfaces";
 import type { WalkEffect, WalkEvent, WalkFact, WalkNext, WalkRule, WalkRules, WalkState } from "../interfaces";
 
 /**
@@ -179,7 +179,12 @@ function settled(state: WalkState, event: WalkFact<"settled">): WalkNext {
     viaLinkIds: [],
     isAwaitingRepeat: false,
   };
-  const stood = settledWait(standing, event.fromId, event.work, event.via, walk.isStopped);
+  const stood = settledWait(standing, {
+    fromId: event.fromId,
+    work: event.work,
+    via: event.via,
+    isBroken: walk.isStopped,
+  });
 
   if (!isWaitOver(stood)) {
     return {
@@ -294,15 +299,9 @@ function released(state: WalkState, event: WalkFact<"released">, config: Project
  * A line that could not be taken: nothing ever goes down it. A converging point at its end is settled with
  * nothing, so it does not wait for what will never come; an agent standing alone lets down whoever waits behind.
  */
-function notTaken(
-  state: WalkState,
-  fromId: string,
-  to: Agent,
-  awaited: string[],
-  startAgentId: string,
-  runKey: string,
-  config: ProjectConfig,
-): WalkNext {
+function notTaken(state: WalkState, line: LineNotTaken, config: ProjectConfig): WalkNext {
+  const { fromId, to, awaited, startAgentId, runKey } = line;
+
   if (awaited.length < 2) {
     return released(
       state,
@@ -359,7 +358,17 @@ function handedOn(state: WalkState, event: WalkFact<"handedOn">, config: Project
     const awaited = awaitedSuppliers(config, event.startAgentId, to.id);
 
     if (stopReason !== null) {
-      const next = notTaken(standing, event.from.id, to, awaited, event.startAgentId, event.runKey, config);
+      const next = notTaken(
+        standing,
+        {
+          fromId: event.from.id,
+          to,
+          awaited,
+          startAgentId: event.startAgentId,
+          runKey: event.runKey,
+        },
+        config,
+      );
 
       standing = next.state;
       effects.push(...next.effects);
@@ -825,7 +834,17 @@ function workThatArrived(state: WalkState, event: WalkFact<"repeated">, config: 
         askedAt: event.askedAt,
       });
 
-      const next = notTaken(standing, arrival.fromAgentId, to, awaited, event.startAgentId, event.runKey, config);
+      const next = notTaken(
+        standing,
+        {
+          fromId: arrival.fromAgentId,
+          to,
+          awaited,
+          startAgentId: event.startAgentId,
+          runKey: event.runKey,
+        },
+        config,
+      );
 
       standing = next.state;
       effects.push(...next.effects);

@@ -78,7 +78,11 @@ export function MainPage({ project, setProject }: MainPageProps) {
     wayOut.guard(raise);
   }
 
-  usePageKeys(subjects, parts, chosenLinkId, requestDeleteAgent, putCopy);
+  usePageKeys(subjects, parts, {
+    chosenLinkId,
+    requestDeleteAgent,
+    putCopy,
+  });
 
   return (
     // Positioned so the project badge can sit over the canvas's top-left corner.

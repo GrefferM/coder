@@ -1,16 +1,12 @@
-import type { IncomingWork, WaitedWork } from "../interfaces";
+import type { SettledSupplier, WaitedWork } from "../interfaces";
 
 /**
  * One supplier of a converging point has had its turn: what arrived is added to what is held, and the supplier
  * counts as settled whether it answered or not. A walk that broke leaves the point standing for the repeat.
  */
-export function settledWait(
-  standing: WaitedWork,
-  fromId: string,
-  work: IncomingWork | null,
-  via: string | null,
-  isBroken: boolean,
-): WaitedWork {
+export function settledWait(standing: WaitedWork, settled: SettledSupplier): WaitedWork {
+  const { fromId, work, via, isBroken } = settled;
+
   return {
     ...standing,
     settledIds: standing.settledIds.includes(fromId) ? standing.settledIds : [...standing.settledIds, fromId],

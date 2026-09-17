@@ -3,6 +3,7 @@ import { askAgain, closeRun, openRun, writeStep } from "../../../record";
 import { callEnd, fedStepIds, notStartedOf } from "../../logic";
 import type { RecordWriter } from "./interfaces";
 import type { Agent } from "../../../../interfaces";
+import type { AskedQuestion } from "../../../record";
 import type { RunLedger, WrittenTurn } from "../../interfaces";
 
 /**
@@ -54,12 +55,18 @@ export function useRecordWriter(
 
   const askQuestion = useCallback(
     (ledger: RunLedger, directory: string, agent: Agent, text: string, runKey: string) => {
+      const asked: AskedQuestion = {
+        questionId: ledger.questionId,
+        agent,
+        asked: text,
+        askedAt: ledger.askedAt,
+      };
       // Which row this question is written into is settled the moment it is asked, and not when
       // the queue reaches it: «+ НОВИЙ ЧАТ» in between must not leave the question standing without a row.
       const isOpening = ledger.runId === null && opening.current === null;
 
       if (isOpening) {
-        opening.current = openRun(directory, agent, ledger.questionId, text, ledger.askedAt).then((opened) => {
+        opening.current = openRun(directory, asked).then((opened) => {
           // The row this stream's own question opened; a stream the person has already left is none
           // of the screen's business, and says nothing to it.
           if (opened !== null && !isPutAway(runKey)) {
@@ -82,7 +89,7 @@ export function useRecordWriter(
           return;
         }
 
-        if (await askAgain(runId, ledger.questionId, agent, text, ledger.askedAt)) {
+        if (await askAgain(runId, asked)) {
           return;
         }
 

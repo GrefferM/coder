@@ -8,7 +8,7 @@ import {
   AGENT_PROMPT_DROPPED_LABEL,
 } from "../constants";
 import type { ProjectCommand, ProjectModel, ProjectPrompt } from "../../../interfaces";
-import type { AgentDraft } from "../interfaces";
+import type { AgentDraft, AgentNaming } from "../interfaces";
 import { aDraft, aModel, aPrompt } from "../../../testing";
 import type { ProjectMcpServer } from "../../../interfaces";
 
@@ -40,9 +40,17 @@ const SAVED: AgentDraft = aDraft({
 
 const SERVERS: ProjectMcpServer[] = [];
 
+/** The catalogues a diff line's words are read from. */
+const NAMING: AgentNaming = {
+  models: MODELS,
+  prompts: PROMPTS,
+  commands: COMMANDS,
+  servers: SERVERS,
+};
+
 describe("agentChanges", () => {
   it("says nothing moved while the draft still holds what is saved", () => {
-    expect(agentChanges(SAVED, SAVED, MODELS, PROMPTS, COMMANDS, SERVERS)).toEqual([]);
+    expect(agentChanges(SAVED, SAVED, NAMING)).toEqual([]);
   });
 
   it("names only the field that moved, and both its sides", () => {
@@ -53,10 +61,7 @@ describe("agentChanges", () => {
           ...SAVED,
           name: "REVIEWER",
         },
-        MODELS,
-        PROMPTS,
-        COMMANDS,
-        SERVERS,
+        NAMING,
       ),
     ).toEqual([
       {
@@ -76,10 +81,7 @@ describe("agentChanges", () => {
           ...SAVED,
           promptId: null,
         },
-        MODELS,
-        PROMPTS,
-        COMMANDS,
-        SERVERS,
+        NAMING,
       ),
     ).toEqual([
       {
@@ -98,10 +100,7 @@ describe("agentChanges", () => {
         ...SAVED,
         modelId: "model-gone",
       },
-      MODELS,
-      PROMPTS,
-      COMMANDS,
-      SERVERS,
+      NAMING,
     );
 
     const [change] = changes;
@@ -122,10 +121,7 @@ describe("agentChanges", () => {
           maxCalls: 9,
           temperature: 0.9,
         },
-        MODELS,
-        PROMPTS,
-        COMMANDS,
-        SERVERS,
+        NAMING,
       ),
     ).toHaveLength(5);
   });

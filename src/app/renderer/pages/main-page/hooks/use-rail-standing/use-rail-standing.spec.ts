@@ -7,6 +7,7 @@ import type { AgentSelection } from "../../../../features/agents";
 import type { ModelSection } from "../../../../features/models";
 import type { OpenedPassState } from "../../../../features/projection";
 import type { OpenProject, ProjectView } from "../../../../interfaces";
+import type { PageSubjects } from "../../interfaces";
 import type { PromptSection } from "../../../../features/prompts";
 import type { WayOut } from "../../../../hooks/use-way-out/interfaces";
 
@@ -57,9 +58,14 @@ function rail(
       }
     },
   });
-  const rendered = renderHook(() =>
-    useRailStanding(project(stands.view ?? null), agents, models, prompts, pass, wayOut),
-  );
+  const subjects = <PageSubjects>(<unknown>{
+    project: project(stands.view ?? null),
+    agents,
+    models,
+    prompts,
+    wayOut,
+  });
+  const rendered = renderHook(() => useRailStanding(subjects, pass));
 
   return {
     ...rendered,

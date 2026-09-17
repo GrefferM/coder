@@ -26,7 +26,12 @@ function waiting(patch: Partial<WaitedWork> = {}): WaitedWork {
 
 describe("settledWait", () => {
   it("counts the supplier as settled and keeps what it sent, with the line it came by", () => {
-    const stood = settledWait(waiting(), "agent-1", work("Тези"), "link-1", false);
+    const stood = settledWait(waiting(), {
+      fromId: "agent-1",
+      work: work("Тези"),
+      via: "link-1",
+      isBroken: false,
+    });
 
     expect(stood.settledIds).toEqual(["agent-1"]);
     expect(stood.arrived.map((one) => one.text)).toEqual(["Тези"]);
@@ -35,7 +40,12 @@ describe("settledWait", () => {
 
   it("counts a supplier that sent nothing as settled all the same", () => {
     // A supplier that said nothing has still had its turn; the point must not hold for it.
-    const stood = settledWait(waiting(), "agent-1", null, null, false);
+    const stood = settledWait(waiting(), {
+      fromId: "agent-1",
+      work: null,
+      via: null,
+      isBroken: false,
+    });
 
     expect(stood.settledIds).toEqual(["agent-1"]);
     expect(stood.arrived).toEqual([]);
@@ -43,15 +53,35 @@ describe("settledWait", () => {
   });
 
   it("counts one supplier once, however many times its turn is settled", () => {
-    const once = settledWait(waiting(), "agent-1", null, null, false);
-    const twice = settledWait(once, "agent-1", null, null, false);
+    const once = settledWait(waiting(), {
+      fromId: "agent-1",
+      work: null,
+      via: null,
+      isBroken: false,
+    });
+    const twice = settledWait(once, {
+      fromId: "agent-1",
+      work: null,
+      via: null,
+      isBroken: false,
+    });
 
     expect(twice.settledIds).toEqual(["agent-1"]);
   });
 
   it("keeps what arrived in the order it came, so the turn reads them that way", () => {
-    const first = settledWait(waiting(), "agent-1", work("Перше"), "link-1", false);
-    const second = settledWait(first, "agent-2", work("Друге"), "link-2", false);
+    const first = settledWait(waiting(), {
+      fromId: "agent-1",
+      work: work("Перше"),
+      via: "link-1",
+      isBroken: false,
+    });
+    const second = settledWait(first, {
+      fromId: "agent-2",
+      work: work("Друге"),
+      via: "link-2",
+      isBroken: false,
+    });
 
     expect(second.arrived.map((one) => one.text)).toEqual(["Перше", "Друге"]);
     expect(second.viaLinkIds).toEqual(["link-1", "link-2"]);
@@ -59,8 +89,18 @@ describe("settledWait", () => {
 
   it("stands the point on a broken walk, and never takes that back", () => {
     // Once the walk under it broke, the point waits for the repeat and for nothing else.
-    const broken = settledWait(waiting(), "agent-1", null, null, true);
-    const after = settledWait(broken, "agent-2", work("Друге"), "link-2", false);
+    const broken = settledWait(waiting(), {
+      fromId: "agent-1",
+      work: null,
+      via: null,
+      isBroken: true,
+    });
+    const after = settledWait(broken, {
+      fromId: "agent-2",
+      work: work("Друге"),
+      via: "link-2",
+      isBroken: false,
+    });
 
     expect(broken.isAwaitingRepeat).toBe(true);
     expect(after.isAwaitingRepeat).toBe(true);

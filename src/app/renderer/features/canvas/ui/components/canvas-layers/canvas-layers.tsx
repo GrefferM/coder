@@ -102,7 +102,12 @@ export function CanvasLayers({
             isDragged: drag?.agentId === agent.id,
           }}
           wearing={{
-            standing: sphereStanding(agent, picked, draft?.agentId ?? null, selectedLink !== null, links),
+            standing: sphereStanding(agent, {
+              picked,
+              drawnFrom: draft?.agentId ?? null,
+              isLinkChosen: selectedLink !== null,
+              links,
+            }),
             isActive: agent.isActive && agent.modelId !== dimmedModelId,
             stateColor: states[agent.id],
             modelTitle: models.find((model) => model.id === agent.modelId)?.title,

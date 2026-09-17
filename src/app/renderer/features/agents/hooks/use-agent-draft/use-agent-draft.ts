@@ -22,17 +22,7 @@ export function useAgentDraft(
   const ownEdits = edits !== null && edits.agentId === selectedAgentId ? edits.values : null;
   const draft = selectedAgent === null ? null : agentDraft(selectedAgent, ownEdits);
   const saved = selectedAgent === null ? null : agentDraft(selectedAgent, null);
-  const changes =
-    saved === null || draft === null
-      ? []
-      : agentChanges(
-          saved,
-          draft,
-          project.config.models,
-          project.config.prompts,
-          project.config.commands,
-          project.config.servers,
-        );
+  const changes = saved === null || draft === null ? [] : agentChanges(saved, draft, project.config);
   const isDirty = changes.length > 0;
   // A name is what the person calls this sphere; two spheres with one name name neither, so the write is refused.
   const isNameTaken =

@@ -1,6 +1,6 @@
 import { cannotDrawLink } from "../../links";
-import type { CanvasPicked, SphereStanding } from "../interfaces";
-import type { Agent, Link } from "../../../interfaces";
+import type { SphereScene, SphereStanding } from "../interfaces";
+import type { Agent } from "../../../interfaces";
 
 /**
  * How a sphere stands. While a line is being drawn everything is about that line — the sphere
@@ -8,13 +8,9 @@ import type { Agent, Link } from "../../../interfaces";
  * since a line is a moment and an aim stands for hours. Otherwise the picked sphere is the selection's, the aimed one
  * is the chat's, and the rest stand back only when the panel is about a selected agent or a link is chosen.
  */
-export function sphereStanding(
-  agent: Agent,
-  picked: CanvasPicked,
-  drawnFrom: string | null,
-  isLinkChosen: boolean,
-  links: Link[],
-): SphereStanding {
+export function sphereStanding(agent: Agent, scene: SphereScene): SphereStanding {
+  const { picked, drawnFrom, isLinkChosen, links } = scene;
+
   if (drawnFrom !== null) {
     return {
       isSelected: agent.id === drawnFrom,

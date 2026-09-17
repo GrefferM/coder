@@ -14,22 +14,16 @@ import {
   STATE_WONT_START_LABEL,
   STATE_WORKING_LABEL,
 } from "../constants";
-import type { Agent, McpLook, ProjectConfig, ProviderAnswer, ProviderState } from "../../../interfaces";
-import type { AgentState } from "../interfaces";
+import type { Agent } from "../../../interfaces";
+import type { AgentState, StateFacts } from "../interfaces";
 
 /** The state by priority — working, waiting, off, a break, provider, a lost model, a fall, «готовий». */
-export function agentState(
-  agent: Agent,
-  config: ProjectConfig,
-  providers: ProviderState[],
-  answers: Record<string, ProviderAnswer>,
-  isWorking: boolean,
-  fellAt: string | null = null,
-  isWaiting = false,
-  /** What each server hands over right now; a break can hang on a function that is no longer offered. */
-  looks: Record<string, McpLook> = {},
-): AgentState {
-  if (isWorking) {
+export function agentState(agent: Agent, facts: StateFacts): AgentState {
+  const { config, providers, answers, looks } = facts;
+  // Whether this agent is the one working or the one waiting is asked of the lists by its own id.
+  const fellAt = facts.fellAt[agent.id] ?? null;
+
+  if (facts.working.some((one) => one.agentId === agent.id)) {
     return {
       label: STATE_WORKING_LABEL,
       color: STATE_LIVE_COLOR,
@@ -39,7 +33,7 @@ export function agentState(
   }
 
   // Alive, but it is not the one working — the dot is grey, not green.
-  if (isWaiting) {
+  if (facts.waiting.some((one) => one.agentId === agent.id)) {
     return {
       label: STATE_WAITING_LABEL,
       color: STATE_WAITING_COLOR,

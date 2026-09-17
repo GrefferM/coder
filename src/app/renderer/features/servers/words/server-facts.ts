@@ -16,19 +16,16 @@ import {
   SERVER_VALUE_MISSING_LABEL,
 } from "../constants";
 import type { McpLook, ProjectMcpServer } from "../../../interfaces";
+import type { ServerStanding } from "../interfaces";
 
 /**
  * The one line under a server's name — what it is, how much it hands over, and how many agents hold any
  * of it. A server that fell says so in place of its kind, because that is the fact that matters about it just then:
  * «ПРОЦЕС УПАВ · 12 ФУНКЦІЙ · 1 АГЕНТ», where the count is what it handed over while it still stood.
  */
-export function serverFacts(
-  server: ProjectMcpServer,
-  look: McpLook | null,
-  clock: string | null,
-  functionCount: number,
-  agentCount: number,
-): string {
+export function serverFacts(server: ProjectMcpServer, stands: ServerStanding): string {
+  const { look, clock, functionCount, agentCount } = stands;
+
   /**
    * A count is given only by a server that has just answered. One nobody has a token for was
    * never asked, and one being raised right now has not answered yet — in both, last time's number is a number

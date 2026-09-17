@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { wasAgent } from "./was-agent";
 import { AGENT_ACTIVE_ON_LABEL, AGENT_NO_PROMPT_LABEL } from "../constants";
-import type { AgentDraft } from "../interfaces";
+import type { AgentDraft, AgentNaming } from "../interfaces";
 import type { ProjectModel, ProjectPrompt } from "../../../interfaces";
 import { aDraft, aModel, aPrompt } from "../../../testing";
 
@@ -35,9 +35,17 @@ const PROMPTS: ProjectPrompt[] = [
   }),
 ];
 
+/** The catalogues a field's words are read from — an id becomes the name the person sees. */
+const NAMING: AgentNaming = {
+  models: MODELS,
+  prompts: PROMPTS,
+  commands: [],
+  servers: [],
+};
+
 describe("wasAgent", () => {
   it("says nothing about an agent that has never been saved", () => {
-    const was = wasAgent(draft(), null, MODELS, PROMPTS, [], []);
+    const was = wasAgent(draft(), null, NAMING);
 
     expect(Object.values(was).every((word) => word === null)).toBe(true);
   });
@@ -45,7 +53,7 @@ describe("wasAgent", () => {
   it("says nothing about a field standing as it was saved", () => {
     const saved = draft();
 
-    expect(wasAgent(draft(), saved, MODELS, PROMPTS, [], [])).toEqual({
+    expect(wasAgent(draft(), saved, NAMING)).toEqual({
       name: null,
       model: null,
       prompt: null,
@@ -68,10 +76,7 @@ describe("wasAgent", () => {
         isActive: false,
       }),
       draft(),
-      MODELS,
-      PROMPTS,
-      [],
-      [],
+      NAMING,
     );
 
     expect(was.name).toBe("EDITOR");
@@ -89,10 +94,7 @@ describe("wasAgent", () => {
       draft({
         promptId: "prompt-gone",
       }),
-      MODELS,
-      PROMPTS,
-      [],
-      [],
+      NAMING,
     );
 
     expect(was.prompt).toBe(AGENT_NO_PROMPT_LABEL);
@@ -127,10 +129,7 @@ describe("wasAgent", () => {
         ],
       }),
       saved,
-      MODELS,
-      PROMPTS,
-      [],
-      [],
+      NAMING,
     );
 
     // Only the server's field moved, so only it says what it was — and it says nothing of the command.

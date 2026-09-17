@@ -89,7 +89,7 @@ export function AgentSettings({
   const isModelGone = isModelLost(draft.modelId, models);
   // The model is whole, but nobody declared the provider under it — the field names it in the same words.
   const goneProviderId = lostProvider(draft.modelId, models, providers);
-  const was = wasAgent(draft, writing.saved, models, prompts, commands, servers);
+  const was = wasAgent(draft, writing.saved, catalogue);
 
   /** «Зберегти»: an empty name marks the field and writes nothing. */
   function save() {

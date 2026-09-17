@@ -51,7 +51,12 @@ describe("run-record · what is sent to the machine", () => {
       questionId: "question-1",
     });
 
-    await openRun("/tmp/coder", AGENT, "question-1", "Розбий текст", 1_000);
+    await openRun("/tmp/coder", {
+      questionId: "question-1",
+      agent: AGENT,
+      asked: "Розбий текст",
+      askedAt: 1_000,
+    });
 
     expect(invoke).toHaveBeenCalledWith(OPEN_RUN_CHANNEL, {
       directory: "/tmp/coder",
@@ -67,7 +72,12 @@ describe("run-record · what is sent to the machine", () => {
   it("asks again under the question's own id, into the row that already stands", async () => {
     const invoke = machine("question-2");
 
-    await askAgain("run-1", "question-2", AGENT, "Друге", 2_000);
+    await askAgain("run-1", {
+      questionId: "question-2",
+      agent: AGENT,
+      asked: "Друге",
+      askedAt: 2_000,
+    });
 
     expect(invoke).toHaveBeenCalledWith(ASK_AGAIN_CHANNEL, {
       runId: "run-1",
@@ -138,13 +148,27 @@ describe("run-record · what comes back when the machine cannot answer", () => {
   it("says a run was not opened rather than throwing at the conversation", async () => {
     brokenMachine();
 
-    expect(await openRun("/tmp/coder", AGENT, "question-1", "Розбий текст", 1_000)).toBeNull();
+    expect(
+      await openRun("/tmp/coder", {
+        questionId: "question-1",
+        agent: AGENT,
+        asked: "Розбий текст",
+        askedAt: 1_000,
+      }),
+    ).toBeNull();
   });
 
   it("says the row did not take the question", async () => {
     brokenMachine();
 
-    expect(await askAgain("run-1", "question-2", AGENT, "Друге", 2_000)).toBe(false);
+    expect(
+      await askAgain("run-1", {
+        questionId: "question-2",
+        agent: AGENT,
+        asked: "Друге",
+        askedAt: 2_000,
+      }),
+    ).toBe(false);
   });
 
   it("says a step was not written, and closing a run stays quiet", async () => {
@@ -166,9 +190,23 @@ describe("run-record · what comes back when the machine cannot answer", () => {
     // The bridge answers `undefined` when a channel is not registered at all.
     machine(undefined);
 
-    expect(await openRun("/tmp/coder", AGENT, "question-1", "Розбий текст", 1_000)).toBeNull();
+    expect(
+      await openRun("/tmp/coder", {
+        questionId: "question-1",
+        agent: AGENT,
+        asked: "Розбий текст",
+        askedAt: 1_000,
+      }),
+    ).toBeNull();
     expect(await readRun("run-1")).toBeNull();
     expect(await writeStep(<WrittenStep>(<unknown>{}))).toBeNull();
-    expect(await askAgain("run-1", "question-2", AGENT, "Друге", 2_000)).toBe(false);
+    expect(
+      await askAgain("run-1", {
+        questionId: "question-2",
+        agent: AGENT,
+        asked: "Друге",
+        askedAt: 2_000,
+      }),
+    ).toBe(false);
   });
 });

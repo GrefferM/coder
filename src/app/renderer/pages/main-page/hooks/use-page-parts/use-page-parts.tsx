@@ -55,7 +55,7 @@ export function usePageParts(
   /** The pass whose projection stands over the canvas. */
   const pass = useOpenedPass(project.config.agents, project.config.models, chat.written);
   /** Which section of the rail stands open, and every way in and out of it. */
-  const rail = useRailStanding(project, agents, models, prompts, pass, wayOut);
+  const rail = useRailStanding(subjects, pass);
   // The catalogue's one way into the chat — the call its row is talking about, opened where it happened.
   const showCall = useShowCall(stream, rail, chat.openCalls);
 
@@ -65,15 +65,15 @@ export function usePageParts(
   }
 
   /** Which state every agent is in, worked out once for the whole page. */
-  const states = agentStates(
-    project.config,
-    machine.providers,
-    machine.answers,
-    chat.working,
-    chat.waiting,
-    chat.fellAt,
-    servers.looks,
-  );
+  const states = agentStates({
+    config: project.config,
+    providers: machine.providers,
+    answers: machine.answers,
+    looks: servers.looks,
+    working: chat.working,
+    waiting: chat.waiting,
+    fellAt: chat.fellAt,
+  });
 
   // The rail's order is agents, models, MCP, commands, prompts, store; the built ones keep those places.
   const items: SidePanelItem[] = [
