@@ -1,4 +1,5 @@
 import { AgentSphere } from "../agent-sphere";
+import { DeadSphere } from "../dead-sphere";
 import { DeletedPlace } from "../deleted-place";
 import { LinkDraft } from "../link-draft";
 import { LinkLayer } from "../link-layer";
@@ -7,8 +8,9 @@ import { PastedMarker } from "../pasted-marker";
 import { CANVAS_DRAG_GHOST_BORDER_COLOR, CANVAS_DRAG_GHOST_SIZE_PX } from "../../../constants";
 import { linkLine } from "../../../../links";
 import { SPHERE_SIZE_PX } from "../../../../../components/sphere/constants";
-import { armedTally, callOut, sphereStanding } from "../../../logic";
+import { armedTally, callOut, deadEnd, deadEnds, sphereStanding } from "../../../logic";
 import type { CanvasLayersProps } from "./interfaces";
+import type { LinkEnd } from "../../../interfaces";
 
 /** Everything the canvas draws in its own coordinates: the lines, the line in hand, the spheres and their marks. */
 export function CanvasLayers({
@@ -34,13 +36,27 @@ export function CanvasLayers({
   const { drag, draft, cancelled, target, chosenLinkId, markScale, isDrawnSmall } = drawing;
   const isDragged = drag !== null && agents.some((agent) => agent.id === drag.agentId);
   const selectedLink = links.find((link) => link.id === chosenLinkId) ?? null;
+  /** One end of the chosen line, whether an agent stands there or only the id the line carries. */
+  const endOf = (agentId: string): LinkEnd | null => {
+    const agent = agents.find((one) => one.id === agentId) ?? null;
+
+    if (agent !== null) {
+      return agent;
+    }
+
+    const place = dead[agentId];
+
+    return place === undefined ? null : deadEnd(agentId, place);
+  };
   const selectedLinkEnds =
     selectedLink === null
       ? null
       : {
-          from: agents.find((agent) => agent.id === selectedLink.from),
-          to: agents.find((agent) => agent.id === selectedLink.to),
+          from: endOf(selectedLink.from),
+          to: endOf(selectedLink.to),
         };
+  // A line the file holds is drawn as it is; the end that names nobody is a dead sphere in free space (50a).
+  const dead = deadEnds(agents, links);
   const pastedAgent = pasted === null ? null : (agents.find((agent) => agent.id === pasted.agentId) ?? null);
   const draftAgent = draft === null ? null : (agents.find((agent) => agent.id === draft.agentId) ?? null);
   const cancelledAgent = cancelled === null ? null : (agents.find((agent) => agent.id === cancelled.agentId) ?? null);
@@ -61,6 +77,7 @@ export function CanvasLayers({
        */}
       <LinkLayer
         links={links}
+        deadEnds={dead}
         linkLives={linkLives}
         agents={agents}
         selectedAgentId={isPanelOnAgent ? selectedAgentId : null}
@@ -90,6 +107,9 @@ export function CanvasLayers({
           }}
         />
       )}
+      {Object.entries(dead).map(([agentId, at]) => (
+        <DeadSphere key={agentId} agentId={agentId} at={at} />
+      ))}
       {agents.map((agent) => (
         <AgentSphere
           key={agent.id}

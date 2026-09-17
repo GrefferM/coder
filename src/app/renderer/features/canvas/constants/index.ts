@@ -6,6 +6,7 @@ export * from "./canvas-link-draft.constant";
 export * from "./canvas-link.constant";
 export * from "./canvas-mark.constant";
 export * from "./canvas-paste.constant";
+export * from "./canvas-trouble.constant";
 export * from "./canvas-window.constant";
 export * from "./canvas-zoom.constant";
 export * from "./orb-hint.constant";

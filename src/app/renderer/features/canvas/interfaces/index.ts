@@ -12,6 +12,7 @@ export * from "./canvas-props.interface";
 export * from "./canvas-standing.interface";
 export * from "./canvas-view.interface";
 export * from "./canvas-write-acts.interface";
+export * from "./link-end.interface";
 export * from "./link-tally.interface";
 export * from "./orb-hint.interface";
 export * from "./sources-said.interface";

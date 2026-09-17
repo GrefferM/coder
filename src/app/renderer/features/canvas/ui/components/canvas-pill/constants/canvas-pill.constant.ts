@@ -1,4 +1,5 @@
 import { BORDER_AT_REST_COLOR, PANEL_GROUND_COLOR } from "../../../../../../constants";
+import { CANVAS_TROUBLE_BACKGROUND_COLOR, CANVAS_TROUBLE_BORDER_COLOR } from "../../../../constants";
 
 export const CANVAS_PILL_BOTTOM_PX = 24;
 
@@ -7,8 +8,8 @@ export const CANVAS_PILL_BORDER_COLOR = BORDER_AT_REST_COLOR;
 
 /** Pill tones — step, done, failed. */
 export const CANVAS_PILL_DONE_BORDER_COLOR = "#2c4a3a";
-export const CANVAS_PILL_FAILED_BORDER_COLOR = "#4a2530";
-export const CANVAS_PILL_FAILED_BACKGROUND_COLOR = "#1f1a20";
+export const CANVAS_PILL_FAILED_BORDER_COLOR = CANVAS_TROUBLE_BORDER_COLOR;
+export const CANVAS_PILL_FAILED_BACKGROUND_COLOR = CANVAS_TROUBLE_BACKGROUND_COLOR;
 export const CANVAS_PILL_SHADOW = "0 14px 32px rgba(0, 0, 0, 0.45)";
 export const CANVAS_PILL_BORDER_RADIUS_PX = 9;
 export const CANVAS_PILL_PADDING = "9px 13px";

@@ -26,6 +26,7 @@ function props(patch: Partial<LinkLayerProps> = {}): LinkLayerProps {
     links: [link],
     linkLives: {},
     agents: [seeker, teller],
+    deadEnds: {},
     selectedAgentId: null,
     selectedLinkId: null,
     doomedAgentId: null,

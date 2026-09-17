@@ -45,6 +45,7 @@ export function LinkLayer({
   links,
   linkLives,
   agents,
+  deadEnds,
   selectedAgentId,
   selectedLinkId,
   doomedAgentId,
@@ -52,12 +53,13 @@ export function LinkLayer({
   draggedAt,
   onSelectLink,
 }: LinkLayerProps) {
+  /** Where one end of a line stands — the agent, the point it is being dragged to, or its dead place (50a). */
   function placeOf(agentId: string) {
     if (agentId === draggedAgentId && draggedAt) {
       return draggedAt;
     }
 
-    return agents.find((agent) => agent.id === agentId);
+    return agents.find((agent) => agent.id === agentId) ?? deadEnds[agentId];
   }
 
   return (

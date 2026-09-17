@@ -29,6 +29,7 @@ import { ZOOM_IN_LABEL, ZOOM_OUT_LABEL } from "../../../components/zoom-toolbar/
 import { mixWithTransparent } from "../../../utils/colors";
 import { linkLine } from "../../links";
 import { SPHERE_DIMMED_OPACITY, SPHERE_SIZE_PX } from "../../../components/sphere/constants";
+import { DEAD_SPHERE_NOTE_LABEL } from "./components/dead-sphere/constants";
 import { LINK_PILL_DELETE_LABEL, LINK_PILL_DELETE_SHORTCUT } from "./components/link-pill/constants";
 import type { Agent, Link, ProjectModel } from "../../../interfaces";
 import type {
@@ -1248,7 +1249,8 @@ describe("Canvas", () => {
     expect(container.querySelector("svg rect")).not.toBeInTheDocument();
   });
 
-  it("draws nothing for a link whose agent is gone, rather than throwing", () => {
+  it("draws a link whose agent is gone, and stands a dead sphere at its far end (50a)", () => {
+    // The file says one thing and the screen must not say another: the line is drawn as it is.
     const { container } = renderCanvas({
       links: [
         ...LINKS,
@@ -1259,7 +1261,31 @@ describe("Canvas", () => {
       ],
     });
 
+    expect(container.querySelectorAll("svg polygon")).toHaveLength(2);
+    expect(screen.getByText("AGENT-GO")).toBeInTheDocument();
+    expect(screen.getByText(DEAD_SPHERE_NOTE_LABEL)).toBeInTheDocument();
+  });
+
+  it("stands no dead sphere where every line names agents the project has", () => {
+    const { container } = renderCanvas({});
+
     expect(container.querySelectorAll("svg polygon")).toHaveLength(1);
+    expect(screen.queryByText(DEAD_SPHERE_NOTE_LABEL)).not.toBeInTheDocument();
+  });
+
+  it("draws no line at all where both of its ends are gone", () => {
+    const { container } = renderCanvas({
+      links: [
+        aLink({
+          id: "link-2",
+          from: "gone-one",
+          to: "gone-two",
+        }),
+      ],
+    });
+
+    expect(container.querySelectorAll("svg polygon")).toHaveLength(0);
+    expect(screen.queryByText(DEAD_SPHERE_NOTE_LABEL)).not.toBeInTheDocument();
   });
 
   it("has a dragged sphere's links follow it, dashed and no longer drifting", () => {

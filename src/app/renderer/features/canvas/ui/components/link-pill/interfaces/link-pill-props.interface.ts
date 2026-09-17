@@ -1,8 +1,8 @@
-import type { Agent } from "../../../../../../interfaces";
+import type { LinkEnd } from "../../../../interfaces";
 
 export interface LinkPillProps {
-  from: Agent;
-  to: Agent;
+  from: LinkEnd;
+  to: LinkEnd;
   at: {
     x: number;
     y: number;
