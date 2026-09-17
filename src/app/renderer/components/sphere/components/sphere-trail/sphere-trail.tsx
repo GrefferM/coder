@@ -14,8 +14,7 @@ import type { SphereTrailProps } from "./interfaces";
 
 /**
  * The trail — a dim third line under the model, saying what this agent is made of. Not a pill: a pill
- * is kept for a trigger and for trouble, because those change what the agent does, while a prompt and a key only
- * describe it.
+ * is kept for trouble, because trouble changes what the agent does, while a prompt and a key only describe it.
  *
  * The key says **one** number — how many functions are granted, all sources together, a command
  * counting as one. Not two numbers: read without hovering, at nine pixels, two numbers in a row read as a

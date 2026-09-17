@@ -16,8 +16,8 @@ import {
 } from "./constants";
 
 /**
- * How fresh something is, on the one scale the whole app speaks — the server's row and its «оновлено»
- *, the recent folders, the history of deletions, a trigger's «востаннє перевірено».
+ * How fresh something is, on the one scale the whole app speaks — the server's row and its «оновлено»,
+ * and the recent folders.
  *
  * Six steps and nothing between them, **the boundary belonging to the lower one and the rounding always down**:
  * «1 хв» comes on the sixtieth second and not on the thirtieth, because rounding up is promising what has not

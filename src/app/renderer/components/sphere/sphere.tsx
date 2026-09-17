@@ -22,8 +22,8 @@ import type { SphereProps } from "./interfaces";
  * One agent as a wireframe sphere; Hover rings it and brightens the model line, but not the glow.
  *
  * Three levels of loudness hang under it — the name with its state dot at full brightness, the model
- * dimmer, and the trail dimmer still. A pill is kept for a trigger and for trouble, because those change what the
- * agent does, while a prompt and a key only say what it is.
+ * dimmer, and the trail dimmer still. A pill is kept for trouble, because trouble changes what the agent does,
+ * while a prompt and a key only say what it is.
  *
  * The arc of mini-spheres is **not** here, though it stands over this drawing: it is its own targets,
  * and a button inside a button is not HTML at all. The canvas puts the two side by side — `AgentSphere` — and both

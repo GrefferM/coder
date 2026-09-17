@@ -7,8 +7,6 @@ different cost and capability to each one, and granting each the tools it may ca
 A project is a folder on disk: it travels with the repository, so an automation can be committed and
 shared like any other code.
 
-Early — both halves are being built right now.
-
 ## How it is laid out
 
 - `src/app` — the Electron application: `main.ts` and the services behind it, `ipc/` for the
