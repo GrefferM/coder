@@ -7,6 +7,8 @@ const OPENROUTER: ProviderState = {
   id: "openrouter",
   name: "OpenRouter",
   kind: "remote",
+  needs: ["key"],
+  takesTools: true,
   customaryAddress: null,
   keyHint: "sk-…f31a",
   address: null,

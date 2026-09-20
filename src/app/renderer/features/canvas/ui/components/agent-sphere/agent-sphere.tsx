@@ -61,6 +61,7 @@ export function AgentSphere({ agent, place, wearing, doing, acts }: AgentSphereP
         orbs={armedWith(agent.tools, wearing.sources)}
         scale={place.scale}
         isDimmed={wearing.standing.isDimmed}
+        isQuiet={wearing.isToolless}
         onPress={acts.onPressOrb}
         onPointTo={acts.onPointToOrb}
         onPointAway={acts.onPointAwayFromOrb}

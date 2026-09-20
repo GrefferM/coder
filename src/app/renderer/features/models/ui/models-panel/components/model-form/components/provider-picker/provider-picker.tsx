@@ -13,9 +13,9 @@ import {
   PICKER_VALUE_COLOR,
 } from "../../../../../../../../components/picker-shell/constants";
 import {
+  providerMissing,
   PROVIDER_KEY_WRITTEN_LABEL,
   PROVIDER_LOCAL_LABEL,
-  PROVIDER_NO_KEY_LABEL,
   PROVIDER_REMOTE_LABEL,
 } from "../../../../../../../providers";
 import { MODELS_PANEL_PROVIDER_FIELD_LABEL } from "../../../../constants";
@@ -38,13 +38,14 @@ export function ProviderPicker({ providers, providerId, wasProviderId, isInvalid
   // The was-value shows the display name, not the file's word.
   const wasValue = wasProviderId === null ? null : nameOf(wasProviderId);
 
-  /** Line under a provider's name: its kind and, for a remote one, its key. */
+  /** Line under a provider's name: its kind and, for a remote one, whatever it is still short of. */
   function note(provider: ProviderState): string {
     if (provider.kind === "local") {
       return PROVIDER_LOCAL_LABEL;
     }
 
-    const reach = provider.keyHint === null ? PROVIDER_NO_KEY_LABEL : PROVIDER_KEY_WRITTEN_LABEL;
+    const missing = providerMissing(provider);
+    const reach = missing.length === 0 ? PROVIDER_KEY_WRITTEN_LABEL : missing.join(PROVIDER_PICKER_NOTE_SEPARATOR);
 
     return `${PROVIDER_REMOTE_LABEL}${PROVIDER_PICKER_NOTE_SEPARATOR}${reach}`;
   }

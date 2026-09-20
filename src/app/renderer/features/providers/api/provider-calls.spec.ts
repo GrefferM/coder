@@ -13,6 +13,8 @@ const OLLAMA: ProviderState = {
   id: "ollama",
   name: "Ollama",
   kind: "local",
+  needs: ["address"],
+  takesTools: true,
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,
@@ -22,6 +24,8 @@ const OPENROUTER: ProviderState = {
   id: "openrouter",
   name: "OpenRouter",
   kind: "remote",
+  needs: ["key"],
+  takesTools: true,
   customaryAddress: null,
   keyHint: null,
   address: null,
@@ -89,7 +93,11 @@ describe("provider calls", () => {
     // The two stores are not alike: a key is a secret and an address is not, and each has its own channel.
     const invoke = machine(undefined);
 
-    await saveProviderValue(OLLAMA, "http://localhost:11434");
+    await saveProviderValue({
+      provider: OLLAMA,
+      need: "address",
+      value: "http://localhost:11434",
+    });
 
     expect(invoke).toHaveBeenCalledWith(SAVE_PROVIDER_ADDRESS_CHANNEL, {
       providerId: "ollama",
@@ -100,7 +108,11 @@ describe("provider calls", () => {
   it("writes a remote provider's key into the store for keys", async () => {
     const invoke = machine(undefined);
 
-    await saveProviderValue(OPENROUTER, "sk-secret");
+    await saveProviderValue({
+      provider: OPENROUTER,
+      need: "key",
+      value: "sk-secret",
+    });
 
     expect(invoke).toHaveBeenCalledWith(SAVE_PROVIDER_KEY_CHANNEL, {
       providerId: "openrouter",

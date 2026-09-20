@@ -33,3 +33,9 @@ export const TOOLS_SECTION_LOST_NAME = "функції немає";
 /** The head over one source's functions in the picker — its glyph, its name, and the count on the right. */
 export const TOOLS_GROUP_ICON_SIZE_PX = 10;
 export const TOOLS_GROUP_LABEL_COLOR = CONTROL_AT_REST_COLOR;
+
+/**
+ * Said in place of the picker where the agent's model stands on a provider that carries no function calls at
+ * all. The grants already given stay listed under it: they are the person's, and nobody took them away.
+ */
+export const TOOLS_SECTION_LOCKED_NOTE = "Провайдер цієї моделі не вміє викликати функції";

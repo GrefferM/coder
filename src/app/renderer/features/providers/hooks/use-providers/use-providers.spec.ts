@@ -1,7 +1,12 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { useProviders } from "./use-providers";
-import { ASK_PROVIDER_CHANNEL, LIST_PROVIDERS_CHANNEL } from "../../../../../../contracts";
+import {
+  ASK_PROVIDER_CHANNEL,
+  LIST_PROVIDERS_CHANNEL,
+  SAVE_PROVIDER_ADDRESS_CHANNEL,
+  SAVE_PROVIDER_KEY_CHANNEL,
+} from "../../../../../../contracts";
 import { PROVIDER_ASKED_EVERY_MS } from "../../constants";
 import type { ProviderState } from "../../../../interfaces";
 import { standInBridge } from "../../../../testing";
@@ -10,6 +15,8 @@ const OLLAMA: ProviderState = {
   id: "ollama",
   name: "Ollama",
   kind: "local",
+  needs: ["address"],
+  takesTools: true,
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,
@@ -19,8 +26,21 @@ const OPENROUTER: ProviderState = {
   id: "openrouter",
   name: "OpenRouter",
   kind: "remote",
+  needs: ["key"],
+  takesTools: true,
   customaryAddress: null,
   keyHint: "sk-or",
+  address: null,
+};
+
+const RUNPOD: ProviderState = {
+  id: "runpod",
+  name: "RunPod",
+  kind: "remote",
+  needs: ["key", "address"],
+  takesTools: true,
+  customaryAddress: null,
+  keyHint: null,
   address: null,
 };
 
@@ -154,5 +174,45 @@ describe("useProviders", () => {
     act(() => result.current.heard(OPENROUTER.id, false));
 
     expect(result.current.answers[OPENROUTER.id]).toBeUndefined();
+  });
+
+  it("writes both of the things a provider asked for, each into its own store", async () => {
+    // The key is a secret and the address is not, so one press fills two stores and neither is guessed at.
+    const invoke = held();
+    const { result } = renderHook(() => useProviders());
+
+    await waitFor(() => expect(result.current.providers).toHaveLength(2));
+
+    await act(async () => {
+      await result.current.save(RUNPOD, {
+        key: "rpa_longvalue4Kd",
+        address: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1",
+      });
+    });
+
+    expect(invoke).toHaveBeenCalledWith(SAVE_PROVIDER_KEY_CHANNEL, {
+      providerId: "runpod",
+      value: "rpa_longvalue4Kd",
+    });
+    expect(invoke).toHaveBeenCalledWith(SAVE_PROVIDER_ADDRESS_CHANNEL, {
+      providerId: "runpod",
+      value: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1",
+    });
+  });
+
+  it("writes nothing for a field nobody touched, so a key kept is not a key rewritten", async () => {
+    const invoke = held();
+    const { result } = renderHook(() => useProviders());
+
+    await waitFor(() => expect(result.current.providers).toHaveLength(2));
+
+    await act(async () => {
+      await result.current.save(RUNPOD, {
+        key: null,
+        address: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1",
+      });
+    });
+
+    expect(invoke).not.toHaveBeenCalledWith(SAVE_PROVIDER_KEY_CHANNEL, expect.anything());
   });
 });

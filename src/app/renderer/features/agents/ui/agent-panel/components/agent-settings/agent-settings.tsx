@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ActionButton, Field } from "../../../../../../components";
 import { FIELD_INVALID_MS } from "../../../../../../components/field/constants";
 import { wasAgent } from "../../../../words";
-import { isModelLost, isPromptLost, lostProvider, mendedNumber, withFunction } from "../../../../logic";
+import { isModelLost, isPromptLost, lostProvider, mendedNumber, takesNoTools, withFunction } from "../../../../logic";
 import { NAME_TAKEN_AGENT_NOTE } from "../../../../../../constants";
 
 import {
@@ -89,6 +89,8 @@ export function AgentSettings({
   const isModelGone = isModelLost(draft.modelId, models);
   // The model is whole, but nobody declared the provider under it — the field names it in the same words.
   const goneProviderId = lostProvider(draft.modelId, models, providers);
+  // A provider whose protocol carries no functions: the fields are shut, and what was granted before stays listed.
+  const isToolless = takesNoTools(draft.modelId, models, providers);
   const was = wasAgent(draft, writing.saved, catalogue);
 
   /** «Зберегти»: an empty name marks the field and writes nothing. */
@@ -189,6 +191,7 @@ export function AgentSettings({
           onDraftChange={onDraftChange}
         />
         <ToolsSection
+          isLocked={isToolless}
           fieldRef={presses.mending === "grants" ? mendedField : undefined}
           press={presses.tools}
           commands={commands}
@@ -207,6 +210,7 @@ export function AgentSettings({
          * draft, so a tick in one never drops what the other holds.
          */}
         <ServersSection
+          isLocked={isToolless}
           servers={servers}
           looks={looks}
           grants={draft.tools}

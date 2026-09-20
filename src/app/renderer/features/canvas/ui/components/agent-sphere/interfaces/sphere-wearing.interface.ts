@@ -16,4 +16,6 @@ export interface SphereWearing {
   trail: SphereTrailProps;
   /** What the sources say of themselves — the words a mini-sphere shows under the cursor. */
   sources: SourcesSaid;
+  /** Nothing this agent is armed with can be called: its model's provider carries no functions at all. */
+  isToolless: boolean;
 }

@@ -23,6 +23,7 @@ import {
   TOOLS_SECTION_EMPTY_PADDING,
   TOOLS_SECTION_GAP_PX,
   TOOLS_SECTION_LIST_MAX_HEIGHT_PX,
+  TOOLS_SECTION_LOCKED_NOTE,
 } from "./constants";
 import { isCommandGrant } from "../../../../../../../../interfaces";
 import type { ToolChoice } from "../../../../../../interfaces";
@@ -41,6 +42,7 @@ export function ToolsSection({
   grants,
   press,
   wasValue,
+  isLocked,
   fieldRef,
   onGrantsChange,
   onOpenGrant,
@@ -128,33 +130,37 @@ export function ToolsSection({
           gap: TOOLS_SECTION_GAP_PX,
         }}
       >
-        <PickerShell
-          fieldRef={fieldRef}
-          field={
-            <span className="flex-fill text-truncate">
-              {chosen.length === 0
-                ? TOOLS_SECTION_CHOOSE_LABEL
-                : `${chosen.length}${TOOLS_SECTION_CHOSEN_JOIN}${options.length}${TOOLS_SECTION_CHOSEN_TAIL}`}
-            </span>
-          }
-          fieldColor={chosen.length === 0 ? PICKER_PLACEHOLDER_COLOR : PICKER_VALUE_COLOR}
-          listMaxHeightPx={TOOLS_SECTION_LIST_MAX_HEIGHT_PX}
-          isChanged={wasValue !== null}
-          items={options}
-          matches={(option, query) =>
-            option.name.toLowerCase().includes(query) || option.description.toLowerCase().includes(query)
-          }
-          openedBy={mine}
-          choose={(option) => toggle(option)}
-          row={(option) => (
-            <ToolOption
-              key={option.key}
-              name={option.name}
-              isGranted={grantedOf(option, grants) !== null}
-              onToggle={() => toggle(option)}
-            />
-          )}
-        />
+        {isLocked ? (
+          <Words isQuiet>{TOOLS_SECTION_LOCKED_NOTE}</Words>
+        ) : (
+          <PickerShell
+            fieldRef={fieldRef}
+            field={
+              <span className="flex-fill text-truncate">
+                {chosen.length === 0
+                  ? TOOLS_SECTION_CHOOSE_LABEL
+                  : `${chosen.length}${TOOLS_SECTION_CHOSEN_JOIN}${options.length}${TOOLS_SECTION_CHOSEN_TAIL}`}
+              </span>
+            }
+            fieldColor={chosen.length === 0 ? PICKER_PLACEHOLDER_COLOR : PICKER_VALUE_COLOR}
+            listMaxHeightPx={TOOLS_SECTION_LIST_MAX_HEIGHT_PX}
+            isChanged={wasValue !== null}
+            items={options}
+            matches={(option, query) =>
+              option.name.toLowerCase().includes(query) || option.description.toLowerCase().includes(query)
+            }
+            openedBy={mine}
+            choose={(option) => toggle(option)}
+            row={(option) => (
+              <ToolOption
+                key={option.key}
+                name={option.name}
+                isGranted={grantedOf(option, grants) !== null}
+                onToggle={() => toggle(option)}
+              />
+            )}
+          />
+        )}
 
         {chosen.map((option) => {
           const granted = grantedOf(option, grants);

@@ -3,7 +3,7 @@ import { SidePanel } from "../../components";
 import { isSomethingOpen, useWayOut } from "../../hooks";
 import { useNotedView, usePageKeys, usePageParts, useProjectActions } from "./hooks";
 import { useAgentClipboard, useAgentDraft, useAgentSelection } from "../../features/agents";
-import { agentTrouble } from "../../features/agents";
+import { agentTrouble, takesNoTools } from "../../features/agents";
 import { RunDebug } from "../../features/projection";
 import { useModelSection } from "../../features/models";
 import { closeProject, ProjectSwitcher, useProjectFile } from "../../features/project";
@@ -117,6 +117,10 @@ export function MainPage({ project, setProject }: MainPageProps) {
               agentTrouble(agent, project.config, parts.machine.providers, parts.looks),
             ]),
           ),
+          // Their tools are still in the file and still listed; what the arc says is that none of them can be called.
+          toolless: drafted.drawnAgents
+            .filter((agent) => takesNoTools(agent.modelId, project.config.models, parts.machine.providers))
+            .map((agent) => agent.id),
           states: Object.fromEntries(
             drafted.drawnAgents.map((agent) => [agent.id, parts.agentStates[agent.id]?.color ?? ""]),
           ),

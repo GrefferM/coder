@@ -18,6 +18,8 @@ const PROVIDERS: ProviderState[] = [
     id: "ollama",
     name: "Ollama",
     kind: "local",
+    needs: ["address"],
+    takesTools: true,
     address: "http://localhost:11434",
     keyHint: null,
     customaryAddress: "http://localhost:11434",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { agentsCountLabel } from "../../../../words";
-import { modelsCountLabel } from "../../words";
+import { modelsCountLabel, providerMissing } from "../../words";
 import { PROJECT_FILE_NAME } from "../../../../../../contracts";
 import { ProviderCard, ProviderRow } from "./components";
 import {
@@ -27,9 +27,10 @@ import {
   PROVIDER_FACTS_SEPARATOR,
   PROVIDER_SILENT_LABEL,
 } from "./constants";
-import { PROVIDER_KEY_WRITTEN_LABEL, PROVIDER_NO_KEY_LABEL, PROVIDER_REMOTE_LABEL } from "../../constants";
+import { NOTHING_TYPED, PROVIDER_KEY_WRITTEN_LABEL, PROVIDER_REMOTE_LABEL } from "../../constants";
 import { Hairline, Mark } from "../../../../components";
 import type { ProviderState } from "../../../../interfaces";
+import type { ProviderDraft } from "../../interfaces";
 import type { ProvidersPanelProps } from "./interfaces";
 
 /** Fixed provider rows — filled first, untouched below; one open at a time. */
@@ -45,10 +46,10 @@ export function ProvidersPanel({
 }: ProvidersPanelProps) {
   const [openProviderId, setOpenProviderId] = useState<string | null>(null);
   // Nothing at all until somebody types or presses the cross; a key untouched is a key kept.
-  const [draft, setDraft] = useState<string | null>(null);
+  const [draft, setDraft] = useState<ProviderDraft>(NOTHING_TYPED);
 
-  /** Remote: set up when its key is written. Local: always set up, having a default address. */
-  const isFilled = (provider: ProviderState) => provider.kind === "local" || provider.keyHint !== null;
+  /** Set up when everything it asked for is here; a local one is, having a customary address behind the field. */
+  const isFilled = (provider: ProviderState) => providerMissing(provider).length === 0;
   const isSilent = (provider: ProviderState) =>
     provider.kind === "local" && answers[provider.id]?.isAnswering === false;
 
@@ -75,8 +76,8 @@ export function ProvidersPanel({
         : answer.isAnswering
           ? PROVIDER_ANSWERING_LABEL
           : PROVIDER_SILENT_LABEL;
-    const remote =
-      provider.keyHint === null ? [PROVIDER_REMOTE_LABEL, PROVIDER_NO_KEY_LABEL] : [PROVIDER_KEY_WRITTEN_LABEL];
+    const missing = providerMissing(provider);
+    const remote = missing.length === 0 ? [PROVIDER_KEY_WRITTEN_LABEL] : [PROVIDER_REMOTE_LABEL, ...missing];
     const head = provider.kind === "local" ? [local] : remote;
 
     return [...head, ...counts(provider)].join(PROVIDER_FACTS_SEPARATOR);
@@ -84,12 +85,12 @@ export function ProvidersPanel({
 
   function open(provider: ProviderState) {
     setOpenProviderId(provider.id);
-    setDraft(null);
+    setDraft(NOTHING_TYPED);
   }
 
   function close() {
     setOpenProviderId(null);
-    setDraft(null);
+    setDraft(NOTHING_TYPED);
   }
 
   /**
@@ -98,7 +99,7 @@ export function ProvidersPanel({
    * that writes the empty value that removes it.
    */
   async function save(provider: ProviderState) {
-    if (draft !== null) {
+    if (draft.key !== null || draft.address !== null) {
       await onSave(provider, draft);
     }
 
@@ -116,7 +117,12 @@ export function ProvidersPanel({
           answer={answers[provider.id] ?? null}
           isAsking={askingIds.includes(provider.id)}
           onAsk={() => onAsk(provider.id)}
-          onChange={setDraft}
+          onChange={(need, typed) =>
+            setDraft((standing) => ({
+              ...standing,
+              [need]: typed,
+            }))
+          }
           onCancel={close}
           onSave={() => void save(provider)}
           onTakeUpModel={(title) => onTakeUpModel(provider.id, title)}

@@ -16,6 +16,8 @@ function provider(patch: Partial<ProviderState> = {}): ProviderState {
     id: "openrouter",
     name: "OpenRouter",
     kind: "remote",
+    needs: ["key"],
+    takesTools: true,
     customaryAddress: null,
     keyHint: "sk-…4f2",
     address: null,
@@ -27,6 +29,8 @@ const local = provider({
   id: "ollama",
   name: "Ollama",
   kind: "local",
+  needs: ["address"],
+  takesTools: true,
   keyHint: null,
   customaryAddress: "http://localhost:11434",
 });

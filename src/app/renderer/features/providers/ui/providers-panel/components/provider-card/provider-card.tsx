@@ -17,6 +17,8 @@ import {
   PROVIDER_CARD_SILENT_COLOR,
   PROVIDER_CARD_SILENT_LABEL,
   PROVIDER_CARD_ADDRESS_NOTE,
+  PROVIDER_CARD_ADDRESS_PLACEHOLDER,
+  PROVIDER_CARD_OWN_ADDRESS_NOTE,
   PROVIDER_CARD_BACKGROUND_COLOR,
   PROVIDER_CARD_BADGE_BACKGROUND_COLOR,
   PROVIDER_CARD_BADGE_BORDER_COLOR,
@@ -45,7 +47,7 @@ import {
 } from "./constants";
 import type { ProviderCardProps } from "./interfaces";
 
-/** Opened provider; the kind badge decides the field — key (remote) or address (local). */
+/** Opened provider; it draws a field for each thing it asks for — a key, an address, or both. */
 export function ProviderCard({
   provider,
   value,
@@ -62,16 +64,18 @@ export function ProviderCard({
   const countOfModels = (count: number) => `${count} ${ukrainianPlural(count, one, few, many)}`;
   const isLocal = provider.kind === "local";
   const isAnswering = answer === null ? null : answer.isAnswering;
-  // A local provider is lit by answering.
-  const isFilled = isLocal ? isAnswering === true : provider.keyHint !== null;
+  const wantsKey = provider.needs.includes("key");
+  const wantsAddress = provider.needs.includes("address");
+  // A local provider is lit by answering; every other one by holding everything it asked for.
+  const isFilled = isLocal
+    ? isAnswering === true
+    : (!wantsKey || provider.keyHint !== null) &&
+      (!wantsAddress || provider.address !== null || provider.customaryAddress !== null);
   const isSilent = isLocal && isAnswering === false;
   // The hint stands until somebody types or presses the cross; after that the field is plainly empty.
-  const isKeyHeld = value === null && provider.keyHint !== null;
-  const placeholder = isLocal
-    ? (provider.address ?? provider.customaryAddress ?? "")
-    : isKeyHeld
-      ? (provider.keyHint ?? "")
-      : PROVIDER_CARD_KEY_PLACEHOLDER;
+  const isKeyHeld = value.key === null && provider.keyHint !== null;
+  const keyPlaceholder = isKeyHeld ? (provider.keyHint ?? "") : PROVIDER_CARD_KEY_PLACEHOLDER;
+  const addressPlaceholder = provider.address ?? provider.customaryAddress ?? PROVIDER_CARD_ADDRESS_PLACEHOLDER;
 
   return (
     <div
@@ -123,16 +127,30 @@ export function ProviderCard({
         </span>
       </div>
 
-      <Field
-        isMono
-        label={isLocal ? PROVIDER_CARD_ADDRESS_LABEL : PROVIDER_CARD_KEY_LABEL}
-        value={value ?? ""}
-        placeholder={placeholder}
-        note={isLocal ? PROVIDER_CARD_ADDRESS_NOTE : provider.keyHint === null ? undefined : PROVIDER_CARD_KEY_NOTE}
-        // A key stands behind its hint, so emptying it is a press somebody makes and not a field left alone.
-        onClear={isKeyHeld ? () => onChange("") : undefined}
-        onChange={onChange}
-      />
+      {wantsKey && (
+        <Field
+          isMono
+          label={PROVIDER_CARD_KEY_LABEL}
+          value={value.key ?? ""}
+          placeholder={keyPlaceholder}
+          note={provider.keyHint === null ? undefined : PROVIDER_CARD_KEY_NOTE}
+          // A key stands behind its hint, so emptying it is a press somebody makes and not a field left alone.
+          onClear={isKeyHeld ? () => onChange("key", "") : undefined}
+          onChange={(typed) => onChange("key", typed)}
+        />
+      )}
+
+      {wantsAddress && (
+        <Field
+          isMono
+          label={PROVIDER_CARD_ADDRESS_LABEL}
+          value={value.address ?? ""}
+          placeholder={addressPlaceholder}
+          // An address with nothing customary behind it is the person's own, and an empty field leaves them nowhere.
+          note={provider.customaryAddress === null ? PROVIDER_CARD_OWN_ADDRESS_NOTE : PROVIDER_CARD_ADDRESS_NOTE}
+          onChange={(typed) => onChange("address", typed)}
+        />
+      )}
 
       {isLocal && (isAsking || isAnswering !== null) && (
         <Mark

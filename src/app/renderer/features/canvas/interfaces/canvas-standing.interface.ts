@@ -10,6 +10,8 @@ export interface CanvasStanding {
   /** The trail says an agent stands on a prompt, and a prompt the project let go is not one. */
   prompts: ProjectPrompt[];
   troubles: Record<string, AgentTrouble | null>;
+  /** The agents whose model stands on a provider that carries no functions; their arc is drawn quiet. */
+  toolless: string[];
   /** Per-agent state colour for the dot beside the name. */
   states: Record<string, string>;
   /** What the sources say of themselves, so a mini-sphere can name the one it stands for. */

@@ -5,6 +5,8 @@ export * from "../../../contracts/project/mcp-server.interface";
 export * from "../../../contracts/runs/turn-call.interface";
 export * from "./agent-answer.interface";
 export * from "./agent-client.interface";
+export * from "./agent-opening.interface";
+export * from "./runpod-opening.interface";
 export * from "./agent-key-store.interface";
 export * from "./agent-voice.interface";
 export * from "./llm-module.interface";

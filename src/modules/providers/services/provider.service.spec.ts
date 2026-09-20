@@ -3,7 +3,7 @@ import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { beforeEach, describe, it } from "node:test";
-import { KNOWN_PROVIDERS, PROVIDER_HAS_NO_ADDRESS, UNKNOWN_PROVIDER } from "../constants";
+import { KNOWN_PROVIDERS, UNKNOWN_PROVIDER } from "../constants";
 import { ProviderService } from "./provider.service";
 import type { ProviderKeyStore } from "../interfaces";
 
@@ -115,11 +115,34 @@ describe("ProviderService", () => {
     assert.equal(await providerService.addressOf("ollama"), "http://10.0.0.4:11434");
   });
 
-  it("gives a remote provider no address at all — there is nothing there to answer with", async () => {
+  it("gives a provider that asks for no address none at all — there is nothing there to answer with", async () => {
     assert.equal(await providerService.addressOf("anthropic"), null);
   });
 
-  it("refuses a key on a local provider and an address on a remote one — neither has anywhere to put it", async () => {
+  it("holds both a key and an address for a provider that asks for both, each in its own store", async () => {
+    // RunPod is somebody else's machine, but the endpoint in the address is the person's own.
+    await providerService.saveKey({
+      providerId: "runpod",
+      value: "rpa_longvalue4Kd",
+    });
+    await providerService.saveAddress({
+      providerId: "runpod",
+      value: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1",
+    });
+
+    const runpod = (await providerService.list()).find((provider) => provider.id === "runpod");
+
+    assert.deepEqual(runpod?.needs, ["key", "address"]);
+    assert.equal(runpod?.keyHint, "rpa_lon•••");
+    assert.equal(runpod?.address, "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1");
+    assert.equal(await providerService.addressOf("runpod"), "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1");
+  });
+
+  it("offers no customary address where the endpoint is the person's own: an empty field is empty", async () => {
+    assert.equal(await providerService.addressOf("runpod"), null);
+  });
+
+  it("refuses a key on a provider that asks for none, and an address on one that asks for none", async () => {
     await assert.rejects(
       providerService.saveKey({
         providerId: "ollama",
@@ -212,12 +235,19 @@ describe("ProviderService", () => {
     );
   });
 
-  it("refuses to ask a remote provider, which has no address to answer at", async () => {
+  it("refuses to ask any provider that does not run on this machine, address or no address", async () => {
+    // Asking is «what have you installed», and that is a question only a local process answers.
     await assert.rejects(
       providerService.ask({
         providerId: "anthropic",
       }),
-      new RegExp(PROVIDER_HAS_NO_ADDRESS),
+      new RegExp(UNKNOWN_PROVIDER),
+    );
+    await assert.rejects(
+      providerService.ask({
+        providerId: "runpod",
+      }),
+      new RegExp(UNKNOWN_PROVIDER),
     );
   });
 });

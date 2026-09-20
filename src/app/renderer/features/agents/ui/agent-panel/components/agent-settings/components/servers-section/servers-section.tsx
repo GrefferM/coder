@@ -1,5 +1,5 @@
 import { isServerGrant, namesFunction } from "../../../../../../../../interfaces";
-import { FieldSlot, PickerShell } from "../../../../../../../../components";
+import { FieldSlot, PickerShell, Words } from "../../../../../../../../components";
 import {
   PICKER_PLACEHOLDER_COLOR,
   PICKER_VALUE_COLOR,
@@ -13,6 +13,7 @@ import { connectedTo, withServer } from "../../../../../../logic";
 import { connectedLabel } from "../../../../../../words";
 import {
   SERVERS_SECTION_CHOOSE_LABEL,
+  SERVERS_SECTION_LOCKED_NOTE,
   SERVERS_SECTION_COUNT_SEPARATOR,
   SERVERS_SECTION_GAP_PX,
   SERVERS_SECTION_LABEL,
@@ -31,6 +32,7 @@ export function ServersSection({
   looks,
   grants,
   wasValue,
+  isLocked,
   onGrantsChange,
   onOpenServer,
 }: ServersSectionProps) {
@@ -60,27 +62,33 @@ export function ServersSection({
           gap: SERVERS_SECTION_GAP_PX,
         }}
       >
-        <PickerShell
-          field={
-            <span className="flex-fill text-truncate">
-              {connected.length === 0 ? SERVERS_SECTION_CHOOSE_LABEL : connectedLabel(connected.length, servers.length)}
-            </span>
-          }
-          fieldColor={connected.length === 0 ? PICKER_PLACEHOLDER_COLOR : PICKER_VALUE_COLOR}
-          listMaxHeightPx={SERVERS_SECTION_LIST_MAX_HEIGHT_PX}
-          isChanged={wasValue !== null}
-          items={servers}
-          matches={(server, query) => server.name.toLowerCase().includes(query)}
-          choose={(server) => onGrantsChange(withServer(server, looks[server.id] ?? null, grants))}
-          row={(server) => (
-            <ToolOption
-              key={server.id}
-              name={server.name}
-              isGranted={connectedTo(server.id, grants)}
-              onToggle={() => onGrantsChange(withServer(server, looks[server.id] ?? null, grants))}
-            />
-          )}
-        />
+        {isLocked ? (
+          <Words isQuiet>{SERVERS_SECTION_LOCKED_NOTE}</Words>
+        ) : (
+          <PickerShell
+            field={
+              <span className="flex-fill text-truncate">
+                {connected.length === 0
+                  ? SERVERS_SECTION_CHOOSE_LABEL
+                  : connectedLabel(connected.length, servers.length)}
+              </span>
+            }
+            fieldColor={connected.length === 0 ? PICKER_PLACEHOLDER_COLOR : PICKER_VALUE_COLOR}
+            listMaxHeightPx={SERVERS_SECTION_LIST_MAX_HEIGHT_PX}
+            isChanged={wasValue !== null}
+            items={servers}
+            matches={(server, query) => server.name.toLowerCase().includes(query)}
+            choose={(server) => onGrantsChange(withServer(server, looks[server.id] ?? null, grants))}
+            row={(server) => (
+              <ToolOption
+                key={server.id}
+                name={server.name}
+                isGranted={connectedTo(server.id, grants)}
+                onToggle={() => onGrantsChange(withServer(server, looks[server.id] ?? null, grants))}
+              />
+            )}
+          />
+        )}
 
         {connected.map((server) => (
           <HeldServer

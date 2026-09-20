@@ -7,6 +7,8 @@ export interface ServersSectionProps {
   /** The whole draft's grants: this section changes only the servers' and leaves the commands' alone. */
   grants: ToolGrant[];
   wasValue: string | null;
+  /** The model's provider carries no functions, so nothing here may be connected; what stands, stands. */
+  isLocked: boolean;
   onGrantsChange: (grants: ToolGrant[]) => void;
   /** A connected server opens as a step of its own, the way an opened grant does. */
   onOpenServer: (serverId: string) => void;

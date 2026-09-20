@@ -129,6 +129,8 @@ const PROVIDERS: ProviderState[] = [
     id: "anthropic",
     name: "Anthropic",
     kind: "remote",
+    needs: ["key"],
+    takesTools: true,
     customaryAddress: null,
     keyHint: null,
     address: null,

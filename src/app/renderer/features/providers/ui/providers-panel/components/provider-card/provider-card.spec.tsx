@@ -2,7 +2,11 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { ProviderCard } from "./provider-card";
-import { PROVIDER_CARD_ANSWERED_LABEL, PROVIDER_CARD_SILENT_LABEL } from "./constants";
+import {
+  PROVIDER_CARD_ADDRESS_PLACEHOLDER,
+  PROVIDER_CARD_ANSWERED_LABEL,
+  PROVIDER_CARD_SILENT_LABEL,
+} from "./constants";
 import { MODEL_FIELD_ANSWER_CEILING, NOT_FILLED_LABEL } from "../../../../../../constants";
 import {
   PROVIDER_MODELS_LAST_KNOWN_NOTE,
@@ -13,13 +17,16 @@ import {
   PROVIDER_MODELS_SHOW_ALL_LABEL,
   PROVIDER_MODELS_TAKE_UP_LABEL,
 } from "./components/provider-models/constants";
-import type { ProjectModel, ProviderAnswer, ProviderState } from "../../../../../../interfaces";
+import type { ProjectModel, ProviderAnswer, ProviderNeed, ProviderState } from "../../../../../../interfaces";
+import { NOTHING_TYPED } from "../../../../constants";
 import { aModel } from "../../../../../../testing";
 
 const OLLAMA: ProviderState = {
   id: "ollama",
   name: "Ollama",
   kind: "local",
+  needs: ["address"],
+  takesTools: true,
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,
@@ -29,8 +36,21 @@ const ANTHROPIC: ProviderState = {
   id: "anthropic",
   name: "Anthropic",
   kind: "remote",
+  needs: ["key"],
+  takesTools: true,
   customaryAddress: null,
   keyHint: "sk-ant-…4Kd",
+  address: null,
+};
+
+const RUNPOD: ProviderState = {
+  id: "runpod",
+  name: "RunPod",
+  kind: "remote",
+  needs: ["key", "address"],
+  takesTools: true,
+  customaryAddress: null,
+  keyHint: null,
   address: null,
 };
 
@@ -72,13 +92,17 @@ function renderCard(
   provider: ProviderState,
   answer: ProviderAnswer | null = null,
   models: ProjectModel[] = [],
-  acts: { onTakeUpModel?: () => void; onAsk?: () => void; onChange?: (value: string) => void } = {},
+  acts: {
+    onTakeUpModel?: () => void;
+    onAsk?: () => void;
+    onChange?: (need: ProviderNeed, value: string) => void;
+  } = {},
 ) {
   return render(
     <ProviderCard
       provider={provider}
       // Nothing typed: the field stands behind the hint of the key already here.
-      value={null}
+      value={NOTHING_TYPED}
       models={models}
       answer={answer}
       isAsking={false}
@@ -211,7 +235,7 @@ describe("ProviderCard's key", () => {
       }),
     );
 
-    expect(onChange).toHaveBeenCalledWith("");
+    expect(onChange).toHaveBeenCalledWith("key", "");
 
     renderCard({
       ...ANTHROPIC,
@@ -224,5 +248,31 @@ describe("ProviderCard's key", () => {
         name: "Очистити",
       }),
     ).toHaveLength(1);
+  });
+
+  it("draws a field for each thing the provider asks for, and names which one was typed into", async () => {
+    // RunPod asks for both: the key is the person's, and the address carries their endpoint's id.
+    const onChange = vi.fn();
+
+    renderCard(RUNPOD, null, [], {
+      onChange,
+    });
+
+    const address = screen.getByLabelText("АДРЕСА");
+
+    expect(screen.getByLabelText("КЛЮЧ")).toBeInTheDocument();
+    // Nothing customary stands behind it, so the placeholder shows the shape of an address and not one to keep.
+    expect(address).toHaveAttribute("placeholder", PROVIDER_CARD_ADDRESS_PLACEHOLDER);
+
+    await userEvent.type(address, "h");
+
+    expect(onChange).toHaveBeenCalledWith("address", "h");
+  });
+
+  it("asks a key-only provider for no address at all", () => {
+    renderCard(ANTHROPIC);
+
+    expect(screen.getByLabelText("КЛЮЧ")).toBeInTheDocument();
+    expect(screen.queryByLabelText("АДРЕСА")).not.toBeInTheDocument();
   });
 });

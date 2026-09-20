@@ -12,12 +12,14 @@ import {
   OPENAI_PROTOCOL_PATH,
   OPENAI_PROVIDER_ID,
   OPENROUTER_PROVIDER_ID,
+  RUNPOD_PROVIDER_ID,
 } from "./provider-ids.constant";
+import { RunPodChat } from "../services/runpod-chat.service";
 import type { AgentClient } from "../interfaces";
 
 /** The address with `/v1` appended unless it already ends in it. */
-function atProtocol(address: string): string {
-  const machine = address.replace(/\/+$/, "");
+function atProtocol(address: string | null): string {
+  const machine = (address ?? "").replace(/\/+$/, "");
 
   return machine.endsWith(OPENAI_PROTOCOL_PATH) ? machine : `${machine}${OPENAI_PROTOCOL_PATH}`;
 }
@@ -25,33 +27,33 @@ function atProtocol(address: string): string {
 /** Every provider the app knows and how each is opened. */
 export const AGENT_CLIENTS: Record<string, AgentClient> = {
   [ANTHROPIC_PROVIDER_ID]: {
-    needs: "key",
-    open: (model, apiKey, temperature, answerTokens) =>
+    needs: ["key"],
+    open: (opening) =>
       new ChatAnthropic({
-        apiKey,
-        model,
-        temperature,
-        maxTokens: answerTokens,
+        apiKey: opening.key ?? undefined,
+        model: opening.model,
+        temperature: opening.temperature,
+        maxTokens: opening.answerTokens,
       }),
   },
   [OPENAI_PROVIDER_ID]: {
-    needs: "key",
-    open: (model, apiKey, temperature, answerTokens) =>
+    needs: ["key"],
+    open: (opening) =>
       new ChatOpenAI({
-        apiKey,
-        model,
-        temperature,
-        maxTokens: answerTokens,
+        apiKey: opening.key ?? undefined,
+        model: opening.model,
+        temperature: opening.temperature,
+        maxTokens: opening.answerTokens,
       }),
   },
   [OPENROUTER_PROVIDER_ID]: {
-    needs: "key",
-    open: (model, apiKey, temperature, answerTokens) =>
+    needs: ["key"],
+    open: (opening) =>
       new ChatOpenRouter({
-        apiKey,
-        model,
-        temperature,
-        maxTokens: answerTokens,
+        apiKey: opening.key ?? undefined,
+        model: opening.model,
+        temperature: opening.temperature,
+        maxTokens: opening.answerTokens,
         // OpenRouter returns usage counts only when asked.
         modelKwargs: {
           usage: {
@@ -61,35 +63,50 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
       }),
   },
   [GOOGLE_PROVIDER_ID]: {
-    needs: "key",
-    open: (model, apiKey, temperature, answerTokens) =>
+    needs: ["key"],
+    open: (opening) =>
       new ChatGoogleGenerativeAI({
-        apiKey,
-        model,
-        temperature,
-        maxOutputTokens: answerTokens,
+        apiKey: opening.key ?? undefined,
+        model: opening.model,
+        temperature: opening.temperature,
+        maxOutputTokens: opening.answerTokens,
+      }),
+  },
+  [RUNPOD_PROVIDER_ID]: {
+    /**
+     * A serverless endpoint of the person's own, reached through its queue: the key is theirs and the address
+     * carries the endpoint's id, so both are asked for. The address is taken as it stands — the queue's paths
+     * hang off it, and OpenAI's `/v1` is not one of them.
+     */
+    needs: ["key", "address"],
+    open: (opening) =>
+      new RunPodChat({
+        address: (opening.address ?? "").replace(/\/+$/, ""),
+        key: opening.key ?? "",
+        temperature: opening.temperature,
+        answerTokens: opening.answerTokens,
       }),
   },
   [OLLAMA_PROVIDER_ID]: {
-    needs: "address",
-    open: (model, address, temperature, answerTokens) =>
+    needs: ["address"],
+    open: (opening) =>
       new ChatOllama({
-        baseUrl: address,
-        model,
-        temperature,
-        numPredict: answerTokens,
+        baseUrl: opening.address ?? undefined,
+        model: opening.model,
+        temperature: opening.temperature,
+        numPredict: opening.answerTokens,
       }),
   },
   [LMSTUDIO_PROVIDER_ID]: {
-    needs: "address",
-    open: (model, address, temperature, answerTokens) =>
+    needs: ["address"],
+    open: (opening) =>
       new ChatOpenAI({
         apiKey: LMSTUDIO_ANY_KEY,
-        model,
-        temperature,
-        maxTokens: answerTokens,
+        model: opening.model,
+        temperature: opening.temperature,
+        maxTokens: opening.answerTokens,
         configuration: {
-          baseURL: atProtocol(address),
+          baseURL: atProtocol(opening.address),
         },
       }),
   },

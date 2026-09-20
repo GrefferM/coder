@@ -23,6 +23,7 @@ import {
   MODELS_PANEL_SAVE_LABEL,
   MODEL_NAME_EXAMPLES,
   MODEL_NAME_NOTE_LOCAL,
+  MODEL_NAME_NOTES,
   MODEL_NAME_NOTE_PREFIX,
   MODEL_NAME_NOTE_UNCHOSEN,
   MODELS_PANEL_TITLE_FIELD_LABEL,
@@ -86,9 +87,10 @@ export function ModelForm({ providers, values, saved, isNew, isMending, onChange
   const titleNote =
     chosen === null
       ? MODEL_NAME_NOTE_UNCHOSEN
-      : chosen.kind === "local"
-        ? MODEL_NAME_NOTE_LOCAL
-        : `${MODEL_NAME_NOTE_PREFIX}${MODEL_NAME_EXAMPLES[chosen.id] ?? ""}`;
+      : (MODEL_NAME_NOTES[chosen.id] ??
+        (chosen.kind === "local"
+          ? MODEL_NAME_NOTE_LOCAL
+          : `${MODEL_NAME_NOTE_PREFIX}${MODEL_NAME_EXAMPLES[chosen.id] ?? ""}`));
 
   return (
     <div

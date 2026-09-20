@@ -68,7 +68,7 @@ export class LlmService {
       throw new Refusal(LLM_PROVIDER_NOT_BUILT);
     }
 
-    const secret = await this.opened(client, payload.providerId);
+    const held = await this.opened(client, payload.providerId);
     const stopping = new AbortController();
 
     this.running.set(payload.turnId, stopping);
@@ -77,7 +77,13 @@ export class LlmService {
     const conversation = this.said(payload.systemPrompt, payload.messages);
     // The ceiling is written in tokens and goes to the provider as it stands — nothing is converted.
     const answering = this.answering(
-      client.open(payload.model, secret, payload.temperature, payload.answerCeiling),
+      client.open({
+        model: payload.model,
+        key: held.key,
+        address: held.address,
+        temperature: payload.temperature,
+        answerTokens: payload.answerCeiling,
+      }),
       payload.tools,
     );
     const ledger = new TurnLedger();
@@ -386,23 +392,19 @@ export class LlmService {
     return reason !== undefined && LLM_CEILING_REASONS.includes(reason.toLowerCase());
   }
 
-  /** The provider's key or address, or a refusal naming which is missing. */
-  private async opened(client: AgentClient, providerId: string): Promise<string> {
-    if (client.needs === "address") {
-      const address = await this.keys.addressOf(providerId);
+  /** Everything the provider asked for, or a refusal naming the first of them that is missing. */
+  private async opened(
+    client: AgentClient,
+    providerId: string,
+  ): Promise<{ key: string | null; address: string | null }> {
+    return {
+      key: client.needs.includes("key") ? await this.heldKey(providerId) : null,
+      address: client.needs.includes("address") ? await this.heldAddress(providerId) : null,
+    };
+  }
 
-      if (address === null || address === "") {
-        throw new Refusal(LLM_NO_ADDRESS);
-      }
-
-      // A local provider is pinged first: a silent one gets its own refusal.
-      if (!(await this.keys.isAnswering(providerId))) {
-        throw new Refusal(LLM_PROVIDER_SILENT);
-      }
-
-      return address;
-    }
-
+  /** The provider's key, or a refusal saying there is none. */
+  private async heldKey(providerId: string): Promise<string> {
     const key = await this.keys.keyOf(providerId);
 
     if (key === null || key === "") {
@@ -410,6 +412,22 @@ export class LlmService {
     }
 
     return key;
+  }
+
+  /** The provider's address, or a refusal: no address at all, or a machine that did not answer. */
+  private async heldAddress(providerId: string): Promise<string> {
+    const address = await this.keys.addressOf(providerId);
+
+    if (address === null || address === "") {
+      throw new Refusal(LLM_NO_ADDRESS);
+    }
+
+    // A local provider is pinged first: a silent one gets its own refusal. A remote one always reads as answering.
+    if (!(await this.keys.isAnswering(providerId))) {
+      throw new Refusal(LLM_PROVIDER_SILENT);
+    }
+
+    return address;
   }
 
   /** A provider's token count; `NaN` and non-numbers count as 0. */

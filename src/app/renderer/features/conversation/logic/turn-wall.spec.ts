@@ -208,6 +208,64 @@ describe("turnWall", () => {
     expect("notStarted" in way).toBe(false);
   });
 
+  it("stops a turn whose provider carries no functions while the agent holds grants", () => {
+    // Dropping them quietly would read as an answer made with the tools the person granted.
+    const stood = turnWall(
+      turn({
+        agent: {
+          ...AGENT,
+          tools: [
+            {
+              id: "grant-1",
+              source: "command",
+              commandId: COMMAND.id,
+              pinned: [],
+            },
+          ],
+        },
+        stands: {
+          model: MODEL,
+          provider: {
+            id: "runpod",
+            name: "RunPod",
+            kind: "remote",
+            needs: ["key", "address"],
+            takesTools: false,
+            customaryAddress: null,
+            keyHint: "rpa_lon•••",
+            address: "https://api.runpod.ai/v2/z5x8c1v4b7n2m6",
+          },
+          prompt: null,
+        },
+      }),
+    );
+
+    expect("notStarted" in stood && stood.notStarted).toBe("noTools");
+  });
+
+  it("lets a turn through on such a provider where the agent holds no grants at all", () => {
+    const stood = turnWall(
+      turn({
+        stands: {
+          model: MODEL,
+          provider: {
+            id: "runpod",
+            name: "RunPod",
+            kind: "remote",
+            needs: ["key", "address"],
+            takesTools: false,
+            customaryAddress: null,
+            keyHint: "rpa_lon•••",
+            address: "https://api.runpod.ai/v2/z5x8c1v4b7n2m6",
+          },
+          prompt: null,
+        },
+      }),
+    );
+
+    expect("notStarted" in stood).toBe(false);
+  });
+
   it("stops a turn whose prompt the project has lost", () => {
     const stood = wall({
       promptId: "prompt-gone",

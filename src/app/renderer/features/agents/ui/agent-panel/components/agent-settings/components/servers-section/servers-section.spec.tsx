@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { ServersSection } from "./servers-section";
 import { LOST_GRANTS_NOTES } from "../lost-grants/constants";
+import { SERVERS_SECTION_CHOOSE_LABEL, SERVERS_SECTION_LOCKED_NOTE } from "./constants";
 import { PICKER_SEARCH_PLACEHOLDER } from "../../../../../../../../components/picker-shell/constants";
 import { NO_MCP_CALLS } from "../../../../../../../../interfaces";
 import type { McpLook, ProjectMcpServer, ToolGrant } from "../../../../../../../../interfaces";
@@ -69,7 +70,7 @@ function held(functionName: string, serverId = SERVER_ID): ToolGrant {
   };
 }
 
-function renderSection(grants: ToolGrant[], servers = SERVERS, looks = LOOKS) {
+function renderSection(grants: ToolGrant[], servers = SERVERS, looks = LOOKS, isLocked = false) {
   const onGrantsChange = vi.fn();
   const onOpenServer = vi.fn();
 
@@ -79,6 +80,7 @@ function renderSection(grants: ToolGrant[], servers = SERVERS, looks = LOOKS) {
       looks={looks}
       grants={grants}
       wasValue={null}
+      isLocked={isLocked}
       onGrantsChange={onGrantsChange}
       onOpenServer={onOpenServer}
     />,
@@ -197,5 +199,12 @@ describe("ServersSection", () => {
 
     expect(screen.getByLabelText("Видати playwright-mcp")).toBeInTheDocument();
     expect(screen.queryByLabelText("Видати github-mcp")).not.toBeInTheDocument();
+  });
+
+  it("shuts the field where the model's provider carries no functions", () => {
+    renderSection([], SERVERS, LOOKS, true);
+
+    expect(screen.getByText(SERVERS_SECTION_LOCKED_NOTE)).toBeInTheDocument();
+    expect(screen.queryByText(SERVERS_SECTION_CHOOSE_LABEL)).not.toBeInTheDocument();
   });
 });

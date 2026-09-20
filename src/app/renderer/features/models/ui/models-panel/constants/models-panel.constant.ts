@@ -71,6 +71,14 @@ export const MODEL_NAME_EXAMPLES: Record<string, string> = {
   openrouter: "anthropic/claude-sonnet-4.5",
   google: "gemini-2.5-pro",
 };
+
+/**
+ * Where the name is not what the provider is asked by, the note says what it is instead. A RunPod endpoint
+ * serves one model and the request never names it: the title is the person's own word, for the eye alone.
+ */
+export const MODEL_NAME_NOTES: Record<string, string> = {
+  runpod: "Ім'я для ока: точка обслуговує одну модель, і запит її не називає",
+};
 export const MODEL_NAME_NOTE_PREFIX = "Так, як його пише провайдер: ";
 export const MODEL_NAME_NOTE_UNCHOSEN = "Так, як його пише провайдер — оберіть провайдера нижче";
 export const MODEL_NAME_NOTE_LOCAL = "Так, як його називає сам провайдер на цій машині";

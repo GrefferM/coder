@@ -3,6 +3,7 @@ import { notFilledLabel } from "../../../words";
 import {
   TROUBLE_LOST_FUNCTION_LABEL,
   TROUBLE_LOST_PROMPT_LABEL,
+  TROUBLE_NO_ADDRESS_LABEL,
   TROUBLE_NO_KEY_LABEL,
   TROUBLE_NO_MODEL_LABEL,
   TROUBLE_NO_PROMPT_LABEL,
@@ -35,8 +36,13 @@ export function agentTrouble(
     return broken(TROUBLE_NO_PROVIDER_LABEL);
   }
 
-  if (provider.kind === "remote" && provider.keyHint === null) {
+  if (provider.needs.includes("key") && provider.keyHint === null) {
     return broken(TROUBLE_NO_KEY_LABEL);
+  }
+
+  // A local provider falls back to its customary address, so only one asking for an address of its own breaks here.
+  if (provider.needs.includes("address") && provider.address === null && provider.customaryAddress === null) {
+    return broken(TROUBLE_NO_ADDRESS_LABEL);
   }
 
   // One word for every way a grant can point at nothing: a command undeclared, a function the server took

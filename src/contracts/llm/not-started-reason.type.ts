@@ -9,4 +9,5 @@ export type NotStartedReason =
   | "notFilledAgent"
   | "lostPrompt"
   | "lostFunction"
+  | "noTools"
   | "tooLong";

@@ -1,4 +1,5 @@
 import type { Agent, ProjectModel, ProviderAnswer, ProviderState } from "../../../../../interfaces";
+import type { ProviderDraft } from "../../../interfaces";
 
 export interface ProvidersPanelProps {
   providers: ProviderState[];
@@ -7,7 +8,7 @@ export interface ProvidersPanelProps {
   models: ProjectModel[];
   agents: Agent[];
   onAsk: (providerId: string) => void;
-  onSave: (provider: ProviderState, value: string) => Promise<void>;
+  onSave: (provider: ProviderState, draft: ProviderDraft) => Promise<void>;
   /** Takes an undeclared installed model up to the catalogue. */
   onTakeUpModel: (providerId: string, title: string) => void;
 }

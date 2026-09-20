@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
-import { AIMessageChunk } from "@langchain/core/messages";
+import { afterEach, describe, it } from "node:test";
+import { AIMessageChunk, HumanMessage } from "@langchain/core/messages";
 import { ChatOllama } from "@langchain/ollama";
 import { ChatOpenAI } from "@langchain/openai";
 import {
@@ -12,9 +12,12 @@ import {
   OLLAMA_PROVIDER_ID,
   OPENAI_PROVIDER_ID,
   OPENROUTER_PROVIDER_ID,
+  RUNPOD_CLIENT_NAME,
+  RUNPOD_PROVIDER_ID,
 } from "../constants";
 import { LLM_NO_ADDRESS, LLM_NO_KEY, LLM_PROVIDER_NOT_BUILT, LLM_PROVIDER_SILENT } from "../../../contracts";
 import { LlmService } from "./llm.service";
+import { RunPodChat } from "./runpod-chat.service";
 import { ToolArguments } from "./tool-arguments.service";
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import type { BaseMessage } from "@langchain/core/messages";
@@ -196,44 +199,130 @@ describe("LlmService", () => {
   });
 });
 
+/** The RunPod queue, standing in for the real one: every address asked is written down, and a job comes back done. */
+function runpodQueue(): string[] {
+  const asked: string[] = [];
+  const answers = [
+    {
+      id: "job-1",
+      status: "IN_QUEUE",
+    },
+    {
+      status: "COMPLETED",
+      output: [
+        {
+          choices: [
+            {
+              finish_reason: "stop",
+              message: {
+                role: "assistant",
+                content: "Готово.",
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
+  globalThis.fetch = (async (url: string) => {
+    asked.push(String(url));
+
+    return {
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify(answers[Math.min(asked.length - 1, answers.length - 1)]),
+    };
+  }) as unknown as typeof fetch;
+
+  return asked;
+}
+
 describe("AGENT_CLIENTS", () => {
-  it("holds a client for every provider the app knows, each saying whether it wants a key or an address", () => {
+  afterEach(() => {
+    globalThis.fetch = undefined as unknown as typeof fetch;
+  });
+
+  it("holds a client for every provider the app knows, each saying what it asks the person for", () => {
     const needs = Object.fromEntries(
       Object.entries(AGENT_CLIENTS).map(([providerId, client]) => [providerId, client.needs]),
     );
 
     assert.deepEqual(needs, {
-      [ANTHROPIC_PROVIDER_ID]: "key",
-      [OPENAI_PROVIDER_ID]: "key",
-      [OPENROUTER_PROVIDER_ID]: "key",
-      [GOOGLE_PROVIDER_ID]: "key",
-      [OLLAMA_PROVIDER_ID]: "address",
-      [LMSTUDIO_PROVIDER_ID]: "address",
+      [ANTHROPIC_PROVIDER_ID]: ["key"],
+      [OPENAI_PROVIDER_ID]: ["key"],
+      [OPENROUTER_PROVIDER_ID]: ["key"],
+      [GOOGLE_PROVIDER_ID]: ["key"],
+      // A serverless endpoint carries its id in the address, so the key alone says nothing about where to knock.
+      [RUNPOD_PROVIDER_ID]: ["key", "address"],
+      [OLLAMA_PROVIDER_ID]: ["address"],
+      [LMSTUDIO_PROVIDER_ID]: ["address"],
     });
   });
 
   it("points LM Studio at the address it was given, with OpenAI's own path on the end of it", () => {
-    const model = <ChatOpenAI>(
-      AGENT_CLIENTS[LMSTUDIO_PROVIDER_ID].open("qwen3", "http://localhost:1234", 0.3, ANSWER_TOKENS)
-    );
+    const model = <ChatOpenAI>AGENT_CLIENTS[LMSTUDIO_PROVIDER_ID].open({
+      model: "qwen3",
+      key: null,
+      address: "http://localhost:1234",
+      temperature: 0.3,
+      answerTokens: ANSWER_TOKENS,
+    });
 
     assert.equal(model.clientConfig.baseURL, "http://localhost:1234/v1");
   });
 
   it("appends that path once, whatever trailing slashes the address was written with", () => {
-    const model = <ChatOpenAI>(
-      AGENT_CLIENTS[LMSTUDIO_PROVIDER_ID].open("qwen3", "http://localhost:1234/v1//", 0.3, ANSWER_TOKENS)
-    );
+    const model = <ChatOpenAI>AGENT_CLIENTS[LMSTUDIO_PROVIDER_ID].open({
+      model: "qwen3",
+      key: null,
+      address: "http://localhost:1234/v1//",
+      temperature: 0.3,
+      answerTokens: ANSWER_TOKENS,
+    });
 
     assert.equal(model.clientConfig.baseURL, "http://localhost:1234/v1");
   });
 
   it("leaves Ollama's address as it stands, since it is not OpenAI's protocol", () => {
-    const model = <ChatOllama>(
-      AGENT_CLIENTS[OLLAMA_PROVIDER_ID].open("llama3", "http://localhost:11434", 0.3, ANSWER_TOKENS)
-    );
+    const model = <ChatOllama>AGENT_CLIENTS[OLLAMA_PROVIDER_ID].open({
+      model: "llama3",
+      key: null,
+      address: "http://localhost:11434",
+      temperature: 0.3,
+      answerTokens: ANSWER_TOKENS,
+    });
 
     assert.equal(model.baseUrl, "http://localhost:11434");
+  });
+
+  it("opens RunPod on the queue's own client, since such an endpoint has no OpenAI door to knock at", () => {
+    const model = AGENT_CLIENTS[RUNPOD_PROVIDER_ID].open({
+      model: "dphn/dolphin-2.9.3-mistral-nemo-12b",
+      key: "rpa_test",
+      address: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3",
+      temperature: 0.3,
+      answerTokens: ANSWER_TOKENS,
+    });
+
+    assert.ok(model instanceof RunPodChat);
+    assert.equal(model._llmType(), RUNPOD_CLIENT_NAME);
+  });
+
+  it("keeps the endpoint's address as the person wrote it, adding no path of OpenAI's to the end", async () => {
+    // The endpoint's id lives in the address, and the model is the name that endpoint serves: it is never sent.
+    const asked = runpodQueue();
+    const model = AGENT_CLIENTS[RUNPOD_PROVIDER_ID].open({
+      model: "dphn/dolphin-2.9.3-mistral-nemo-12b",
+      key: "rpa_test",
+      address: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3//",
+      temperature: 0.3,
+      answerTokens: ANSWER_TOKENS,
+    });
+
+    await model.invoke([new HumanMessage("Привіт")]);
+
+    assert.equal(asked[0], "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/run");
   });
 });
 
@@ -304,7 +393,7 @@ function speaking(rounds: AIMessageChunk[]) {
     boundTools: bound,
     clients: <Record<string, AgentClient>>{
       [TEST_PROVIDER_ID]: {
-        needs: "key",
+        needs: ["key"],
         open: () => <BaseChatModel>(<unknown>model),
       },
     },
@@ -322,7 +411,7 @@ function faulting(failure: unknown) {
 
   return <Record<string, AgentClient>>{
     [TEST_PROVIDER_ID]: {
-      needs: "key",
+      needs: ["key"],
       open: () => <BaseChatModel>(<unknown>model),
     },
   };

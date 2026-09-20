@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { ToolsSection } from "./tools-section";
 import { LOST_GRANTS_NOTES } from "../lost-grants/constants";
+import { TOOLS_SECTION_CHOOSE_LABEL, TOOLS_SECTION_LOCKED_NOTE } from "./constants";
 import { PICKER_SEARCH_PLACEHOLDER } from "../../../../../../../../components/picker-shell/constants";
 import { aCommand } from "../../../../../../../../testing";
 import type { ProjectCommand, ToolGrant } from "../../../../../../../../interfaces";
@@ -49,6 +50,7 @@ function renderSection(
   commands: ProjectCommand[] = COMMANDS,
   onOpenGrant: () => void = vi.fn(),
   press: ToolsPress | null = null,
+  isLocked = false,
 ) {
   const onGrantsChange = vi.fn();
 
@@ -58,6 +60,7 @@ function renderSection(
       press={press}
       grants={grants}
       wasValue={null}
+      isLocked={isLocked}
       onGrantsChange={onGrantsChange}
       onOpenGrant={onOpenGrant}
     />,
@@ -207,5 +210,27 @@ describe("ToolsSection", () => {
     renderSection([GRANT]);
 
     expect(screen.queryByPlaceholderText(PICKER_SEARCH_PLACEHOLDER)).not.toBeInTheDocument();
+  });
+
+  it("shuts the field where the model's provider carries no functions, and keeps what was granted listed", () => {
+    // The grants are the person's own and nobody took them away; what is gone is the way to give more.
+    renderSection(
+      [
+        {
+          id: "grant-1",
+          source: "command",
+          commandId: COMMANDS[0].id,
+          pinned: [],
+        },
+      ],
+      COMMANDS,
+      vi.fn(),
+      null,
+      true,
+    );
+
+    expect(screen.getByText(TOOLS_SECTION_LOCKED_NOTE)).toBeInTheDocument();
+    expect(screen.queryByText(TOOLS_SECTION_CHOOSE_LABEL)).not.toBeInTheDocument();
+    expect(screen.getByText(COMMANDS[0].name)).toBeInTheDocument();
   });
 });

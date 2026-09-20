@@ -8,6 +8,12 @@ export interface SphereOrbsProps<Orb extends SphereOrb = SphereOrb> {
   /** The arc goes quiet with the sphere it belongs to, since it is a part of the same agent. */
   isDimmed?: boolean;
   /**
+   * Nothing on the arc can be called: the agent's model stands on a provider whose protocol carries no
+   * functions. The marks stay — the grants are still in the file — and take the quiet tone instead of their
+   * sources' colours.
+   */
+  isQuiet?: boolean;
+  /**
    * A press hands back the very mark that was pressed — not a name of it — and the mark's own button, because a
    * window opened from it is bound to that mark: it stands over it, and Escape gives the focus back to it.
    */

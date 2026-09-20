@@ -1,5 +1,6 @@
 import {
   TROUBLE_LOST_FUNCTION_LABEL,
+  TROUBLE_NO_TOOLS_LABEL,
   TROUBLE_LOST_PROMPT_LABEL,
   TROUBLE_NO_KEY_LABEL,
   TROUBLE_NO_MODEL_LABEL,
@@ -39,6 +40,11 @@ export const LOST_FUNCTION_NOTE_SUFFIX =
 
 /** The sentence for a prompt the agent names and the project has lost. */
 export const LOST_PROMPT_NOTE_PREFIX = "В агента ";
+
+/** The sentence where the provider's protocol carries no functions and the agent holds grants all the same. */
+export const NO_TOOLS_NOTE_PREFIX = "Провайдер ";
+export const NO_TOOLS_NOTE_MIDDLE = " не вміє викликати функції, а в агента ";
+export const NO_TOOLS_NOTE_SUFFIX = " є видачі. Зніміть їх або оберіть модель іншого провайдера, і агент піде.";
 export const LOST_PROMPT_NOTE_SUFFIX =
   " зник промпт, на який він посилається. Оберіть промпт наново або зніміть його, і агент піде.";
 export const NOT_FILLED_NOTE_MIDDLE = " не заповнено поле «";
@@ -106,6 +112,14 @@ export const NOT_STARTED_ENDS: Record<NotStartedReason, NotStartedEnd> = {
     actLabel: "ВІДКРИТИ ВИДАЧУ",
     act: "grants",
     state: "lostFunction",
+  },
+  // The provider cannot carry a function at all, and the agent holds grants: the act leads to the grants, which
+  // are the person's to take off — the model is theirs to change instead, and both live a tab away.
+  noTools: {
+    label: TROUBLE_NO_TOOLS_LABEL,
+    actLabel: "ВІДКРИТИ ВИДАЧУ",
+    act: "grants",
+    state: "noTools",
   },
   // The agent names a prompt the project has lost — the act leads to the field that still names it.
   lostPrompt: {

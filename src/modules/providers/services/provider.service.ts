@@ -44,11 +44,11 @@ export class ProviderService {
     return this.keys.value(this.secretKey(this.known(providerId).id));
   }
 
-  /** A local provider's address (saved or customary); `null` for a remote one. */
+  /** The address of a provider that asks for one — saved, or its customary one; `null` where none is asked for. */
   async addressOf(providerId: string): Promise<string | null> {
     const provider = this.known(providerId);
 
-    if (provider.kind !== "local") {
+    if (!provider.needs.includes("address")) {
       return null;
     }
 
@@ -59,6 +59,11 @@ export class ProviderService {
 
   /** What a local provider has installed; one that is not running reports `isAnswering: false`. */
   async ask(payload: AskProviderDto): Promise<ProviderReply> {
+    // Only a provider running on this machine is asked what it holds: a remote one is nobody's to poll.
+    if (this.known(payload.providerId).kind !== "local") {
+      throw new Refusal(UNKNOWN_PROVIDER);
+    }
+
     const address = await this.addressOf(payload.providerId);
 
     if (address === null) {
@@ -95,12 +100,12 @@ export class ProviderService {
     return reply.isAnswering;
   }
 
-  /** Writes a remote provider's key; an empty value removes it. */
+  /** Writes the key of a provider that asks for one; an empty value removes it. */
   async saveKey(payload: SaveProviderKeyDto): Promise<void> {
     const provider = this.known(payload.providerId);
     const value = payload.value.trim();
 
-    if (provider.kind !== "remote") {
+    if (!provider.needs.includes("key")) {
       throw new Refusal(UNKNOWN_PROVIDER);
     }
 
@@ -118,12 +123,12 @@ export class ProviderService {
     });
   }
 
-  /** Writes a local provider's address; an empty value falls back to the customary one. */
+  /** Writes the address of a provider that asks for one; an empty value falls back to the customary one. */
   async saveAddress(payload: SaveProviderAddressDto): Promise<void> {
     const provider = this.known(payload.providerId);
     const value = payload.value.trim();
 
-    if (provider.kind !== "local") {
+    if (!provider.needs.includes("address")) {
       throw new Refusal(UNKNOWN_PROVIDER);
     }
 

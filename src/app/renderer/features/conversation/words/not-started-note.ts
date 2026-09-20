@@ -15,6 +15,9 @@ import {
   NO_KEY_NOTE_SUFFIX,
   NO_PROVIDER_NOTE_PREFIX,
   NO_PROVIDER_NOTE_SUFFIX,
+  NO_TOOLS_NOTE_MIDDLE,
+  NO_TOOLS_NOTE_PREFIX,
+  NO_TOOLS_NOTE_SUFFIX,
 } from "../constants";
 import { modelNumbers } from "../../../logic";
 import { unfilledField } from "../../../words";
@@ -32,9 +35,14 @@ export function noProviderNote(providerId: string): string {
   return `${NO_PROVIDER_NOTE_PREFIX}${providerId}${NO_PROVIDER_NOTE_SUFFIX}`;
 }
 
-/** The local provider whose address field is empty. */
+/** The provider whose address field is empty — a local one, or a remote one whose address is the person's own. */
 export function noAddressNote(providerName: string): string {
   return `${NO_ADDRESS_NOTE_PREFIX}${providerName}${NO_ADDRESS_NOTE_SUFFIX}`;
+}
+
+/** Which provider carries no functions, and which agent is holding grants against it. */
+export function noToolsNote(providerName: string, agentName: string): string {
+  return `${NO_TOOLS_NOTE_PREFIX}${providerName}${NO_TOOLS_NOTE_MIDDLE}${agentName}${NO_TOOLS_NOTE_SUFFIX}`;
 }
 
 /** Which agent holds a grant on a function the project no longer has. */

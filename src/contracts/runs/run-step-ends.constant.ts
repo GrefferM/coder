@@ -14,6 +14,8 @@ export const RUN_STEP_NOT_SENT_ENDS: string[] = [
   "notFilled",
   "notFilledAgent",
   "lostFunction",
+  // The provider's protocol carries no function calls, and the agent holds grants all the same.
+  "noTools",
   "lostPrompt",
   "tooLong",
   // A provider that never answered at its address; the words never left the machine.

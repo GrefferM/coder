@@ -12,4 +12,5 @@ export * from "./lost-provider";
 export * from "./mended-number";
 export * from "./server-grants";
 export * from "./suppliers-of";
+export * from "./takes-no-tools";
 export * from "./tool-choices";

@@ -61,6 +61,7 @@ function props(patch: SphereOverrides = {}): AgentSphereProps {
         servers: [],
         looks: {},
       },
+      isToolless: false,
       ...patch.wearing,
     },
     doing: {

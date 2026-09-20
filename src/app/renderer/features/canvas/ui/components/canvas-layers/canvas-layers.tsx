@@ -30,7 +30,7 @@ export function CanvasLayers({
   onPointToOrb,
   onPointAwayFromOrb,
 }: CanvasLayersProps) {
-  const { agents, links, models, prompts, troubles, states, sources } = standing;
+  const { agents, links, models, prompts, troubles, toolless, states, sources } = standing;
   const { workingAgents, waitingAgents, linkLives, callsOut } = living;
   const { selectedAgentId, isPanelOnAgent, dimmedModelId, doomedAgentId, pasted } = picked;
   const { drag, draft, cancelled, target, chosenLinkId, markScale, isDrawnSmall } = drawing;
@@ -141,6 +141,7 @@ export function CanvasLayers({
               tools: armedTally(agent.tools, sources),
             },
             sources,
+            isToolless: toolless.includes(agent.id),
           }}
           doing={{
             // An agent may work in several walks at once, and the sphere is no list of works —

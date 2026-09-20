@@ -23,3 +23,6 @@ export const SERVER_SCREEN_SAID_COLOR = "#6b7490";
 /** The count of functions on a held server's row — quiet, and spaced like the row's own small caps. */
 export const HELD_SERVER_COUNT_COLOR = QUIET_MARK_COLOR;
 export const HELD_SERVER_COUNT_LETTER_SPACING_PX = 1;
+
+/** Said in place of the picker where the model's provider carries no function calls; the connected stay listed. */
+export const SERVERS_SECTION_LOCKED_NOTE = "Провайдер цієї моделі не вміє викликати функції";

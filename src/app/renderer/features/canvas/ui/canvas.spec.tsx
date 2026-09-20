@@ -111,6 +111,7 @@ function stands(): CanvasSays {
     models: MODELS,
     prompts: [],
     troubles: {},
+    toolless: [],
     states: {},
     // What the sources say of themselves; the arc is built from the grants, and this only names them.
     sources: {
@@ -166,6 +167,7 @@ function canvasWith(overrides: Partial<CanvasSays> = {}) {
         models: said.models,
         prompts: said.prompts,
         troubles: said.troubles,
+        toolless: said.toolless,
         states: said.states,
         sources: said.sources,
       }}

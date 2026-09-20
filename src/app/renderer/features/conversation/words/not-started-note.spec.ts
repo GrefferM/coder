@@ -23,8 +23,10 @@ describe("not-started notes", () => {
     expect(noProviderNote("ollama-old")).toBe("Модель називає провайдера ollama-old, якого немає.");
   });
 
-  it("names the local provider whose address is empty", () => {
-    expect(noAddressNote("ollama")).toBe("У локального провайдера ollama порожнє поле адреси — стукати нікуди.");
+  it("names the provider whose address is empty, whoever runs it", () => {
+    // RunPod is somebody else's machine and its address is still the person's own to write.
+    expect(noAddressNote("ollama")).toBe("У провайдера ollama порожнє поле адреси — стукати нікуди.");
+    expect(noAddressNote("RunPod")).toBe("У провайдера RunPod порожнє поле адреси — стукати нікуди.");
   });
 
   it("names the model's empty field in plain speech, since the caps belong to the pill and not to the name", () => {

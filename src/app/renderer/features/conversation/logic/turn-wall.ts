@@ -2,7 +2,14 @@ import { agentTools } from "./agent-tools";
 import { notStartedTurn } from "./not-started-turn";
 import { turnLength } from "./turn-length";
 import { agentNumbers, isAgentFilled, isModelFilled } from "../../../logic";
-import { lostFunctionNote, lostPromptNote, notFilledAgentNote, notStartedNote, overCeilingNote } from "../words";
+import {
+  lostFunctionNote,
+  lostPromptNote,
+  noToolsNote,
+  notFilledAgentNote,
+  notStartedNote,
+  overCeilingNote,
+} from "../words";
 import { unfilledField } from "../../../words";
 import { NO_MODEL_NOTE } from "../constants";
 import { hasBrokenGrant } from "../../../logic";
@@ -22,6 +29,13 @@ export function turnWall(turn: TurnToAsk): TurnAnswer | TurnAsked {
   // without it silently would be a different walk under the same question — «хід не йде без функції».
   if (hasBrokenGrant(agent.tools, catalogue.commands, catalogue.servers, catalogue.looks)) {
     return notStartedTurn(lostFunctionNote(agent.name), "lostFunction");
+  }
+
+  // A provider whose protocol carries no function calls is asked with none — and an agent holding grants is not
+  // asked at all. Dropping them quietly would be a different walk under the same question, and the person would
+  // read the answer as one made with the tools they granted.
+  if (agent.tools.length > 0 && provider !== null && !provider.takesTools) {
+    return notStartedTurn(noToolsNote(provider.name, agent.name), "noTools");
   }
 
   // A prompt the agent names and the project has lost is a broken tie; going without it would do the work

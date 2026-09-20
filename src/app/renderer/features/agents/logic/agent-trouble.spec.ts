@@ -3,6 +3,7 @@ import { agentTrouble } from "./agent-trouble";
 import {
   TROUBLE_LOST_FUNCTION_LABEL,
   TROUBLE_LOST_PROMPT_LABEL,
+  TROUBLE_NO_ADDRESS_LABEL,
   TROUBLE_NO_KEY_LABEL,
   TROUBLE_NO_MODEL_LABEL,
   TROUBLE_NO_PROMPT_LABEL,
@@ -17,6 +18,8 @@ const ANTHROPIC: ProviderState = {
   id: "anthropic",
   name: "Anthropic",
   kind: "remote",
+  needs: ["key"],
+  takesTools: true,
   customaryAddress: null,
   keyHint: "sk-ant-…4Kd",
   address: null,
@@ -80,6 +83,37 @@ describe("agentTrouble", () => {
       label: TROUBLE_NO_KEY_LABEL,
       isBreak: true,
     });
+  });
+
+  it("marks an agent whose provider asks for an address of its own and has none", () => {
+    // RunPod's endpoint carries its id in the address: the key alone leaves the turn nowhere to knock.
+    expect(
+      agentTrouble(AGENT, CONFIG, [
+        {
+          ...ANTHROPIC,
+          needs: ["key", "address"],
+          takesTools: true,
+          keyHint: "rpa_lon•••",
+        },
+      ]),
+    ).toEqual({
+      label: TROUBLE_NO_ADDRESS_LABEL,
+      isBreak: true,
+    });
+  });
+
+  it("marks nothing for a provider whose address is written, or one that has a customary one behind the field", () => {
+    expect(
+      agentTrouble(AGENT, CONFIG, [
+        {
+          ...ANTHROPIC,
+          needs: ["key", "address"],
+          takesTools: true,
+          keyHint: "rpa_lon•••",
+          address: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1",
+        },
+      ]),
+    ).toBeNull();
   });
 
   it("marks an agent whose model is gone from the project", () => {

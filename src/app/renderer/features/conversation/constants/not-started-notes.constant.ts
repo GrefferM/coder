@@ -6,7 +6,7 @@ export const NO_KEY_NOTE_SUFFIX = ", а ключа до нього немає.";
 export const NO_PROVIDER_NOTE_PREFIX = "Модель називає провайдера ";
 export const NO_PROVIDER_NOTE_SUFFIX = ", якого немає.";
 
-export const NO_ADDRESS_NOTE_PREFIX = "У локального провайдера ";
+export const NO_ADDRESS_NOTE_PREFIX = "У провайдера ";
 export const NO_ADDRESS_NOTE_SUFFIX = " порожнє поле адреси — стукати нікуди.";
 
 /** The only card whose reason is written into the project file by hand. */

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { PROVIDER_ASKED_EVERY_MS } from "../../constants";
 import { askProvider, listProviders, saveProviderValue } from "../../api";
 import type { ProviderAnswer, ProviderState } from "../../../../interfaces";
+import type { ProviderDraft } from "../../interfaces";
 import type { ProvidersState } from "./interfaces";
 
 /** Providers this machine can call, re-read on mount and after every write; each local one asked at its address. */
@@ -102,9 +103,21 @@ export function useProviders(): ProvidersState {
     [ask],
   );
 
+  /** Writes every field the person typed into, and only those; the list is read again once, when all of them are in. */
   const save = useCallback(
-    async (provider: ProviderState, value: string) => {
-      await saveProviderValue(provider, value);
+    async (provider: ProviderState, draft: ProviderDraft) => {
+      for (const need of provider.needs) {
+        const value = need === "key" ? draft.key : draft.address;
+
+        if (value !== null) {
+          await saveProviderValue({
+            provider,
+            need,
+            value,
+          });
+        }
+      }
+
       await load();
     },
     [load],

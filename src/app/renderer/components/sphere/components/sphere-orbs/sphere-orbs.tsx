@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { mixWithTransparent } from "../../../../utils/colors";
+import { QUIET_MARK_COLOR } from "../../../../constants";
 import {
   SPHERE_ORB_ELLIPSE_OPACITY,
   SPHERE_ORB_FOLD_DASH,
@@ -50,6 +51,7 @@ export function SphereOrbs<Orb extends SphereOrb>({
   orbs,
   scale = 1,
   isDimmed = false,
+  isQuiet = false,
   onPress,
   onPointTo,
   onPointAway,
@@ -73,7 +75,10 @@ export function SphereOrbs<Orb extends SphereOrb>({
          * bare outline and nothing else — the wire inside a mark says «a source», and a heap is not one.
          */
         const isFold = orb.more !== null;
-        const wire = isFold ? mixWithTransparent(orb.color, SPHERE_ORB_FOLD_DIM_PERCENT) : orb.color;
+        // Where nothing on the arc can be called at all, every mark goes to the quiet tone: the source's own
+        // colour would promise a tool that this agent's provider cannot be handed.
+        const tone = isQuiet ? QUIET_MARK_COLOR : orb.color;
+        const wire = isFold ? mixWithTransparent(tone, SPHERE_ORB_FOLD_DIM_PERCENT) : tone;
         const dash = isFold ? SPHERE_ORB_FOLD_DASH : undefined;
         /**
          * The shape says where the tool came from. A command's corner is a part of its size, so it holds
@@ -103,7 +108,7 @@ export function SphereOrbs<Orb extends SphereOrb>({
               // here raises is the canvas's own affair — the arc only says where the hand is.
               outline:
                 pointedAt === at
-                  ? `${SPHERE_ORB_RING_PX}px solid ${mixWithTransparent(orb.color, SPHERE_ORB_RING_PERCENT)}`
+                  ? `${SPHERE_ORB_RING_PX}px solid ${mixWithTransparent(tone, SPHERE_ORB_RING_PERCENT)}`
                   : undefined,
               outlineOffset: SPHERE_ORB_RING_PX,
             }}

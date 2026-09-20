@@ -15,6 +15,8 @@ const OLLAMA: ProviderState = {
   id: "ollama",
   name: "Ollama",
   kind: "local",
+  needs: ["address"],
+  takesTools: true,
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,

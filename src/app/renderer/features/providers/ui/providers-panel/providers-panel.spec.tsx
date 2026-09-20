@@ -37,6 +37,8 @@ const ANTHROPIC: ProviderState = {
   id: "anthropic",
   name: "Anthropic",
   kind: "remote",
+  needs: ["key"],
+  takesTools: true,
   customaryAddress: null,
   keyHint: null,
   address: null,
@@ -46,6 +48,19 @@ const OPENAI: ProviderState = {
   id: "openai",
   name: "OpenAI",
   kind: "remote",
+  needs: ["key"],
+  takesTools: true,
+  customaryAddress: null,
+  keyHint: null,
+  address: null,
+};
+
+const RUNPOD: ProviderState = {
+  id: "runpod",
+  name: "RunPod",
+  kind: "remote",
+  needs: ["key", "address"],
+  takesTools: true,
   customaryAddress: null,
   keyHint: null,
   address: null,
@@ -55,6 +70,8 @@ const OLLAMA: ProviderState = {
   id: "ollama",
   name: "Ollama",
   kind: "local",
+  needs: ["address"],
+  takesTools: true,
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,
@@ -134,7 +151,10 @@ describe("ProvidersPanel", () => {
     await user.type(screen.getByLabelText("КЛЮЧ"), "sk-ant-api03-longvalue4Kd");
     await user.click(screen.getByText("Зберегти"));
 
-    expect(onSave).toHaveBeenCalledWith(ANTHROPIC, "sk-ant-api03-longvalue4Kd");
+    expect(onSave).toHaveBeenCalledWith(ANTHROPIC, {
+      key: "sk-ant-api03-longvalue4Kd",
+      address: null,
+    });
   });
 
   it("asks a local provider for an address instead, offering the one it usually answers at", async () => {
@@ -151,7 +171,10 @@ describe("ProvidersPanel", () => {
     await user.type(address, "http://10.0.0.4:11434");
     await user.click(screen.getByText("Зберегти"));
 
-    expect(onSave).toHaveBeenCalledWith(OLLAMA, "http://10.0.0.4:11434");
+    expect(onSave).toHaveBeenCalledWith(OLLAMA, {
+      key: null,
+      address: "http://10.0.0.4:11434",
+    });
   });
 
   it("stands what is written first, apart from what nobody has touched", () => {
@@ -198,6 +221,49 @@ describe("ProvidersPanel", () => {
     );
     await user.click(screen.getByText("Зберегти"));
 
-    expect(onSave).toHaveBeenCalledWith(written, "");
+    expect(onSave).toHaveBeenCalledWith(written, {
+      key: "",
+      address: null,
+    });
+  });
+
+  it("says both things missing where a provider asks for both, and the address alone once the key is in", () => {
+    renderPanel([RUNPOD], [], []);
+
+    expect(screen.getByText("ВІДДАЛЕНИЙ · КЛЮЧА НЕМАЄ · АДРЕСИ НЕМАЄ")).toBeInTheDocument();
+  });
+
+  it("asks a provider that needs both for both at once, and writes each where it belongs", async () => {
+    // RunPod's endpoint carries its id in the address, so the key alone would leave the turn nowhere to go.
+    const user = userEvent.setup();
+    const onSave = renderPanel([RUNPOD], [], []);
+
+    await user.click(screen.getByLabelText(/Відкрити провайдера RunPod/));
+    await user.type(screen.getByLabelText("КЛЮЧ"), "rpa_longvalue4Kd");
+    await user.type(screen.getByLabelText("АДРЕСА"), "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1");
+    await user.click(screen.getByText("Зберегти"));
+
+    expect(onSave).toHaveBeenCalledWith(RUNPOD, {
+      key: "rpa_longvalue4Kd",
+      address: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1",
+    });
+  });
+
+  it("leaves the field nobody touched alone, whichever of the two it is", async () => {
+    const user = userEvent.setup();
+    const written = {
+      ...RUNPOD,
+      keyHint: "rpa_lon•••",
+    };
+    const onSave = renderPanel([written], [], []);
+
+    await user.click(screen.getByLabelText(/Відкрити провайдера RunPod/));
+    await user.type(screen.getByLabelText("АДРЕСА"), "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1");
+    await user.click(screen.getByText("Зберегти"));
+
+    expect(onSave).toHaveBeenCalledWith(written, {
+      key: null,
+      address: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1",
+    });
   });
 });
