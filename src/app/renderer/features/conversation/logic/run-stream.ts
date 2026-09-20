@@ -8,8 +8,8 @@ import {
   RUN_STEP_STOPPED,
   RUN_STEP_TOO_LONG,
 } from "../../record";
-import { answerCeilingNote, callsExhaustedNote } from "../words";
-import { CHAT_FAILED_NOTE, CHAT_SAID_NOTHING_NOTE, CHAT_STOPPED_NOTE } from "../constants";
+import { answerCeilingNote, callsExhaustedNote, fellNote } from "../words";
+import { CHAT_SAID_NOTHING_NOTE, CHAT_STOPPED_NOTE } from "../constants";
 import type { ChatMessage } from "../interfaces";
 import type { WholeRun, WholeStep } from "../../record";
 import type { TurnCall } from "../../../interfaces";
@@ -63,7 +63,8 @@ function message(
  */
 function noteOf(step: WholeStep): string | null {
   if (step.state === RUN_STEP_FAILED) {
-    return CHAT_FAILED_NOTE;
+    // What the record holds for a fallen step is the provider's own sentence, and the rule says it after our word.
+    return fellNote(step.said);
   }
 
   if (step.state === RUN_STEP_STOPPED) {
@@ -142,8 +143,9 @@ export function runStream(run: WholeRun): ChatMessage[] {
           at: step.endedAt.toISOString(),
           questionId: question.id,
           askedAt,
-          // What the provider said, kept as it came; for a turn that ran, the model's own words.
-          text: step.said,
+          // What the provider said, kept as it came; for a turn that ran, the model's own words. A fall said
+          // nothing of its own — what came back was the refusal, and that stands on the rule, not in a card.
+          text: step.state === RUN_STEP_FAILED ? "" : step.said,
           // Its own question and the steps that fed it, for a repeat to pick the walk up on.
           asked: step.asked,
           fedBy: step.fromStepIds,

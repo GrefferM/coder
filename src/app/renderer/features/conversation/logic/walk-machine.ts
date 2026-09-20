@@ -618,10 +618,13 @@ function answered(state: WalkState, event: WalkFact<"answered">, config: Project
   // The lines out of this turn, worked out once from the lines drawn out of the agent.
   const out = goesOn ? linkOuts(config, event.agent) : [];
   const effects: WalkEffect[] = [answerCard(event, walk, ledger, said)];
+  // A turn that fell said nothing of its own, and what came back instead was the provider's sentence: the
+  // record keeps it, so a run opened tomorrow says why it fell and not merely that it did.
+  const written = said === "" ? (event.answer.fell ?? "") : said;
 
   // A turn that never began is a step too, so a walk broken that way survives closing.
   if (ledger !== null) {
-    effects.push(writtenStep(event, config, said, out));
+    effects.push(writtenStep(event, config, written, out));
   }
 
   const next = goesOn ? handedOn(standing, handOut(event, said, out), config) : brokeOff(standing, event, config);

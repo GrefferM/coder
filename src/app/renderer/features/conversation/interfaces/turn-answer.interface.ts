@@ -11,6 +11,8 @@ export interface TurnAnswer {
   /** The ceiling this turn ran with, so the counts can be read against it; unknown where no model answered. */
   answerCeiling: number | null;
   isFailure: boolean;
+  /** The provider's own sentence about a fall, kept for the record; nothing where the turn did not fall. */
+  fell: string | null;
   /** The turn ended without the agent saying its piece, so nothing goes down a line. */
   isCut: boolean;
   /** Set when the turn never began, which is not a fall — there was no attempt to fall. */

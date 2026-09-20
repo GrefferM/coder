@@ -1,5 +1,6 @@
 export * from "./attention-pulse.constant";
 export * from "./counts.constant";
+export * from "./failure-words.constant";
 export * from "./interaction.constant";
 export * from "./layers.constant";
 export * from "./lost-provider.constant";

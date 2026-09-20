@@ -1,8 +1,8 @@
-import { cutEnd, notStartedReason, notStartedTurn, turnCost, turnWall } from "../logic";
+import { cutEnd, notStartedReason, notStartedTurn, providerWords, turnCost, turnWall } from "../logic";
 import { notStartedNote } from "../words";
 import { ASK_AGENT_CHANNEL, STOP_AGENT_CHANNEL } from "../../../../../contracts";
 import { RUN_STEP_DONE, RUN_STEP_FAILED } from "../../record";
-import { CHAT_FAILED_NOTE } from "../constants";
+import { fellNote } from "../words";
 import type { TurnAnswer, TurnToAsk } from "../interfaces";
 
 /**
@@ -52,6 +52,7 @@ export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
       cost: turnCost(said.inputTokens, said.outputTokens, held),
       answerCeiling: held.answerCeiling,
       isFailure: false,
+      fell: null,
       // A note the app wrote is not an answer: only the agent's own words go down the line.
       isCut: cut !== null,
       notStarted: null,
@@ -60,17 +61,22 @@ export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
       calls: said.calls ?? [],
     };
   } catch (error) {
-    const reason = notStartedReason(String(error));
+    const thrown = error instanceof Error ? error.message : String(error);
+    const reason = notStartedReason(thrown);
 
     // Nothing was tried, so nothing failed.
     if (reason !== null) {
       return notStartedTurn(notStartedNote(reason, held, turn.stands.provider), reason);
     }
 
-    // The turn fell, and the agent wears «упав» until one of its own goes through.
+    // The turn fell, and the agent wears «упав» until one of its own goes through. The provider's own sentence
+    // goes with it — a fall that says only that it fell sends the person to a terminal to learn why.
+    const said = providerWords(thrown);
+
     return {
       text: "",
-      note: CHAT_FAILED_NOTE,
+      note: fellNote(said),
+      fell: said,
       cost: null,
       answerCeiling: held.answerCeiling,
       isFailure: true,

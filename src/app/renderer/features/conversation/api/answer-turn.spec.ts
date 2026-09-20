@@ -6,11 +6,14 @@ import { LLM_NO_KEY } from "../constants";
 import { RUN_STEP_DONE, RUN_STEP_FAILED } from "../../record";
 import { aModel, aPrompt, anAgent, standInBridge } from "../../../testing";
 import type { ProviderState } from "../../../interfaces";
+import { fellNote } from "../words";
 
 const OPENROUTER: ProviderState = {
   id: "openrouter",
   name: "OpenRouter",
   kind: "remote",
+  needs: ["key"],
+  takesTools: true,
   customaryAddress: null,
   keyHint: "sk-…f31a",
   address: null,
@@ -217,6 +220,18 @@ describe("answerTurn · what comes back", () => {
     expect(answer.state).toBe(RUN_STEP_FAILED);
     expect(answer.cost).toBeNull();
     expect(answer.calls).toEqual([]);
+  });
+
+  it("brings the provider's own sentence back with the fall, on the rule and for the record", async () => {
+    // A fall that says only that it fell sends the person to a terminal to learn why.
+    refusingMachine("404 page not found");
+
+    const answer = await ask();
+
+    expect(answer.note).toBe(fellNote("404 page not found"));
+    expect(answer.fell).toBe("404 page not found");
+    // The sentence is not the agent speaking, so no card is made of it.
+    expect(answer.text).toBe("");
   });
 });
 

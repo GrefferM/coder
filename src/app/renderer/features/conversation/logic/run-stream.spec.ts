@@ -16,6 +16,7 @@ import { CHAT_SAID_NOTHING_NOTE } from "../constants";
 import { answerCeilingNote } from "../words";
 import type { WholeRun, WholeStep } from "../../record";
 import { aStep } from "../../../testing";
+import { fellNote } from "../words";
 
 function step(patch: Partial<WholeStep> = {}): WholeStep {
   return aStep({
@@ -328,6 +329,22 @@ describe("runStream", () => {
     );
 
     expect(said.find((message) => message.from === "agent")?.isFailure).toBe(true);
+  });
+
+  it("says why a step fell, in the provider's own words, and keeps them off the card", () => {
+    // The record holds what came back; a refusal is not the agent speaking, so it stands on the rule.
+    const said = runStream(
+      run([
+        step({
+          said: "404 page not found",
+          state: RUN_STEP_FAILED,
+        }),
+      ]),
+    );
+    const fell = said.find((message) => message.from === "agent");
+
+    expect(fell?.note).toBe(fellNote("404 page not found"));
+    expect(fell?.text).toBe("");
   });
 
   it("says over a read-back step what the live stream said, whichever wall the turn hit", () => {

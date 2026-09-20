@@ -10,6 +10,7 @@ function answer(patch: Partial<TurnAnswer> = {}): TurnAnswer {
     cost: null,
     answerCeiling: null,
     isFailure: false,
+    fell: null,
     isCut: false,
     notStarted: null,
     wouldGo: null,

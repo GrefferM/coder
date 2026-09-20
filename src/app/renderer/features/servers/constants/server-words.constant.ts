@@ -118,11 +118,3 @@ export const SERVER_NONE_ANSWERED_NOTE_TAIL =
  * nothing at all. The heading is skipped and the sentence under it stands: still the server's own words.
  */
 export const SERVER_SAID_MARK = /^(#{1,6}\s|`{3}|-{3,}|\*{3,}|={3,})/;
-/**
- * A failure is a sentence, not a page. An address that is not a server at all answers with a whole website, and
- * the transport hands the page over word for word: YouTube's «Oops» came back as a screenful of svg. Everything
- * worth reading stood before the first tag, so the words are cut there, and cut again if even they run long.
- */
-export const SERVER_FAILURE_MARKUP = /<\s*[a-zA-Z!/]/;
-export const SERVER_FAILURE_MAX_CHARS = 200;
-export const SERVER_FAILURE_CUT = "…";

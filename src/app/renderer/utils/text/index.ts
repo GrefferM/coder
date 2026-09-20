@@ -2,6 +2,7 @@ export * from "./interfaces";
 export * from "./is-slot-name";
 export * from "./joined-labels";
 export * from "./open-brace";
+export * from "./plain-first-line";
 export * from "./selected-text";
 export * from "./shared-labels";
 export * from "./short-label";

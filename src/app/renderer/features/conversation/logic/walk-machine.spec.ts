@@ -86,6 +86,7 @@ function answer(patch: Partial<TurnAnswer> = {}): TurnAnswer {
     cost: null,
     answerCeiling: null,
     isFailure: false,
+    fell: null,
     isCut: false,
     notStarted: null,
     wouldGo: null,
@@ -1476,6 +1477,31 @@ describe("walkMachine · the turn that came back", () => {
     );
 
     expect(effects.map((effect) => effect.kind)).toEqual(["sayAnswer", "writeTurn", "turnBack"]);
+  });
+
+  it("writes the provider's sentence down for a turn that fell, and makes no card of it", () => {
+    // The record keeps what came back, so the run opened tomorrow says why it fell; the card holds the model's
+    // own words alone, and a refusal is not the model speaking.
+    const { effects } = walkMachine(
+      walk({
+        out: working(turn("turn-1", "editor", "walk-1")),
+        ledgers: {
+          "walk-1": ledger(),
+        },
+      }),
+      back("editor", {
+        text: "",
+        isFailure: true,
+        fell: "404 page not found",
+        state: RUN_STEP_FAILED,
+      }),
+      config([agent("editor")]),
+    );
+    const written = effects.find((effect) => effect.kind === "writeTurn");
+    const card = effects.find((effect) => effect.kind === "sayAnswer");
+
+    expect(written?.kind === "writeTurn" && written.turn.said).toBe("404 page not found");
+    expect(card?.kind === "sayAnswer" && card.turn.said).toBe("");
   });
 });
 

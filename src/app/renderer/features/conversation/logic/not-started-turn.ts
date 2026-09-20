@@ -18,6 +18,7 @@ export function notStartedTurn(
     // Nothing was sent, so no ceiling stood over it.
     answerCeiling: null,
     isFailure: false,
+    fell: null,
     isCut: false,
     notStarted,
     wouldGo,

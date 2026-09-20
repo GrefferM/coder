@@ -4,6 +4,12 @@ export const CHAT_PROVIDER_SILENT_NOTE =
 
 /** The app's own sentences about a turn; the row draws them in upper case, so they carry no full stop. */
 export const CHAT_FAILED_NOTE = "Відповідь не прийшла";
+/** What stands between the app's word about a fall and the provider's own sentence after it. */
+export const CHAT_FELL_SEPARATOR = " · ";
+
+/** How the bridge names a fault it carried over, and how an Error names itself; neither is the provider talking. */
+export const IPC_WRAPPER_PATTERN = /^Error invoking remote method '[^']*':\s*/;
+export const THROWN_PREFIX = /^Error:\s*/;
 export const CHAT_STOPPED_NOTE = "Зупинено";
 export const CHAT_SAID_NOTHING_NOTE = "Модель не сказала нічого";
 
