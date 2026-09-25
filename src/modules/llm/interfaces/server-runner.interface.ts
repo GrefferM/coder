@@ -12,5 +12,7 @@ export interface ServerRunner {
     arguments: Record<string, unknown>;
     /** The id this call wears everywhere else, so what a server's calls come to can lead back to it. */
     callId: string;
+    /** Aborts the request the moment the turn is stopped. */
+    signal?: AbortSignal;
   }): Promise<{ output: string; isFailed: boolean }>;
 }

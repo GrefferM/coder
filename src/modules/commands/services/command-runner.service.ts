@@ -22,6 +22,8 @@ export class CommandRunner {
       const { stdout, stderr } = await run(line, {
         cwd: payload.directory,
         maxBuffer: undefined,
+        // A stop kills the process here; the abort surfaces as a failure the turn already treats as stopped.
+        signal: payload.signal,
       });
 
       return {

@@ -41,11 +41,12 @@ export class CommandWay implements ToolWay {
     return complaints.length === 0 ? null : this.arguments_.notRunNote(this.tool.name, complaints);
   }
 
-  async make(callId: string, directory: string): Promise<CallResult> {
+  async make(callId: string, directory: string, signal: AbortSignal): Promise<CallResult> {
     const result = await this.runner.call({
       run: this.tool.run,
       directory,
       arguments: this.given,
+      signal,
       // Braces are read against these names alone; anything else in braces is the line's own text.
       declared: [...this.tool.parameters.map((parameter) => parameter.name), ...Object.keys(this.tool.pinned)],
     });

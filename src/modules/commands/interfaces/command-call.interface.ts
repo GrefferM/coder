@@ -5,4 +5,6 @@ export interface CommandCall {
   arguments: Record<string, string>;
   /** Every name this command declared; braces naming anything else are text. */
   declared: string[];
+  /** Aborts the process the moment the turn is stopped. */
+  signal?: AbortSignal;
 }

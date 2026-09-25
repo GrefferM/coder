@@ -105,10 +105,17 @@ export class McpClient {
   private async asked(payload: McpCall): Promise<McpResult> {
     try {
       const client = await this.held(payload.server, payload.directory);
-      const answer = await client.callTool({
-        name: payload.functionName,
-        arguments: payload.arguments,
-      });
+      const answer = await client.callTool(
+        {
+          name: payload.functionName,
+          arguments: payload.arguments,
+        },
+        undefined,
+        // A stop aborts the request in flight; the throw is caught below and the turn ends stopped.
+        {
+          signal: payload.signal,
+        },
+      );
 
       return {
         output: saidWhole(answer.content),

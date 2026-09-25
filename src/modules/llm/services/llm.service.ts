@@ -122,7 +122,14 @@ export class LlmService {
 
         conversation.push(round.gathered);
 
-        await this.ranCalls(payload, byName, asked, conversation, ledger);
+        await this.ranCalls(payload, byName, asked, conversation, ledger, stopping.signal);
+
+        // A stop that landed while a tool was running ends the turn here, before another round begins.
+        if (stopping.signal.aborted) {
+          return ledger.answer({
+            isStopped: true,
+          });
+        }
 
         this.voice.say({
           turnId: payload.turnId,
@@ -192,10 +199,16 @@ export class LlmService {
     asked: { id?: string; name: string; args: Record<string, unknown> }[],
     conversation: BaseMessage[],
     ledger: TurnLedger,
+    signal: AbortSignal,
   ): Promise<void> {
     for (const call of asked) {
+      // A stop cuts the queue: a call not yet made is not made.
+      if (signal.aborted) {
+        return;
+      }
+
       const tool = byName.get(call.name) ?? null;
-      const ran = await this.called(payload.turnId, payload.directory, payload.servers, tool, call);
+      const ran = await this.called(payload.turnId, payload.directory, payload.servers, tool, call, signal);
 
       conversation.push(ran.message);
 
@@ -274,6 +287,7 @@ export class LlmService {
     servers: ProjectMcpServer[],
     tool: AgentTool | null,
     call: { id?: string; name: string; args: Record<string, unknown> },
+    signal: AbortSignal,
   ): Promise<{ message: ToolMessage; made: TurnCall | null }> {
     if (tool === null) {
       return this.notCalled(call, `[${call.name}: такої команди в агента немає]`);
@@ -320,7 +334,7 @@ export class LlmService {
     // The call is said the moment it goes out, and said again when it is over.
     this.sayCall(turnId, standing, RUN_CALL_RUNNING);
 
-    const result = await way.make(standing.id, directory);
+    const result = await way.make(standing.id, directory, signal);
     const made = {
       ...standing,
       ...result,

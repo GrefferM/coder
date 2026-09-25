@@ -13,4 +13,6 @@ export interface McpCall {
    */
   callId: string;
   arguments: Record<string, unknown>;
+  /** Aborts the request the moment the turn is stopped. */
+  signal?: AbortSignal;
 }

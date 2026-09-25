@@ -35,5 +35,5 @@ export interface ToolWay {
    */
   refusal(): string | null;
   /** The call itself, once the person has been told it is out. */
-  make(callId: string, directory: string): Promise<CallResult>;
+  make(callId: string, directory: string, signal: AbortSignal): Promise<CallResult>;
 }

@@ -37,7 +37,7 @@ export class ServerWay implements ToolWay {
     return null;
   }
 
-  async make(callId: string, directory: string): Promise<CallResult> {
+  async make(callId: string, directory: string, signal: AbortSignal): Promise<CallResult> {
     const result = await this.servers.call({
       server: this.server,
       directory,
@@ -46,6 +46,7 @@ export class ServerWay implements ToolWay {
       arguments: this.said,
       // What a server's calls came to has to lead back to the very call it is counting.
       callId,
+      signal,
     });
 
     return {

@@ -798,7 +798,7 @@ describe("LlmService when a server's function is called", () => {
     assert.deepEqual(ran, []);
     assert.equal(asked.length, 1);
     // The reach of the server is answered from the list that travelled beside the tools, by the tool's id alone.
-    const { callId, ...went } = <{ callId: string }>asked[0];
+    const { callId, signal, ...went } = <{ callId: string; signal: AbortSignal }>asked[0];
 
     assert.deepEqual(went, {
       server: SERVER,
@@ -808,6 +808,8 @@ describe("LlmService when a server's function is called", () => {
         deep: true,
       },
     });
+    // The turn's own stop signal travels with the call, so «ЗУПИНИТИ» reaches the server mid-request.
+    assert.ok(signal instanceof AbortSignal);
     // The call goes out under the id the record keeps it by, so what fails can be led back to.
     assert.equal(callId, heard.find((piece) => piece.call !== null)?.call?.id);
     assert.equal(answer.text, "Два корені.");
