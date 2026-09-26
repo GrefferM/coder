@@ -15,6 +15,7 @@ function work(fromAgentId: string | null, text: string): IncomingWork {
     fromAgentId,
     fromStepIds: [],
     seconds: 4,
+    attached: [],
   };
 }
 

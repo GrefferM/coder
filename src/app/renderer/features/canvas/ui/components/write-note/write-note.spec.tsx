@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { WriteNote } from "./write-note";
-import { WRITE_NOTE_MS, WRITE_NOTE_OUT_MS, WRITE_NOTE_RETRY_LABEL } from "./constants";
+import { WRITE_NOTE_MS, WRITE_NOTE_OUT_MS, WRITE_NOTE_REFUSAL_MS, WRITE_NOTE_RETRY_LABEL } from "./constants";
 
 afterEach(() => {
   vi.useRealTimers();
@@ -19,6 +19,7 @@ describe("WriteNote", () => {
           label: "Агента збережено",
           detail: null,
           reason: null,
+          isRefusal: false,
         }}
         onRetry={() => {}}
         onDismiss={onDismiss}
@@ -47,6 +48,7 @@ describe("WriteNote", () => {
           label: "Агента збережено",
           detail: null,
           reason: "Не збереглося · немає доступу до файла",
+          isRefusal: false,
         }}
         onRetry={onRetry}
         onDismiss={onDismiss}
@@ -74,6 +76,7 @@ describe("WriteNote", () => {
           label: "Промпт збережено",
           detail: null,
           reason: null,
+          isRefusal: false,
         }}
         onRetry={() => {}}
         onDismiss={() => {}}
@@ -81,5 +84,41 @@ describe("WriteNote", () => {
     );
 
     expect(screen.queryByText(WRITE_NOTE_RETRY_LABEL)).not.toBeInTheDocument();
+  });
+
+  it("says a refusal in red with nothing to try again, and leaves once it has had time to be read", () => {
+    vi.useFakeTimers();
+
+    const onDismiss = vi.fn();
+
+    render(
+      <WriteNote
+        note={{
+          label: "«big-repo/» не влізе",
+          detail: null,
+          reason: "«big-repo/» не влізе",
+          isRefusal: true,
+        }}
+        onRetry={() => {}}
+        onDismiss={onDismiss}
+      />,
+    );
+
+    expect(screen.getByText("«big-repo/» не влізе")).toBeInTheDocument();
+    // The same pick would be refused the same way, so there is no «ще раз» to offer.
+    expect(screen.queryByText(WRITE_NOTE_RETRY_LABEL)).not.toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(WRITE_NOTE_MS + WRITE_NOTE_OUT_MS);
+    });
+
+    // A sentence is longer than «збережено»: it is not taken away as fast as a done note.
+    expect(onDismiss).not.toHaveBeenCalled();
+
+    act(() => {
+      vi.advanceTimersByTime(WRITE_NOTE_REFUSAL_MS);
+    });
+
+    expect(onDismiss).toHaveBeenCalled();
   });
 });

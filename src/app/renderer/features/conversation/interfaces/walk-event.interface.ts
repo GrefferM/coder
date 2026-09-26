@@ -1,4 +1,5 @@
 import type { Agent } from "../../../interfaces";
+import type { PackedAttachment } from "../../../interfaces";
 import type { ChatMessage } from "./chat-message.interface";
 import type { ChatCost } from "./chat-cost.interface";
 import type { IncomingWork } from "./incoming-work.interface";
@@ -19,6 +20,8 @@ export type WalkEvent =
       kind: "put";
       agent: Agent;
       text: string;
+      /** The files and folders attached to the question; their packed text goes into the turn's input. */
+      attached: PackedAttachment[];
       /** The steps a question picked up out of the record grew from; the person's own names none. */
       fedFrom: string[];
       isAgain: boolean;

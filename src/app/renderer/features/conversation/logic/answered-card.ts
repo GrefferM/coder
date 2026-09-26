@@ -15,6 +15,7 @@ export function answeredCard(turn: AnsweredTurn): ChatMessage {
     note: turn.answer.note,
     asked: turn.asked,
     fedBy: turn.fedBy,
+    attached: [],
     at: new Date(turn.endedAt).toISOString(),
     cost: turn.answer.cost,
     answerCeiling: turn.answer.answerCeiling,

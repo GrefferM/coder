@@ -52,6 +52,7 @@ function said(patch: Partial<ChatMessage> = {}): ChatMessage {
     note: null,
     asked: null,
     fedBy: [],
+    attached: [],
     ...patch,
   };
 }

@@ -1,4 +1,5 @@
 import type { ChatMessage } from "../../../interfaces";
+import type { PickedAttachment } from "../../../../../interfaces";
 import type { OpenCalls } from "../../use-open-calls";
 import type { LinkLife, WaitingAgent, WorkingAgent } from "../../../../../interfaces";
 
@@ -47,6 +48,12 @@ export interface AgentChatState {
   /** Sets it, at the end of a pull; the page notes it down beside the canvas's own scale. */
   setFieldHeight: (height: number) => void;
   changeDraft: (draft: string) => void;
+  /** What is attached under the field of the stream on screen, waiting to go with the next question. */
+  attachments: PickedAttachment[];
+  /** «+ ПРИКРІПИТИ» — opens the native pick and adds what is chosen to this stream's attachments. */
+  attach: () => void;
+  /** The × on a chip — takes one attachment off by its own path before the question goes. */
+  detach: (path: string) => void;
   send: () => void;
   stop: () => void;
 }

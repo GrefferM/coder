@@ -29,7 +29,9 @@ function answerOf(channel: string, thrown: unknown): IpcAnswer {
   if (thrown instanceof Refusal) {
     return {
       value: null,
-      refusal: thrown.code,
+      // The whole message, not the code alone: a refusal that says one thing more (which place a file
+      // goes wrong, say) rides in the message after the code, and the screen reads it from there.
+      refusal: thrown.message,
       failure: null,
     };
   }

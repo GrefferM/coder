@@ -35,6 +35,7 @@ function work(fromAgentId: string): IncomingWork {
     fromAgentId,
     fromStepIds: [],
     seconds: 4,
+    attached: [],
   };
 }
 

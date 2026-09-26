@@ -8,6 +8,7 @@ export function emptyWalk(): WalkState {
     ledgers: {},
     saidAgain: [],
     drafts: {},
+    attachments: {},
     aimedAgentId: null,
     flowRunId: null,
   };

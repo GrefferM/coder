@@ -70,6 +70,7 @@ describe("useProjectFile", () => {
       label: PROJECT_REREAD_LABEL,
       detail: "+2 агенти",
       reason: null,
+      isRefusal: false,
     });
   });
 

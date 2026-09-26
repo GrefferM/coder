@@ -91,6 +91,7 @@ describe("useProjectWrite · one write", () => {
       label: "Агента збережено",
       detail: null,
       reason: null,
+      isRefusal: false,
     });
   });
 
@@ -145,6 +146,7 @@ describe("useProjectWrite · one write", () => {
         label: "Файл змінився ззовні",
         detail: null,
         reason: null,
+        isRefusal: false,
       }),
     );
 

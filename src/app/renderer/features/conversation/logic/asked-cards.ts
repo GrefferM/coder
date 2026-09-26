@@ -27,5 +27,10 @@ export function askedCards(said: AskedSaid): ChatMessage[] {
     note: null,
     asked: null,
     fedBy: [],
+    // A person's question carries the files attached to it; work down a line carries none.
+    attached: one.attached.map((file) => ({
+      name: file.name,
+      kind: file.kind,
+    })),
   }));
 }

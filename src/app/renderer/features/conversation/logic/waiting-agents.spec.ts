@@ -11,6 +11,7 @@ function work(fromAgentId: string, seconds: number): IncomingWork {
     fromAgentId,
     fromStepIds: [],
     seconds,
+    attached: [],
   };
 }
 

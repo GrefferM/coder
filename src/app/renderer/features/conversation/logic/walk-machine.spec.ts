@@ -38,6 +38,7 @@ function question(): IncomingWork {
     fromAgentId: null,
     fromStepIds: [],
     seconds: null,
+    attached: [],
   };
 }
 
@@ -48,6 +49,7 @@ function work(fromAgentId: string): IncomingWork {
     fromAgentId,
     fromStepIds: [],
     seconds: 1,
+    attached: [],
   };
 }
 
@@ -136,6 +138,7 @@ function broken(id: string, walkId: string): ChatMessage {
     note: null,
     asked: null,
     fedBy: [],
+    attached: [],
     calls: [],
   };
 }
@@ -741,6 +744,7 @@ describe("walkMachine · the answer takes its lines out", () => {
             fromAgentId: "thesaurus",
             fromStepIds: [],
             seconds: 3,
+            attached: [],
           },
         ],
         startAgentId: "thesaurus",
@@ -854,6 +858,7 @@ describe("walkMachine · the answer takes its lines out", () => {
           fromAgentId: "shortener",
           fromStepIds: [],
           seconds: 2,
+          attached: [],
         },
       ],
     ]);
@@ -921,6 +926,7 @@ describe("walkMachine · the answer takes its lines out", () => {
             fromAgentId: "thesaurus",
             fromStepIds: [],
             seconds: 3,
+            attached: [],
           },
         ],
         startAgentId: "thesaurus",
@@ -1232,6 +1238,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
             fromAgentId: null,
             fromStepIds: [],
             seconds: null,
+            attached: [],
           },
         ],
         startAgentId: "thesaurus",
@@ -1266,6 +1273,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
             fromAgentId: "thesaurus",
             fromStepIds: ["step-1"],
             seconds: null,
+            attached: [],
           },
         ],
         startAgentId: "thesaurus",
@@ -1340,6 +1348,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
             fromAgentId: null,
             fromStepIds: [],
             seconds: null,
+            attached: [],
           },
         ],
         startAgentId: "thesaurus",
@@ -1515,6 +1524,7 @@ describe("walkMachine · the person put a question", () => {
         kind: "put",
         agent: agent("editor"),
         text: "Прогони тести",
+        attached: [],
         fedFrom: [],
         isAgain: false,
         questionId: "question-1",
@@ -1546,6 +1556,7 @@ describe("walkMachine · the person put a question", () => {
         kind: "put",
         agent: agent("editor"),
         text: "Прогони тести",
+        attached: [],
         fedFrom: [],
         isAgain: false,
         questionId: "question-1",
@@ -1574,6 +1585,7 @@ describe("walkMachine · the person put a question", () => {
         kind: "put",
         agent: agent("editor"),
         text: "Прогони тести ще раз",
+        attached: [],
         fedFrom: [],
         isAgain: false,
         questionId: "question-2",
@@ -1605,6 +1617,7 @@ describe("walkMachine · the person put a question", () => {
         kind: "put",
         agent: agent("editor"),
         text: "Прогони тести",
+        attached: [],
         fedFrom: [],
         isAgain: false,
         questionId: "question-2",
@@ -1633,6 +1646,7 @@ describe("walkMachine · the person put a question", () => {
         kind: "put",
         agent: agent("editor"),
         text: "Прогони тести",
+        attached: [],
         fedFrom: [],
         isAgain: false,
         questionId: "question-1",
@@ -1665,6 +1679,7 @@ describe("walkMachine · the person put a question", () => {
         kind: "put",
         agent: agent("editor"),
         text: "Прогони тести",
+        attached: [],
         fedFrom: [],
         isAgain: false,
         questionId: "question-1",

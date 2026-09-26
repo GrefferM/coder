@@ -75,6 +75,29 @@ describe("registerIpcChannels", () => {
     });
   });
 
+  it("lets a refusal carry one thing more than its name, in the message after the code", async () => {
+    let registeredListener: ((...args: unknown[]) => Promise<unknown> | unknown) | undefined;
+    const handle: IpcHandleFn = (_channel, listener) => {
+      registeredListener = listener;
+    };
+
+    registerIpcChannels(
+      {},
+      {
+        "test:one": async () => {
+          throw new Refusal("PROJECT_FILE_BROKEN", '{"trail":[],"field":"name","rule":"isNotEmpty"}');
+        },
+      },
+      handle,
+    );
+
+    assert.deepStrictEqual(await registeredListener?.({}, null), {
+      value: null,
+      refusal: 'PROJECT_FILE_BROKEN :: {"trail":[],"field":"name","rule":"isNotEmpty"}',
+      failure: null,
+    });
+  });
+
   it("answers a fault of its own with words, keeping the refusal empty", async () => {
     let registeredListener: ((...args: unknown[]) => Promise<unknown> | unknown) | undefined;
     const handle: IpcHandleFn = (_channel, listener) => {

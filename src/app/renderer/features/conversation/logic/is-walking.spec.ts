@@ -31,6 +31,7 @@ function state(patch: Partial<WalkState> = {}): WalkState {
     ledgers: {},
     saidAgain: [],
     drafts: {},
+    attachments: {},
     aimedAgentId: null,
     flowRunId: null,
     ...patch,

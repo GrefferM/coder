@@ -1,3 +1,5 @@
+import type { PickedAttachment } from "../../../../../../../interfaces";
+
 export interface ComposerProps {
   /** Whom the stream is aimed at — null while nobody is, and then a question has nowhere to go. */
   agentId: string | null;
@@ -8,6 +10,12 @@ export interface ComposerProps {
   /** What stands typed in this stream; it belongs to the stream, not to the agent. */
   draft: string;
   onDraftChange: (draft: string) => void;
+  /** What is attached under the field, shown as chips; none where empty and then no chip row stands. */
+  attachments: PickedAttachment[];
+  /** «+ ПРИКРІПИТИ» — opens the native pick; the button stands only while the field is open. */
+  onAttach: () => void;
+  /** The × on a chip — takes one attachment off by its own path. */
+  onDetach: (path: string) => void;
   onSend: () => void;
   onStop: () => void;
   /** How tall the person pulled the field, or nothing where they never did; then it stands at its least. */

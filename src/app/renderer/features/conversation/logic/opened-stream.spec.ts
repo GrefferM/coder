@@ -80,6 +80,7 @@ function live(patch: Partial<ChatMessage> & Pick<ChatMessage, "id" | "from" | "q
     note: null,
     asked: null,
     fedBy: [],
+    attached: [],
     calls: [],
     ...patch,
   };

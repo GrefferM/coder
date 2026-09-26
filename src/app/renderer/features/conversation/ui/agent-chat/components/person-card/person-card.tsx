@@ -2,6 +2,14 @@ import { timeLabel } from "../../../../../../utils/dates";
 import { Dot, FoundWords } from "../../../../../../components";
 import {
   AGENT_CHAT_AGENT_GAP_PX,
+  AGENT_CHAT_ATTACHED_GLYPH_COLOR,
+  AGENT_CHAT_ATTACHED_GLYPH_SIZE_PX,
+  AGENT_CHAT_ATTACHED_ITEM_GAP_PX,
+  AGENT_CHAT_ATTACHED_LABEL,
+  AGENT_CHAT_ATTACHED_LABEL_COLOR,
+  AGENT_CHAT_ATTACHED_NAME_COLOR,
+  AGENT_CHAT_ATTACHED_NAME_LETTER_SPACING_PX,
+  AGENT_CHAT_ATTACHED_ROW_GAP_PX,
   AGENT_CHAT_CARD_BACKGROUND_COLOR,
   AGENT_CHAT_CARD_PADDING,
   AGENT_CHAT_CARD_BORDER_RADIUS_PX,
@@ -23,13 +31,15 @@ import {
 } from "./constants";
 import { PERSON_COLOR, PERSON_NAME } from "../../../../../../constants";
 import { DebugBand } from "../../../../../projection";
+import { AttachGlyph } from "../attach-glyph";
+import { attachedName } from "../../../../words";
 import type { PersonCardProps } from "./interfaces";
 
 /**
  * The person's own reply, signed the way an agent's is — the sign over the card and not inside it — and with
  * no step number in it. The way into the projection stands under the text of the question.
  */
-export function PersonCard({ text, at, onDebug, isFound, looked = "" }: PersonCardProps) {
+export function PersonCard({ text, at, attached, onDebug, isFound, looked = "" }: PersonCardProps) {
   return (
     <div
       className="d-flex flex-column"
@@ -96,6 +106,47 @@ export function PersonCard({ text, at, onDebug, isFound, looked = "" }: PersonCa
           </span>
         )}
       </div>
+      {/*
+        After the question has gone, what was attached stays under it as a quiet record — an app row, not a card:
+        the same file and folder marks, and no × to take anything off, because the question has already been asked.
+      */}
+      {attached.length > 0 && (
+        <div
+          className="d-flex flex-wrap align-items-center font-monospace"
+          style={{
+            gap: AGENT_CHAT_ATTACHED_ROW_GAP_PX,
+            fontSize: AGENT_CHAT_QUIET_FONT_SIZE_PX,
+            letterSpacing: AGENT_CHAT_QUIET_LETTER_SPACING_PX,
+          }}
+        >
+          <span
+            className="text-uppercase"
+            style={{
+              color: AGENT_CHAT_ATTACHED_LABEL_COLOR,
+            }}
+          >
+            {AGENT_CHAT_ATTACHED_LABEL}
+          </span>
+          {attached.map((file, index) => (
+            <span
+              key={`${file.kind}-${file.name}-${index}`}
+              className="d-flex align-items-center"
+              style={{
+                gap: AGENT_CHAT_ATTACHED_ITEM_GAP_PX,
+                letterSpacing: AGENT_CHAT_ATTACHED_NAME_LETTER_SPACING_PX,
+                color: AGENT_CHAT_ATTACHED_NAME_COLOR,
+              }}
+            >
+              <AttachGlyph
+                kind={file.kind}
+                size={AGENT_CHAT_ATTACHED_GLYPH_SIZE_PX}
+                color={AGENT_CHAT_ATTACHED_GLYPH_COLOR}
+              />
+              {attachedName(file.name, file.kind)}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

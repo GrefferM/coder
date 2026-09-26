@@ -1,3 +1,4 @@
+export * from "./attach-glyph";
 export * from "./answer-card";
 export * from "./call-row";
 export * from "./composer";

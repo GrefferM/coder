@@ -45,6 +45,7 @@ export function useProjectWrite(
               label,
               detail: null,
               reason: `${WRITE_FAILED_PREFIX}${errorMessage(reason)}`,
+              isRefusal: false,
             },
             config,
           });
@@ -62,6 +63,7 @@ export function useProjectWrite(
                 label,
                 detail: null,
                 reason: null,
+                isRefusal: false,
               },
               config,
             },

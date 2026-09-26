@@ -1,3 +1,4 @@
+export * from "./attachments.channel";
 export * from "./deletions.channel";
 export * from "./llm.channel";
 export * from "./mcp.channel";

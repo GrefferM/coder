@@ -42,6 +42,7 @@ export function useProjectFile(
             label: PROJECT_REREAD_LABEL,
             detail: fileChangeDetail(project.config, read.config),
             reason: null,
+            isRefusal: false,
           });
         });
       }),
@@ -64,6 +65,7 @@ export function useProjectFile(
       label: PROJECT_REREAD_LABEL,
       detail: fileChangeDetail(project.config, arrived.config),
       reason: null,
+      isRefusal: false,
     });
   }, [arrived, project.config, sayNote, setProject, unsaved]);
 

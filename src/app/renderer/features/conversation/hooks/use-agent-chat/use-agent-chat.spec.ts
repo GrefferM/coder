@@ -47,6 +47,8 @@ const PROVIDERS: ProviderState[] = [
 
 /** A project that declares no server, so no look ever stands. */
 const NO_SERVERS = {};
+/** Where a pick is refused is the page's to say; these walks pick nothing. */
+const NO_REFUSALS = () => undefined;
 
 /** The chat tells the providers what each turn heard at their address; no case here reads it back. */
 const heard = vi.fn();
@@ -202,13 +204,14 @@ function row(walkId: string): ChatMessage {
     note: null,
     asked: null,
     fedBy: [],
+    attached: [],
   };
 }
 
 describe("useAgentChat", () => {
   it("asks the model the person's question once, not once in the history and once again as the question", async () => {
     const invoke = held();
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -225,7 +228,7 @@ describe("useAgentChat", () => {
 
   it("empties the stream on a fresh chat, and leaves the aim and the draft where they were", async () => {
     const invoke = held();
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -277,7 +280,7 @@ describe("useAgentChat", () => {
       invoke,
     });
 
-    const { result } = renderHook(() => useAgentChat(alone, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(alone, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -309,7 +312,7 @@ describe("useAgentChat", () => {
     held();
 
     const { result, rerender } = renderHook(
-      ({ agentId }) => useAgentChat(PROJECT, agentId, PROVIDERS, heard, NO_SERVERS),
+      ({ agentId }) => useAgentChat(PROJECT, agentId, PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
       {
         initialProps: {
           agentId: <string | null>"agent-1",
@@ -331,7 +334,7 @@ describe("useAgentChat", () => {
   it("keeps what is written in the field when the aim moves to somebody else", () => {
     held();
 
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     // Opening a run aims the chat at whoever walked it, and the aim alone moves nothing in the field.
@@ -344,7 +347,7 @@ describe("useAgentChat", () => {
   it("gives every stream a field of its own, and hands each back what was written in it", () => {
     held();
 
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     // A run opened from the history stands in the stream's place — with its own field, not this one's.
@@ -365,7 +368,7 @@ describe("useAgentChat", () => {
   it("opens a fresh chat with an empty field, and takes the words of the stream it ended", () => {
     held();
 
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     // «+ НОВИЙ ЧАТ» is a start from a clean place, and an unsent question is not carried into it.
@@ -377,7 +380,7 @@ describe("useAgentChat", () => {
   it("sends to the agent it is aimed at, with no sphere selected at all", async () => {
     const invoke = held();
     const { result, rerender } = renderHook(
-      ({ agentId }) => useAgentChat(PROJECT, agentId, PROVIDERS, heard, NO_SERVERS),
+      ({ agentId }) => useAgentChat(PROJECT, agentId, PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
       {
         initialProps: {
           agentId: <string | null>"agent-2",
@@ -402,23 +405,26 @@ describe("useAgentChat", () => {
   it("aims at nobody when the agent it was aimed at is no longer in the project", () => {
     held();
 
-    const { result, rerender } = renderHook(({ opened }) => useAgentChat(opened, null, PROVIDERS, heard, NO_SERVERS), {
-      initialProps: {
-        opened: <OpenProject>{
-          ...PROJECT,
-          view: {
-            pan: {
-              x: 0,
-              y: 0,
+    const { result, rerender } = renderHook(
+      ({ opened }) => useAgentChat(opened, null, PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
+      {
+        initialProps: {
+          opened: <OpenProject>{
+            ...PROJECT,
+            view: {
+              pan: {
+                x: 0,
+                y: 0,
+              },
+              scale: 1,
+              sectionId: "chat",
+              isCollapsed: false,
+              aimedAgentId: "agent-1",
             },
-            scale: 1,
-            sectionId: "chat",
-            isCollapsed: false,
-            aimedAgentId: "agent-1",
           },
         },
       },
-    });
+    );
 
     expect(result.current.aimedAgentId).toBe("agent-1");
 
@@ -439,7 +445,7 @@ describe("useAgentChat", () => {
   it("hands the neighbour the answer as a block: who worked, what for, and what it said", async () => {
     const invoke = held();
     const { result, rerender } = renderHook(
-      ({ agentId }) => useAgentChat(PROJECT, agentId, PROVIDERS, heard, NO_SERVERS),
+      ({ agentId }) => useAgentChat(PROJECT, agentId, PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
       {
         initialProps: {
           agentId: "agent-1",
@@ -475,7 +481,7 @@ describe("useAgentChat", () => {
 
   it("walks the drawn line to the end, not one step and no further", async () => {
     const invoke = held();
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -503,7 +509,7 @@ describe("useAgentChat", () => {
 
     fallsOnce(invoke, new Error("постачальник не відповів"));
 
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -521,7 +527,7 @@ describe("useAgentChat", () => {
     const invoke = ending({
       isCallsExhausted: true,
     });
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -540,7 +546,7 @@ describe("useAgentChat", () => {
       text: "ФАЙЛИ\n- package.json",
       isCeilingHit: true,
     });
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -558,7 +564,7 @@ describe("useAgentChat", () => {
 
   it("says the model said nothing rather than drawing an empty card", async () => {
     const invoke = ending({});
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -710,7 +716,7 @@ async function stood() {
 describe("useAgentChat where lines converge", () => {
   it("waits for both suppliers and works once, on their answers together", async () => {
     const invoke = voices();
-    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
@@ -733,7 +739,7 @@ describe("useAgentChat where lines converge", () => {
 
   it("does not wait for a switched-off supplier, and asks with the one answer as it came", async () => {
     const invoke = voices();
-    const { result } = renderHook(() => useAgentChat(HALF_OFF, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(HALF_OFF, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
@@ -755,7 +761,7 @@ describe("useAgentChat where lines converge", () => {
 
   it("ends the walk where a supplier fell, instead of working the point below it on half the work", async () => {
     const invoke = voices(["model-2"]);
-    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
@@ -770,7 +776,7 @@ describe("useAgentChat where lines converge", () => {
 
   it("ends the run at the point when neither supplier answered", async () => {
     const invoke = voices(["model-2", "model-3"]);
-    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
@@ -829,7 +835,7 @@ function voicesHolding(...models: string[]) {
 describe("useAgentChat while a converging point waits", () => {
   it("says whom it waits for and how many answered, and tells the two lines apart", async () => {
     const { invoke, release } = voicesHolding("model-3");
-    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
@@ -869,7 +875,7 @@ describe("useAgentChat while a converging point waits", () => {
 
   it("keeps standing when the walk breaks under it, and waits for the repeat instead", async () => {
     const { invoke } = recording({}, ["model-3"]);
-    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
@@ -899,7 +905,7 @@ describe("useAgentChat while a converging point waits", () => {
   it("puts a wait left by a break down when the next question begins a walk of its own", async () => {
     recording({}, ["model-3"]);
 
-    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
@@ -915,7 +921,7 @@ describe("useAgentChat while a converging point waits", () => {
 
   it("sends nothing into a walk still out, and keeps the words in the field until it ends", async () => {
     const { release } = recording({}, [], ["model-4"]);
-    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
@@ -952,7 +958,7 @@ describe("useAgentChat while a converging point waits", () => {
 
   it("flows down every line the work arrived by, not only the last of them", async () => {
     const { release } = voicesHolding("model-3", "model-4");
-    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
@@ -1007,7 +1013,7 @@ describe("useAgentChat when a step breaks", () => {
       invoke,
     });
 
-    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
@@ -1024,7 +1030,7 @@ describe("useAgentChat when a turn never began", () => {
 
     fallsOnce(invoke, new Error("LLM_NO_KEY"));
 
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1041,7 +1047,7 @@ describe("useAgentChat when a turn never began", () => {
 
     fallsOnce(invoke, new Error("LLM_NO_KEY"));
 
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1060,11 +1066,14 @@ describe("useAgentChat when a turn never began", () => {
     fallsOnce(invoke, new Error("LLM_NO_KEY"));
 
     // The providers are read over the bridge, so the first render of a chat has none.
-    const { result, rerender } = renderHook(({ list }) => useAgentChat(PROJECT, "agent-1", list, heard, NO_SERVERS), {
-      initialProps: {
-        list: <ProviderState[]>[],
+    const { result, rerender } = renderHook(
+      ({ list }) => useAgentChat(PROJECT, "agent-1", list, heard, NO_SERVERS, NO_REFUSALS),
+      {
+        initialProps: {
+          list: <ProviderState[]>[],
+        },
       },
-    });
+    );
 
     rerender({
       list: PROVIDERS,
@@ -1082,7 +1091,7 @@ describe("useAgentChat when a turn never began", () => {
 
     fallsOnce(invoke, new Error("LLM_PROVIDER_SILENT"));
 
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1099,7 +1108,7 @@ describe("useAgentChat when a turn never began", () => {
 
     fallsOnce(invoke, new Error("LLM_NO_KEY"));
 
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1116,7 +1125,7 @@ describe("useAgentChat when a turn never began", () => {
 
     fallsOnce(invoke, new Error("нічого не вийшло"));
 
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1143,7 +1152,9 @@ const LOW_CEILING: OpenProject = {
 describe("useAgentChat against the model's ceiling", () => {
   it("does not go at all when the turn is longer than the model takes", async () => {
     const invoke = held();
-    const { result } = renderHook(() => useAgentChat(LOW_CEILING, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() =>
+      useAgentChat(LOW_CEILING, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
+    );
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1161,7 +1172,9 @@ describe("useAgentChat against the model's ceiling", () => {
   it("shows what would have gone, part by part, against the number on the model", async () => {
     held();
 
-    const { result } = renderHook(() => useAgentChat(LOW_CEILING, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() =>
+      useAgentChat(LOW_CEILING, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
+    );
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1188,7 +1201,7 @@ describe("useAgentChat against the model's ceiling", () => {
         })),
       },
     };
-    const { result } = renderHook(() => useAgentChat(unpriced, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(unpriced, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1212,7 +1225,7 @@ describe("useAgentChat against the model's ceiling", () => {
         })),
       },
     };
-    const { result } = renderHook(() => useAgentChat(unnumbered, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(unnumbered, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1235,7 +1248,7 @@ describe("useAgentChat against the model's ceiling", () => {
         })),
       },
     };
-    const { result } = renderHook(() => useAgentChat(lost, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(lost, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1265,7 +1278,7 @@ describe("useAgentChat against the model's ceiling", () => {
         })),
       },
     };
-    const { result } = renderHook(() => useAgentChat(lost, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(lost, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1278,7 +1291,7 @@ describe("useAgentChat against the model's ceiling", () => {
 
   it("lets a turn under the ceiling through untouched", async () => {
     const invoke = held();
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
     act(() => result.current.send());
@@ -1364,7 +1377,7 @@ function standing(state: string, patch: Partial<LiveCall> = {}): LiveCall {
 describe("useAgentChat while a turn is making calls", () => {
   it("says the same call over rather than twice, and keeps it for the rest of the turn", async () => {
     const voice = heldWithVoice();
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Знайди файли глибше"));
     act(() => result.current.send());
@@ -1577,7 +1590,9 @@ describe("useAgentChat writing the record of a run", () => {
     // A conversation walks one walk at a time, and its row stands open for as long as that walk
     // is out — the reviewer is held, so the editor's own step is written and the row says nothing about an end.
     const { sent, invoke, release } = recording({}, [], ["reviewer-model"]);
-    const { result } = renderHook(() => useAgentChat(REVIEWER_APART, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() =>
+      useAgentChat(REVIEWER_APART, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
+    );
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1596,7 +1611,9 @@ describe("useAgentChat writing the record of a run", () => {
     // A run opened from the history while the first walk is still out. The row on screen is the person's
     // own; a walk of another conversation writing its step and closing its row must not move the screen to itself.
     const { sent, invoke, release } = recording({}, [], ["reviewer-model"]);
-    const { result } = renderHook(() => useAgentChat(REVIEWER_APART, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() =>
+      useAgentChat(REVIEWER_APART, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
+    );
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1622,7 +1639,7 @@ describe("useAgentChat writing the record of a run", () => {
 
     fallsOnce(invoke, new Error("LLM_NO_KEY"));
 
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1646,7 +1663,7 @@ describe("useAgentChat writing the record of a run", () => {
   it("writes the question the moment it is asked, even where no turn of it begins", async () => {
     // The stand-in holds by the model's own title, which is what an ask carries.
     const { sent, release } = recording({}, [], ["claude-sonnet-4.5"]);
-    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1675,8 +1692,12 @@ describe("useAgentChat writing the record of a run", () => {
 
     act(() => result.current.send());
 
-    // The walk is over, and the second question goes on in the row already standing.
-    await waitFor(() => expect(sent[ASK_AGAIN_CHANNEL]?.length).toBe(1));
+    // The walk is over, and the second question goes on in the row already standing. This is the longest wait in
+    // the file — three answers over the bridge and the run's close before it — so it gets more than the second the
+    // others make do with, or the whole suite loading beside it is enough to miss it.
+    await waitFor(() => expect(sent[ASK_AGAIN_CHANNEL]?.length).toBe(1), {
+      timeout: 5000,
+    });
     expect(sent[ASK_AGENT_CHANNEL]).toHaveLength(2);
     expect(sent[OPEN_RUN_CHANNEL]).toHaveLength(1);
     expect(result.current.messages.filter((message) => message.from === "person")).toHaveLength(2);
@@ -1700,6 +1721,7 @@ describe("useAgentChat writing the record of a run", () => {
         PROVIDERS,
         heard,
         NO_SERVERS,
+        NO_REFUSALS,
       ),
     );
 
@@ -1723,7 +1745,7 @@ describe("useAgentChat writing the record of a run", () => {
 
   it("opens one run for the whole walk, writes a step for each turn and closes it once", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1752,7 +1774,7 @@ describe("useAgentChat writing the record of a run", () => {
 
   it("names the step the work came from, so the walk can be drawn from the record alone", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1768,7 +1790,7 @@ describe("useAgentChat writing the record of a run", () => {
 
   it("keeps what the turn ran with, since a prompt changes and a step must still say what it said", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1791,7 +1813,7 @@ describe("useAgentChat writing the record of a run", () => {
 
   it("writes the links the turn made, the one it could not take among them", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(HALF_OFF, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(HALF_OFF, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1816,7 +1838,7 @@ describe("useAgentChat writing the record of a run", () => {
 
   it("keeps the agent as it stood, and what the turn counted", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1873,7 +1895,7 @@ describe("useAgentChat writing the record of a run", () => {
         },
       ],
     });
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Знайди md-файли"));
     act(() => result.current.send());
@@ -1899,7 +1921,7 @@ describe("useAgentChat writing the record of a run", () => {
 
     fallsOnce(invoke, new Error("мережа мовчить"));
 
-    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1914,7 +1936,7 @@ describe("useAgentChat writing the record of a run", () => {
 describe("useAgentChat as one stream", () => {
   it("holds every agent's turns in one flow, each saying whose it is", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1930,7 +1952,7 @@ describe("useAgentChat as one stream", () => {
 
   it("keeps the stream in the order things happened, whichever agent said them", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1944,7 +1966,7 @@ describe("useAgentChat as one stream", () => {
 
   it("goes on in the record it already has when the same conversation is asked again", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -1975,7 +1997,7 @@ describe("useAgentChat as one stream", () => {
 
   it("opens a record of its own after a fresh chat, since that is where one conversation ends", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -2017,7 +2039,7 @@ describe("useAgentChat as one stream", () => {
       invoke,
     });
 
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -2046,7 +2068,7 @@ describe("useAgentChat as one stream", () => {
     const { sent } = recording({
       text: "",
     });
-    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Підсумуй, що змінилось"));
     act(() => result.current.send());
@@ -2081,7 +2103,7 @@ describe("useAgentChat as one stream", () => {
 
   it("hands the point what had already arrived, and runs the broken turn again beside it", async () => {
     const { sent, invoke, release } = recording({}, ["model-2"], ["model-4"]);
-    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(FAN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
@@ -2119,7 +2141,7 @@ describe("useAgentChat as one stream", () => {
   it("says the link a repeat cannot take, instead of passing the neighbour over without a word", async () => {
     const { sent, invoke } = recording({}, ["model-2"]);
     const { result, rerender } = renderHook(
-      ({ project }) => useAgentChat(project, "agent-1", PROVIDERS, heard, NO_SERVERS),
+      ({ project }) => useAgentChat(project, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
       {
         initialProps: {
           project: FAN,
@@ -2156,7 +2178,7 @@ describe("useAgentChat as one stream", () => {
 
   it("asks nobody when there is no record to pick a walk up out of", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.sayAgain(row("walk-nobody-holds")));
 
@@ -2167,7 +2189,7 @@ describe("useAgentChat as one stream", () => {
 
   it("asks nobody where the walk of that row names a question the record does not hold", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -2184,7 +2206,7 @@ describe("useAgentChat as one stream", () => {
 
   it("writes into the record the person opened, and not into the one the stream held before", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -2207,7 +2229,7 @@ describe("useAgentChat as one stream", () => {
 
   it("lets the conversation go when the record it writes into is deleted", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -2229,7 +2251,7 @@ describe("useAgentChat as one stream", () => {
 
   it("keeps the stream standing when the record deleted is somebody else's", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
@@ -2243,7 +2265,7 @@ describe("useAgentChat as one stream", () => {
 
   it("says each answer once: what came down a line is the supplier's own words, already standing", async () => {
     const { sent } = recording();
-    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS));
+    const { result } = renderHook(() => useAgentChat(CHAIN, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());

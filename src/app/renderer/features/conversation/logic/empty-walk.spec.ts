@@ -11,6 +11,7 @@ describe("emptyWalk", () => {
     expect(state.ledgers).toEqual({});
     expect(state.saidAgain).toEqual([]);
     expect(state.drafts).toEqual({});
+    expect(state.attachments).toEqual({});
     expect(state.aimedAgentId).toBeNull();
     expect(state.flowRunId).toBeNull();
   });
@@ -22,10 +23,12 @@ describe("emptyWalk", () => {
 
     first.saidAgain.push("turn-1");
     first.drafts["agent-1"] = "недописане";
+    first.attachments["agent-1"] = [];
     first.aimedAgentId = "agent-1";
 
     expect(second.saidAgain).toEqual([]);
     expect(second.drafts).toEqual({});
+    expect(second.attachments).toEqual({});
     expect(second.aimedAgentId).toBeNull();
   });
 });

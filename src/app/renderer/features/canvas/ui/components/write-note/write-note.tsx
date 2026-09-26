@@ -11,14 +11,20 @@ import {
   WRITE_NOTE_ICON_SIZE_PX,
   WRITE_NOTE_MS,
   WRITE_NOTE_OUT_MS,
+  WRITE_NOTE_REFUSAL_MS,
   WRITE_NOTE_RETRY_COLOR,
   WRITE_NOTE_RETRY_LABEL,
 } from "./constants";
 import type { WriteNoteProps } from "./interfaces";
 
-/** Write result line. Done: green check, auto-dismisses. Failed: reason and retry, stays until answered. */
+/**
+ * Write result line. Done: green check, auto-dismisses. Failed: reason and retry, stays until answered. Refused:
+ * a red cross and the reason, nothing to retry, and it leaves by itself once it has had time to be read.
+ */
 export function WriteNote({ note, onRetry, onDismiss }: WriteNoteProps) {
   const isDone = note.reason === null;
+  /** Leaves by itself: a done note at once, a refusal once it has been read; a failed write waits to be answered. */
+  const leavesAfter = isDone ? WRITE_NOTE_MS : note.isRefusal ? WRITE_NOTE_REFUSAL_MS : null;
   const [isLeaving, setIsLeaving] = useState(false);
   /**
    * The note is what the timer stands on, never the hand that takes it away. A caller passing an inline arrow
@@ -32,24 +38,25 @@ export function WriteNote({ note, onRetry, onDismiss }: WriteNoteProps) {
   }, [onDismiss]);
 
   useEffect(() => {
-    if (!isDone) {
+    if (leavesAfter === null) {
       return;
     }
 
-    const standing = window.setTimeout(() => setIsLeaving(true), WRITE_NOTE_MS);
-    const going = window.setTimeout(() => dismiss.current(), WRITE_NOTE_MS + WRITE_NOTE_OUT_MS);
+    const standing = window.setTimeout(() => setIsLeaving(true), leavesAfter);
+    const going = window.setTimeout(() => dismiss.current(), leavesAfter + WRITE_NOTE_OUT_MS);
 
     return () => {
       window.clearTimeout(standing);
       window.clearTimeout(going);
     };
     // A new note restarts the timer.
-  }, [isDone, note]);
+  }, [leavesAfter, note]);
 
   return (
-    <CanvasPill gapPx={WRITE_NOTE_GAP_PX} tone={isDone ? "done" : "failed"} isLeaving={isLeaving}>
+    <CanvasPill gapPx={WRITE_NOTE_GAP_PX} tone={isDone ? "done" : "failed"} isLeaving={isLeaving} place="top">
       {isDone ? (
         <svg
+          className="flex-shrink-0"
           width={WRITE_NOTE_ICON_SIZE_PX}
           height={WRITE_NOTE_ICON_SIZE_PX}
           viewBox="0 0 24 24"
@@ -61,8 +68,22 @@ export function WriteNote({ note, onRetry, onDismiss }: WriteNoteProps) {
         >
           <path d="m5 13 4 4L19 7" />
         </svg>
+      ) : note.isRefusal ? (
+        <svg
+          className="flex-shrink-0"
+          width={WRITE_NOTE_ICON_SIZE_PX}
+          height={WRITE_NOTE_ICON_SIZE_PX}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={WRITE_NOTE_FAILED_COLOR}
+          strokeWidth="2.6"
+          strokeLinecap="round"
+        >
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
       ) : (
         <svg
+          className="flex-shrink-0"
           width={WRITE_NOTE_ICON_SIZE_PX}
           height={WRITE_NOTE_ICON_SIZE_PX}
           viewBox="0 0 24 24"
@@ -78,6 +99,9 @@ export function WriteNote({ note, onRetry, onDismiss }: WriteNoteProps) {
       <span
         style={{
           color: isDone ? WRITE_NOTE_DONE_TEXT_COLOR : WRITE_NOTE_FAILED_COLOR,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          minWidth: 0,
         }}
       >
         {isDone ? note.label : note.reason}
@@ -91,7 +115,7 @@ export function WriteNote({ note, onRetry, onDismiss }: WriteNoteProps) {
           {note.detail}
         </span>
       )}
-      {!isDone && (
+      {!isDone && !note.isRefusal && (
         <TextButton
           tone={{
             rest: WRITE_NOTE_RETRY_COLOR,

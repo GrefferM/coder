@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { AimPicker, ChatIcon, useAgentChat, useLookAfterCall } from "../../../../features/conversation";
 import { AgentsIcon, agentStates, suppliersOf } from "../../../../features/agents";
 import { useOpenedPass } from "../../../../features/projection";
@@ -38,14 +39,33 @@ export function usePageParts(
   isNamingCopy: boolean,
   onDeleteAgent: (agentId: string) => void,
 ): PageParts {
-  const { project, agents, models, commands, servers: section, prompts, drafted, wayOut } = subjects;
+  const { project, agents, models, commands, servers: section, prompts, drafted, wayOut, actions } = subjects;
   const machine = useProviders();
   /** Every server the project declares, asked what it hands over; nothing of it is written down. */
   const servers = useServers(project.directory, project.config.servers);
 
   // A call that ended is the one thing that changes a server's row, so the catalogue asks it afresh.
   useLookAfterCall(servers.look);
-  const chat = useAgentChat(project, agents.selectedAgentId, machine.providers, machine.heard, servers.looks);
+  const { sayNote } = actions;
+  /** A pick the chat would not attach is said on the line a write is — red, with nothing to try again. */
+  const sayRefused = useCallback(
+    (words: string) =>
+      sayNote({
+        label: words,
+        detail: null,
+        reason: words,
+        isRefusal: true,
+      }),
+    [sayNote],
+  );
+  const chat = useAgentChat(
+    project,
+    agents.selectedAgentId,
+    machine.providers,
+    machine.heard,
+    servers.looks,
+    sayRefused,
+  );
   /** The agent the stream is aimed at; when it is the selected one, its unsaved draft stands in. */
   const aimed =
     chat.aimedAgentId === agents.selectedAgentId && drafted.draft !== null

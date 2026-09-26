@@ -9,6 +9,7 @@ function work(text: string): IncomingWork {
     fromAgentId: "agent-1",
     fromStepIds: [],
     seconds: 3,
+    attached: [],
   };
 }
 

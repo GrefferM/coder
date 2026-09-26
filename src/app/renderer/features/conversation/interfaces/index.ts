@@ -1,3 +1,4 @@
+export * from "./attached-file.interface";
 // What the machine says back is the boundary's: written once in `src/contracts`, taken from there.
 export * from "../../../../../contracts/llm";
 export * from "./agent-stands.interface";
@@ -18,6 +19,7 @@ export * from "./live-answer.interface";
 export * from "./not-started-act.type";
 export * from "./not-started-end.interface";
 export * from "./not-started-wall.type";
+export * from "./packed-send.interface";
 export * from "./put-turn.interface";
 export * from "./run-ledger.interface";
 export * from "./settled-supplier.interface";

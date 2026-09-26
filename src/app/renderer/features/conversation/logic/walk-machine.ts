@@ -2,6 +2,7 @@ import { awaitedSuppliers } from "./awaited-suppliers";
 import { begunWalk } from "./begun-walk";
 import { fedStepIds } from "./fed-step-ids";
 import { cannotTake, linkOuts } from "./link-outs";
+import { askedWithAttached } from "./asked-with-attached";
 import { handedWork } from "./handed-work";
 import { isOnScreen } from "./is-on-screen";
 import { isWalking } from "./is-walking";
@@ -382,6 +383,7 @@ function handedOn(state: WalkState, event: WalkFact<"handedOn">, config: Project
       fromAgentId: event.from.id,
       fromStepIds: [],
       seconds: event.seconds,
+      attached: [],
     };
 
     // One live supplier is not a converging point: the work goes in the moment it arrives.
@@ -451,6 +453,8 @@ function put(state: WalkState, event: WalkFact<"put">): WalkNext {
         fromAgentId: null,
         fromStepIds: event.fedFrom,
         seconds: null,
+        // The attached files ride with the person's own words into the turn; the stream shows neither.
+        attached: event.attached,
       },
     ],
     startAgentId: event.agent.id,
@@ -578,7 +582,7 @@ function turnPut(event: WalkFact<"asked">, first: IncomingWork): WalkEffect {
     // A person's words go in as they were typed, and work that came by a line goes in as it was said.
     asked:
       first.fromAgentId === null
-        ? first.text
+        ? askedWithAttached(first.text, first.attached)
         : handedWork(
             event.incoming.map((one) => ({
               text: one.text,
@@ -861,6 +865,7 @@ function workThatArrived(state: WalkState, event: WalkFact<"repeated">, config: 
       fromAgentId: arrival.fromAgentId,
       fromStepIds: [arrival.fromStepId],
       seconds: null,
+      attached: [],
     };
     const via = lineTo(config, arrival.fromAgentId, to.id);
 
@@ -924,6 +929,7 @@ function questionNeverPut(event: WalkFact<"repeated">, config: ProjectConfig): W
           fromAgentId: null,
           fromStepIds: [],
           seconds: null,
+          attached: [],
         },
       ],
       startAgentId: aimed.id,
@@ -993,6 +999,7 @@ function turnsToRunAgain(state: WalkState, event: WalkFact<"repeated">, config: 
           fromAgentId: null,
           fromStepIds: turn.fromStepIds,
           seconds: null,
+          attached: [],
         },
       ],
       startAgentId: event.startAgentId,

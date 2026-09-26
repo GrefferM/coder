@@ -178,6 +178,9 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
         isWalking={field.isWalking}
         draft={field.draft}
         onDraftChange={field.onDraftChange}
+        attachments={field.attachments}
+        onAttach={field.onAttach}
+        onDetach={field.onDetach}
         onSend={field.onSend}
         onStop={field.onStop}
         fieldHeight={field.height}

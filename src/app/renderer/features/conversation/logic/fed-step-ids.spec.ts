@@ -21,6 +21,7 @@ function work(patch: Partial<IncomingWork> = {}): IncomingWork {
     fromAgentId: null,
     fromStepIds: [],
     seconds: null,
+    attached: [],
     ...patch,
   };
 }

@@ -24,6 +24,8 @@ import type {
   LOOK_PROJECT_CHANNEL,
   OPEN_OR_CREATE_PROJECT_CHANNEL,
   OPEN_PROJECT_CHANNEL,
+  PACK_ATTACHMENTS_CHANNEL,
+  PICK_ATTACHMENT_CHANNEL,
   OPEN_RUN_CHANNEL,
   PROJECT_VIEW_CHANNEL,
   CALL_PLACE_CHANNEL,
@@ -44,6 +46,7 @@ import type { ProviderReply, ProviderState } from "../providers";
 import type { McpLook, McpSecretsHeld } from "../mcp";
 import type { SaidTurn } from "../llm";
 import type { CallPlace, OpenedRecord, RunHit, RunRow, WholeRun } from "../runs";
+import type { AttachmentPick, PackAttachmentsAsk, PackedAttachment, PickAttachmentsAsk } from "../attachments";
 import type {
   AddRunStep,
   AskAgain,
@@ -121,9 +124,11 @@ export interface ChannelMap {
   [FORGET_RUN_CHANNEL]: { payload: OfOne; answer: boolean };
   [FORGET_RUNS_CHANNEL]: { payload: OfProject; answer: number };
 
-  /** The desktop's own two: a folder to work in, and a project's file shown where it lies. */
+  /** The desktop's own: a folder to work in, a project's file shown where it lies, and files picked and packed for a question. */
   [CHOOSE_DIRECTORY_CHANNEL]: { payload: void; answer: string | null };
   [REVEAL_PROJECT_CHANNEL]: { payload: string; answer: void };
+  [PICK_ATTACHMENT_CHANNEL]: { payload: PickAttachmentsAsk; answer: AttachmentPick };
+  [PACK_ATTACHMENTS_CHANNEL]: { payload: PackAttachmentsAsk; answer: PackedAttachment[] };
 }
 
 /** Every channel there is; a name outside this is not a channel. */

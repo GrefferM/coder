@@ -22,12 +22,11 @@ export function CanvasOver({
         <LinkCounts outgoing={tally.outgoing} incoming={tally.incoming} color={tally.color} />
       )}
       <ZoomToolbar scale={scale} onZoomOut={onZoomOut} onZoomIn={onZoomIn} />
-      {/* The file's own word takes the bottom while it stands, and the offers wait behind it. */}
-      {writeNote !== null ? (
+      {/* The app's own word stands along the top, so the offers keep the bottom while it is said. */}
+      {writeNote !== null && (
         <WriteNoteLine note={writeNote} onRetry={() => void onWriteRetry()} onDismiss={onWriteDismiss} />
-      ) : (
-        undoOffers.length > 0 && <UndoStack offers={undoOffers} onUndo={onUndo} />
       )}
+      {undoOffers.length > 0 && <UndoStack offers={undoOffers} onUndo={onUndo} />}
     </>
   );
 }

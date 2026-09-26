@@ -1,3 +1,4 @@
+import type { AttachedFile } from "./attached-file.interface";
 import type { ChatCost } from "./chat-cost.interface";
 import type { NotStartedReason, TurnCall, ChatStopReason } from "../../../interfaces";
 import type { TurnLength } from "./turn-length.interface";
@@ -46,4 +47,6 @@ export interface ChatMessage {
   asked: string | null;
   /** The steps that fed this turn, so a repeat picks the walk up in its place. */
   fedBy: string[];
+  /** The files and folders attached to a person's question, for the «ПРИКРІПЛЕНО:» row under it. */
+  attached: AttachedFile[];
 }

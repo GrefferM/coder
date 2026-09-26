@@ -1,4 +1,7 @@
 export * from "./answer-ceiling-note";
+export * from "./attach-refusal-note";
+export * from "./attach-weight";
+export * from "./attached-name";
 export * from "./calls-exhausted-note";
 export * from "./fell-note";
 export * from "./field-word";

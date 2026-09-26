@@ -27,6 +27,7 @@ function said(patch: Partial<ChatMessage> = {}): ChatMessage {
     // Every answer carries what it was asked, so a repeat anywhere in the walk has the words.
     asked: "Прогони тести",
     fedBy: [],
+    attached: [],
     ...patch,
   };
 }

@@ -3,7 +3,8 @@ import { forgetLive, sayPiece } from "../use-live-answer";
 import { useNewsSeen } from "../use-news-seen";
 import { useFlowRecord } from "../use-flow-record";
 import { useOpenCalls } from "../use-open-calls";
-import { answerTurn, stopTurn } from "../../api";
+import { answerTurn, pickAttachment, stopTurn } from "../../api";
+import { usePackedSend } from "../use-packed-send";
 import { AGENT_CHUNK_CHANNEL } from "../../../../../../contracts";
 import {
   agentStands,
@@ -17,14 +18,23 @@ import {
   isOnScreen,
   isWalking,
   linkLives,
+  packCeiling,
   wordsAwaitingHand,
   repeatOf,
   waitingAgents,
   walkMachine,
   workingTurns,
 } from "../../logic";
+import { refusedPickNote } from "../../words";
 import { readRun } from "../../../record";
-import type { Agent, McpLook, OpenProject, ProviderState } from "../../../../interfaces";
+import type {
+  Agent,
+  McpLook,
+  OpenProject,
+  PackedAttachment,
+  PickedAttachment,
+  ProviderState,
+} from "../../../../interfaces";
 import type {
   ChatMessage,
   RunLedger,
@@ -45,6 +55,8 @@ export function useAgentChat(
   heard: (providerId: string, isAnswering: boolean) => void,
   /** What every declared server said it hands over, by server id; a turn reads it at the moment it asks. */
   looks: Record<string, McpLook>,
+  /** Says a pick that was not attached, and why, on the line over the canvas. */
+  onRefused: (words: string) => void,
 ): AgentChatState {
   /** The stream that has no record of its own yet — «+ НОВИЙ ЧАТ» starts another, with an empty field. */
   const [freshStream, setFreshStream] = useState(() => crypto.randomUUID());
@@ -55,6 +67,7 @@ export function useAgentChat(
   const held = useRef(project);
   const machine = useRef(providers);
   const said = useRef(looks);
+  const refused = useRef(onRefused);
   /**
    * How tall the field under the stream stands. It is the person's own setting, kept where the canvas keeps its
    * scale — this machine's note about this project — so it outlives the window like everything else there.
@@ -89,6 +102,7 @@ export function useAgentChat(
   held.current = project;
   machine.current = providers;
   said.current = looks;
+  refused.current = onRefused;
   stream.current = record.runId ?? freshStream;
 
   useEffect(() => {
@@ -142,6 +156,10 @@ export function useAgentChat(
     }),
     [],
   );
+  /** The stream on screen, read at the moment a pack comes back — the question goes there or waits there. */
+  const streamNow = useCallback(() => stream.current, []);
+  /** A question with files goes through here: packed first, then sent — or given back. */
+  const packed = usePackedSend(streamNow);
   /** The hands the runner reaches for, held apart so the one runner below never takes an old one. */
   const hands = useRef<WalkHands>({
     askAgent: () => undefined,
@@ -504,13 +522,14 @@ export function useAgentChat(
    * record it writes into is the conversation's, which is older than this walk whenever one was asked.
    */
   const put = useCallback(
-    (agent: Agent, text: string, fedFrom: string[] = [], isAgain = false) => {
+    (agent: Agent, text: string, attached: PackedAttachment[]) => {
       dispatch({
         kind: "put",
         agent,
         text,
-        fedFrom,
-        isAgain,
+        attached,
+        fedFrom: [],
+        isAgain: false,
         // The question's own id, minted here and kept by the record — one id from the first moment.
         questionId: crypto.randomUUID(),
         runKey: crypto.randomUUID(),
@@ -521,6 +540,24 @@ export function useAgentChat(
     [dispatch],
   );
 
+  /** A question that did not go comes back to its field with what was attached to it; newer words typed there stay. */
+  const giveBack = useCallback(
+    (at: string, text: string, picked: PickedAttachment[]) => {
+      change((standing) => ({
+        ...standing,
+        drafts: {
+          ...standing.drafts,
+          [at]: (standing.drafts[at] ?? "") === "" ? text : standing.drafts[at],
+        },
+        attachments: {
+          ...standing.attachments,
+          [at]: [...picked, ...(standing.attachments[at] ?? [])],
+        },
+      }));
+    },
+    [change],
+  );
+
   const send = useCallback(() => {
     const agentId = aimedAgentId;
 
@@ -528,7 +565,8 @@ export function useAgentChat(
       return;
     }
 
-    const text = (stands.current.drafts[stream.current] ?? "").trim();
+    const at = stream.current;
+    const text = (stands.current.drafts[at] ?? "").trim();
     const agent = held.current.config.agents.find((standing) => standing.id === agentId) ?? null;
 
     // An agent switched off is asked all the same — the walk says why the question stayed, and never
@@ -537,21 +575,90 @@ export function useAgentChat(
       return;
     }
 
-    // This conversation is walking, so there is nothing to send with — and what is typed stays where it
-    // was typed, waiting for the walk to end or for «ЗУПИНИТИ».
-    if (isWalking(walkNow())) {
+    // This conversation is walking, or its last question is still being packed, so there is nothing to send with —
+    // and what is typed stays where it was typed, waiting for the walk to end or for «ЗУПИНИТИ».
+    if (isWalking(walkNow()) || packed.isPacking(at)) {
       return;
     }
 
+    const picked = stands.current.attachments[at] ?? [];
+
+    // The question and its files leave the field together; it is left clear for the next one.
     change((standing) => ({
       ...standing,
       drafts: {
         ...standing.drafts,
-        [stream.current]: "",
+        [at]: "",
+      },
+      attachments: {
+        ...standing.attachments,
+        [at]: [],
       },
     }));
-    put(agent, text);
-  }, [aimedAgentId, change, put, walkNow]);
+
+    if (picked.length === 0) {
+      put(agent, text, []);
+
+      return;
+    }
+
+    packed.send({
+      stream: at,
+      text,
+      picked,
+      ceiling: packCeiling(agentStands(agent, held.current.config, machine.current)),
+      onPacked: (attached) => put(agent, text, attached),
+      onGivenBack: () => giveBack(at, text, picked),
+    });
+  }, [aimedAgentId, change, giveBack, packed, put, walkNow]);
+
+  /** «+ ПРИКРІПИТИ» — the native pick opens, and what is chosen waits under the field of this stream. */
+  const attach = useCallback(() => {
+    const at = stream.current;
+
+    const config = held.current.config;
+    const agent = config.agents.find((one) => one.id === aimed.current) ?? null;
+    const ceiling = agent === null ? 0 : packCeiling(agentStands(agent, config, machine.current));
+    const used = (stands.current.attachments[at] ?? []).reduce((sum, one) => sum + one.least, 0);
+
+    // The room left under the ceiling of the agent aimed at: what could never fit in it is refused as soon as the
+    // count shows it, and never becomes a chip. Where no model can be asked yet, there is nothing to count against.
+    void pickAttachment(ceiling > 0 ? Math.max(0, ceiling - used) : null).then(
+      (pick) => {
+        if (pick.picked.length > 0) {
+          change((was) => ({
+            ...was,
+            attachments: {
+              ...was.attachments,
+              [at]: [...(was.attachments[at] ?? []), ...pick.picked],
+            },
+          }));
+        }
+
+        if (pick.refused.length > 0) {
+          refused.current(pick.refused.map(refusedPickNote).join("; "));
+        }
+      },
+      // The chooser itself did not open: there is nothing picked to speak of.
+      () => undefined,
+    );
+  }, [change]);
+
+  /** The × on a chip — the one attachment named by its own path is taken off before the question goes. */
+  const detach = useCallback(
+    (path: string) => {
+      const at = stream.current;
+
+      change((standing) => ({
+        ...standing,
+        attachments: {
+          ...standing.attachments,
+          [at]: (standing.attachments[at] ?? []).filter((one) => one.path !== path),
+        },
+      }));
+    },
+    [change],
+  );
 
   /** «СПИТАТИ ЩЕ РАЗ» — the same agent, the same question, inside the record it already has. */
   const sayAgain = useCallback(
@@ -646,6 +753,8 @@ export function useAgentChat(
     },
     messages: chatStream(walk),
     draft: walked.drafts[stream.current] ?? "",
+    /** What is attached in the stream on screen, waiting under the field for the question to go. */
+    attachments: walked.attachments[stream.current] ?? [],
     isWorking: turn !== undefined,
     /** Bumped by every step written and by every run closed, so the history can follow. */
     written: record.written,
@@ -656,6 +765,8 @@ export function useAgentChat(
     /** How every line of the canvas stands right now — flowing, awaited, answered or silent. */
     linkLives: linkLives(project.config.links, walk),
     changeDraft,
+    attach,
+    detach,
     send,
     stop,
   };

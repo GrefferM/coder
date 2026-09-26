@@ -105,7 +105,14 @@ export function SaidTurn({
           isCounting={false}
         />
       ) : message.from === "person" ? (
-        <PersonCard text={message.text} at={said} onDebug={onDebug} isFound={isFound} looked={looked} />
+        <PersonCard
+          text={message.text}
+          at={said}
+          attached={message.attached}
+          onDebug={onDebug}
+          isFound={isFound}
+          looked={looked}
+        />
       ) : message.notStarted !== null ? (
         <>
           {/* The line about the words stands while the field holds them — a card read back out of

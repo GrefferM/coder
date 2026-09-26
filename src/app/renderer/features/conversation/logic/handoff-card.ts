@@ -29,6 +29,7 @@ export function handoffCard(said: HandoffSaid): ChatMessage {
     note: null,
     asked: null,
     fedBy: [],
+    attached: [],
     calls: [],
   };
 }

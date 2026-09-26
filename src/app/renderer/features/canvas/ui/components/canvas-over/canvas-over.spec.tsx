@@ -87,12 +87,13 @@ describe("CanvasOver", () => {
     expect(screen.queryByText(/вихідн|вхідн/u)).not.toBeInTheDocument();
   });
 
-  it("gives the bottom to the file's own word, and the offers wait behind it", () => {
-    // A write that failed is the one thing the canvas must not let a person miss.
+  it("says the file's own word along the top, and keeps the offers at the bottom while it stands", () => {
+    // The two no longer share a place, so neither has to wait behind the other.
     const note: WriteNote = {
       label: "Не вдалося записати файл проєкту",
       detail: null,
       reason: null,
+      isRefusal: false,
     };
     const { rerender } = render(
       <CanvasOver
@@ -114,6 +115,6 @@ describe("CanvasOver", () => {
     );
 
     expect(screen.getByText("Не вдалося записати файл проєкту")).toBeInTheDocument();
-    expect(screen.queryByText(UNDO_ACTION_LABEL)).not.toBeInTheDocument();
+    expect(screen.getByText(UNDO_ACTION_LABEL)).toBeInTheDocument();
   });
 });

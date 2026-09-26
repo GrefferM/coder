@@ -601,31 +601,38 @@ describe("MainPage", () => {
     });
   });
 
-  it("says what was saved once the write went through, and takes the word off by itself", async () => {
-    const user = userEvent.setup();
+  it(
+    "says what was saved once the write went through, and takes the word off by itself",
+    {
+      // The note stands long enough to be read, so the wait for it to go outlasts a test's usual five seconds.
+      timeout: WRITE_NOTE_MS + WRITE_NOTE_OUT_MS + 5000,
+    },
+    async () => {
+      const user = userEvent.setup();
 
-    render(<OpenProjectHarness />);
-    await user.click(
-      screen.getByRole("button", {
-        name: "EDITOR",
-      }),
-    );
-    await openSettings(user);
-    await user.type(await screen.findByLabelText(AGENT_SETTINGS_NAME_LABEL), "2");
-    await user.click(screen.getByText(AGENT_SETTINGS_SAVE_LABEL));
+      render(<OpenProjectHarness />);
+      await user.click(
+        screen.getByRole("button", {
+          name: "EDITOR",
+        }),
+      );
+      await openSettings(user);
+      await user.type(await screen.findByLabelText(AGENT_SETTINGS_NAME_LABEL), "2");
+      await user.click(screen.getByText(AGENT_SETTINGS_SAVE_LABEL));
 
-    // Saving answers with a note that appears.
-    expect(await screen.findByText(WRITE_AGENT_LABEL)).toBeInTheDocument();
+      // Saving answers with a note that appears.
+      expect(await screen.findByText(WRITE_AGENT_LABEL)).toBeInTheDocument();
 
-    await waitFor(
-      () => {
-        expect(screen.queryByText(WRITE_AGENT_LABEL)).not.toBeInTheDocument();
-      },
-      {
-        timeout: WRITE_NOTE_MS + WRITE_NOTE_OUT_MS + 1000,
-      },
-    );
-  });
+      await waitFor(
+        () => {
+          expect(screen.queryByText(WRITE_AGENT_LABEL)).not.toBeInTheDocument();
+        },
+        {
+          timeout: WRITE_NOTE_MS + WRITE_NOTE_OUT_MS + 1000,
+        },
+      );
+    },
+  );
 
   it("names what stopped a write, keeps the draft, and writes it again on «ще раз»", async () => {
     const user = userEvent.setup();

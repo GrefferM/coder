@@ -5,8 +5,10 @@ import {
   FALLEN_COLOR,
   FIRST_LEVEL_TEXT_COLOR,
   HAIRLINE_COLOR,
+  INTERACTION_ACCENT_COLOR,
   PANEL_GROUND_COLOR,
   QUIET_MARK_COLOR,
+  SECOND_LEVEL_TEXT_COLOR,
   WORDS_COLOR,
 } from "../../../../../constants";
 import type { ChatStopReason } from "../../../../../interfaces";
@@ -60,7 +62,6 @@ export const AGENT_CHAT_GRIP_LIT_COLOR = "#4a5164";
 export const AGENT_CHAT_GRIP_LABEL = "Висота поля";
 export const AGENT_CHAT_FIELD_PLACEHOLDER_PREFIX = "Завдання для ";
 export const AGENT_CHAT_FIELD_PLACEHOLDER_SUFFIX = "…";
-export const AGENT_CHAT_SEND_HINT = "⌘↵ НАДІСЛАТИ";
 /** Nobody is aimed at yet — the stream stands, and a question has nowhere to go. */
 export const AGENT_CHAT_NO_AIM_PLACEHOLDER = "Клікніть по сфері, щоб питати того агента";
 export const AGENT_CHAT_NO_AIM_HINT = "НІКОГО НЕ ВИБРАНО";
@@ -190,3 +191,44 @@ export const AGENT_CHAT_TO_BOTTOM_NEWS_COLOR = "#4ade80";
 export const AGENT_CHAT_TO_BOTTOM_NEWS_BORDER_COLOR = "#2c4a3a";
 export const AGENT_CHAT_TO_BOTTOM_NEWS_FONT_SIZE_PX = 9;
 export const AGENT_CHAT_TO_BOTTOM_NEWS_LETTER_SPACING_PX = 1;
+
+/** «+ ПРИКРІПИТИ» — the second act under the field, beside the send hand: second-level at rest, accent under the pointer. */
+export const AGENT_CHAT_ATTACH_LABEL = "+ ПРИКРІПИТИ";
+export const AGENT_CHAT_ATTACH_TONE: IconTone = {
+  rest: SECOND_LEVEL_TEXT_COLOR,
+  lit: INTERACTION_ACCENT_COLOR,
+};
+
+/** The row of chips between the field and the hand — it stands only while something is attached, and wraps into rows. */
+export const AGENT_CHAT_ATTACH_CHIPS_GAP_PX = 6;
+/** One chip: its icon, name, weight and ×. A folder and a file are told apart by the icon alone. */
+export const AGENT_CHAT_ATTACH_CHIP_GAP_PX = 6;
+export const AGENT_CHAT_ATTACH_CHIP_PADDING = "3px 3px 3px 8px";
+export const AGENT_CHAT_ATTACH_CHIP_BORDER_RADIUS_PX = 7;
+export const AGENT_CHAT_ATTACH_CHIP_BACKGROUND_COLOR = "#171b26";
+export const AGENT_CHAT_ATTACH_CHIP_BORDER_COLOR = BORDER_AT_REST_COLOR;
+export const AGENT_CHAT_ATTACH_GLYPH_SIZE_PX = 11;
+export const AGENT_CHAT_ATTACH_GLYPH_COLOR = "#838ba6";
+export const AGENT_CHAT_ATTACH_NAME_FONT_SIZE_PX = 10.5;
+export const AGENT_CHAT_ATTACH_NAME_COLOR = FIRST_LEVEL_TEXT_COLOR;
+export const AGENT_CHAT_ATTACH_WEIGHT_FONT_SIZE_PX = 9;
+export const AGENT_CHAT_ATTACH_WEIGHT_LETTER_SPACING_PX = 1;
+export const AGENT_CHAT_ATTACH_WEIGHT_COLOR = "#5c6478";
+/** The × on a chip — a step closer under the pointer, the way a scale step is (42a); its box lights, its glyph brightens. */
+export const AGENT_CHAT_ATTACH_CLOSE_SIZE_PX = 18;
+export const AGENT_CHAT_ATTACH_CLOSE_BORDER_RADIUS_PX = 5;
+export const AGENT_CHAT_ATTACH_CLOSE_GLYPH_SIZE_PX = 9;
+export const AGENT_CHAT_ATTACH_CLOSE_REST_COLOR = "#5c6478";
+export const AGENT_CHAT_ATTACH_CLOSE_LIT_COLOR = FIRST_LEVEL_TEXT_COLOR;
+export const AGENT_CHAT_ATTACH_CLOSE_LIT_BACKGROUND_COLOR = "#1b1f2c";
+export const AGENT_CHAT_ATTACH_CLOSE_LABEL = "Відкріпити";
+
+/** The «ПРИКРІПЛЕНО:» record under a sent question — an app row, not a card: the same icons, quiet, and no ×. */
+export const AGENT_CHAT_ATTACHED_LABEL = "ПРИКРІПЛЕНО:";
+export const AGENT_CHAT_ATTACHED_ROW_GAP_PX = 10;
+export const AGENT_CHAT_ATTACHED_ITEM_GAP_PX = 4;
+export const AGENT_CHAT_ATTACHED_GLYPH_SIZE_PX = 11;
+export const AGENT_CHAT_ATTACHED_GLYPH_COLOR = "#5c6478";
+export const AGENT_CHAT_ATTACHED_LABEL_COLOR = QUIET_MARK_COLOR;
+export const AGENT_CHAT_ATTACHED_NAME_COLOR = SECOND_LEVEL_TEXT_COLOR;
+export const AGENT_CHAT_ATTACHED_NAME_LETTER_SPACING_PX = 0.5;

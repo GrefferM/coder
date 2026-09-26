@@ -26,6 +26,7 @@ function said(patch: Partial<ChatMessage> = {}): ChatMessage {
     walkId: null,
     asked: null,
     fedBy: [],
+    attached: [],
     ...patch,
   };
 }

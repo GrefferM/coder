@@ -1,3 +1,4 @@
+import type { PickedAttachment } from "../../../../../interfaces";
 /** The field under the stream: what is typed in it, how tall it stands, and the two acts of it. */
 export interface ChatField {
   draft: string;
@@ -7,6 +8,10 @@ export interface ChatField {
   isWalking: boolean;
   onDraftChange: (draft: string) => void;
   onHeight: (height: number) => void;
+  /** What is attached under the field, waiting to go with the question — chips show it, none where empty. */
+  attachments: PickedAttachment[];
+  onAttach: () => void;
+  onDetach: (path: string) => void;
   onSend: () => void;
   onStop: () => void;
 }

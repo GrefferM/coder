@@ -1,6 +1,7 @@
 import type { RunLedger } from "./run-ledger.interface";
 import type { TurnOut } from "./turn-out.interface";
 import type { Walk } from "./walk.interface";
+import type { PickedAttachment } from "../../../interfaces";
 
 /**
  * Everything a stream's walks stand on, in one object. The hook holds it in React state today; the views
@@ -20,6 +21,8 @@ export interface WalkState {
   saidAgain: string[];
   /** What stands typed in each stream, the one on screen and every run opened in its place. */
   drafts: Record<string, string>;
+  /** The files and folders attached in each stream, waiting under the field for the question to go. */
+  attachments: Record<string, PickedAttachment[]>;
   /** Whom the chat is aimed at. */
   aimedAgentId: string | null;
   /**

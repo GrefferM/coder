@@ -53,6 +53,7 @@ function message(
     note: null,
     asked: null,
     fedBy: [],
+    attached: [],
     ...patch,
   };
 }
@@ -149,6 +150,7 @@ export function runStream(run: WholeRun): ChatMessage[] {
           // Its own question and the steps that fed it, for a repeat to pick the walk up on.
           asked: step.asked,
           fedBy: step.fromStepIds,
+          attached: [],
           isFailure: step.state === RUN_STEP_FAILED,
           note: noteOf(step),
           notStarted,

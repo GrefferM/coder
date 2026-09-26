@@ -9,13 +9,15 @@ import {
   AGENT_CHAT_OFF_HINT,
   AGENT_CHAT_OFF_PLACEHOLDER,
   AGENT_CHAT_GRIP_LABEL,
-  AGENT_CHAT_SEND_HINT,
+  AGENT_CHAT_ATTACH_CLOSE_LABEL,
+  AGENT_CHAT_ATTACH_LABEL,
   AGENT_CHAT_SEND_LABEL,
   AGENT_CHAT_STOP_BLINK_CLASS,
   AGENT_CHAT_STOP_LABEL,
   AGENT_CHAT_WALKING_PLACEHOLDER,
 } from "../../constants";
 import type { ComposerProps } from "./interfaces";
+import type { PickedAttachment } from "../../../../../../interfaces";
 import { FIELD_LEAST_HEIGHT_PX, FIELD_MOST_HEIGHT_PX } from "../../../../constants";
 
 const FIELD = `${AGENT_CHAT_FIELD_PLACEHOLDER_PREFIX}Шукач`;
@@ -73,6 +75,9 @@ function props(patch: Partial<ComposerProps> = {}): ComposerProps {
     isWalking: false,
     draft: "",
     onDraftChange: vi.fn(),
+    attachments: [],
+    onAttach: vi.fn(),
+    onDetach: vi.fn(),
     onSend: vi.fn(),
     onStop: vi.fn(),
     fieldHeight: null,
@@ -86,7 +91,11 @@ describe("Composer", () => {
     render(<Composer {...props()} />);
 
     expect(screen.getByPlaceholderText(`${FIELD}…`)).toBeInTheDocument();
-    expect(screen.getByText(AGENT_CHAT_SEND_HINT)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: AGENT_CHAT_SEND_LABEL,
+      }),
+    ).toBeInTheDocument();
   });
 
   it("stitches the field shut where there is nothing to write in it at all", () => {
@@ -144,7 +153,7 @@ describe("Composer", () => {
     );
 
     expect(screen.getByText(AGENT_CHAT_STOP_LABEL)).toBeInTheDocument();
-    expect(screen.queryByText(AGENT_CHAT_SEND_HINT)).not.toBeInTheDocument();
+    expect(screen.queryByText(AGENT_CHAT_ATTACH_LABEL)).not.toBeInTheDocument();
   });
 
   it("sends on ⌘↵ and leaves a plain Enter to make a new line", async () => {
@@ -222,5 +231,78 @@ describe("Composer", () => {
     await userEvent.click(screen.getByText(AGENT_CHAT_STOP_LABEL));
 
     expect(said.onStop).toHaveBeenCalledOnce();
+  });
+});
+
+function attachment(patch: Partial<PickedAttachment> = {}): PickedAttachment {
+  return {
+    path: "/proj/logout.log",
+    name: "logout.log",
+    kind: "file",
+    bytes: 2150,
+    least: 600,
+    ...patch,
+  };
+}
+
+describe("Composer · attaching files", () => {
+  it("puts «+ ПРИКРІПИТИ» under the field while it is open, and opens the pick on a press", async () => {
+    const said = props();
+
+    render(<Composer {...said} />);
+    await userEvent.click(screen.getByText(AGENT_CHAT_ATTACH_LABEL));
+
+    expect(said.onAttach).toHaveBeenCalledOnce();
+  });
+
+  it("takes «+ ПРИКРІПИТИ» away where there is nowhere to send — a walk out, or a stitched field", () => {
+    const { rerender } = render(
+      <Composer
+        {...props({
+          isWalking: true,
+        })}
+      />,
+    );
+
+    expect(screen.queryByText(AGENT_CHAT_ATTACH_LABEL)).not.toBeInTheDocument();
+
+    rerender(
+      <Composer
+        {...props({
+          agentId: null,
+        })}
+      />,
+    );
+
+    expect(screen.queryByText(AGENT_CHAT_ATTACH_LABEL)).not.toBeInTheDocument();
+  });
+
+  it("shows a chip for each attachment, and takes one off by its own path on the ×", async () => {
+    const said = props({
+      attachments: [
+        attachment(),
+        attachment({
+          path: "/proj/src",
+          name: "src",
+          kind: "folder",
+        }),
+      ],
+    });
+
+    render(<Composer {...said} />);
+
+    expect(screen.getByText("logout.log")).toBeInTheDocument();
+    // A folder wears a trailing slash so the eye sees the tree.
+    expect(screen.getByText("src/")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByLabelText(`${AGENT_CHAT_ATTACH_CLOSE_LABEL} logout.log`));
+
+    expect(said.onDetach).toHaveBeenCalledWith("/proj/logout.log");
+  });
+
+  it("draws no chip row while nothing is attached", () => {
+    render(<Composer {...props()} />);
+
+    expect(screen.queryByText("logout.log")).not.toBeInTheDocument();
   });
 });

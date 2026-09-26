@@ -55,6 +55,9 @@ export function ChatSection({
             isWalking: chat.working.length > 0,
             onDraftChange: chat.changeDraft,
             onHeight: chat.setFieldHeight,
+            attachments: chat.attachments,
+            onAttach: chat.attach,
+            onDetach: chat.detach,
             onSend: chat.send,
             onStop: chat.stop,
           }}

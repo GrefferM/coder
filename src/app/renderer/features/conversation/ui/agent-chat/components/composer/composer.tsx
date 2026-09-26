@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AttachChip } from "./components";
 import { Mark, TextButton } from "../../../../../../components";
 import { useInteraction } from "../../../../../../hooks";
 import { INTERACTION_HOVER_BACKGROUND_COLOR, INTERACTION_TRANSITION } from "../../../../../../constants";
@@ -7,6 +8,9 @@ import { canAsk, fieldStanding } from "../../../../logic";
 import { FIELD_LEAST_HEIGHT_PX } from "../../../../constants";
 import { useFieldHeight } from "./hooks";
 import {
+  AGENT_CHAT_ATTACH_CHIPS_GAP_PX,
+  AGENT_CHAT_ATTACH_LABEL,
+  AGENT_CHAT_ATTACH_TONE,
   AGENT_CHAT_COMPOSER_GAP_PX,
   AGENT_CHAT_COMPOSER_PADDING,
   AGENT_CHAT_FIELD_BORDER_RADIUS_PX,
@@ -28,7 +32,6 @@ import {
   AGENT_CHAT_RULE_COLOR,
   AGENT_CHAT_SEND_BACKGROUND_COLOR,
   AGENT_CHAT_SEND_BORDER_RADIUS_PX,
-  AGENT_CHAT_SEND_HINT,
   AGENT_CHAT_SEND_ICON_COLOR,
   AGENT_CHAT_SEND_ICON_SIZE_PX,
   AGENT_CHAT_SEND_LABEL,
@@ -53,6 +56,9 @@ export function Composer({
   isWalking,
   draft,
   onDraftChange,
+  attachments,
+  onAttach,
+  onDetach,
   onSend,
   onStop,
   fieldHeight,
@@ -97,14 +103,9 @@ export function Composer({
     return `${AGENT_CHAT_FIELD_PLACEHOLDER_PREFIX}${agentName}${AGENT_CHAT_FIELD_PLACEHOLDER_SUFFIX}`;
   }
 
-  /** What stands under the field: the way to send, or why there is nowhere to send. */
+  /** Why there is nowhere to send — the only word under the field, and none at all where the send is open. */
   function aimLabel(): string {
-    if (agentId === null) {
-      return AGENT_CHAT_NO_AIM_HINT;
-    }
-
-    // The field itself already names the agent, and the band over the stream names it again.
-    return isAgentActive ? AGENT_CHAT_SEND_HINT : AGENT_CHAT_OFF_HINT;
+    return agentId === null ? AGENT_CHAT_NO_AIM_HINT : AGENT_CHAT_OFF_HINT;
   }
 
   function handleSend() {
@@ -186,6 +187,19 @@ export function Composer({
           outline: "none",
         }}
       />
+      {/* Chips stand between the field and the hand, and only while something is attached; they wrap into rows. */}
+      {attachments.length > 0 && (
+        <div
+          className="d-flex flex-wrap"
+          style={{
+            gap: AGENT_CHAT_ATTACH_CHIPS_GAP_PX,
+          }}
+        >
+          {attachments.map((attachment) => (
+            <AttachChip key={attachment.path} attachment={attachment} onDetach={onDetach} />
+          ))}
+        </div>
+      )}
       <div
         className="d-flex align-items-center"
         style={{
@@ -214,7 +228,16 @@ export function Composer({
             </svg>
             {AGENT_CHAT_STOP_LABEL}
           </TextButton>
+        ) : standing === "open" ? (
+          // «+ ПРИКРІПИТИ» stands to the left, and the send hand to the right; nothing names the send between them.
+          <>
+            <TextButton className="flex-shrink-0" tone={AGENT_CHAT_ATTACH_TONE} onPress={onAttach}>
+              {AGENT_CHAT_ATTACH_LABEL}
+            </TextButton>
+            <span className="flex-fill" />
+          </>
         ) : (
+          // The field is stitched — no «+», only the word for why there is nowhere to send.
           <Mark className="flex-fill">{aimLabel()}</Mark>
         )}
         <button

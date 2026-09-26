@@ -26,7 +26,6 @@ import {
   AGENT_CHAT_NO_AIM_PLACEHOLDER,
   AGENT_CHAT_OFF_HINT,
   AGENT_CHAT_OFF_PLACEHOLDER,
-  AGENT_CHAT_SEND_HINT,
   AGENT_CHAT_SEND_LABEL,
   AGENT_CHAT_STOP_LABEL,
   AGENT_CHAT_STOP_BLINK_CLASS,
@@ -104,6 +103,9 @@ function renderChat(overrides: ChatOverrides = {}) {
         isWalking: false,
         onDraftChange: () => {},
         onHeight: () => {},
+        attachments: [],
+        onAttach: () => {},
+        onDetach: () => {},
         onSend: () => {},
         onStop: () => {},
         ...overrides.field,
@@ -172,6 +174,7 @@ function asked(questionId: string) {
     walkId: null,
     asked: null,
     fedBy: [],
+    attached: [],
   };
 }
 
@@ -212,9 +215,6 @@ describe("AgentChat", () => {
         onSend: onSend,
       },
     });
-
-    // The line under the field is the way to send and nothing else: the field already names the agent.
-    expect(screen.getByText(AGENT_CHAT_SEND_HINT)).toBeInTheDocument();
 
     await userEvent.click(screen.getByLabelText(AGENT_CHAT_SEND_LABEL));
 
@@ -280,6 +280,7 @@ describe("AgentChat", () => {
             walkId: null,
             asked: null,
             fedBy: [],
+            attached: [],
             note: null,
             calls: [],
           },
@@ -327,6 +328,7 @@ describe("AgentChat", () => {
             walkId: null,
             asked: null,
             fedBy: [],
+            attached: [],
             note: null,
             calls: [],
           },
@@ -462,6 +464,7 @@ describe("AgentChat", () => {
             walkId: null,
             asked: null,
             fedBy: [],
+            attached: [],
             note: null,
             calls: [
               {
@@ -568,6 +571,7 @@ describe("AgentChat", () => {
             walkId: null,
             asked: null,
             fedBy: [],
+            attached: [],
           },
         ],
       },
@@ -608,6 +612,7 @@ describe("AgentChat", () => {
               walkId: null,
               asked: "Підсумуй, що змінилось",
               fedBy: [],
+              attached: [],
             },
           ],
         },
@@ -651,6 +656,7 @@ describe("AgentChat", () => {
       stepId: null,
       asked: "Підсумуй, що змінилось",
       fedBy: [],
+      attached: [],
     });
 
     renderChat({
@@ -688,6 +694,7 @@ describe("AgentChat", () => {
       stepId: null,
       asked: "Підсумуй, що змінилось",
       fedBy: [],
+      attached: [],
     });
 
     renderChat({
@@ -732,6 +739,7 @@ describe("AgentChat", () => {
       walkId: null,
       asked: "Підсумуй, що змінилось",
       fedBy: [],
+      attached: [],
     });
 
     renderChat({
@@ -794,6 +802,7 @@ describe("AgentChat", () => {
       walkId: null,
       asked: "Підсумуй, що змінилось",
       fedBy: [],
+      attached: [],
     };
     const answered = {
       ...unbegun,
@@ -838,6 +847,7 @@ describe("AgentChat", () => {
       walkId: null,
       asked: "Прогони тести",
       fedBy: [],
+      attached: [],
     };
 
     renderChat({
@@ -889,6 +899,7 @@ describe("AgentChat", () => {
       walkId: null,
       asked: "Прогони тести",
       fedBy: [],
+      attached: [],
     };
 
     renderChat({
@@ -939,6 +950,7 @@ describe("AgentChat", () => {
       walkId,
       asked: null,
       fedBy: [],
+      attached: [],
     });
 
     renderChat({
@@ -993,6 +1005,7 @@ describe("AgentChat", () => {
       walkId: null,
       asked: null,
       fedBy: [],
+      attached: [],
     });
 
     sayPiece("turn-first", "Перша робота", null);
@@ -1065,6 +1078,7 @@ describe("AgentChat", () => {
       walkId: null,
       asked: null,
       fedBy,
+      attached: [],
     });
 
     renderChat({
@@ -1107,6 +1121,7 @@ describe("AgentChat", () => {
       walkId,
       asked: null,
       fedBy: [],
+      attached: [],
     });
 
     renderChat({
@@ -1155,6 +1170,7 @@ describe("AgentChat", () => {
       walkId: null,
       asked: from === "agent" ? "Прогони тести" : null,
       fedBy: [],
+      attached: [],
     });
 
     renderChat({
@@ -1208,6 +1224,7 @@ describe("AgentChat", () => {
             walkId: null,
             asked: null,
             fedBy: [],
+            attached: [],
           },
         ],
       },
@@ -1251,6 +1268,7 @@ describe("AgentChat", () => {
             walkId: null,
             asked: "Підсумуй, що змінилось",
             fedBy: [],
+            attached: [],
           },
         ],
         saidAgain: ["silent"],
@@ -1287,6 +1305,7 @@ describe("AgentChat", () => {
             walkId: null,
             asked: "Підсумуй, що змінилось",
             fedBy: [],
+            attached: [],
           },
           {
             id: "next",
@@ -1310,6 +1329,7 @@ describe("AgentChat", () => {
             walkId: null,
             asked: null,
             fedBy: [],
+            attached: [],
           },
         ],
       },
@@ -1349,6 +1369,7 @@ describe("AgentChat", () => {
             walkId: null,
             asked: null,
             fedBy: [],
+            attached: [],
           },
         ],
       },
@@ -1391,6 +1412,7 @@ describe("AgentChat", () => {
             walkId: null,
             asked: null,
             fedBy: [],
+            attached: [],
           },
         ],
       },
@@ -1427,6 +1449,7 @@ describe("AgentChat", () => {
             walkId: null,
             asked: null,
             fedBy: [],
+            attached: [],
           },
         ],
       },
@@ -1459,7 +1482,6 @@ describe("AgentChat", () => {
       },
     });
 
-    expect(screen.queryByText(AGENT_CHAT_SEND_HINT)).not.toBeInTheDocument();
     screen.getByText(AGENT_CHAT_STOP_LABEL).click();
     expect(onStop).toHaveBeenCalledTimes(1);
   });
@@ -1617,6 +1639,6 @@ describe("AgentChat", () => {
     });
 
     expect(screen.queryByText(AGENT_CHAT_STOP_LABEL)).not.toBeInTheDocument();
-    expect(screen.getByText(AGENT_CHAT_SEND_HINT)).toBeInTheDocument();
+    expect(screen.getByLabelText(AGENT_CHAT_SEND_LABEL)).toBeInTheDocument();
   });
 });
