@@ -8,7 +8,9 @@ import {
   REFUSAL_SAID_SEPARATOR,
 } from "../constants";
 
+import { brokenPlaceNote } from "./broken-place-note";
 import { projectFailureNote } from "./project-failure-note";
+import type { BrokenPlace } from "../../../interfaces";
 
 describe("projectFailureNote", () => {
   it("says in words that the file came from a newer build", () => {
@@ -24,11 +26,23 @@ describe("projectFailureNote", () => {
   });
 
   it("names a broken file in its own words, with the place the file goes wrong after them", () => {
+    const place: BrokenPlace = {
+      trail: [
+        {
+          kind: "command",
+          name: "fetch",
+        },
+      ],
+      field: "id",
+      rule: "isUuid",
+    };
     const said = projectFailureNote(
-      new Error(`Error invoking remote method: ${PROJECT_FILE_BROKEN}${REFUSAL_SAID_SEPARATOR}agents[1].tools[7].id`),
+      new Error(
+        `Error invoking remote method: ${PROJECT_FILE_BROKEN}${REFUSAL_SAID_SEPARATOR}${JSON.stringify(place)}`,
+      ),
     );
 
-    expect(said).toBe(`${PROJECT_FILE_BROKEN_NOTE}agents[1].tools[7].id`);
+    expect(said).toBe(`${PROJECT_FILE_BROKEN_NOTE}${brokenPlaceNote(place)}`);
   });
 
   it("does not leave the sentence hanging where the refusal named no place", () => {

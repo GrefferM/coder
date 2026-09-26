@@ -2,6 +2,7 @@ export * from "./project-file-name.constant";
 export * from "./project-refusals.constant";
 export * from "./deletion.interface";
 export * from "./agent.interface";
+export * from "./broken-place.interface";
 export * from "./named-agent.interface";
 export * from "./command-parameter-type.type";
 export * from "./command-parameter.interface";

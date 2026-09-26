@@ -69,7 +69,10 @@ export class ProjectConfigSerializer {
 
     // The validator's own words are English and name classes; the screen gets a refusal and the place instead.
     await validateOrReject(config).catch((errors: unknown) => {
-      throw new Refusal(PROJECT_FILE_BROKEN, brokenPlace(Array.isArray(errors) ? <ValidationError[]>errors : []));
+      const place = brokenPlace(Array.isArray(errors) ? <ValidationError[]>errors : []);
+
+      // The structured place crosses the bridge as the refusal's say; the screen turns it into a line.
+      throw new Refusal(PROJECT_FILE_BROKEN, place === null ? "" : JSON.stringify(place));
     });
 
     // The link checks run whichever way the config arrived: read from the folder or saved over IPC.

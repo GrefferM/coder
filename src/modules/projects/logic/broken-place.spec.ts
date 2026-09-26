@@ -3,40 +3,137 @@ import assert from "node:assert/strict";
 import { brokenPlace } from "./broken-place";
 import type { ValidationError } from "class-validator";
 
-/** One node of the validator's tree, as it hands it over. */
-function at(property: string, children: ValidationError[] = []): ValidationError {
+/** A leaf: the field that broke, with the rule it broke. */
+function leaf(property: string, rule = "isUuid"): ValidationError {
   return <ValidationError>{
     property,
+    children: [],
+    constraints: {
+      [rule]: `${property} ${rule}`,
+    },
+  };
+}
+
+/** A branch: a property with something wrong under it. */
+function branch(property: string, children: ValidationError[], value?: unknown): ValidationError {
+  return <ValidationError>{
+    property,
+    value,
     children,
-    constraints:
-      children.length === 0
-        ? {
-            isUuid: "id must be a UUID",
-          }
-        : undefined,
   };
 }
 
 describe("brokenPlace · where a project file first goes wrong", () => {
-  it("says nothing where the validator refused but named no field", () => {
-    assert.equal(brokenPlace([]), "");
+  it("is null where the validator refused but named no field", () => {
+    assert.equal(brokenPlace([]), null);
   });
 
-  it("names a field of the config itself", () => {
-    assert.equal(brokenPlace([at("name")]), "name");
+  it("names a field of the project itself, with an empty trail", () => {
+    assert.deepEqual(brokenPlace([leaf("name", "isNotEmpty")]), {
+      trail: [],
+      field: "name",
+      rule: "isNotEmpty",
+    });
   });
 
-  it("hangs a row's number on the list above it with no dot between", () => {
-    assert.equal(brokenPlace([at("agents", [at("1", [at("name")])])]), "agents[1].name");
+  it("names the thing by its own name, taken from the row that carries it", () => {
+    const tree = [
+      branch("commands", [
+        branch("0", [leaf("id")], {
+          name: "run_tests",
+        }),
+      ]),
+    ];
+
+    assert.deepEqual(brokenPlace(tree), {
+      trail: [
+        {
+          kind: "command",
+          name: "run_tests",
+        },
+      ],
+      field: "id",
+      rule: "isUuid",
+    });
   });
 
-  it("walks all the way to the leaf, since a branch only says something under it is wrong", () => {
-    const tree = [at("agents", [at("1", [at("tools", [at("7", [at("pinned", [at("0", [at("id")])])])])])])];
+  it("names a model by its title, since a model has no name", () => {
+    const tree = [
+      branch("models", [
+        branch("2", [leaf("id")], {
+          title: "gpt-4o",
+        }),
+      ]),
+    ];
 
-    assert.equal(brokenPlace(tree), "agents[1].tools[7].pinned[0].id");
+    assert.deepEqual(brokenPlace(tree)?.trail, [
+      {
+        kind: "model",
+        name: "gpt-4o",
+      },
+    ]);
+  });
+
+  it("walks a list inside a thing, naming every named step on the way", () => {
+    const tree = [
+      branch("commands", [
+        branch(
+          "0",
+          [
+            branch("parameters", [
+              branch("1", [leaf("id")], {
+                name: "url",
+              }),
+            ]),
+          ],
+          {
+            name: "fetch",
+          },
+        ),
+      ]),
+    ];
+
+    assert.deepEqual(brokenPlace(tree), {
+      trail: [
+        {
+          kind: "command",
+          name: "fetch",
+        },
+        {
+          kind: "parameter",
+          name: "url",
+        },
+      ],
+      field: "id",
+      rule: "isUuid",
+    });
+  });
+
+  it("leaves a name null where the thing has none, as a link does not", () => {
+    const tree = [branch("links", [branch("0", [leaf("fromId")], {})])];
+
+    assert.deepEqual(brokenPlace(tree)?.trail, [
+      {
+        kind: "link",
+        name: null,
+      },
+    ]);
   });
 
   it("follows the first failing branch, because one place is enough to stop a file opening", () => {
-    assert.equal(brokenPlace([at("models", [at("0", [at("id")])]), at("agents")]), "models[0].id");
+    const tree = [
+      branch("models", [
+        branch("0", [leaf("id")], {
+          title: "m",
+        }),
+      ]),
+      branch("agents", [
+        branch("0", [leaf("name")], {
+          name: "a",
+        }),
+      ]),
+    ];
+
+    assert.equal(brokenPlace(tree)?.trail[0].kind, "model");
   });
 });
