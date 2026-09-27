@@ -63,6 +63,8 @@ export function ChatSection({
           }}
           band={{
             head: stream.head,
+            // There is nothing to write out of an empty stream, so the act stands only where a turn does.
+            onExport: stream.messages.length === 0 ? null : stream.exportChat,
             /*
               The stream's own field stands over the stream, under the band — one word for both faces of the
               section, and the count here is this stream's own matches and not the record's.

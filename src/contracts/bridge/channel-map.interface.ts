@@ -34,6 +34,7 @@ import type {
   REMEMBER_DELETION_CHANNEL,
   REMEMBER_PROJECT_VIEW_CHANNEL,
   REVEAL_PROJECT_CHANNEL,
+  SAVE_TEXT_FILE_CHANNEL,
   SAVE_PROJECT_CHANNEL,
   SAVE_MCP_ENV_VALUE_CHANNEL,
   SAVE_MCP_TOKEN_CHANNEL,
@@ -47,6 +48,7 @@ import type { McpLook, McpSecretsHeld } from "../mcp";
 import type { SaidTurn } from "../llm";
 import type { CallPlace, OpenedRecord, RunHit, RunRow, WholeRun } from "../runs";
 import type { AttachmentPick, PackAttachmentsAsk, PackedAttachment, PickAttachmentsAsk } from "../attachments";
+import type { SaveTextAsk } from "../shell";
 import type {
   AddRunStep,
   AskAgain,
@@ -129,6 +131,8 @@ export interface ChannelMap {
   [REVEAL_PROJECT_CHANNEL]: { payload: string; answer: void };
   [PICK_ATTACHMENT_CHANNEL]: { payload: PickAttachmentsAsk; answer: AttachmentPick };
   [PACK_ATTACHMENTS_CHANNEL]: { payload: PackAttachmentsAsk; answer: PackedAttachment[] };
+  /** The person chooses where a text file goes and it is written there; the saved path, or null when dismissed. */
+  [SAVE_TEXT_FILE_CHANNEL]: { payload: SaveTextAsk; answer: string | null };
 }
 
 /** Every channel there is; a name outside this is not a channel. */

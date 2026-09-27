@@ -61,6 +61,7 @@ function stream(patch: Partial<ShownStream> = {}): ShownStream {
     messages: [],
     agents: [],
     head: null,
+    exportChat: vi.fn(),
     shownRunId: null,
     runs: [],
     isFailed: false,

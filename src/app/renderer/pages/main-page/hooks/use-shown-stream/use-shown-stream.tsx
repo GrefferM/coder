@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { chatStanding, foundInStream, foundMessage, openedStream, standingIn } from "../../../../features/conversation";
+import {
+  chatFileName,
+  chatStanding,
+  chatText,
+  foundInStream,
+  foundMessage,
+  openedStream,
+  saveChatText,
+  standingIn,
+} from "../../../../features/conversation";
 import { RUN_DONE, runAgents, useOpenedRun, useRunHistory, useRunSearch } from "../../../../features/record";
 import type { AgentChatState, ChatHead, ChatMessage, ChatTab } from "../../../../features/conversation";
 import type { NamedAgent } from "../../../../interfaces";
@@ -130,8 +139,19 @@ export function useShownStream(
   }
 
   const shown = messages();
+  // The stream names its agents as they stand today, and keeps the record's name for one that is gone.
+  const shownAgents = runAgents(opened.run, agents);
   /** The messages of this stream the word stands in, freshest first — the order is `foundInStream`'s. */
   const inStream = foundInStream(shown, query);
+
+  /** Writes the stream out as a plain-text transcript where the person points; a dismissed chooser writes nothing. */
+  async function exportChat() {
+    try {
+      await saveChatText(chatText(shown, shownAgents), chatFileName());
+    } catch {
+      // A file that could not be written leaves the conversation exactly as it was; nothing is half-done.
+    }
+  }
   /** The message a pressed row promised, which is where the stream stands until a hand moves it. */
   const promised = foundMessage(shown, drivenTo);
   const standingAt = standingIn(inStream, at, promised);
@@ -150,9 +170,9 @@ export function useShownStream(
     tab,
     showTab: setTab,
     messages: shown,
-    // The stream names its agents as they stand today, and keeps the record's name for one that is gone.
-    agents: runAgents(opened.run, agents),
+    agents: shownAgents,
     head: head(),
+    exportChat,
     shownRunId: openedRunId ?? chat.runId,
     runs: history.runs,
     isFailed: history.isFailed,

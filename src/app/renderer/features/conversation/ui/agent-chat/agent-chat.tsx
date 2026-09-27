@@ -93,7 +93,7 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
         minHeight: 0,
       }}
     >
-      {band.head !== null && <OpenedBand head={band.head} />}
+      {band.head !== null && <OpenedBand head={band.head} onExport={band.onExport} />}
       {/*
         The stream's own search stands over the stream and under the band, with space on every side: nothing is
         attached to it, so it reads as standing over the conversation and not as another band of it.

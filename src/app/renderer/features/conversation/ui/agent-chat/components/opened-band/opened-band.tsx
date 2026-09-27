@@ -1,9 +1,11 @@
-import { Dot, Mark } from "../../../../../../components";
+import { Dot, Mark, TextButton } from "../../../../../../components";
 import { dayLabel, timeLabel } from "../../../../../../utils/dates";
 import { RUN_STATE_LABELS } from "../../../../../record";
 import {
   AGENT_CHAT_OPENED_BACKGROUND_COLOR,
   AGENT_CHAT_OPENED_DOT_COLORS,
+  AGENT_CHAT_OPENED_EXPORT_LABEL,
+  AGENT_CHAT_OPENED_EXPORT_TONE,
   AGENT_CHAT_OPENED_DOT_GLOW_PX,
   AGENT_CHAT_OPENED_DOT_SIZE_PX,
   AGENT_CHAT_OPENED_GAP_PX,
@@ -24,7 +26,7 @@ import type { OpenedBandProps } from "./interfaces";
  * other. One word for every state, with the state left to a dot, says nothing beside a row that names it outright
  * — and «НЕ ПІШОВ» has no colour for a dot to carry.
  */
-export function OpenedBand({ head }: OpenedBandProps) {
+export function OpenedBand({ head, onExport }: OpenedBandProps) {
   const dotColor = AGENT_CHAT_OPENED_DOT_COLORS[head.state] ?? AGENT_CHAT_OPENED_RUNNING_DOT_COLOR;
 
   return (
@@ -55,6 +57,12 @@ export function OpenedBand({ head }: OpenedBandProps) {
         {RUN_STATE_LABELS[head.state] ?? RUN_STATE_LABELS.running}
       </span>
       <Mark color={AGENT_CHAT_OPENED_WHEN_COLOR}>{`${dayLabel(head.at, new Date())} ${timeLabel(head.at)}`}</Mark>
+      {/* The band's own act stands on its right, away from how the flow stands on the left. */}
+      {onExport !== null && (
+        <TextButton className="ms-auto" tone={AGENT_CHAT_OPENED_EXPORT_TONE} onPress={onExport}>
+          {AGENT_CHAT_OPENED_EXPORT_LABEL}
+        </TextButton>
+      )}
     </div>
   );
 }

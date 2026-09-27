@@ -1,7 +1,7 @@
 import { dialog, shell } from "electron";
-import { stat } from "node:fs/promises";
+import { stat, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { ATTACHMENT_PICKER_TITLE, DIRECTORY_PICKER_TITLE } from "../constants";
+import { ATTACHMENT_PICKER_TITLE, DIRECTORY_PICKER_TITLE, TEXT_SAVE_FILTER_LABEL, TEXT_SAVE_TITLE } from "../constants";
 import { PROJECT_FILE_NAME } from "../../modules/projects/constants";
 import { AttachmentPacker } from "../../modules/attachments";
 import type {
@@ -10,6 +10,7 @@ import type {
   PackedAttachment,
   PickAttachmentsAsk,
   RefusedPick,
+  SaveTextAsk,
 } from "../../contracts";
 
 /** Electron's own desktop calls: the choosers, the file-manager reveal, and the files a question is packed with. */
@@ -82,6 +83,31 @@ export class SystemShell {
   /** Reveals a project's config file in the system's file manager, with the project's folder open around it. */
   async revealProject(directory: string): Promise<void> {
     shell.showItemInFolder(path.join(directory, PROJECT_FILE_NAME));
+  }
+
+  /**
+   * Opens the system's save chooser on a suggested name, and writes the text where the person points it. Null
+   * when the chooser is dismissed — nothing is written, and the caller says nothing happened.
+   */
+  async saveText({ text, suggestedName }: SaveTextAsk): Promise<string | null> {
+    const result = await dialog.showSaveDialog({
+      title: TEXT_SAVE_TITLE,
+      defaultPath: suggestedName,
+      filters: [
+        {
+          name: TEXT_SAVE_FILTER_LABEL,
+          extensions: ["txt"],
+        },
+      ],
+    });
+
+    if (result.canceled || result.filePath === undefined) {
+      return null;
+    }
+
+    await writeFile(result.filePath, text, "utf8");
+
+    return result.filePath;
   }
 
   /** A chosen file or folder that is not attached: too big for the room, or not ours to read, with the system's words. */

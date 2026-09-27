@@ -168,6 +168,13 @@ export const AGENT_CHAT_OPENED_DOT_COLORS: Record<string, string> = {
 export const AGENT_CHAT_OPENED_RUNNING_DOT_COLOR = "#4ade80";
 export const AGENT_CHAT_OPENED_EMPTY_DOT_BORDER = "1px solid #5c6478";
 
+/** The band's own act, on its right — writing the stream out as a transcript. */
+export const AGENT_CHAT_OPENED_EXPORT_LABEL = "ЕКСПОРТУВАТИ";
+export const AGENT_CHAT_OPENED_EXPORT_TONE: IconTone = {
+  rest: AGENT_CHAT_OPENED_WHEN_COLOR,
+  lit: AGENT_CHAT_OPENED_LABEL_COLOR,
+};
+
 /**
  * The button down: one button, there exactly while the end of the stream is out of view. News labels it rather
  * than raising a second — coming back down and looking at what came is a single act.

@@ -112,6 +112,7 @@ function renderChat(overrides: ChatOverrides = {}) {
       }}
       band={{
         head: null,
+        onExport: null,
         search: {
           query: "",
           isTyping: false,

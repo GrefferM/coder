@@ -11,6 +11,7 @@ export * from "./can-ask";
 export * from "./chat-levels";
 export * from "./chat-standing";
 export * from "./chat-stream";
+export * from "./chat-text";
 export * from "./cut-end";
 export * from "./empty-walk";
 export * from "./fed-step-ids";

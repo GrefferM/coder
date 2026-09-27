@@ -12,6 +12,8 @@ export interface ShownStream {
   /** Who the stream calls its agents — today's, and the record's own for an agent the project has let go. */
   agents: NamedAgent[];
   head: ChatHead | null;
+  /** Writes the shown stream out as a plain-text transcript, where the person points the save chooser. */
+  exportChat: () => void;
   /** The run the stream stands on — the opened one, or the row this conversation writes into. */
   shownRunId: string | null;
   runs: RunRow[];
