@@ -8,5 +8,6 @@
 export const AGENT_TEMPERATURE_LEAST = 0;
 export const AGENT_TEMPERATURE_MOST = 1;
 
-/** The fewest calls an agent may be allowed — one, since none would let it call nothing. */
-export const AGENT_MAX_CALLS_LEAST = 1;
+/** The fewest calls an agent may be allowed — nought, which is no ceiling at all: the turn calls on until
+ * the model has nothing more to ask for. Any whole number above it is a ceiling that many calls high. */
+export const AGENT_MAX_CALLS_LEAST = 0;

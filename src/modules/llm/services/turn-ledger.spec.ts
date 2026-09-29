@@ -79,6 +79,17 @@ describe("TurnLedger", () => {
     assert.equal(ledger.wouldOverspend(3, 3), true);
   });
 
+  it("treats a maximum of nought as no ceiling — never spent, and never overspent", () => {
+    const ledger = new TurnLedger();
+
+    for (let spent = 0; spent < 50; spent += 1) {
+      ledger.spend();
+    }
+
+    assert.equal(ledger.isSpent(0), false);
+    assert.equal(ledger.wouldOverspend(1000, 0), false);
+  });
+
   it("keeps the words and the calls at every end, since a turn cut short still spent what it spent", () => {
     const ledger = new TurnLedger();
 

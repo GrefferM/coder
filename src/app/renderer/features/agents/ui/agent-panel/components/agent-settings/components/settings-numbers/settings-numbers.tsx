@@ -6,7 +6,9 @@ import {
   AGENT_TEMPERATURE_MOST,
 } from "../../../../../../../../../../contracts";
 import {
+  AGENT_SETTINGS_MAX_CALLS_HINT,
   AGENT_SETTINGS_MAX_CALLS_LABEL,
+  AGENT_SETTINGS_MAX_CALLS_UNLIMITED,
   AGENT_SETTINGS_SWITCH_LABEL,
   AGENT_SETTINGS_TEMPERATURE_HINT,
   AGENT_SETTINGS_TEMPERATURE_LABEL,
@@ -17,12 +19,13 @@ import type { SettingsNumbersProps } from "./interfaces";
 export function SettingsNumbers({ draft, was, mendedStepper, mendedRow, onDraftChange }: SettingsNumbersProps) {
   return (
     <>
-      <SettingRow label={AGENT_SETTINGS_MAX_CALLS_LABEL} wasValue={was.maxCalls}>
+      <SettingRow label={AGENT_SETTINGS_MAX_CALLS_LABEL} wasValue={was.maxCalls} hint={AGENT_SETTINGS_MAX_CALLS_HINT}>
         <Stepper
           ref={mendedRow === "maxCalls" ? mendedStepper : undefined}
           label={AGENT_SETTINGS_MAX_CALLS_LABEL}
           value={draft.maxCalls}
           least={AGENT_MAX_CALLS_LEAST}
+          floorLabel={AGENT_SETTINGS_MAX_CALLS_UNLIMITED}
           onChange={(maxCalls) =>
             onDraftChange({
               maxCalls,

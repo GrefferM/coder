@@ -28,6 +28,7 @@ export function Stepper({
   least,
   most = Number.POSITIVE_INFINITY,
   places = STEPPER_PLACES,
+  floorLabel,
 }: StepperProps) {
   // A row nobody has written stands empty, and the first step up writes the least it may hold.
   const isLeast = value === null || value <= least;
@@ -76,7 +77,7 @@ export function Stepper({
           fontSize: STEPPER_VALUE_FONT_SIZE_PX,
         }}
       >
-        {value === null ? "" : value.toFixed(places)}
+        {value === null ? "" : floorLabel !== undefined && value <= least ? floorLabel : value.toFixed(places)}
       </span>
       <button
         type="button"

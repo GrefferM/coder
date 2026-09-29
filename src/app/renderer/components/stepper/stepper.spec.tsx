@@ -85,4 +85,14 @@ describe("Stepper", () => {
 
     expect(onChange).not.toHaveBeenCalled();
   });
+  it("shows the floor label in place of the number at the floor, and the number above it", () => {
+    const { rerender } = render(<Stepper label={LABEL} value={0} least={0} floorLabel="∞" onChange={vi.fn()} />);
+
+    expect(screen.getByText("∞")).toBeInTheDocument();
+
+    rerender(<Stepper label={LABEL} value={3} least={0} floorLabel="∞" onChange={vi.fn()} />);
+
+    expect(screen.queryByText("∞")).not.toBeInTheDocument();
+    expect(screen.getByText("3")).toBeInTheDocument();
+  });
 });

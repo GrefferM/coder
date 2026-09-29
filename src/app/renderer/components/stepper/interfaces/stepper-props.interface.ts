@@ -16,4 +16,6 @@ export interface StepperProps {
   least: number;
   most?: number;
   places?: number;
+  /** A word shown in place of the number at the floor — «∞» for a call ceiling of nought, no ceiling at all. */
+  floorLabel?: string;
 }

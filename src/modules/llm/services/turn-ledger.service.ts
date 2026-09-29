@@ -14,14 +14,14 @@ export class TurnLedger {
   private outputTokens = 0;
   private calls = 0;
 
-  /** Whether the turn has spent the calls the person allowed it. */
+  /** Whether the turn has spent the calls the person allowed it; a ceiling of nought is no ceiling, never spent. */
   isSpent(maxCalls: number): boolean {
-    return this.calls >= maxCalls;
+    return maxCalls !== 0 && this.calls >= maxCalls;
   }
 
-  /** Whether this many more calls would take the turn past what the person allowed it. */
+  /** Whether this many more calls would take the turn past what the person allowed it; nought allows any number. */
   wouldOverspend(more: number, maxCalls: number): boolean {
-    return this.calls + more > maxCalls;
+    return maxCalls !== 0 && this.calls + more > maxCalls;
   }
 
   /** One call spent: a round of the model and a tool run count the same. */

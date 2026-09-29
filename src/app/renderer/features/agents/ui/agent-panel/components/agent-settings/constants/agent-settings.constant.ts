@@ -23,6 +23,10 @@ export const AGENT_SETTINGS_TIE_GAP_PX = 8;
 /** Per-agent call limit — how many tool calls one turn may make; rings the graph refuses outright. */
 export const AGENT_SETTINGS_MAX_CALLS_LABEL = "Максимум викликів";
 
+/** Nought is no ceiling: the stepper shows «∞» there, and a line under the row says so in words. */
+export const AGENT_SETTINGS_MAX_CALLS_UNLIMITED = "∞";
+export const AGENT_SETTINGS_MAX_CALLS_HINT = "0 — БЕЗ ЛІМІТУ";
+
 /** The temperature row and the line under it, in plain words. */
 export const AGENT_SETTINGS_TEMPERATURE_LABEL = "Температура";
 export const AGENT_SETTINGS_TEMPERATURE_HINT = "0 — ТРИМАЄТЬСЯ ПРИНЕСЕНОГО · 1 — ВІЛЬНІШЕ ФОРМУЛЮЄ · КРОК 0.1";

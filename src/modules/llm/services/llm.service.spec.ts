@@ -678,6 +678,36 @@ describe("LlmService when the check refuses a call", () => {
     assert.equal(answer.text, "");
   });
 
+  it("runs the whole turn under a ceiling of nought, spending calls without ever being cut", async () => {
+    const provider = speaking([
+      asking({
+        depth: 2,
+      }),
+      new AIMessageChunk({
+        content: "Знайшов три файли.",
+      }),
+    ]);
+    const llmService = new LlmService(
+      keyStore("sk-1"),
+      voice([]),
+      runner(),
+      noServers(),
+      toolArguments,
+      provider.clients,
+    );
+
+    const answer = await llmService.ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      maxCalls: 0,
+      tools: [FIND_DEEP],
+    });
+
+    // Nought is no ceiling: the call is made and the turn goes on to the model's own last word.
+    assert.equal(answer.isCallsExhausted, false);
+    assert.equal(answer.text, "Знайшов три файли.");
+  });
+
   it("says nothing of a refusal when the arguments hold, and runs the line", async () => {
     const provider = speaking([
       asking({
