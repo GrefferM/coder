@@ -35,17 +35,17 @@ export function noProviderNote(providerId: string): string {
   return `${NO_PROVIDER_NOTE_PREFIX}${providerId}${NO_PROVIDER_NOTE_SUFFIX}`;
 }
 
-/** The provider whose address field is empty — a local one, or a remote one whose address is the person's own. */
+/** The provider whose address field is empty: local, or remote with the address left to the person. */
 export function noAddressNote(providerName: string): string {
   return `${NO_ADDRESS_NOTE_PREFIX}${providerName}${NO_ADDRESS_NOTE_SUFFIX}`;
 }
 
-/** Which provider carries no functions, and which agent is holding grants against it. */
+/** Which provider carries no functions and which agent holds grants against it. */
 export function noToolsNote(providerName: string, agentName: string): string {
   return `${NO_TOOLS_NOTE_PREFIX}${providerName}${NO_TOOLS_NOTE_MIDDLE}${agentName}${NO_TOOLS_NOTE_SUFFIX}`;
 }
 
-/** Which agent holds a grant on a function the project no longer has. */
+/** Which agent holds a grant on a function missing from the project. */
 export function lostFunctionNote(agentName: string): string {
   return `${LOST_FUNCTION_NOTE_PREFIX}${agentName}${LOST_FUNCTION_NOTE_SUFFIX}`;
 }
@@ -65,23 +65,17 @@ export function notFilledNote(modelTitle: string, field: string): string {
   return `${NOT_FILLED_NOTE_PREFIX}${modelTitle}${NOT_FILLED_NOTE_MIDDLE}${fieldWord(field)}${NOT_FILLED_NOTE_SUFFIX}`;
 }
 
-/**
- * What each wall says, one row per wall — the union counts them, so a wall added without a sentence does not
- * compile, and none can quietly take another's words.
- */
+/** One sentence per wall; the union makes a missing one a compile error. */
 const WALL_NOTES: Record<NotStartedWall, (model: ProjectModel, provider: ProviderState | null) => string> = {
   noKey: (model, provider) => noKeyNote(model.title, provider?.name ?? model.provider),
   noProvider: (model) => noProviderNote(model.provider),
   noAddress: (model, provider) => noAddressNote(provider?.id ?? model.provider),
   notFilled: (model) => notFilledNote(model.title, unfilledField(modelNumbers(model)) ?? ""),
-  // A provider that never answered has neither a model nor a name worth pointing at: the address is where to look.
+  // A silent provider has no model or name to point at; the address is where to look.
   silent: () => CHAT_PROVIDER_SILENT_NOTE,
 };
 
-/**
- * The card's one sentence, naming the model or the provider the wall is about. Only the walls are written for:
- * the rest of the family says its piece elsewhere, and cannot arrive here to be given the wrong words.
- */
+/** The card's sentence naming the model or provider the wall concerns; only walls are handled here. */
 export function notStartedNote(wall: NotStartedWall, model: ProjectModel, provider: ProviderState | null): string {
   return WALL_NOTES[wall](model, provider);
 }

@@ -15,8 +15,8 @@ import {
 import type { StepHeadProps } from "./interfaces";
 
 /**
- * The head every step inside a panel wears: whose it is, what it is about, and the way back. The whole head is
- * the way back — a chevron alone is a small target in a narrow panel, and there is nothing else here to press.
+ * The head of every step inside a panel: whose it is, what it is about, and the way back. The whole head is the back
+ * button.
  */
 export function StepHead({ whose, name, backLabel, onBack }: StepHeadProps) {
   const back = useInteraction();

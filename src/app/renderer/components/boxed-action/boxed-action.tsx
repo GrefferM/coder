@@ -11,13 +11,7 @@ import {
 } from "./constants";
 import type { BoxedActionProps } from "./interfaces";
 
-/**
- * A plain action wearing its own box — «СКАСУВАТИ», «ПЕРЕПИТАТИ», «ПЕРЕЗАПУСТИТИ».
- *
- * Its own button and not a text action inside a bordered span: only then are the paddings of the box its own, and
- * a line of text under the label does not push it below the border drawn around it. The press is stopped here as
- * well, because these stand inside rows and cards that lead somewhere of their own.
- */
+/** A plain action in its own box — «СКАСУВАТИ», «ПЕРЕПИТАТИ», «ПЕРЕЗАПУСТИТИ»; its press stops here. */
 export function BoxedAction({ label, onPress }: BoxedActionProps) {
   const { isLit, handlers } = useInteraction();
 

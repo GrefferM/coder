@@ -36,7 +36,7 @@ describe("walkLevels", () => {
   });
 
   it("puts turns that ran at once on one step, since a step is a level and not a turn", () => {
-    // Three agents working on one step — what breaks together and is asked again together.
+    // Three agents on one step.
     expect(walkLevels([step("one", 1), step("two", 2, ["one"]), step("three", 3, ["one"])])).toEqual({
       one: 1,
       two: 2,
@@ -52,7 +52,7 @@ describe("walkLevels", () => {
       step("slow", 4, ["quick"]),
     ]);
 
-    // The record was written in the order turns finished; the walk is deeper than that order says.
+    // The record is in finish order; levels follow dependencies.
     expect(levels).toEqual({
       one: 1,
       quick: 2,
@@ -68,7 +68,7 @@ describe("walkLevels", () => {
   });
 
   it("leaves a turn whose feeder is not in the walk standing on the first step", () => {
-    // A record read back holds what was written; a step naming one that is gone is not a reason to fail.
+    // A step naming a missing step does not fail.
     expect(walkLevels([step("orphan", 1, ["gone"])])).toEqual({
       orphan: 1,
     });

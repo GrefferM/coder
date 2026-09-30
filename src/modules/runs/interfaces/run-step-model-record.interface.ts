@@ -1,4 +1,4 @@
-/** The columns the `run_step_models` table holds; the entity implements it. */
+/** Columns of `run_step_models`; the entity implements it. */
 export interface RunStepModelRecord {
   id: string;
   modelId: string;

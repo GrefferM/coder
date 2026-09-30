@@ -5,14 +5,14 @@ import type { ProjectMcpServer } from "./mcp-server.interface";
 import type { ProjectModel } from "./project-model.interface";
 import type { ProjectPrompt } from "./project-prompt.interface";
 
-/** An open project, as `window.electronApi` delivers it — everything its folder's config file holds. */
+/** An open project as `window.electronApi` delivers it: everything its config file holds. */
 export interface ProjectConfig {
   version: number;
   name: string;
   models: ProjectModel[];
   prompts: ProjectPrompt[];
   commands: ProjectCommand[];
-  /** Each has a life of its own that a declared command has not: it is started, it answers or it falls. */
+  /** Each has its own life: it is started, it answers or it fails. */
   servers: ProjectMcpServer[];
   agents: Agent[];
   links: Link[];

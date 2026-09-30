@@ -15,12 +15,9 @@ import {
 } from "../../../../constants";
 import type { ForgetCrossProps } from "./interfaces";
 
-/**
- * The cross that deletes a run, standing over the row and not inside it — a press to open is not
- * a press to delete. A run still going has none: the record is being written, and half a record is nobody’s.
- */
+/** Deletes a run. It stands beside the row, not inside it, and a running run has none. */
 export function ForgetCross({ press, isRaised, onForget }: ForgetCrossProps) {
-  // A wordless control says what it is in the app's own window, and never in the browser's `title`.
+  // A wordless control gives its hint in the app's own window, not the browser `title`.
   const said = useHint<HTMLButtonElement>(RUN_HISTORY_FORGET_LABEL, press.isLit, press.isFocused);
 
   return (

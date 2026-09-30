@@ -44,17 +44,17 @@ describe("freshnessLine", () => {
   });
 
   it("stands on the answer alone where this machine has no memory of the server yet", () => {
-    // A change needs two looks to be one, and the arrow needs a change: a first meeting has neither.
+    // A change needs two looks, and the arrow needs a change: a first meeting has neither.
     expect(freshnessLine(aLook(), "щойно", null)).toBe("Відповів щойно");
   });
 
   it("keeps «оновлено» after the news of the arrow has been read", () => {
-    // The arrow is news and goes out when the page opens; when the list changed is a fact and stays.
+    // The arrow is news and goes out when the page opens; «оновлено» is a fact and stays.
     expect(freshnessLine(aLook(), "щойно", "вчора")).toBe("Відповів щойно · оновлено вчора");
   });
 
   it("has no line at all where there was no answer, rather than standing with a dash", () => {
-    // A dash says «уже не дізнатись»; here we have simply not been told yet.
+    // No dash for an unanswered server; there is no line.
     expect(freshnessLine(aLook(), null, "вчора")).toBeNull();
     expect(freshnessLine(null, "щойно", null)).toBeNull();
   });

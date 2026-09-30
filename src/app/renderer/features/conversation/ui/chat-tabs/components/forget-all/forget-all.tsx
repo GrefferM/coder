@@ -12,7 +12,7 @@ import {
 } from "../../constants";
 import type { ForgetAllProps } from "./interfaces";
 
-/** The history's own act, in the place the stream keeps for its own — and it destroys. */
+/** The history's act, destructive, in the place the stream keeps for its own. */
 export function ForgetAll({ runs, onForgetAll }: ForgetAllProps) {
   const { isLit, isFocused, handlers } = useInteraction();
   const isSpent = runs === 0;

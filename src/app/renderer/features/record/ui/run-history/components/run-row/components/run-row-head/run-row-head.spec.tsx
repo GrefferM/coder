@@ -23,7 +23,7 @@ import type { RunRow } from "../../../../../../interfaces";
 
 const ASKED_AT = new Date(2026, 8, 6, 14, 5);
 
-// The project as it stands today — the head looks the name up here, by the agent's id and nothing else.
+// The project's agents; the head looks the name up by id only.
 const AGENTS: NamedAgent[] = [
   {
     id: "agent-1",
@@ -54,7 +54,7 @@ function row(patch: Partial<RunRow> = {}): RunRow {
 
 describe("RunRowHead", () => {
   it("names whom the flow was asked last, by the name that agent goes by today", () => {
-    // The record kept «Шукач», the project renamed them, and the head says today's name.
+    // The head shows the agent's current name, not the one the record kept.
     render(<RunRowHead run={row()} agents={AGENTS} isRunning={false} isRaised={false} />);
 
     expect(screen.getByText("ШУКАЧ")).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe("RunRowHead", () => {
   });
 
   it("names the agent the last question went to, not the one the flow started from", () => {
-    // A flow is asked more than once, and the head answers «with whom now», not «with whom first».
+    // The head names the last addressee, not the first.
     render(
       <RunRowHead
         run={row({
@@ -80,7 +80,7 @@ describe("RunRowHead", () => {
   });
 
   it("names an agent the project no longer holds from the record, and says so by going dimmer", () => {
-    // Today's name for one who stands, the record's for one who is gone — and the gone one reads quieter.
+    // Current name for an existing agent, the record's for a gone one, drawn quieter.
     render(
       <RunRowHead
         run={row({
@@ -99,7 +99,7 @@ describe("RunRowHead", () => {
   });
 
   it("wears the agent's own colour, so a row is read by whom it belongs to and not by its words", () => {
-    // A list of grey names tells the eye nothing; the colour is what a person already knows their agents by.
+    // The name wears the agent's colour.
     render(<RunRowHead run={row()} agents={AGENTS} isRunning={false} isRaised={false} />);
 
     expect(screen.getByText("ШУКАЧ")).toHaveStyle({
@@ -108,8 +108,7 @@ describe("RunRowHead", () => {
   });
 
   it("says the fifth word where nothing was sent, and draws its dot as an empty place", () => {
-    // Red does not go on what the app never did — the word is quiet like the rest, and the dot
-    // is an outline with nothing inside it, because there is no colour for a turn that never left.
+    // A not-sent run is not red: the word is quiet and the dot is an empty outline.
     render(
       <RunRowHead
         run={row({
@@ -130,7 +129,7 @@ describe("RunRowHead", () => {
   });
 
   it("keeps every state word quiet, whatever the state, so the head has one coloured word and it is the name", () => {
-    // The pill is gone from all five states — two colours in a 380 px row would be one too many.
+    // No pill in any of the five states.
     const { rerender } = render(<RunRowHead run={row()} agents={AGENTS} isRunning={false} isRaised={false} />);
 
     for (const [state, label] of [
@@ -175,15 +174,14 @@ describe("RunRowHead", () => {
   });
 
   it("says the hour the flow last spoke and the work under it, not the waiting", () => {
-    // The hour is the flow's last word; the span is every written step added up.
+    // The hour is the flow's last word; the span sums every written step.
     render(<RunRowHead run={row()} agents={AGENTS} isRunning={false} isRaised={false} />);
 
     expect(screen.getByText(`${timeLabel(ASKED_AT)}${RUN_HISTORY_SEPARATOR}${spanLabel(5_500)}`)).toBeInTheDocument();
   });
 
   it("says the hour the reply came back, and not the hour the question went out", () => {
-    // The bug this guards: the list is sorted by the flow's last word, and the row wore the hour it was asked — so
-    // a row that had risen to the top said an hour that explained nothing about why it rose.
+    // The hour is the flow's last word, which the list is sorted by, not the hour it was asked.
     const CAME_BACK = new Date(2026, 8, 6, 14, 39);
 
     render(
@@ -262,8 +260,7 @@ describe("RunRowHead", () => {
   });
 
   it("carries the colour of the state in the dot, the word beside it being quiet in every state", () => {
-    // The pill is gone, so the dot is the only place a state has a colour — and it still has one, or
-    // the head would say how the run stands in one grey writing for all five.
+    // The dot carries each state's colour.
     const { rerender } = render(<RunRowHead run={row()} agents={AGENTS} isRunning={false} isRaised={false} />);
 
     expect(screen.getByText(RUN_STATE_LABELS[RUN_DONE]).previousElementSibling).toHaveStyle({

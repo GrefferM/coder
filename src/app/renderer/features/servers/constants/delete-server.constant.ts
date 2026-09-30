@@ -1,8 +1,6 @@
 /**
- * The question before a server goes. The burden is said in words, and it is three
- * things: the grants that go with it, the keys this machine holds for it, and the row in the project file. The
- * first two are counted; the third says nothing, because the file changes from any deed at all. A burden that is
- * not there is not named, so the sentence shortens rather than saying «0».
+ * The question before a server goes, naming what goes with it: the grants and the keys this machine holds (both
+ * counted) and the row in the project file (not counted). A zero is not named.
  */
 export const DELETE_SERVER_QUESTION_PREFIX = "Видалити сервер ";
 export const DELETE_SERVER_QUESTION_SUFFIX = "?";

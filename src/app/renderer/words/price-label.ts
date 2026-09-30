@@ -4,9 +4,8 @@ import { MODEL_PRICE_PLACES, MODEL_PRICE_SEPARATOR, MODEL_PRICE_UNIT } from "../
 import type { ProjectModel } from "../interfaces";
 
 /**
- * What a model costs, in words: the input price, the output price, and what they buy. A model with a
- * number nobody has written says that instead, and names the field that is missing — the pill on a
- * sphere says it in the same words. The catalogue row and the picker row both ask here.
+ * A model's cost in words: input price, output price and what they buy; a model with an unwritten number names the
+ * missing field instead.
  */
 export function priceLabel(model: ProjectModel): string {
   const unfilled = notFilledLabel(modelNumbers(model));

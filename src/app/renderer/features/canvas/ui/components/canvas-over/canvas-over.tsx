@@ -22,7 +22,7 @@ export function CanvasOver({
         <LinkCounts outgoing={tally.outgoing} incoming={tally.incoming} color={tally.color} />
       )}
       <ZoomToolbar scale={scale} onZoomOut={onZoomOut} onZoomIn={onZoomIn} />
-      {/* The app's own word stands along the top, so the offers keep the bottom while it is said. */}
+      {/* The app's own note stands along the top, so the offers keep the bottom. */}
       {writeNote !== null && (
         <WriteNoteLine note={writeNote} onRetry={() => void onWriteRetry()} onDismiss={onWriteDismiss} />
       )}

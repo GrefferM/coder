@@ -37,10 +37,10 @@ describe("DeleteModelConfirm", () => {
   it("asks about a model nobody stands on in the same box, one tone quieter", () => {
     render(<DeleteModelConfirm title="claude-3-haiku" agents={[]} onConfirm={vi.fn()} onDismiss={vi.fn()} />);
 
-    // The question names the model itself, since nothing goes with it.
+    // The question names the model; nothing goes with it.
     expect(screen.getByText("Видалити модель claude-3-haiku?")).toBeInTheDocument();
     expect(screen.getByText(DELETE_MODEL_EMPTY_NOTE)).toBeInTheDocument();
-    // There is nothing to lose, so the answer is not the destructive one.
+    // Nothing to lose, so the answer is not the destructive one.
     expect(
       screen.getByRole("button", {
         name: DELETE_MODEL_EMPTY_YES_LABEL,

@@ -6,7 +6,7 @@ describe("stepsLabel", () => {
     expect(stepsLabel(1)).toBe("1 КРОК");
     expect(stepsLabel(3)).toBe("3 КРОКИ");
     expect(stepsLabel(6)).toBe("6 КРОКІВ");
-    // Eleven to fourteen are the many, whatever their last digit says.
+    // Eleven to fourteen take the many form whatever the last digit.
     expect(stepsLabel(11)).toBe("11 КРОКІВ");
     expect(stepsLabel(12)).toBe("12 КРОКІВ");
     expect(stepsLabel(21)).toBe("21 КРОК");

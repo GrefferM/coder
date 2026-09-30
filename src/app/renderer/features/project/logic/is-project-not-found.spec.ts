@@ -4,7 +4,7 @@ import { PROJECT_NOT_FOUND } from "../constants";
 
 describe("isProjectNotFound", () => {
   it("finds the code inside the wrapping the main process puts around it", () => {
-    // Electron hands the renderer its own sentence with the code somewhere in the middle of it.
+    // Electron wraps the code inside its own sentence.
     expect(isProjectNotFound(new Error(`Error invoking remote method: ${PROJECT_NOT_FOUND}: no config`))).toBe(true);
   });
 

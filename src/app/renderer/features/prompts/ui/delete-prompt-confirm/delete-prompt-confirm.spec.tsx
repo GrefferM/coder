@@ -34,7 +34,7 @@ describe("DeletePromptConfirm", () => {
   });
 
   it("names every agent that would fall to the bare model, each on its own chip", () => {
-    // A prompt is something an agent can stand without, so the question counts who loses it.
+    // Counts the agents that lose the prompt.
     render(
       <DeletePromptConfirm
         prompt={prompt}

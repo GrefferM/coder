@@ -4,7 +4,7 @@ import { usePageKeys } from "./use-page-keys";
 import type { PageSubjects } from "../../interfaces";
 import type { PageParts } from "../use-page-parts/interfaces";
 
-/** Only what the floors of the keyboard actually read; everything else on the page is none of their business. */
+/** Only what the keyboard floors read. */
 function pageKeys(
   stands: {
     selectedAgentId?: string | null;
@@ -104,7 +104,7 @@ function pressKey(key: string, extra: Partial<KeyboardEventInit> = {}, target: E
   });
 }
 
-/** A field the person is typing in, standing in the page while the key is pressed. */
+/** A field being typed in while the key is pressed. */
 function typedIn() {
   const input = document.createElement("input");
 
@@ -123,7 +123,7 @@ describe("usePageKeys · Escape and the panel", () => {
   });
 
   it("stays quiet while a question stands over the canvas", () => {
-    // Whatever stands over the canvas answers Escape itself, and this floor does not answer under it.
+    // Whatever stands over the canvas answers Escape itself; this floor stays quiet.
     const { collapse } = pageKeys({
       doomedAgentId: "agent-1",
     });
@@ -168,8 +168,8 @@ describe("usePageKeys · the key that deletes a sphere", () => {
   });
 
   it("stays quiet while a link stands chosen, though a sphere is still selected", () => {
-    // The key is the link's then. The chat keeps a sphere selected all the while, so
-    // without this floor one press would take the link and ask about the agent at once.
+    // The key is the link's: the chat keeps a sphere selected, so one press must not both take the link and ask about
+    // the agent.
     const { requestDeleteAgent } = pageKeys({
       selectedAgentId: "agent-1",
       chosenLinkId: "link-1",
@@ -236,7 +236,7 @@ describe("usePageKeys · ⌘Z, ⌘C and ⌘V", () => {
   });
 
   it("leaves ⌘C to the words when words are selected", () => {
-    // The sphere is still selected under them; copying text must not quietly take the agent instead.
+    // The sphere stays selected under the words; copying text must not take the agent.
     const selection = vi.spyOn(window, "getSelection");
 
     selection.mockReturnValue(<Selection>(<unknown>{

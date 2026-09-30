@@ -1,10 +1,10 @@
 import type { Point } from "../../../utils/math";
 
-/** Starting scale and its bounds; both of them stand on the step, so the scale is a plain grid of tens. */
+/** Starting scale and its bounds; all stand on the step, so the scale is a grid of tens. */
 export const ZOOM_DEFAULT_SCALE = 1;
 export const ZOOM_MIN_SCALE = 0.3;
 
-/** Ceiling at 100% — «+» is dead there, and a double click fits no further. */
+/** Ceiling at 100%: «+» is dead there and a double click fits no further. */
 export const ZOOM_MAX_SCALE = ZOOM_DEFAULT_SCALE;
 
 /** Scale change per toolbar press or wheel notch. */

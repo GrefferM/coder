@@ -1,6 +1,5 @@
-// Draws the renderer's subject graph — which `features/<subject>` imports which — and fails on a
-// ring between two subjects or on `project` importing any subject: `project` is the leaf every
-// subject stands on. Specs are left out, since a spec names the word it asserts on wherever it is.
+// Draws the renderer's subject graph (which `features/<subject>` imports which); fails on a ring between subjects or on
+// `project` importing any subject. Specs are excluded.
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -42,7 +41,7 @@ function sourceFiles(directory) {
   return files;
 }
 
-/** The subject edges one file draws: from its own subject to every other subject it imports. */
+/** The subject edges one file draws: from its subject to each other subject it imports. */
 function edgesOf(file) {
   const from = subjectOf(file);
   const text = fs.readFileSync(file, "utf8");

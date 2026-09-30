@@ -1,3 +1,3 @@
 export * from "./sphere";
-// The arc is its own thing beside the sphere — the canvas puts the two together, so it is exported too.
+// The arc is exported too, since the canvas puts it together with the sphere.
 export * from "./components/sphere-orbs";

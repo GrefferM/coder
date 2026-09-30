@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { walkHead, walkLine } from "./walk-line";
 
-/** The gutters are counted off these: 10 + 2 × 5 out, and 20 + 8 + 2 × 5 in. */
+/** Gutters derive from these: 10 + 2 × 5 out, 20 + 8 + 2 × 5 in. */
 const SIZES = {
   radius: 30,
   tailAir: 10,
@@ -28,7 +28,7 @@ describe("walkLine", () => {
       false,
     );
 
-    // It starts a breath off the sender's rim and stops at the head's base, not at the rim.
+    // Starts off the sender's rim and stops at the head's base.
     expect(line.path).toBe("M 140 100 L 242 100");
   });
 
@@ -43,7 +43,7 @@ describe("walkLine", () => {
       false,
     );
 
-    // Out of the rim, down the gutter beside the sender, along the lane, and on to the head.
+    // Out of the rim, down the sender's gutter, along the lane, to the head.
     expect(line.path).toBe("M 140 100 L 145 100 Q 150 100 150 105 L 150 195 Q 150 200 155 200 L 242 200");
   });
 
@@ -61,12 +61,12 @@ describe("walkLine", () => {
       false,
     );
 
-    // Both turns are rounded: the one out of the lane, and the one out of the gutter into the row.
+    // Both turns are rounded: out of the lane, and out of the gutter into the row.
     expect(line.path).toBe("M 140 200 L 427 200 Q 432 200 432 195 L 432 105 Q 432 100 437 100 L 442 100");
   });
 
   it("keeps the corner whole at the receiver, since the gutter is counted to hold it", () => {
-    // Gutter = air + head + two corners, so the bend never has to be cut back to fit.
+    // Gutter = air + head + two corners, so the bend is never cut back.
     const line = walkLine(
       {
         x: 100,
@@ -80,7 +80,7 @@ describe("walkLine", () => {
       false,
     );
 
-    // The bend turns a full corner's width before the head's base, and no less.
+    // The bend starts a full corner before the head's base.
     expect(line.path).toContain("Q 432 100 437 100");
   });
 
@@ -141,8 +141,7 @@ describe("walkLine", () => {
       false,
     );
 
-    // Two identical points in one spot read as a single blot, so only the head is dropped;
-    // the line still turns its own corner into the row rather than stopping square on the gutter.
+    // Only the head is dropped; the line still turns its corner into the row.
     expect(shared.arrow).toBe("");
     expect(shared.path).toBe(own.path);
   });

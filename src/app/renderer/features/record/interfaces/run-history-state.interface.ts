@@ -1,6 +1,6 @@
 import type { RunRow } from "../../../../../contracts/runs";
 
-/** What the history tab holds — the runs, and whether the record could be read at all. */
+/** The history tab's runs, and whether the record could be read at all. */
 export interface RunHistoryState {
   runs: RunRow[];
   isFailed: boolean;

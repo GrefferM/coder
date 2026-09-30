@@ -1,6 +1,6 @@
 import { IsInt, IsUUID, Min } from "class-validator";
 
-/** A run ending; how it ended is counted from its steps when the row is read, not written here. */
+/** A run ending; the outcome is counted from its steps on read, not written. */
 export class CloseRunDto {
   @IsUUID()
   declare runId: string;

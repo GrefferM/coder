@@ -11,8 +11,8 @@ import { ZOOM_SCALE_STEP } from "../../../../../../../components";
 export const RUN_GRAPH_COLUMN_LINE_COLOR = "rgba(255, 255, 255, 0.028)";
 
 /**
- * The projection's own ends and its own opening scale — the spheres here are drawn small, so the field
- * starts closer than the canvas ever goes and never goes as far out as the canvas may.
+ * The projection's own scale ends and opening scale: spheres are drawn small, so it opens closer than the canvas ever
+ * goes and zooms out less far.
  */
 export const RUN_GRAPH_OPEN_SCALE = 1.2;
 export const RUN_GRAPH_SCALE_STOPS = {
@@ -21,7 +21,7 @@ export const RUN_GRAPH_SCALE_STOPS = {
   step: ZOOM_SCALE_STEP,
 };
 
-/** The ruler: when each turn began, counted from the moment the question was asked. */
+/** The ruler: when each turn began, counted from when the question was asked. */
 export const RUN_GRAPH_RULER_TOP_PX = 22;
 export const RUN_GRAPH_RULER_WIDTH_PX = 120;
 export const RUN_GRAPH_RULER_FONT_SIZE_PX = 9;
@@ -36,15 +36,11 @@ export const RUN_GRAPH_NUMBER_BORDER_COLOR = BORDER_AT_REST_COLOR;
 export const RUN_GRAPH_NUMBER_FONT_SIZE_PX = 10;
 export const RUN_GRAPH_NUMBER_COLOR = CONTROL_AT_REST_COLOR;
 
-/**
- * How a line of the walk is painted — the same paint a link wears on the canvas, quieter than the
- * spheres, one weight for both states. The sender's colour and a trail come when a step is opened. Where the line runs
- * is worked out in the walk's own drawing.
- */
+/** Paint of a walk line: the canvas link's paint, quieter than the spheres, one weight for both states. */
 export const RUN_GRAPH_EDGE_WIDTH = 1.4;
 export const RUN_GRAPH_REST_LINE_COLOR = LINE_AT_REST_COLOR;
 
-/** The ring in the step's own colour, standing just outside the rim of its sphere. */
+/** Ring in the step's colour just outside its sphere's rim. */
 export const RUN_GRAPH_RING_GAP_PX = 6;
 export const RUN_GRAPH_RING_GLOW_PX = 24;
 export const RUN_GRAPH_RING_GLOW_PERCENT = 25;

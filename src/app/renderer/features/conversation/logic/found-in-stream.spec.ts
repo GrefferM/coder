@@ -60,7 +60,7 @@ describe("foundInStream", () => {
   it("names the messages the word stands in, freshest first, against the order the stream reads", () => {
     const messages = [said("one", "Ялина перша"), said("two", "Нічого"), said("three", "Ялина третя")];
 
-    // A word is looked for to reach the last place it was said, so «1» is the newest of them.
+    // Results run newest first, so «1» is the newest.
     expect(foundInStream(messages, "ялина")).toEqual(["three", "one"]);
   });
 
@@ -97,7 +97,7 @@ describe("foundInStream", () => {
   });
 
   it("passes over a turn that never began: nobody was told that, the app was reporting", () => {
-    // The app never takes a card of its own — and never takes a place in the search either.
+    // The app's own cards are never searched.
     const never = said("one", "Локальний провайдер не відповідає за своєю адресою", [], {
       notStarted: "noAddress",
     });

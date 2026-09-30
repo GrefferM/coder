@@ -3,19 +3,16 @@ import type { McpLook } from "../../../interfaces";
 import type { ServerTrouble } from "../interfaces";
 
 /**
- * **why** a server is not up. «Fell» is one answer among several and the least useful of them:
- * a server nobody has a token for never started at all, and one whose variable has no value on this machine will
- * not start until it has. Each of those is a different sentence and a different action, and the row says which.
- *
- * The answer comes out of what the main process refused with. It is a string on the wire, and the words of a
- * refusal are its own — so what is matched here are the refusals' own names, which is what they are for.
+ * Why a server is not up. «Fell» is one answer among several: a missing token or a variable without a value on this
+ * machine also stops it, each with its own sentence and action. Matched on the refusals' own names in the string the
+ * main process refused with.
  */
 export function serverTrouble(look: McpLook | null): ServerTrouble {
   if (look === null || look.isUp) {
     return null;
   }
 
-  // A server that is not up is in trouble whether or not it said why: silence is «ПРОЦЕС УПАВ», not good health.
+  // A server not up is in trouble whether or not it said why; silence is «ПРОЦЕС УПАВ».
   const said = look.failure ?? "";
 
   if (said.includes(MCP_TOKEN_MISSING)) {
@@ -28,7 +25,7 @@ export function serverTrouble(look: McpLook | null): ServerTrouble {
   if (said.includes(MCP_ENV_VALUE_MISSING)) {
     return {
       kind: "valueMissing",
-      // «НЕМА ЗНАЧЕННЯ: BRAVE_API_KEY» — the name travelled with the refusal, because the row names it.
+      // «НЕМА ЗНАЧЕННЯ: BRAVE_API_KEY»: the name travels with the refusal, since the row names it.
       name: said.split(`${MCP_ENV_VALUE_MISSING}: `)[1]?.trim() ?? null,
     };
   }

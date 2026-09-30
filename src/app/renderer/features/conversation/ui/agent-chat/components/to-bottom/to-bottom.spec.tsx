@@ -20,7 +20,7 @@ describe("ToBottom", () => {
   it("wears the number on itself rather than raising a second button", () => {
     render(<ToBottom news={3} onGo={() => {}} />);
 
-    // Coming back down and looking at what came is one act, so it is one button.
+    // Returning down and seeing the news is one act, so one button.
     expect(screen.getAllByLabelText(AGENT_CHAT_TO_BOTTOM_LABEL)).toHaveLength(1);
     expect(screen.getByText(newsLabel(3))).toBeInTheDocument();
   });

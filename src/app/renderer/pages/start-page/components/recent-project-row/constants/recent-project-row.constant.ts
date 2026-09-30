@@ -19,7 +19,7 @@ export const ROW_PATH_COLOR = "#5c6478";
 
 export const ROW_NOTE_LETTER_SPACING_PX = 1;
 
-/** Said in place of the folder when it no longer holds a project. */
+/** Shown in place of the folder when it no longer holds a project. */
 export const ROW_MISSING_LABEL = "НЕ ЗНАЙДЕНО";
 
 /** Colour of a row whose folder no longer holds a project. */

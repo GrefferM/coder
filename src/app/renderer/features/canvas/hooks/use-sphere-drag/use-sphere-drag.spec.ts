@@ -11,7 +11,7 @@ const AGENT = anAgent({
   y: 200,
 });
 
-/** The canvas stands unmoved and unscaled here, so a client point and a content point are the same point. */
+/** Canvas is unmoved and unscaled, so client and content points coincide. */
 function contentPointAt(clientX: number, clientY: number): Point {
   return {
     x: clientX,
@@ -32,7 +32,7 @@ function drag(onMoveAgent: (agentId: string, at: Point) => Promise<void> = vi.fn
   };
 }
 
-/** A press on the sphere itself; the canvas behind must not hear it. */
+/** A press on the sphere itself; must not reach the canvas behind. */
 function press(clientX: number, clientY: number, button = 0) {
   const stopPropagation = vi.fn();
 
@@ -76,7 +76,7 @@ describe("useSphereDrag", () => {
   });
 
   it("stays a click while the hand has not really left the sphere", () => {
-    // A press that trembles selects the sphere; it does not move it by two pixels.
+    // A trembling press selects the sphere without moving it.
     const { result, onDragStart, onMoveAgent } = drag();
 
     act(() => result.current.grabSphere(press(310, 210).event, AGENT));
@@ -89,10 +89,10 @@ describe("useSphereDrag", () => {
   });
 
   it("keeps the grip it was taken by, so the sphere does not jump under the pointer", () => {
-    // Grabbed by its edge, it stays grabbed by that edge — no snapping of the centre to the hand.
+    // Grabbed by its edge, it stays grabbed by that edge.
     const { result } = drag();
 
-    // The sphere stands at 300,200 and is taken 10 to the right and 10 below its centre.
+    // Sphere at 300,200, grabbed 10 right and 10 below its centre.
     act(() => result.current.grabSphere(press(310, 210).event, AGENT));
     act(() => moveTo(410, 310));
 
@@ -124,7 +124,7 @@ describe("useSphereDrag", () => {
   });
 
   it("holds the sphere where it was dropped until the write settles", async () => {
-    // Letting go before the file answers would snap the sphere back to its old place and then forward again.
+    // Letting go before the file answers must not snap the sphere back and forth.
     let settle: () => void = () => undefined;
     const held = vi.fn(
       async () =>
@@ -151,7 +151,7 @@ describe("useSphereDrag", () => {
   });
 
   it("lets the sphere go back to the project's own word when the write fails", async () => {
-    // The write failed, so the file still says where the agent stands — and the canvas draws the file, not the hand.
+    // A failed write leaves the file's position in force.
     const { result } = drag(vi.fn(async () => Promise.reject(new Error("no file"))));
 
     act(() => result.current.grabSphere(press(310, 210).event, AGENT));
@@ -162,7 +162,7 @@ describe("useSphereDrag", () => {
   });
 
   it("does not take a sphere by any button but the left one", () => {
-    // The right button opens the menu over the sphere, and must not start a drag under it.
+    // The right button opens the menu and does not start a drag.
     const { result, onDragStart } = drag();
     const pressed = press(310, 210, 2);
 
@@ -175,7 +175,7 @@ describe("useSphereDrag", () => {
   });
 
   it("lets go of the window when the press ends, so a later move moves nothing", () => {
-    // The write is still out, so the sphere stands where it was dropped — and stays there while the hand wanders.
+    // While the write is pending the sphere stays at the drop point.
     const { result } = drag(vi.fn(() => new Promise<void>(() => undefined)));
 
     act(() => result.current.grabSphere(press(310, 210).event, AGENT));

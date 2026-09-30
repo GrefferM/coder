@@ -13,7 +13,7 @@ import {
 } from "./constants";
 import type { ForgetRunsConfirmProps } from "./interfaces";
 
-/** The question about many rows at once — the number, the days it spans, and what it leaves alone. */
+/** Confirms forgetting many runs: the number, the days it spans, and what it leaves alone. */
 export function ForgetRunsConfirm({ runs, onConfirm, onDismiss }: ForgetRunsConfirmProps) {
   const now = new Date();
   const counted = `${runs.length}${ukrainianPlural(runs.length, FORGET_RUNS_ONE, FORGET_RUNS_FEW, FORGET_RUNS_MANY)}`;

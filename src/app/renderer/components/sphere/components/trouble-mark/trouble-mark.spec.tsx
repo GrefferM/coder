@@ -5,7 +5,7 @@ import { SPHERE_TROUBLE_BREAK_COLOR, SPHERE_TROUBLE_FACT_COLOR, SPHERE_TROUBLE_M
 
 describe("TroubleMark", () => {
   it("wears one colour for a break the walk would meet and another for a fact only wanting filling in", () => {
-    // The ring says at a glance whether this stops a walk or merely wants a number.
+    // The ring shows whether this stops a walk or only wants a number.
     const { rerender } = render(<TroubleMark isBreak markScale={1} />);
 
     expect(screen.getByText(SPHERE_TROUBLE_MARK)).toHaveStyle({

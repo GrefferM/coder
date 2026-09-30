@@ -5,7 +5,7 @@ import type { OpenProject, ProjectModel } from "../../../../interfaces";
 import type { ProjectWrite } from "../../../project";
 import type { ModelWrites } from "./interfaces";
 
-/** Every write the model catalogue makes to the project's file, over the project's one writer. */
+/** Every write the model catalogue makes to the project file, through the project's one writer. */
 export function useModelWrites(project: OpenProject, write: ProjectWrite): ModelWrites {
   const { save, defer } = write;
 
@@ -40,7 +40,7 @@ export function useModelWrites(project: OpenProject, write: ProjectWrite): Model
     [project.config, save],
   );
 
-  /** The model takes every agent on it, and their links with them. */
+  /** Deleting a model takes every agent on it and their links. */
   const deleteModel = useCallback(
     async (modelId: string) => {
       const previous = project.config;

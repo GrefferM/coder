@@ -18,7 +18,7 @@ describe("CanvasPill", () => {
   });
 
   it("is toned by what it says, a fall being marked and not merely written", () => {
-    // Three different uses share one pill, so the tone is what tells them apart at a glance.
+    // Three uses share one pill; the tone tells them apart.
     const { container, rerender } = render(<CanvasPill tone="done">ГОТОВО</CanvasPill>);
 
     expect(container.firstElementChild).toHaveStyle({

@@ -1,4 +1,4 @@
-// A run's own shapes are the boundary's: written once in `src/contracts`, taken from there.
+// A run's shapes are the boundary's, defined in `src/contracts`.
 export * from "../../../../../contracts/runs";
 export * from "./agent-standing.interface";
 export * from "./asked-question.interface";

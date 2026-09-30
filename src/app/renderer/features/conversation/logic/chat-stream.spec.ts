@@ -32,7 +32,7 @@ function said(patch: Partial<ChatMessage>): ChatMessage {
   };
 }
 
-/** One stream's walks, each with the words it said; every one of them stands on this screen. */
+/** One stream's walks with the words each said, all standing on this screen. */
 function walk(said: Record<string, ChatMessage[]>): WalkState {
   return {
     ...emptyWalk(),
@@ -76,7 +76,7 @@ describe("chatStream", () => {
       }),
     );
 
-    // The older question stands first even though its words came later by the clock.
+    // The older question stands first even when its words came later.
     expect(stream.map((message) => message.id)).toEqual(["two", "three", "one"]);
   });
 
@@ -128,7 +128,7 @@ describe("chatStream", () => {
   });
 
   it("says nothing of a walk writing into another row: that is another conversation", () => {
-    // The words of a walk are its own and stand where its row stands — this screen is not it.
+    // A walk's words stand where its row stands, not on this screen.
     const stream = chatStream({
       ...emptyWalk(),
       walks: {

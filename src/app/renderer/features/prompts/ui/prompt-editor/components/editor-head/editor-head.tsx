@@ -26,9 +26,8 @@ import {
 import type { EditorHeadProps } from "./interfaces";
 
 /**
- * The prompt's own head: the way back, whose prompt it is, how many words stand in it and the way to fold the
- * editor away. It wears the shape of every head of a step walked into — `StepHead`'s — and is not that component,
- * because the whole of that head is one button, and this row has two of its own to press.
+ * The prompt's head: back, whose prompt it is, its word count and the fold-away. Shaped like `StepHead` but a separate
+ * component, since this row holds two buttons.
  */
 export function EditorHead({ name, words, hasUnsaved, onClose }: EditorHeadProps) {
   const [wordOne, wordFew, wordMany] = PROMPT_EDITOR_WORD_FORMS;

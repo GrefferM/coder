@@ -36,7 +36,7 @@ function acts() {
 
 describe("CommandRow", () => {
   it("closed, names the command and counts its parameters and nothing more", () => {
-    // The list is a list of names; what a command says and runs is behind its own row.
+    // The list shows names only; what a command says and runs is behind its row.
     render(<CommandRow command={command()} isOpen={false} {...acts()} />);
 
     expect(screen.getByText("open_pr")).toBeInTheDocument();

@@ -46,7 +46,7 @@ describe("Composer · the field's own height", () => {
   });
 
   it("never stands taller than the stream can spare, whatever the note says", () => {
-    // A note can carry anything — another window, another day, a hand that slipped — and the field still fits.
+    // Any note text still fits the field.
     render(
       <Composer
         {...props({
@@ -99,7 +99,7 @@ describe("Composer", () => {
   });
 
   it("stitches the field shut where there is nothing to write in it at all", () => {
-    // Nobody aimed at, or an agent switched off — a question would have nowhere to go.
+    // No target or an inactive agent: nowhere to send.
     const { rerender } = render(
       <Composer
         {...props({
@@ -126,7 +126,7 @@ describe("Composer", () => {
   });
 
   it("stays open while a walk goes, and says why nothing is going", () => {
-    // The person may write the next question while the walk runs; only sending waits.
+    // Writing stays open during a walk; only sending waits.
     render(
       <Composer
         {...props({
@@ -190,7 +190,7 @@ describe("Composer", () => {
   });
 
   it("answers a press under the walk by blinking the stop, since the stop is what the press wants", async () => {
-    // No second question is asked while one walk is out; the app says where the way is.
+    // No second question while a walk is out.
     const said = props({
       isWalking: true,
       draft: "Ще одне",

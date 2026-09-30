@@ -3,12 +3,8 @@ import type { AgentStanding, WholeRun } from "../../record";
 import type { Agent, ProjectModel } from "../../../interfaces";
 
 /**
- * What has changed about this run's agents since it walked. An agent stands here when anything of it is
- * different — its name, the model it ran on, the temperature it ran at — or when the project no longer has it. Where
- * nothing differs there is nothing to hold against anything, and the card says nothing at all.
- *
- * An agent that walked more than once in this pass is read off its first turn: the record keeps every turn's own
- * circumstances, so two turns of one agent can differ, and the card is about the agent rather than about a turn.
+ * What changed about a run's agents since it walked: an agent is listed when its name, model or temperature differs, or
+ * the project no longer has it. An agent that walked more than once is read off its first turn.
  */
 export function runChanges(
   run: WholeRun | null,

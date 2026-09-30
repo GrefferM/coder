@@ -35,7 +35,7 @@ describe("useUndoOffers", () => {
   });
 
   it("stacks the ways back oldest first, each with its own way home", () => {
-    // Two deletions one after another are two offers, and the older one is the one further up.
+    // Two successive deletions are two offers; the older is further up.
     vi.useFakeTimers();
 
     const { result } = renderHook(() => useUndoOffers());
@@ -77,7 +77,7 @@ describe("useUndoOffers", () => {
   });
 
   it("puts the trace out long before the offer itself goes", () => {
-    // The mark where the thing stood is a moment's thing; the way back stands for half a minute.
+    // The trace where the thing stood is brief; the undo lasts half a minute.
     vi.useFakeTimers();
 
     const { result } = renderHook(() => useUndoOffers());
@@ -141,7 +141,7 @@ describe("useUndoOffers", () => {
   });
 
   it("drops the offer whose deletion the history has already put back", () => {
-    // The thing came back another way; the offer that named that deletion has nothing left to offer.
+    // The thing came back another way, so the offer for that deletion is dropped.
     vi.useFakeTimers();
 
     const { result } = renderHook(() => useUndoOffers());

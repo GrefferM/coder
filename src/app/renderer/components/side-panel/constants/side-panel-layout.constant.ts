@@ -1,5 +1,5 @@
-/** Margin, in pixels, between the rail's and panel's top and bottom edges and the window's content box. */
+/** Margin, px, between the rail's and panel's top and bottom edges and the window's content box. */
 export const SIDE_PANEL_VERTICAL_MARGIN_PX = 6;
 
-/** Gap, in pixels, of window background between the panel and whatever sits beside it. */
+/** Gap, px, of window background between the panel and its neighbour. */
 export const SIDE_PANEL_GAP_PX = 6;

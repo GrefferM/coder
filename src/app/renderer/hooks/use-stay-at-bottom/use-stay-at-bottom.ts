@@ -5,8 +5,7 @@ import type { StayAtBottom } from "./interfaces";
 /**
  * Keeps a scrolling box at its end; scrolling up holds until the person returns; a new `stream` starts at its end.
  *
- * It also says whether the end is in view, because the one thing that decides whether the button down is
- * there is exactly the number this already measures — a second watcher on the same box would count it twice.
+ * Also reports whether the end is in view, from the same measurement.
  */
 export function useStayAtBottom<T extends HTMLElement>(stream: string | null): StayAtBottom<T> {
   const box = useRef<T>(null);
@@ -25,7 +24,7 @@ export function useStayAtBottom<T extends HTMLElement>(stream: string | null): S
       const isThere = seen <= STAY_AT_BOTTOM_REACH_PX;
 
       stays.current = isThere;
-      // React drops a set of the value already held, so this is quiet on every scroll that changes nothing.
+      // React drops a set of the value already held, so unchanged scrolls are quiet.
       setIsAtEnd(isThere);
     };
 
@@ -34,22 +33,18 @@ export function useStayAtBottom<T extends HTMLElement>(stream: string | null): S
         node.scrollTop = node.scrollHeight;
       }
 
-      // What grows can also shrink, and a stream that no longer fills the box has its end in view again.
+      // A stream that no longer fills the box has its end in view again.
       watch();
     };
 
-    // A stream of one's own: the end of it, whatever the last one was showing.
+    // A new stream starts at its end.
     stays.current = true;
     setIsAtEnd(true);
     follow();
 
-    // The answer is written a word at a time, and a card can appear under it; both are the box growing.
+    // Text or cards added to the stream grow the box.
     const growing = new MutationObserver(follow);
-    /**
-     * The box itself can shrink while nothing in it changes — the field under the stream is pulled taller, the
-     * window is made shorter — and then the end of the stream slides under the fold with nothing to notice it.
-     * Whoever stood at the end stays at the end: the stream rises with the field instead of being covered by it.
-     */
+    /** The box can shrink with nothing in it changing; whoever stood at the end stays at the end. */
     const shrinking = new ResizeObserver(follow);
 
     growing.observe(node, {
@@ -68,20 +63,15 @@ export function useStayAtBottom<T extends HTMLElement>(stream: string | null): S
   }, [stream]);
 
   /**
-   * The search rides to a place of its own, and the box must stop following its end or it would
-   * pull the ride back the moment anything grew. Standing anywhere but the end is the person's own act, and this
-   * says so on their behalf.
-   *
-   * It is held still between renders on purpose: a ride is one act, and a fresh function each time would make the
-   * effect that rides run again on every render — the stream would be pinned to the match and the person could not
-   * scroll away from it at all.
+   * Stops following the end, so a search ride to a higher place is not pulled back. Stable across renders, or the riding
+   * effect would rerun every render.
    */
   const stopFollowing = useCallback(() => {
     stays.current = false;
     setIsAtEnd(false);
   }, []);
 
-  /** The one act of the button down — the end of the stream, and the person is standing there again. */
+  /** The button down: scrolls to the end and resumes following. */
   const goToEnd = useCallback(() => {
     const node = box.current;
 

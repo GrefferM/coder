@@ -1,4 +1,4 @@
-/** A granted function under the field — no tick, a lock with the pinned count, a chevron in. */
+/** A granted function under the field: no tick, a lock with the pinned count, a chevron in. */
 export const TOOL_ROW_OPEN_LABEL = "Відкрити видачу";
 
 export const TOOL_ROW_PINNED_GAP_PX = 4;

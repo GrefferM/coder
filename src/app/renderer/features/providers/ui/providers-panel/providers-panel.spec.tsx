@@ -126,7 +126,7 @@ describe("ProvidersPanel", () => {
     renderPanel([ANTHROPIC, OLLAMA]);
 
     expect(screen.getByText("ВІДДАЛЕНИЙ · КЛЮЧА НЕМАЄ · 2 МОДЕЛІ · 1 АГЕНТ")).toBeInTheDocument();
-    // A local provider's row says whether anybody answers at its address.
+    // A local provider's row shows whether anything answers at its address.
     expect(screen.getByText("ВІДПОВІДАЄ")).toBeInTheDocument();
   });
 
@@ -191,7 +191,7 @@ describe("ProvidersPanel", () => {
   });
 
   it("leaves a key nobody touched alone, whatever else the card was opened for", async () => {
-    // The key is not in the field — its hint is — so an untouched save must not be a way of losing it.
+    // The field shows the key's hint, not the key, so an untouched save must not lose it.
     const user = userEvent.setup();
     const written = {
       ...ANTHROPIC,
@@ -234,7 +234,7 @@ describe("ProvidersPanel", () => {
   });
 
   it("asks a provider that needs both for both at once, and writes each where it belongs", async () => {
-    // RunPod's endpoint carries its id in the address, so the key alone would leave the turn nowhere to go.
+    // RunPod's endpoint id lives in the address, so the key alone is not enough.
     const user = userEvent.setup();
     const onSave = renderPanel([RUNPOD], [], []);
 

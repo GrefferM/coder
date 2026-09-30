@@ -1,9 +1,8 @@
 import type { ProjectConfig } from "../../../interfaces";
 
 /**
- * Whether work handed down this line would come back where it came from — a line into itself, or a ring further
- * along. The last of three walls against a ring, behind drawing and behind the file. Nothing stops a turn, so
- * work that walks a ring walks it for ever.
+ * Whether work handed down this line would return to where it came from: a line into itself, or a ring further along.
+ * The last of three walls against a ring, behind the drawing and the file.
  */
 export function leadsBack(config: ProjectConfig, fromAgentId: string, toAgentId: string): boolean {
   const ahead = [toAgentId];

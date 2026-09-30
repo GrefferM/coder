@@ -146,7 +146,7 @@ describe("ModelsPanel", () => {
       isMending: true,
     });
 
-    // The card named the answer ceiling, and the cursor is already in that row.
+    // The card named the answer ceiling, and the cursor is in that row.
     expect(screen.getByLabelText(MODELS_PANEL_ANSWER_CEILING_FIELD_LABEL)).toHaveFocus();
   });
 
@@ -221,7 +221,7 @@ describe("ModelsPanel", () => {
     // The provider is chosen from the known list, not typed.
     await userEvent.click(screen.getByText(PROVIDER_PICKER_PLACEHOLDER));
     await userEvent.click(screen.getByText("Anthropic"));
-    // Both ceilings are the person's own, and nothing is written until both stand.
+    // Both ceilings are the person's own; nothing is written until both are set.
     await userEvent.type(screen.getByLabelText(MODELS_PANEL_CEILING_FIELD_LABEL), "200000");
     await userEvent.type(screen.getByLabelText(MODELS_PANEL_ANSWER_CEILING_FIELD_LABEL), "4096");
     await userEvent.type(screen.getByLabelText(MODELS_PANEL_INPUT_PRICE_FIELD_LABEL), "15");
@@ -242,7 +242,7 @@ describe("ModelsPanel", () => {
     renderPanel();
     await userEvent.click(screen.getByText(MODELS_PANEL_NEW_LABEL));
 
-    // No provider is asked and nothing is guessed, so there is no number to open on.
+    // No provider is asked and nothing is guessed, so no number to open on.
     expect(screen.getByLabelText(MODELS_PANEL_CEILING_FIELD_LABEL)).toHaveValue(null);
     expect(screen.getByLabelText(MODELS_PANEL_ANSWER_CEILING_FIELD_LABEL)).toHaveValue(null);
   });

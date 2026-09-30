@@ -16,16 +16,16 @@ const ASKED_AT = 1_700_000_000_000;
 const SEEKER = "22222222-2222-4222-8222-222222222222";
 const QUESTION = "44444444-4444-4444-8444-444444444444";
 const WALK = "77777777-7777-4777-8777-777777777777";
-/** A repeat is a walk of its own, and the row is read by the last walk and not the last step. */
+/** A repeat is its own walk; the row is read by the last walk, not the last step. */
 const REPEAT_WALK = "88888888-8888-4888-8888-888888888888";
 const TELLER = "33333333-3333-4333-8333-333333333333";
 
-/** The question each run was opened with — a step is written against one, and the record holds it. */
+/** The question each run was opened with. */
 const questionOf = new Map<string, string>();
 
 function ran(patch: Partial<AddCallDto> = {}): AddCallDto {
   return {
-    // THE FIRST RULE: a call comes to the record under the id it already wears, and keeps it.
+    // A call reaches the record under its existing id and keeps it.
     id: crypto.randomUUID(),
     source: "command",
     name: "find_deep",
@@ -100,7 +100,7 @@ describe("the record", () => {
   let reader: RunReader;
   let keeper: RunKeeper;
 
-  /** Opens a run and keeps the question it was opened with, so a step of that run can be written against it. */
+  /** Opens a run and keeps its question so its steps can be written against it. */
   async function openRun(payload: OpenRunDto): Promise<RunOpened> {
     const opened = await writer.open(payload);
 
@@ -112,10 +112,10 @@ describe("the record", () => {
   beforeEach(async () => {
     questionOf.clear();
 
-    // A real database of its own, made and thrown away for each test; the app's own is never touched.
+    // A fresh real database per test; the app's own is untouched.
     record = await openTestDatabase();
 
-    // The three stand over one store: what the writer wrote is what the reader reads and the keeper sweeps.
+    // All three share one store.
     const store = new TypeormRunStore(runTablesOf(record.dataSource));
 
     writer = new RunWriter(store);
@@ -140,11 +140,11 @@ describe("the record", () => {
 
     const [row] = await reader.list(DIRECTORY);
 
-    // The run keeps its own name, so a row whose first turn is still out is not a nameless one.
+    // The run keeps its own name, so a row with its first turn still out is not nameless.
     assert.equal(row.steps, 0);
     assert.equal(row.startedByAgentName, "Шукач");
     assert.equal(row.startedByAgentColor, "#6fd3d8");
-    // The addressee lies down with the question, so the head of the row is named before the first step.
+    // The addressee is stored with the question, so the row's head is named before the first step.
     assert.equal(row.askedAgentId, SEEKER);
     assert.equal(row.askedAgentName, "Шукач");
   });
@@ -171,7 +171,7 @@ describe("the record", () => {
 
     const [row] = await reader.list(DIRECTORY);
 
-    // One flow, many agents — the head answers «with whom now», while the run keeps whom it began with.
+    // One flow, many agents: the head shows the current addressee, the run keeps the first.
     assert.equal(row.askedAgentId, TELLER);
     assert.equal(row.askedAgentName, "Рев'юер");
     assert.equal(row.startedByAgentId, SEEKER);
@@ -204,7 +204,7 @@ describe("the record", () => {
       },
     });
 
-    // A question is a thing of its own, and whom it went to is its own fact, kept beside it for good.
+    // Each question keeps its own addressee.
     assert.equal(whole?.questions.length, 2);
     assert.deepEqual(
       written.map((question) => [question.place, question.askedAgentId, question.askedAgentName]),
@@ -344,12 +344,12 @@ describe("the record", () => {
     assert.equal(call.output, "report.md");
     assert.equal(call.exitCode, 0);
     assert.equal(call.end, "ran");
-    // A value the person pinned is not a value the model chose, and the record says which.
+    // The record tells pinned values from the model's.
     assert.deepEqual(call.pinned, ["mask"]);
   });
 
   it("says where a call stands, by the very id the call already wore", async () => {
-    // «ПОКАЗАТИ ВИКЛИК» has an id and nothing else, and the record must answer it with a place.
+    // A call id alone resolves to its place.
     const opened = await openRun({
       directory: DIRECTORY,
       questionId: "aaaaaaaa-0000-4000-8000-00000000000c",
@@ -445,7 +445,7 @@ describe("the record", () => {
         state: "failed",
       }),
     );
-    // The repeat is a walk of its own, and it is the walk the row is read by now.
+    // A repeat is its own walk, and the row is read by it.
     await writer.step(
       step(id, {
         walkId: REPEAT_WALK,
@@ -459,16 +459,14 @@ describe("the record", () => {
 
     const [row] = await reader.list(DIRECTORY);
 
-    // The state is counted from the steps every time, so nothing has to unsay a fall.
+    // State is counted from the steps on every read.
     assert.equal(row.state, "stopped");
     assert.notEqual(row.endedAt, null);
     assert.equal(row.steps, 2);
   });
 
   it("says nothing was sent where the last turn never began, and never says it fell", async () => {
-    // The bug this guards: the row read any end word it did not know as «done», so a provider that never answered
-    // — a step the record keeps with its own word — left the history saying «ГОТОВО» over a walk that
-    // reached nobody. And it is not «УПАВ» either: red does not go on what the app never did.
+    // An unknown end word is not «done»: a provider that never answered is not «ГОТОВО», nor «УПАВ».
     const { runId: id } = await openRun({
       directory: DIRECTORY,
       questionId: "aaaaaaaa-0000-4000-8000-000000000051",
@@ -495,8 +493,7 @@ describe("the record", () => {
   });
 
   it("says nothing was sent where the model answered with nothing, no answer having come of it", async () => {
-    // An empty answer is its own event in the stream — the turn ran whole, but nothing came back, and
-    // that is the same news for the row as a turn that never left.
+    // An empty answer counts for the row like a turn that never left.
     const { runId: id } = await openRun({
       directory: DIRECTORY,
       questionId: "aaaaaaaa-0000-4000-8000-000000000052",
@@ -545,8 +542,7 @@ describe("the record", () => {
   });
 
   it("reads the whole last walk, so a branch that fell does not hide behind one that answered after it", async () => {
-    // The bug this guards: one agent hands to two, the turns come back in whatever order they finish in, and the
-    // row read only the one that came back last — so a fallen branch stood under «ГОТОВО».
+    // With two branches finishing in any order, a fallen branch is not shown as «ГОТОВО».
     const { runId: id } = await openRun({
       directory: DIRECTORY,
       questionId: "aaaaaaaa-0000-4000-8000-000000000055",
@@ -562,7 +558,7 @@ describe("the record", () => {
         state: "failed",
       }),
     );
-    // The other branch of the same walk answered, and answered later.
+    // The other branch answers later.
     await writer.step(step(id));
     await writer.close({
       runId: id,
@@ -575,8 +571,7 @@ describe("the record", () => {
   });
 
   it("takes the worse word where the branches ended differently, a fall being worse than nothing sent", async () => {
-    // «УПАВ» stands before «НЕ ПІШОВ» — a turn that was sent and broke is news of a kind a turn that
-    // never left can never be, and the row says the worse of the two.
+    // «УПАВ» outranks «НЕ ПІШОВ»: a sent turn that broke is worse than one that never left.
     const { runId: id } = await openRun({
       directory: DIRECTORY,
       questionId: "aaaaaaaa-0000-4000-8000-000000000059",
@@ -663,8 +658,7 @@ describe("the record", () => {
   });
 
   it("says a hand where a hand stopped every turn that did not answer, and the other word where one did not", async () => {
-    // A stop is a person's act; but a hand explains only what it stopped, so a branch that ended some
-    // other way beside it is still the news of the row — here one that never left, and so «НЕ ПІШОВ».
+    // A stop explains only what it stopped; another branch that never left still gives «НЕ ПІШОВ».
     const stopped = await openRun({
       directory: DIRECTORY,
       questionId: "aaaaaaaa-0000-4000-8000-000000000057",
@@ -713,8 +707,7 @@ describe("the record", () => {
   });
 
   it("calls a flow done where the walk that fell was mended by a later one", async () => {
-    // The other side of the same rule: an answer that actually came is the only «ГОТОВО» there is, and a repeat
-    // is a walk of its own — so a fall that was already mended is not read again.
+    // A real answer is the only «ГОТОВО»; a mended fall in an earlier walk is not read again.
     const { runId: id } = await openRun({
       directory: DIRECTORY,
       questionId: "aaaaaaaa-0000-4000-8000-000000000054",
@@ -921,7 +914,7 @@ describe("the record", () => {
 
     const [row] = await reader.list(DIRECTORY);
 
-    // One flow is one row — the text and the hour are the new question's, the day it began stays.
+    // One flow is one row: the text and hour are the new question's, the start day stays.
     assert.equal(row.id, id);
     assert.equal(row.asked, "А тепер постав рев'ювера");
     assert.equal(row.startedAt.getTime(), ASKED_AT - HISTORY_DAY_MS);
@@ -995,12 +988,12 @@ describe("the record", () => {
 
     const [row] = await reader.list(DIRECTORY);
 
-    // The minute between the two questions is nobody's work, and the row does not count it as any.
+    // The gap between two questions is not counted as work.
     assert.equal(row.worked, 5_500);
   });
 
   it("names no question when the record it was asked to go on in is gone", async () => {
-    // The answer is the id of the question the walk is written against, and there is none.
+    // No question id exists to write the walk against.
     assert.equal(
       await writer.askAgain({
         runId: "11111111-1111-4111-8111-111111111111",
@@ -1065,8 +1058,7 @@ describe("the record", () => {
 
     const whole = await reader.one(runId);
 
-    // The moment is what a snapshot is about, and two turns are two moments — so the second
-    // one carrying other words is not a contradiction to be settled but two rows to be read.
+    // Two turns are two snapshots; differing words make two rows, not a conflict.
     assert.deepEqual(
       whole?.walk.map((one) => [one.agentName, one.model]),
       [
@@ -1074,15 +1066,14 @@ describe("the record", () => {
         ["Шукач-2", "hy-mt2"],
       ],
     );
-    // The money on a step is a number; the prices it was counted from are what make it one that can
-    // be read back, since a catalogue is edited and the step is not.
+    // A step's money is stored with the prices it was counted from, since the catalogue is editable.
     assert.equal(whole?.walk[0].inputPrice, 3);
     assert.equal(whole?.walk[0].outputPrice, 15);
     assert.equal(whole?.walk[0].prompt, "Ти шукаєш файли.");
-    // A snapshot says what a thing was; the id says which thing, so «today» can be found.
+    // The snapshot keeps the model id, so «today» can be found.
     assert.equal(whole?.walk[0].modelId, "model-1");
     assert.equal(whole?.walk[0].promptId, "prompt-1");
-    // The row of the history wears the name the walk began under, not the latest one.
+    // The history row shows the name the walk began under.
     const [row] = await reader.list(DIRECTORY);
 
     assert.equal(row.startedByAgentName, "Шукач");
@@ -1123,7 +1114,7 @@ describe("the record", () => {
 
     const [row] = await reader.list(DIRECTORY);
 
-    // A flow is a sequence of questions, and the row of the history is the last of them.
+    // The history row is the last question of the flow.
     assert.equal(row.asked, "А тепер постав рев'ювера");
     assert.equal(row.askedAt.getTime(), ASKED_AT);
     assert.equal(row.startedAt.getTime(), ASKED_AT - HISTORY_DAY_MS);
@@ -1134,8 +1125,7 @@ describe("the record", () => {
   });
 
   it("keeps a question's hour to the millisecond, since the repeat finds its question by that very number", async () => {
-    // Two questions of one breath are told apart by their hour alone, and «СПИТАТИ ЩЕ РАЗ» looks its
-    // question up by it — a second's worth of rounding would put the repeat under somebody else's words.
+    // Questions are told apart by exact hour, which «СПИТАТИ ЩЕ РАЗ» uses to look one up; no rounding to seconds.
     const first = ASKED_AT + 137;
     const second = ASKED_AT + 892;
     const { runId } = await openRun({
@@ -1194,8 +1184,7 @@ describe("the record", () => {
     const whole = await reader.one(id);
     const read = whole?.walk.find((one) => one.id === second);
 
-    // A step names other rows, so the naming is a row of its own and not a word in a text
-    // column — the base can follow it, clear it away with the step, and be asked about it.
+    // A step's naming of other steps is a row of its own, so it can be followed, cleared with the step and queried.
     assert.deepEqual(read?.fromStepIds, [first]);
     assert.deepEqual(read?.handoffs, [
       {
@@ -1242,7 +1231,7 @@ describe("the record", () => {
     const one = rows.find((row) => row.id === walked);
     const other = rows.find((row) => row.id === mute);
 
-    // A walk cannot outlive the window it ran in: nothing is out any more, so nothing says «іде».
+    // A walk cannot outlive its window: nothing is «іде» after a restart.
     assert.equal(one?.endedAt?.getTime(), ASKED_AT + 4_000);
     assert.equal(other?.endedAt?.getTime(), ASKED_AT);
     assert.equal(one?.state, "done");
@@ -1296,7 +1285,7 @@ describe("the record", () => {
 
     const [row] = await reader.list(DIRECTORY);
 
-    // Not the moment the first step landed, and not the moment the last write finished.
+    // Not the first step's landing time, nor the last write's.
     assert.equal(row.startedAt.getTime(), ASKED_AT);
     assert.equal(row.endedAt?.getTime(), ASKED_AT + 9_000);
   });

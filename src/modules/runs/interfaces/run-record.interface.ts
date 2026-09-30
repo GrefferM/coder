@@ -1,4 +1,4 @@
-/** The columns the `runs` table holds; the entity implements it. */
+/** Columns of `runs`; the entity implements it. */
 export interface RunRecord {
   id: string;
   directory: string;

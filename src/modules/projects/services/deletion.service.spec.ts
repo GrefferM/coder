@@ -31,7 +31,7 @@ describe("DeletionService", () => {
   let deletions: DeletionService;
 
   beforeEach(async () => {
-    // A real database of its own, made and thrown away for each test; the app's own is never touched.
+    // A fresh real database per test; the app's own is untouched.
     record = await openTestDatabase();
     deletions = new DeletionService(record.dataSource.getRepository(DeletionEntity));
   });

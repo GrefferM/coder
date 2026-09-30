@@ -10,11 +10,8 @@ import { SERVER_ROW_DOT_SIZE_PX, SERVER_ROW_FACTS_COLOR } from "../../constants"
 import type { RowDotProps } from "./interfaces";
 
 /**
- * The state of the connection, in one dot and nothing else.
- *
- * A server nobody has yet asked — no token for it, or never raised at all — wears an **empty** dot: it neither
- * fell nor answered, and a colour would claim one of the two. One being raised takes the waiting colour and
- * breathes it. A fallen one is coloured and still. Only one that answered glows.
+ * The connection state as one dot. Empty: never asked (neither fell nor answered). Waiting colour, breathing: being
+ * raised. Coloured and still: fallen. Glowing: answered.
  */
 export function RowDot({ isAsking, isEmpty, hasFallen, isUp }: RowDotProps) {
   return (

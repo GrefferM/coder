@@ -80,7 +80,7 @@ describe("provider calls", () => {
   });
 
   it("takes a provider that did not answer as a silence, and says nothing is installed there", async () => {
-    // Silence is a state of the provider, not a failure of the app — the agent wears «мовчить».
+    // Silence is a provider state, not an app failure: the agent shows «мовчить».
     brokenMachine();
 
     expect(await askProvider("ollama")).toEqual({
@@ -90,7 +90,7 @@ describe("provider calls", () => {
   });
 
   it("writes a local provider's address into the store for addresses", async () => {
-    // The two stores are not alike: a key is a secret and an address is not, and each has its own channel.
+    // A key and an address go through separate channels.
     const invoke = machine(undefined);
 
     await saveProviderValue({

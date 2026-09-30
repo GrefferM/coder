@@ -6,7 +6,7 @@ import type { TakenThings, UndoOffer } from "../../interfaces";
 import type { UndoOffers } from "./interfaces";
 import type { Point } from "../../../../utils/math";
 
-/** An offer as it is held: the moment it was made, not the seconds it has left. */
+/** An offer as held: the moment it was made, not the seconds left. */
 interface StandingOffer {
   id: string;
   deletionId: string | null;
@@ -16,7 +16,7 @@ interface StandingOffer {
   madeAt: number;
 }
 
-/** The offer as it is drawn at this moment: the trace has gone out, the countdown has moved. */
+/** The offer as drawn at a given moment: trace expired, countdown advanced. */
 function shown(standing: StandingOffer, at: number): UndoOffer {
   const stoodFor = at - standing.madeAt;
 
@@ -30,7 +30,7 @@ function shown(standing: StandingOffer, at: number): UndoOffer {
   };
 }
 
-/** Every deletion's way back, stacked oldest first; one clock serves the trace, countdown and exit. */
+/** Every deletion's undo, oldest first; one clock serves trace, countdown and exit. */
 export function useUndoOffers(): UndoOffers {
   const [standing, setStanding] = useState<StandingOffer[]>([]);
   const [now, setNow] = useState(() => Date.now());
@@ -70,7 +70,7 @@ export function useUndoOffers(): UndoOffers {
     ]);
   }, []);
 
-  /** Takes the offer off the stack and hands it over, so the caller can put its things back. */
+  /** Removes the offer from the stack and returns it so the caller can restore its things. */
   const take = useCallback(
     (id: string): UndoOffer | null => {
       const found = standing.find((held) => held.id === id);
@@ -86,7 +86,7 @@ export function useUndoOffers(): UndoOffers {
     [standing],
   );
 
-  /** The history put the thing back itself; the offer that named that deletion has nothing left to offer. */
+  /** The history restored the thing itself, so the offer for that deletion is dropped. */
   const takeOfDeletion = useCallback((deletionId: string) => {
     setStanding((standingOffers) => standingOffers.filter((held) => held.deletionId !== deletionId));
   }, []);

@@ -31,7 +31,7 @@ describe("NotStartedCard", () => {
       />,
     );
 
-    // One heading for the whole family, and the reason's own word from the sphere's pill beside it.
+    // One shared heading, plus the reason's word from the sphere's pill.
     expect(screen.getByText(NOT_STARTED_TITLE)).toBeInTheDocument();
     expect(screen.getByText(NOT_STARTED_ENDS.noKey.label)).toBeInTheDocument();
     expect(screen.getByText("Провайдер цієї моделі не має ключа.")).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe("NotStartedCard", () => {
       />,
     );
 
-    // The parts that would have gone, their sum, and the ceiling they went over.
+    // The parts that would have gone, their sum and the ceiling.
     expect(screen.getByText("1 900")).toBeInTheDocument();
     expect(screen.getByText("210 500")).toBeInTheDocument();
     expect(screen.getByText(OVER_CEILING_TOTAL_LABEL)).toBeInTheDocument();

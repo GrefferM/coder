@@ -49,12 +49,8 @@ export function CommandForm({ values, isNew, takenNames, onChange, onSave, onCan
   const isMissing = (value: string) => wasTried && !value.trim();
   const isTaken = nameTaken(values.name, takenNames);
   /**
-   * «Набране лишається набраним: символ за людиною не викидаємо» — the field keeps every character, says in
-   * the line what is wrong with it, and refuses the save until it fits.
-   *
-   * It answers for **what is typed here**, and not for what was already declared. A name this app once wrote
-   * into the file is the file's truth, and a form that opens shouting at a name nobody has touched — and then
-   * will not let the run line be mended until the server is renamed — is the app arguing with itself.
+   * The field keeps every typed character, says what is wrong, and refuses the save until it fits. It judges only what is
+   * typed here, not a name already declared in the file.
    */
   const opened = useRef(values.name);
   const isNameWrong = isFunctionNameWrong(values.name) && values.name !== opened.current;
@@ -157,7 +153,7 @@ export function CommandForm({ values, isNew, takenNames, onChange, onSave, onCan
         }
       />
 
-      {/* The border of responsibility stands under the line it is about, before the parameters below it. */}
+      {/* The responsibility border stands under the run line it is about, before the parameters. */}
       <RunFacts />
 
       <ParametersList

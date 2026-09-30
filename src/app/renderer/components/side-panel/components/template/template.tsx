@@ -50,8 +50,7 @@ export function Template({ label, pill, count, hasUnsaved = false, children }: T
         </Mark>
         {hasUnsaved && <UnsavedMark />}
         {pill !== undefined && (
-          // The header is the window's drag region, which takes every press inside it: what the person is meant to
-          // press stands outside it.
+          // The header is a drag region that swallows presses, so pressable content stands outside it.
           <div className="d-flex align-items-center ms-auto" style={pillStyle}>
             {pill}
           </div>

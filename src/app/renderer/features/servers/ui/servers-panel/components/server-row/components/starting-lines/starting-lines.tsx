@@ -20,11 +20,9 @@ import {
 import type { StartingLinesProps } from "./interfaces";
 
 /**
- * What a row says while it is being raised, under the name and the clock. No bar goes with them: the
- * fraction is nobody's to know, and a bar would promise one.
+ * What a row says while being raised, under the name and the clock; no bar.
  *
- * The second line comes on the twentieth second and not before: until then the waiting is ordinary. The ceiling
- * stands for the whole wait, and «СКАСУВАТИ» beside it is the way out of one that has gone on too long.
+ * The second line comes on the twentieth second; the ceiling stands for the whole wait, with «СКАСУВАТИ» beside it.
  */
 export function StartingLines({ waited, onCancel }: StartingLinesProps) {
   return (

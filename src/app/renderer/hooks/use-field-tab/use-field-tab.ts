@@ -8,19 +8,11 @@ import {
 } from "./constants";
 
 /**
- * Tab walks the fields of the open tab and nothing else. The browser's own order counts every button, and this
- * app is almost entirely buttons — walking all of them to reach the one field being filled in costs more presses
- * than the mouse it was meant to spare.
+ * Tab walks the fields of the open tab only.
  *
- * A **field** is the house's own slot, and it is one stop however many things stand inside: a row of five colours
- * is one field, because the choice is one. A row that leads somewhere is a road and not a field at all.
- *
- * The walk goes round, so there is no falling off the end into the chrome; Shift walks it backwards, and from
- * anything that is not a field it starts at whichever end the walk is coming from.
- *
- * From the last slot it goes into the tab's foot, the act that writes first, and from there round to the first
- * field. Enter in a field writes nothing: it already means different things in a list, in the mark window and in
- * the chat, and writing a whole tab from a place that does not name the tab hides what went in.
+ * A field is a slot and one stop however many things stand inside; a row that leads somewhere is not a field. The walk
+ * goes round, Shift reverses it, and from a non-field it starts at the end it is coming from. From the last slot it
+ * enters the tab's foot, the act that writes first, then returns to the first field. Enter in a field writes nothing.
  */
 export function useFieldTab(): void {
   useWindowKeydown(true, (event) => {
@@ -28,7 +20,7 @@ export function useFieldTab(): void {
       return;
     }
 
-    // Even with no field to go to Tab stops here: the browser's order is not a fallback, it is the thing undone.
+    // Tab stops here even with no field to go to; the browser's order is not a fallback.
     event.preventDefault();
 
     const stops = fieldStops();
@@ -37,7 +29,7 @@ export function useFieldTab(): void {
   });
 }
 
-/** Every field of the page as one stop each, in the order they stand. */
+/** Every field of the page, one stop each, in page order. */
 function fieldStops(): HTMLElement[] {
   const stops: HTMLElement[] = [];
   const held = new Set<HTMLElement>();
@@ -48,7 +40,7 @@ function fieldStops(): HTMLElement[] {
 
   for (const mark of marks) {
     for (const stop of stopsOf(mark)) {
-      // A slot holds its own field, so the two meet on the same stop; whichever came first in the page keeps it.
+      // A slot holds its own field, so both meet on one stop; the first in page order keeps it.
       if (stop === null || held.has(stop) || isShut(stop)) {
         continue;
       }
@@ -61,7 +53,7 @@ function fieldStops(): HTMLElement[] {
   return stops;
 }
 
-/** What one mark of the page is worth to the walk: a slot one stop, the foot all of its acts, a field itself. */
+/** A mark's stops: a slot one, the foot all its acts, a field itself. */
 function stopsOf(mark: HTMLElement): (HTMLElement | null)[] {
   if (mark.matches(FIELD_SLOT_SELECTOR)) {
     return [stopOf(mark)];
@@ -70,7 +62,7 @@ function stopsOf(mark: HTMLElement): (HTMLElement | null)[] {
   return mark.matches(TAB_FOOT_SELECTOR) ? footStops(mark) : [mark];
 }
 
-/** The foot's acts, the one that writes first and the rest in the order they stand. */
+/** The foot's acts: the one that writes first, then the rest in page order. */
 function footStops(foot: HTMLElement): HTMLElement[] {
   const acts: HTMLElement[] = [];
 
@@ -85,7 +77,7 @@ function footStops(foot: HTMLElement): HTMLElement[] {
   return acts;
 }
 
-/** The one thing inside a slot the walk lands on; nothing at all where a slot has nothing to press or to type. */
+/** The one thing in a slot the walk lands on; null where nothing can be pressed or typed. */
 function stopOf(slot: HTMLElement): HTMLElement | null {
   for (const wanted of FIELD_STOP_ORDER) {
     const stop = [...slot.querySelectorAll<HTMLElement>(wanted)].find((one) => !isShut(one));
@@ -98,12 +90,12 @@ function stopOf(slot: HTMLElement): HTMLElement | null {
   return null;
 }
 
-/** A shut field is not a place to fill in either, so the walk steps over it exactly as the browser would. */
+/** A shut field is stepped over, as the browser would. */
 function isShut(stop: HTMLElement): boolean {
   return stop.hasAttribute("disabled");
 }
 
-/** The next field along, the walk going round; from anything that is not one, the walk starts at its end. */
+/** The next field along, round the ends; from a non-field, the walk's end. */
 function nextAt(stops: HTMLElement[], isBack: boolean): number {
   const standing = stops.indexOf(document.activeElement as HTMLElement);
 

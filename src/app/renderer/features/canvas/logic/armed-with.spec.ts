@@ -24,7 +24,7 @@ function granted(count: number): ToolGrant[] {
   );
 }
 
-/** Grants from `count` different servers — every server is a source of its own, so this is `count` marks. */
+/** Grants from `count` different servers; each server is its own mark. */
 function fromServers(count: number): ToolGrant[] {
   return Array.from(
     {
@@ -39,7 +39,7 @@ function fromServers(count: number): ToolGrant[] {
   );
 }
 
-/** Grants of `count` other agents as tools — each agent is a mark of its own. */
+/** Grants of `count` other agents as tools; each agent is its own mark. */
 function ofAgents(count: number): ToolGrant[] {
   return Array.from(
     {
@@ -53,7 +53,7 @@ function ofAgents(count: number): ToolGrant[] {
   );
 }
 
-/** The project file's own order, which is what decides who stands and who folds. */
+/** The project file's order decides which marks stand and which fold. */
 function saidOf(commandIds: string[], serverIds: string[], agentIds: string[] = []): GrantTargets {
   return <GrantTargets>(<unknown>{
     commands: commandIds.map((id) => ({
@@ -72,11 +72,7 @@ function saidOf(commandIds: string[], serverIds: string[], agentIds: string[] = 
   });
 }
 
-/**
- * What the sources say of themselves. It names **every** source the fixtures grant, because a grant pointing at
- * an undeclared source is broken, and the mark would take the trouble tone in a test that is not about trouble
- * at all. The tests that are about it say so with a `saidOf` of their own.
- */
+/** Names every source the fixtures grant, so no mark is broken unless a test says so with its own `saidOf`. */
 const SAID = saidOf(
   Array.from(
     {
@@ -100,7 +96,7 @@ const SAID = saidOf(
 
 describe("armedWith", () => {
   it("says which mini-sphere is a command and which a server, since the shape is drawn off that", () => {
-    // The shape says the порода — a rounded square for a command, the globe for a server.
+    // Shape tells the kind: a rounded square for a command, a globe for a server.
     const orbs = armedWith([...granted(1), ...fromServers(1)], SAID);
 
     expect(orbs.find((orb) => orb.group === "commands")?.source).toBe("command");
@@ -108,8 +104,7 @@ describe("armedWith", () => {
   });
 
   it("names the grant behind a command's mark, and none behind a server's", () => {
-    // THE FIRST RULE: a mark that stands for one grant carries that grant's own id, so a press has a page to open
-    // and nobody has to guess which command it meant. A server's mark stands for the whole server, and names none.
+    // A mark for one grant carries that grant's id; a server's mark names none.
     const orbs = armedWith([...granted(1), ...fromServers(1)], SAID);
 
     expect(orbs.find((orb) => orb.group === "commands")?.grantId).toBe("grant-0");
@@ -120,7 +115,7 @@ describe("armedWith", () => {
     expect(armedWith([], SAID)).toEqual([]);
   });
 
-  it("stands a mark of its own for every declared command, up to the two its порода is given", () => {
+  it("stands a mark of its own for every declared command, up to the two its kind is given", () => {
     const arc = armedWith(granted(2), SAID);
 
     expect(arc).toHaveLength(2);
@@ -128,7 +123,7 @@ describe("armedWith", () => {
   });
 
   it("folds a whole server into one mark, however many of its functions were granted", () => {
-    // Only the servers fold whole: twenty-four functions are the server's own affair, and the hand chose none.
+    // Only servers fold whole.
     const arc = armedWith(
       Array.from(
         {
@@ -149,12 +144,12 @@ describe("armedWith", () => {
   });
 
   it("wears the colour of the source and never the agent's own", () => {
-    // Four tools from two different places are to be seen at a glance, so colour says where from.
+    // Colour tells the source.
     expect(armedWith(granted(1), SAID)[0].color).toBe(ARMED_COMMANDS_COLOR);
   });
 
-  it("splits the arc evenly by порода: two commands and a «+», two servers and a «+»", () => {
-    // Six places, and not one of them shared by number — «дві команди ліворуч, два сервери праворуч».
+  it("splits the arc evenly by kind: two commands and a «+», two servers and a «+»", () => {
+    // Six places by kind, not by number: two commands left, two servers right.
     const arc = armedWith([...granted(7), ...fromServers(5)], SAID);
 
     expect(arc.map((orb) => [orb.source, orb.more])).toEqual([
@@ -168,30 +163,29 @@ describe("armedWith", () => {
   });
 
   it("stands the commands on the left and the servers on the right, whichever there are more of", () => {
-    // A порода's place on the arc is not its size: commands stand left and servers right, whichever there are more of.
+    // Commands stand left and servers right, whichever are more numerous.
     const arc = armedWith([...fromServers(3), ...granted(1)], SAID);
 
     expect(arc.map((orb) => orb.source)).toEqual(["command", "mcp", "mcp", "mcp"]);
   });
 
-  it("gives a порода no third place while there is nothing to fold", () => {
-    // «порожньої дірки на дузі не буває» — the arc's width is itself the answer to «how much».
+  it("gives a kind no third place while there is nothing to fold", () => {
+    // No empty hole on the arc: its width answers «how much».
     const arc = armedWith([...granted(ARMED_MARKS_EACH), ...fromServers(1)], SAID);
 
     expect(arc).toHaveLength(3);
     expect(arc.every((orb) => orb.more === null)).toBe(true);
   });
 
-  it("lets a порода that is absent shorten the arc, never lend its places to the other", () => {
-    // Three corners in a row would mean «two commands and the rest» beside one agent and «three
-    // commands» beside another — the same drawing saying two different things.
+  it("lets a kind that is absent shorten the arc, never lend its places to the other", () => {
+    // A kind never takes another's places, so the same drawing never means two things.
     const arc = armedWith(granted(9), SAID);
 
     expect(arc).toHaveLength(ARMED_MARKS_EACH + 1);
     expect(arc.at(-1)?.more).toBe("+7");
   });
 
-  it("wears the порода's own colour on the «+», because there is no grey one any more", () => {
+  it("wears the kind's own colour on the «+», because there is no grey one any more", () => {
     const arc = armedWith([...granted(4), ...fromServers(4)], SAID);
 
     expect(arc.filter((orb) => orb.more !== null).map((orb) => orb.color)).toEqual([
@@ -201,7 +195,7 @@ describe("armedWith", () => {
   });
 
   it("takes the two that stand from the project file's order, not from what was granted first", () => {
-    // A mark that moves when a tick is taken reads as a different mark, so the order is the file's.
+    // Order is the file's, so a mark does not move when a tick is taken.
     const arc = armedWith(
       [...granted(3), ...fromServers(3)],
       saidOf(["command-2", "command-0", "command-1"], ["server-2", "server-1", "server-0"]),
@@ -220,15 +214,14 @@ describe("armedWith", () => {
   });
 
   it("stands a grant whose source the project has let go after the ones it still names", () => {
-    // The grant outlives its command, and the arc is no place to learn that from — the panel says it.
+    // A grant whose command is gone keeps its mark; the panel reports it.
     const arc = armedWith(granted(2), saidOf(["command-1"], []));
 
     expect(arc.map((orb) => orb.grantId)).toEqual(["grant-1", "grant-0"]);
   });
 
   it("takes the trouble tone where every grant of a source points at nothing", () => {
-    // «нуль виданих — позначки немає, але всі видачі зламані — позначка є». The tone is the
-    // states' family and not a source's, so it stands over the colour the source would have worn.
+    // No grants: no mark; all grants broken: a mark. The trouble tone overrides the source colour.
     const arc = armedWith(granted(2), saidOf(["command-1"], []));
 
     expect(arc.map((orb) => orb.isBroken)).toEqual([false, true]);
@@ -236,8 +229,7 @@ describe("armedWith", () => {
   });
 
   it("leaves a source alone where one of its grants is broken and the others are not", () => {
-    // «окремі зламані видачі при живих цілих купу не фарбують» — that is the panel's pill to say, and
-    // one tone meaning two different things would be worse than saying nothing.
+    // Some broken grants among live ones do not tint the mark; the panel's pill says that.
     const arc = armedWith(
       [
         ...fromServers(1),
@@ -273,9 +265,8 @@ describe("armedWith", () => {
     expect(arc[0].isBroken).toBe(false);
   });
 
-  it("gives the порода's «+» the tone where the broken one did not fit its two places", () => {
-    // The hard two places hand out places by the file and not by the event, so they could have
-    // hidden this state along with its source — the heap carries it instead, and nothing moves on the arc.
+  it("gives the kind's «+» the tone where the broken one did not fit its two places", () => {
+    // Places go by the file, so the «+» carries the broken state of a mark that did not fit, and the arc does not move.
     const arc = armedWith(granted(4), saidOf(["command-0", "command-1", "command-2"], []));
 
     expect(arc.map((orb) => orb.isBroken)).toEqual([false, false, true]);
@@ -284,7 +275,7 @@ describe("armedWith", () => {
   });
 
   it("stands what is broken first in the list a «+» raises, though the arc itself does not move", () => {
-    // The list opened to say what is inside, and what is wrong is the first thing it has to say.
+    // Broken rows come first in a «+» list.
     const arc = armedWith(granted(4), saidOf(["command-0", "command-1", "command-3"], []));
 
     expect(arc.map((orb) => orb.grantId)).toEqual(["grant-0", "grant-1", null]);
@@ -295,8 +286,7 @@ describe("armedWith", () => {
   });
 
   it("says nothing at all about a call: the arc knows of none", () => {
-    // «працює загальна сфера, і все». The arc stands the same whether the agent is calling
-    // something or sitting still, so there is no third argument left for a call to come in by.
+    // The arc knows nothing of calls.
     expect(Object.keys(armedWith(granted(1), SAID)[0]).includes("isCalling")).toBe(false);
   });
 
@@ -307,8 +297,7 @@ describe("armedWith", () => {
   });
 
   it("counts two servers as two marks, not as one colour", () => {
-    // Every server shares one colour, so counting by colour would fold two into one mini-sphere and the press
-    // would have no group to lead to.
+    // Servers share one colour, so folding goes by group, not colour.
     const orbs = armedWith(fromServers(2), SAID);
 
     expect(orbs).toHaveLength(2);

@@ -31,7 +31,7 @@ function agent(id: string, name: string, x: number): Agent {
   });
 }
 
-/** The known providers, as the renderer holds them; the chat names one in a card. */
+/** Known providers as the renderer holds them. */
 const PROVIDERS: ProviderState[] = [
   {
     id: "anthropic",
@@ -47,10 +47,10 @@ const PROVIDERS: ProviderState[] = [
 
 /** A project that declares no server, so no look ever stands. */
 const NO_SERVERS = {};
-/** Where a pick is refused is the page's to say; these walks pick nothing. */
+/** These walks pick nothing, so no refusals. */
 const NO_REFUSALS = () => undefined;
 
-/** The chat tells the providers what each turn heard at their address; no case here reads it back. */
+/** Receives what each turn heard at the provider's address; no case reads it back. */
 const heard = vi.fn();
 
 const PROJECT: OpenProject = {
@@ -69,7 +69,7 @@ const PROJECT: OpenProject = {
   view: null,
 };
 
-/** The same project with no line drawn, so one question is one turn and one step. */
+/** Project with no line drawn: one question is one turn and one step. */
 const ALONE: OpenProject = {
   ...PROJECT,
   config: {
@@ -78,7 +78,7 @@ const ALONE: OpenProject = {
   },
 };
 
-/** The same project with a third agent, so the line goes on past the one the person spoke to. */
+/** Project with a third agent, so the line continues past the one spoken to. */
 const CHAIN: OpenProject = {
   ...PROJECT,
   config: {
@@ -95,11 +95,7 @@ const CHAIN: OpenProject = {
   },
 };
 
-/**
- * The next turn asked of the machine falls with this. The record's own calls — the row, the question, the
- * step — are untouched: what fell is the turn, and a harness that fell on «the next call of anything» would name the
- * wrong one the moment the writes change their order.
- */
+/** Makes the next turn asked of the machine fall; the record's own calls (row, question, step) are untouched. */
 function fallsOnce(invoke: Mock, error: Error): void {
   const answering = <(channel: string, payload?: unknown) => Promise<unknown>>invoke.getMockImplementation();
   let standing: Error | null = error;
@@ -117,7 +113,7 @@ function fallsOnce(invoke: Mock, error: Error): void {
   });
 }
 
-/** Every turn answers with the same words, and every ask is kept for the assertions. */
+/** Every turn answers with the same words; every ask is kept for assertions. */
 function held(answer = "Готово, тест зелений.") {
   const invoke = vi.fn(async (channel: string, _payload?: unknown) =>
     channel === ASK_AGENT_CHANNEL
@@ -138,7 +134,7 @@ function held(answer = "Готово, тест зелений.") {
   return invoke;
 }
 
-/** The calls of one turn as its card reads them — they arrive apart from the walk. */
+/** The calls of one turn as its card reads them. */
 function liveCalls(turnId: string): LiveCall[] {
   const { result } = renderHook(() => useLiveAnswer(turnId));
 
@@ -152,7 +148,7 @@ function asked(invoke: ReturnType<typeof held>, nth: number) {
   return <{ messages: { from: string; text: string }[] }>calls[nth]?.[1];
 }
 
-/** A turn that came back unfinished: the fields say how, and the words are whatever got through. */
+/** A turn that came back unfinished: the fields say how, `text` is what got through. */
 function ending(said: { text?: string; isStopped?: boolean; isCallsExhausted?: boolean; isCeilingHit?: boolean }) {
   const invoke = vi.fn(async (channel: string, _payload?: unknown) =>
     channel === ASK_AGENT_CHANNEL
@@ -175,12 +171,12 @@ function ending(said: { text?: string; isStopped?: boolean; isCallsExhausted?: b
   return invoke;
 }
 
-/** The row the act stands under: the last thing said in the stream, which is where «СПИТАТИ ЩЕ РАЗ» lives. */
+/** The last row said in the stream, where «СПИТАТИ ЩЕ РАЗ» lives. */
 function broken(messages: ChatMessage[]): ChatMessage {
   return <ChatMessage>messages.at(-1);
 }
 
-/** A row of no stream, naming a walk and a question the record never held — the repeat has nothing to find by them. */
+/** A row with no stream, naming a walk and question the record never held. */
 function row(walkId: string): ChatMessage {
   return {
     id: "said-1",
@@ -238,7 +234,7 @@ describe("useAgentChat", () => {
 
     act(() => result.current.fresh());
 
-    // What was said goes; every question that walked a line is a run, and runs are kept.
+    // The stream empties, but every question that walked a line is kept as a run.
     expect(result.current.messages).toEqual([]);
     expect(result.current.aimedAgentId).toBe("agent-1");
   });
@@ -303,7 +299,7 @@ describe("useAgentChat", () => {
 
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
 
-    // The walk ran to its end and wrote its step; the stream the person emptied stays empty.
+    // The walk ran to its end and wrote its step; the emptied stream stays empty.
     expect(sent[ADD_RUN_STEP_CHANNEL]?.length).toBe(1);
     expect(result.current.messages).toEqual([]);
   });
@@ -326,7 +322,7 @@ describe("useAgentChat", () => {
       agentId: null,
     });
 
-    // The ring goes off the sphere, the question the person was writing does not.
+    // The ring leaves the sphere; the question being written stays.
     expect(result.current.aimedAgentId).toBe("agent-1");
     expect(result.current.draft).toBe("Полагодь падіння тесту");
   });
@@ -337,7 +333,7 @@ describe("useAgentChat", () => {
     const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
-    // Opening a run aims the chat at whoever walked it, and the aim alone moves nothing in the field.
+    // Opening a run aims the chat at its agent and leaves the field alone.
     act(() => result.current.aim("agent-2"));
 
     expect(result.current.aimedAgentId).toBe("agent-2");
@@ -350,7 +346,7 @@ describe("useAgentChat", () => {
     const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
-    // A run opened from the history stands in the stream's place — with its own field, not this one's.
+    // A run opened from history replaces the stream, with its own field.
     act(() => result.current.goOnIn("run-1"));
 
     expect(result.current.draft).toBe("");
@@ -371,7 +367,7 @@ describe("useAgentChat", () => {
     const { result } = renderHook(() => useAgentChat(PROJECT, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Полагодь падіння тесту"));
-    // «+ НОВИЙ ЧАТ» is a start from a clean place, and an unsent question is not carried into it.
+    // «+ НОВИЙ ЧАТ» starts clean; an unsent question is not carried over.
     act(() => result.current.fresh());
 
     expect(result.current.draft).toBe("");
@@ -458,7 +454,7 @@ describe("useAgentChat", () => {
 
     await waitFor(() => expect(asked(invoke, 1)).toBeDefined());
 
-    // The answer and no more: none of the sender's own conversation, prompt or history travels.
+    // Only the answer travels: none of the sender's conversation, prompt or history.
     expect(asked(invoke, 1).messages).toEqual([
       {
         from: "person",
@@ -470,7 +466,7 @@ describe("useAgentChat", () => {
       agentId: "agent-2",
     });
 
-    // The words the neighbour was handed stand in the stream once — as the neighbour's own.
+    // The handed words appear once in the stream, as the neighbour's own.
     const said = result.current.messages.filter((message) => message.text === "Готово, тест зелений.");
 
     expect(said.map((message) => [message.from, message.agentId])).toEqual([
@@ -488,7 +484,7 @@ describe("useAgentChat", () => {
 
     await waitFor(() => expect(asked(invoke, 2)).toBeDefined());
 
-    // The third agent is asked the second one's answer, the same way the second was asked the first's.
+    // The third agent is asked the second's answer, as the second was asked the first's.
     expect(asked(invoke, 2).messages).toEqual([
       {
         from: "person",
@@ -519,7 +515,7 @@ describe("useAgentChat", () => {
       await Promise.resolve();
     });
 
-    // The fall is the first agent's own, and the neighbour is never asked the note about it.
+    // The fall is the first agent's own; the neighbour is never asked the note about it.
     expect(invoke.mock.calls.filter(([channel]) => channel === ASK_AGENT_CHANNEL)).toHaveLength(1);
   });
 
@@ -537,7 +533,7 @@ describe("useAgentChat", () => {
       await Promise.resolve();
     });
 
-    // The neighbour is never handed the note about the ceiling as if it were work.
+    // The neighbour is never handed the ceiling note as work.
     expect(invoke.mock.calls.filter(([channel]) => channel === ASK_AGENT_CHANNEL)).toHaveLength(1);
   });
 
@@ -556,7 +552,7 @@ describe("useAgentChat", () => {
       await Promise.resolve();
     });
 
-    // Half an answer is not an answer — the model's words stay in the card, ours on the rule.
+    // The model's words stay in the card; the rule's note is the ceiling.
     expect(result.current.messages.at(-1)?.note).toBe(answerCeilingNote(4096));
     expect(result.current.messages.at(-1)?.text).not.toContain(answerCeilingNote(4096));
     expect(invoke.mock.calls.filter(([channel]) => channel === ASK_AGENT_CHANNEL)).toHaveLength(1);
@@ -574,14 +570,14 @@ describe("useAgentChat", () => {
       await Promise.resolve();
     });
 
-    // A card with a price and no words says nothing about what happened; the rule says it.
+    // A card with a price and no words gets the rule's note.
     expect(result.current.messages.at(-1)?.note).toBe(CHAT_SAID_NOTHING_NOTE);
     expect(result.current.messages.at(-1)?.text).toBe("");
     expect(invoke.mock.calls.filter(([channel]) => channel === ASK_AGENT_CHANNEL)).toHaveLength(1);
   });
 });
 
-/** The same agent, moved onto a model of its own, so an ask can be told apart by whom it is for. */
+/** The same agent on its own model, so asks tell apart by recipient. */
 function onModel(id: string, name: string, modelId: string): Agent {
   return {
     ...agent(id, name, 0),
@@ -589,7 +585,7 @@ function onModel(id: string, name: string, modelId: string): Agent {
   };
 }
 
-/** Two lines out of the first agent, back together on the fourth: one converging point. */
+/** Two lines out of the first agent converging on the fourth. */
 const FAN: OpenProject = {
   directory: "/tmp/project",
   config: aConfig({
@@ -645,7 +641,7 @@ const HALF_OFF: OpenProject = {
   },
 };
 
-/** The same fan with the converging point itself switched off between a break and the repeat. */
+/** The same fan with the converging point switched off between a break and the repeat. */
 const POINT_OFF: OpenProject = {
   ...FAN,
   config: {
@@ -661,7 +657,7 @@ const POINT_OFF: OpenProject = {
   },
 };
 
-/** Every agent answers in its own words; the models named in `falls` never answer at all. */
+/** Every agent answers in its own words; models in `falls` never answer. */
 function voices(falls: string[] = []) {
   const invoke = vi.fn(async (channel: string, payload?: unknown) => {
     if (channel !== ASK_AGENT_CHANNEL) {
@@ -691,7 +687,7 @@ function voices(falls: string[] = []) {
   return invoke;
 }
 
-/** What the agent on this model was asked, or `undefined` if it was never asked at all. */
+/** What the agent on this model was asked, or `undefined` if never asked. */
 function askedOf(invoke: { mock: { calls: [string, unknown?][] } }, model: string) {
   const call = invoke.mock.calls.find(
     ([channel, payload]) => channel === ASK_AGENT_CHANNEL && (<{ model: string }>payload).model === model,
@@ -704,7 +700,7 @@ function turns(invoke: ReturnType<typeof voices>) {
   return invoke.mock.calls.filter(([channel]) => channel === ASK_AGENT_CHANNEL).length;
 }
 
-/** Lets every answer that can still arrive arrive — a turn waits on the record for its thread before it goes. */
+/** Lets every pending answer arrive; a turn waits on the record for its thread. */
 async function stood() {
   await act(async () => {
     for (let step = 0; step < 30; step += 1) {
@@ -723,7 +719,7 @@ describe("useAgentChat where lines converge", () => {
 
     await waitFor(() => expect(askedOf(invoke, "model-4")).toBeDefined());
 
-    // One turn, holding both answers — one under another, in arrival order, both whole.
+    // One turn holding both answers in arrival order, both whole.
     expect(askedOf(invoke, "model-4")?.messages).toEqual([
       {
         from: "person",
@@ -733,7 +729,7 @@ describe("useAgentChat where lines converge", () => {
 
     await stood();
 
-    // Four agents, four turns: the point does not work once per supplier.
+    // Four agents, four turns: the point does not run once per supplier.
     expect(turns(invoke)).toBe(4);
   });
 
@@ -746,7 +742,7 @@ describe("useAgentChat where lines converge", () => {
 
     await waitFor(() => expect(askedOf(invoke, "model-4")).toBeDefined());
 
-    // One live supplier is not a converging point, so the answer goes as it was said.
+    // One live supplier is not a converging point; the answer goes as said.
     expect(askedOf(invoke, "model-4")?.messages).toEqual([
       {
         from: "person",
@@ -767,9 +763,8 @@ describe("useAgentChat where lines converge", () => {
     act(() => result.current.send());
     await stood();
 
-    // A step is what breaks, and after a break nothing of the walk begins — the
-    // point that was waiting is not asked with one supplier missing, it is left for the repeat to
-    // pick up whole. What did arrive is not lost: it stands in the record, waiting where it landed.
+    // After a break nothing further begins: the waiting point is not asked with a supplier missing but left for the
+    // repeat, and what arrived stays in the record.
     expect(askedOf(invoke, "model-4")).toBeUndefined();
     expect(turns(invoke)).toBe(3);
   });
@@ -784,7 +779,7 @@ describe("useAgentChat where lines converge", () => {
     await waitFor(() => expect(turns(invoke)).toBe(3));
     await stood();
 
-    // Nothing arrived, so there is nothing to work on: the point is not asked with an empty question.
+    // Nothing arrived, so the point is not asked with an empty question.
     expect(askedOf(invoke, "model-4")).toBeUndefined();
   });
 });
@@ -842,11 +837,11 @@ describe("useAgentChat while a converging point waits", () => {
 
     await waitFor(() => expect(result.current.waiting).toHaveLength(1));
 
-    // Every live supplier, in the order its line was drawn, and where each one stands.
+    // Live suppliers in line-drawing order, with where each stands.
     expect(result.current.waiting[0]).toEqual({
-      // This conversation is the one on screen, so its point is the one the canvas holds.
+      // The on-screen conversation's point is the one the canvas holds.
       agentId: "agent-4",
-      // The walk is alive, so what the point waits for is a supplier, not a hand.
+      // The walk is alive, so the point waits for a supplier, not a hand.
       isAwaitingRepeat: false,
       suppliers: [
         {
@@ -861,14 +856,14 @@ describe("useAgentChat while a converging point waits", () => {
         },
       ],
     });
-    // The line still to answer is drawn as one nothing came down; the one that answered is lit.
+    // The line still to answer is drawn as `awaited`; the one that answered is lit.
     expect(result.current.linkLives["link-4"]).toBe("awaited");
     expect(result.current.linkLives["link-3"]).toBe("answered");
 
     act(() => release("model-3"));
     await stood();
 
-    // The wait is over the moment the last supplier speaks, and the point takes its turn.
+    // The wait ends when the last supplier speaks; the point takes its turn.
     expect(result.current.waiting).toHaveLength(0);
     expect(askedOf(invoke, "model-4")).toBeDefined();
   });
@@ -880,7 +875,7 @@ describe("useAgentChat while a converging point waits", () => {
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
 
-    // A break leaves the point waiting and what arrived standing, for the repeat to bring the rest.
+    // A break leaves the point waiting and what arrived standing, for the repeat.
     await waitFor(() => expect(result.current.waiting[0]?.isAwaitingRepeat).toBe(true));
 
     expect(result.current.waiting[0].suppliers).toEqual([
@@ -895,10 +890,10 @@ describe("useAgentChat while a converging point waits", () => {
         seconds: null,
       },
     ]);
-    // The line of the one that fell says «нічого не приїде»; the one that answered stays lit.
+    // The fallen supplier's line says «нічого не приїде»; the answered one stays lit.
     expect(result.current.linkLives["link-4"]).toBe("silent");
     expect(result.current.linkLives["link-3"]).toBe("answered");
-    // Nothing of the walk begins after the break, the point's own turn least of all.
+    // Nothing of the walk begins after the break, including the point's own turn.
     expect(askedOf(invoke, "model-4")).toBeUndefined();
   });
 
@@ -915,7 +910,7 @@ describe("useAgentChat while a converging point waits", () => {
     act(() => result.current.changeDraft("Перевір ще раз"));
     act(() => result.current.send());
 
-    // What the point held was the broken walk's; a new walk brings its own, out of the record.
+    // What the point held belonged to the broken walk; a new walk brings its own.
     await waitFor(() => expect(result.current.waiting[0]?.isAwaitingRepeat).not.toBe(true));
   });
 
@@ -926,26 +921,25 @@ describe("useAgentChat while a converging point waits", () => {
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
 
-    // The point of the first walk is out: the conversation is walking.
+    // The first walk's point is out; the conversation is walking.
     await waitFor(() => expect(result.current.working.some((one) => one.agentId === "agent-4")).toBe(true));
 
     act(() => result.current.changeDraft("Перевір ще одну гілку"));
     act(() => result.current.send());
 
-    // Nothing went, and what was typed is where it was typed — the hand under the field is the stop.
+    // Nothing went and the typed words stay in the field.
     expect(result.current.messages.filter((message) => message.from === "person")).toHaveLength(1);
     expect(result.current.draft).toBe("Перевір ще одну гілку");
 
     release();
 
-    // What lets a question go is the whole walk of this conversation being over, not this agent's own turn ending:
-    // that is the gate `send` asks about, and the two settle on different ticks. Waiting on the wrong one makes the
-    // send a silent no, and the question stays in the field with nothing on screen to say why.
+    // A question goes only when the whole conversation walk is over, which is the gate `send` checks; the agent's own
+    // turn ends on a different tick.
     await waitFor(() => expect(result.current.working).toEqual([]));
 
     act(() => result.current.send());
 
-    // The walk is over, so the second question goes — and stands in a block of its own below the first.
+    // The walk is over, so the second question goes, in its own block below the first.
     await waitFor(() => expect(result.current.messages.filter((message) => message.from === "person")).toHaveLength(2));
 
     const said = result.current.messages;
@@ -990,7 +984,7 @@ describe("useAgentChat when a step breaks", () => {
 
       const asking = <{ model: string }>payload;
 
-      // One of the two suppliers falls; the other is still out and never answers of its own accord.
+      // One supplier falls; the other is still out and never answers by itself.
       if (asking.model === "model-2") {
         throw new Error("нема зв'язку");
       }
@@ -1018,7 +1012,7 @@ describe("useAgentChat when a step breaks", () => {
     act(() => result.current.changeDraft("Перевір гілку перед мержем"));
     act(() => result.current.send());
 
-    // The walk is over the moment one turn of it breaks — nothing is left running to no end.
+    // The walk ends as soon as one turn breaks.
     await waitFor(() => expect(stopped).toHaveLength(1));
     expect(askedOf(invoke, "model-4")).toBeUndefined();
   });
@@ -1037,7 +1031,7 @@ describe("useAgentChat when a turn never began", () => {
 
     await waitFor(() => expect(result.current.messages.at(-1)?.notStarted).toBe("noKey"));
 
-    // «упав» means something was tried; here nothing was, so the fallen mark stays off.
+    // «упав» means something was tried; nothing was, so the fallen mark stays off.
     expect(result.current.messages.at(-1)?.isFailure).toBe(false);
     expect(result.current.fellAt["agent-1"]).toBeUndefined();
   });
@@ -1054,7 +1048,7 @@ describe("useAgentChat when a turn never began", () => {
 
     await waitFor(() => expect(result.current.messages.at(-1)?.notStarted).toBe("noKey"));
 
-    // The sentence is about this model and this provider, not about models in general.
+    // The sentence names this model and provider.
     expect(result.current.messages.at(-1)?.text).toBe(
       "Модель claude-sonnet-4.5 належить провайдеру Anthropic, а ключа до нього немає.",
     );
@@ -1065,7 +1059,7 @@ describe("useAgentChat when a turn never began", () => {
 
     fallsOnce(invoke, new Error("LLM_NO_KEY"));
 
-    // The providers are read over the bridge, so the first render of a chat has none.
+    // Providers are read over the bridge, so the first render has none.
     const { result, rerender } = renderHook(
       ({ list }) => useAgentChat(PROJECT, "agent-1", list, heard, NO_SERVERS, NO_REFUSALS),
       {
@@ -1098,7 +1092,7 @@ describe("useAgentChat when a turn never began", () => {
 
     await waitFor(() => expect(result.current.messages.at(-1)?.notStarted).toBe("silent"));
 
-    // The field emptied the moment the question went, and nothing puts the words back.
+    // The field empties when the question goes and is not refilled.
     expect(result.current.draft).toBe("");
     expect(result.current.messages.some((message) => message.text === "Полагодь падіння тесту")).toBe(true);
   });
@@ -1115,7 +1109,7 @@ describe("useAgentChat when a turn never began", () => {
 
     await waitFor(() => expect(result.current.messages.at(-1)?.notStarted).toBe("noKey"));
 
-    // The app's own sentence about a missing key is not work, and the line stays dark.
+    // The app's own missing-key sentence is not work; the line stays dark.
     expect(result.current.messages.some((message) => message.from === "handoff")).toBe(false);
     expect(invoke.mock.calls.filter(([channel]) => channel === ASK_AGENT_CHANNEL)).toHaveLength(1);
   });
@@ -1136,7 +1130,7 @@ describe("useAgentChat when a turn never began", () => {
   });
 });
 
-/** The same project with a ceiling shorter than the question the person types. */
+/** Project with a ceiling shorter than the typed question. */
 const LOW_CEILING: OpenProject = {
   ...PROJECT,
   config: {
@@ -1161,11 +1155,11 @@ describe("useAgentChat against the model's ceiling", () => {
 
     await waitFor(() => expect(result.current.messages.at(-1)?.notStarted).toBe("tooLong"));
 
-    // Measured before it goes, so nothing was asked, nothing fell and nothing was spent.
+    // Measured before sending: nothing asked, nothing fell, nothing spent.
     expect(invoke).not.toHaveBeenCalledWith(ASK_AGENT_CHANNEL, expect.anything());
     expect(result.current.messages.at(-1)?.isFailure).toBe(false);
     expect(result.current.messages.at(-1)?.cost).toBeNull();
-    // The field emptied when the question went; the words stand in the stream above the card.
+    // The field empties; the words stay in the stream above the card.
     expect(result.current.draft).toBe("");
   });
 
@@ -1208,7 +1202,7 @@ describe("useAgentChat against the model's ceiling", () => {
 
     await waitFor(() => expect(result.current.messages.at(-1)?.notStarted).toBe("notFilled"));
 
-    // The card names the field the form will open on, and nothing was asked.
+    // The card names the field the form will open on; nothing was asked.
     expect(result.current.messages.at(-1)?.text).toContain("«Вихідна ціна»");
     expect(invoke).not.toHaveBeenCalledWith(ASK_AGENT_CHANNEL, expect.anything());
   });
@@ -1255,7 +1249,7 @@ describe("useAgentChat against the model's ceiling", () => {
 
     await waitFor(() => expect(result.current.messages.at(-1)?.notStarted).toBe("lostPrompt"));
 
-    // Working not the way it was agreed is worse than not working, so nothing was asked.
+    // Nothing is asked: working not as agreed is worse than not working.
     expect(invoke).not.toHaveBeenCalledWith(ASK_AGENT_CHANNEL, expect.anything());
   });
 
@@ -1285,7 +1279,7 @@ describe("useAgentChat against the model's ceiling", () => {
 
     await waitFor(() => expect(result.current.messages.at(-1)?.notStarted).toBe("lostFunction"));
 
-    // The pill already said the agent would not start, and now it does not.
+    // The pill said the agent would not start, and it does not.
     expect(invoke).not.toHaveBeenCalledWith(ASK_AGENT_CHANNEL, expect.anything());
   });
 
@@ -1303,7 +1297,7 @@ describe("useAgentChat against the model's ceiling", () => {
   });
 });
 
-/** A turn that stays out until it is released, with the reverse channel held open. */
+/** A turn that stays out until released, with the reverse channel held open. */
 function heldWithVoice() {
   let release = () => {};
   const out = new Promise<void>((resolve) => {
@@ -1431,12 +1425,12 @@ describe("useAgentChat while a turn is making calls", () => {
     voice.release();
     await waitFor(() => expect(result.current.isWorking).toBe(false));
 
-    // The card the rows stood in is gone with the turn; what keeps them is the answer they belong to.
+    // The card goes with the turn; the answer they belong to keeps the rows.
     expect(result.current.working).toEqual([]);
   });
 });
 
-/** The run as the record would hand it back, built from the steps the stand-in was told. */
+/** The run as the record would return it, built from the steps the stand-in was told. */
 function recorded(sent: Record<string, unknown[]>): WholeRun {
   const written = <WrittenStep[]>(sent[ADD_RUN_STEP_CHANNEL] ?? []);
   const walk: WholeStep[] = written.map((step, index) => ({
@@ -1460,7 +1454,7 @@ function recorded(sent: Record<string, unknown[]>): WholeRun {
     startedAt: new Date(),
     askedAt: new Date(),
     endedAt: new Date(),
-    // The questions as they were asked — the record keeps the id each came with, and so does the stand-in.
+    // Questions as asked, each with the id it came with.
     questions: [
       ...(<{ questionId: string; asked: string; startedAt: number }[]>(sent[OPEN_RUN_CHANNEL] ?? [])).map((one) => ({
         id: one.questionId,
@@ -1485,7 +1479,7 @@ function recorded(sent: Record<string, unknown[]>): WholeRun {
   };
 }
 
-/** Every channel's payloads, in the order they were sent, so the record can be read back. */
+/** Every channel's payloads in send order, to read the record back. */
 function recording(answer: Partial<SaidTurn> = {}, fallsOnce: string[] = [], holds: string[] = []) {
   const sent: Record<string, unknown[]> = {};
   const falling = new Set(fallsOnce);
@@ -1504,7 +1498,7 @@ function recording(answer: Partial<SaidTurn> = {}, fallsOnce: string[] = [], hol
     if (channel === ASK_AGENT_CHANNEL) {
       const asking = <{ model: string }>payload;
 
-      // A model named as falling falls its first time out and answers when it is asked again.
+      // A model named as falling falls on its first ask and answers the next.
       if (falling.has(asking.model)) {
         falling.delete(asking.model);
 
@@ -1563,7 +1557,7 @@ function recording(answer: Partial<SaidTurn> = {}, fallsOnce: string[] = [], hol
   };
 }
 
-/** The same line, with the reviewer on a model of its own, so a stand-in can hold the reviewer alone. */
+/** The same line with the reviewer on its own model, so a stand-in can hold the reviewer alone. */
 const REVIEWER_APART: OpenProject = {
   ...PROJECT,
   config: {
@@ -1589,8 +1583,8 @@ const REVIEWER_APART: OpenProject = {
 
 describe("useAgentChat writing the record of a run", () => {
   it("closes the row with the walk that was in it, and not before that walk is back", async () => {
-    // A conversation walks one walk at a time, and its row stands open for as long as that walk
-    // is out — the reviewer is held, so the editor's own step is written and the row says nothing about an end.
+    // A conversation walks one walk at a time and its row stays open while the walk is out; the reviewer is held, so
+    // the editor's step is written with no end.
     const { sent, invoke, release } = recording({}, [], ["reviewer-model"]);
     const { result } = renderHook(() =>
       useAgentChat(REVIEWER_APART, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
@@ -1610,8 +1604,8 @@ describe("useAgentChat writing the record of a run", () => {
   });
 
   it("keeps the row on screen where the person put it, though another conversation writes its steps", async () => {
-    // A run opened from the history while the first walk is still out. The row on screen is the person's
-    // own; a walk of another conversation writing its step and closing its row must not move the screen to itself.
+    // A run opened from history while the first walk is out; another conversation's walk writing its step and closing
+    // its row must not move the screen.
     const { sent, invoke, release } = recording({}, [], ["reviewer-model"]);
     const { result } = renderHook(() =>
       useAgentChat(REVIEWER_APART, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
@@ -1620,7 +1614,7 @@ describe("useAgentChat writing the record of a run", () => {
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
 
-    // The editor has answered and the reviewer is held: the walk is out, and its row is the one on screen.
+    // The editor has answered and the reviewer is held: the walk is out and its row is on screen.
     await waitFor(() => expect(invoke.mock.calls.filter(([channel]) => channel === ASK_AGENT_CHANNEL)).toHaveLength(2));
     await waitFor(() => expect(result.current.runId).toBe("run-1"));
 
@@ -1630,7 +1624,7 @@ describe("useAgentChat writing the record of a run", () => {
 
     release();
 
-    // The walk of the other conversation runs to its end and writes everything it owes — into its own row.
+    // The other conversation's walk runs to its end and writes everything into its own row.
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
     expect((<{ runId: string }[]>sent[CLOSE_RUN_CHANNEL])[0].runId).toBe("run-1");
     expect(result.current.runId).toBe("run-9");
@@ -1650,7 +1644,7 @@ describe("useAgentChat writing the record of a run", () => {
 
     const [written] = <WrittenStep[]>sent[ADD_RUN_STEP_CHANNEL];
 
-    // The walk met a wall before it began, and the record says which wall it was.
+    // The walk met a wall before it began; the record says which.
     expect(written.state).toBe(NOT_STARTED_ENDS.noKey.state);
     expect(written.said).toBe(result.current.messages.at(-1)?.text);
     expect(written.inputTokens).toBe(0);
@@ -1658,45 +1652,40 @@ describe("useAgentChat writing the record of a run", () => {
     expect(written.money).toBe(0);
     // Nothing went, so the turn took no time at all.
     expect(written.endedAt).toBe(written.startedAt);
-    // The row of the run is there too, which is what carries the card past the app closing.
+    // The run's row is written too; it carries the card past an app close.
     expect(sent[OPEN_RUN_CHANNEL]?.length).toBe(1);
   });
 
   it("writes the question the moment it is asked, even where no turn of it begins", async () => {
-    // The stand-in holds by the model's own title, which is what an ask carries.
+    // The stand-in holds by the model's own title, which an ask carries.
     const { sent, release } = recording({}, [], ["claude-sonnet-4.5"]);
     const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
 
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
 
-    // The row stands before a single turn has ended, so a flow that reaches nobody is kept.
+    // The row exists before any turn ends, so a flow reaching nobody is kept.
     await waitFor(() => expect(sent[OPEN_RUN_CHANNEL]?.length).toBe(1));
     expect(sent[ADD_RUN_STEP_CHANNEL]).toBeUndefined();
 
     act(() => result.current.changeDraft("Ще раз те саме"));
     act(() => result.current.send());
 
-    // The walk of this conversation is still out, so nothing went and nothing was written.
+    // This conversation's walk is still out: nothing went, nothing was written.
     expect(sent[ASK_AGAIN_CHANNEL]).toBeUndefined();
     expect(sent[ASK_AGENT_CHANNEL]).toHaveLength(1);
 
     release();
 
     await waitFor(() => expect(sent[ADD_RUN_STEP_CHANNEL]?.length).toBe(1));
-    // The step being written is not the walk being over: the writer and the machine are two different
-    // moments, and a question sent on the first is a silent no — it would stay in the field with nothing to say
-    // why. Nor is an empty `working` enough: this conversation having no turn out is not the same as the walk
-    // having closed, and `OPEN_RUN_CHANNEL` above only says the row was **asked for**, not that its id is back.
-    // Closing the run is all three at once — the walk is over, the writes have settled, and a run cannot be
-    // closed without the name of the row it closes, which is the very name the second question goes on in.
+    // A question goes only after `CLOSE_RUN_CHANNEL`: the walk is over, writes settled, and the closed row's id is
+    // known.
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
 
     act(() => result.current.send());
 
-    // The walk is over, and the second question goes on in the row already standing. This is the longest wait in
-    // the file — three answers over the bridge and the run's close before it — so it gets more than the second the
-    // others make do with, or the whole suite loading beside it is enough to miss it.
+    // The second question goes on in the standing row. Longest wait in the file (three answers over the bridge, then
+    // the close), so it has an extended timeout.
     await waitFor(() => expect(sent[ASK_AGAIN_CHANNEL]?.length).toBe(1), {
       timeout: 5000,
     });
@@ -1730,7 +1719,7 @@ describe("useAgentChat writing the record of a run", () => {
     act(() => result.current.changeDraft("Прогони тести"));
     act(() => result.current.send());
 
-    // The words stand in the stream, the row says why they stayed, and nobody was asked.
+    // The words stay in the stream, the row says why they stayed, nobody was asked.
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
 
     expect(sent[ASK_AGENT_CHANNEL]).toBeUndefined();
@@ -1761,7 +1750,7 @@ describe("useAgentChat writing the record of a run", () => {
     expect(opened.directory).toBe("/tmp/project");
     expect(opened.startedByAgentId).toBe("agent-1");
     expect(opened.asked).toBe("Прогони тести");
-    // The run begins with the question, not with the step that opened its row.
+    // The run starts with the question, not with the step that opened its row.
     expect(opened.startedAt).toBeLessThanOrEqual((<{ startedAt: number }[]>sent[ADD_RUN_STEP_CHANNEL])[0].startedAt);
     expect((<{ agentName: string }[]>sent[ADD_RUN_STEP_CHANNEL]).map((step) => step.agentName)).toEqual([
       "EDITOR",
@@ -1799,17 +1788,17 @@ describe("useAgentChat writing the record of a run", () => {
 
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
 
-    // The prompt word for word and the two numbers the person set, as they stood then.
+    // The prompt verbatim and the two numbers the person set, as they stood then.
     const [first] = <
       { prompt: string; promptId: string | null; modelId: string; temperature: number; maxCalls: number }[]
     >sent[ADD_RUN_STEP_CHANNEL];
 
     expect(first.temperature).toBe(0.3);
     expect(first.maxCalls).toBe(5);
-    // A snapshot says what the thing was; the id says which thing it was a snapshot of.
+    // The snapshot keeps the id of the thing it is a snapshot of.
     expect(first.modelId).toBe("model-1");
     expect(first.promptId).toBeNull();
-    // The agents of this project carry no prompt, and an agent without one ran with no words at all.
+    // These agents carry no prompt, so an agent without one ran with empty words.
     expect(first.prompt).toBe("");
   });
 
@@ -1822,8 +1811,8 @@ describe("useAgentChat writing the record of a run", () => {
 
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
 
-    // A link not taken leaves no step, so only the step that made it can keep it — without
-    // that, «НЕ ПЕРЕДАЄ ⇢ LINTER · ВИМКНЕНИЙ» is said once on the screen and is nowhere in the record.
+    // A link not taken leaves no step, so the step that made it keeps it, e.g. «НЕ ПЕРЕДАЄ ⇢ LINTER · ВИМКНЕНИЙ» is in
+    // the record, not only on screen.
     const [first] = <{ handoffs: { toAgentId: string; stopReason: string | null }[] }[]>sent[ADD_RUN_STEP_CHANNEL];
 
     expect(first.handoffs).toEqual([
@@ -1913,7 +1902,7 @@ describe("useAgentChat writing the record of a run", () => {
       ["find_deep", "ran", 0],
     ]);
 
-    // The same two calls stay in the chat with the answer, after the card has burned down.
+    // The two calls stay in the chat with the answer after the card is gone.
     expect(result.current.messages.find((message) => message.from === "agent")?.calls.map((call) => call.id)).toEqual([
       "call-1",
       "call-2",
@@ -1932,7 +1921,7 @@ describe("useAgentChat writing the record of a run", () => {
 
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
 
-    // The step carries the word it ended by; the run's own state is counted from the steps.
+    // The step carries its ending word; the run's state is counted from the steps.
     expect((<{ state: string }[]>sent[ADD_RUN_STEP_CHANNEL])[0].state).toBe("failed");
   });
 });
@@ -1947,7 +1936,7 @@ describe("useAgentChat as one stream", () => {
 
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
 
-    // The question, the answer, the handoff and the next agent's turn stand in one stream.
+    // Question, answer, handoff and the next agent's turn stand in one stream.
     expect(
       result.current.messages.filter((message) => message.from === "agent").map((message) => message.agentId),
     ).toEqual(["agent-1", "agent-2", "agent-3"]);
@@ -1982,14 +1971,14 @@ describe("useAgentChat as one stream", () => {
 
     await waitFor(() => expect(sent[ASK_AGAIN_CHANNEL]?.length).toBe(1));
 
-    // One conversation is one row — the second question goes on in it, and wears its text.
+    // One conversation is one row; the second question goes on in it.
     expect(sent[OPEN_RUN_CHANNEL]).toHaveLength(1);
     expect(sent[ASK_AGAIN_CHANNEL]?.[0]).toMatchObject({
       runId: "run-1",
       asked: "Додай опис і постав рев'ювера",
     });
 
-    // Every step names the question it grew from — by the id the question was asked with, not one the record made up.
+    // Every step names its question by the id the question was asked with.
     const written = <{ questionId: string }[]>sent[ADD_RUN_STEP_CHANNEL];
     const [opened] = <{ questionId: string }[]>sent[OPEN_RUN_CHANNEL];
     const [again] = <{ questionId: string }[]>sent[ASK_AGAIN_CHANNEL];
@@ -2064,7 +2053,7 @@ describe("useAgentChat as one stream", () => {
       });
     });
 
-    // A stop is the end of the walk, not of one turn — the hand-off does not set the next going.
+    // A stop ends the walk, not one turn: the hand-off does not start the next.
     expect(sent[ASK_AGENT_CHANNEL]).toHaveLength(1);
   });
 
@@ -2079,7 +2068,7 @@ describe("useAgentChat as one stream", () => {
 
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
 
-    // The model said nothing, and the one repeat the app has asks that same turn again.
+    // The model said nothing; the app's one repeat asks the same turn again.
     expect(result.current.messages.at(-1)?.note).toBe(CHAT_SAID_NOTHING_NOTE);
 
     const said = result.current.messages.length;
@@ -2088,14 +2077,14 @@ describe("useAgentChat as one stream", () => {
 
     await waitFor(() => expect(sent[ASK_AGENT_CHANNEL]?.length).toBe(2));
 
-    // The broken turn runs again word for word, read back out of the record.
+    // The broken turn reruns verbatim, read back from the record.
     expect((<{ messages: { text: string }[] }>sent[ASK_AGENT_CHANNEL]?.[1]).messages[0].text).toBe(
       "Підсумуй, що змінилось",
     );
-    // The walk is picked up, not begun: nothing of the person's is said a second time.
+    // The walk is picked up, not begun: nothing of the person's is said twice.
     await waitFor(() => expect(result.current.messages.length).toBe(said + 1));
     expect(result.current.messages.filter((message) => message.from === "person")).toHaveLength(1);
-    // It goes on in the record already standing, and is no question of the person's.
+    // It goes on in the standing record and is not a question of the person's.
     expect(sent[OPEN_RUN_CHANNEL]).toHaveLength(1);
     expect(sent[ASK_AGAIN_CHANNEL]).toBeUndefined();
 
@@ -2113,19 +2102,17 @@ describe("useAgentChat as one stream", () => {
     act(() => result.current.send());
     await stood();
 
-    // The walk broke on the fallen supplier, and the point below it was never asked.
+    // The walk broke on the fallen supplier; the point below it was never asked.
     expect(askedOf(invoke, "model-4")).toBeUndefined();
 
     act(() => result.current.sayAgain(broken(result.current.messages)));
     await waitFor(() => expect(askedOf(invoke, "model-4")).toBeDefined());
 
-    // The turn that broke ran again, and the point got both works — the one that had been
-    // standing in the record since the break, and the one the repeat brought.
+    // The point got both works: the one in the record since the break and the one the repeat brought.
     const asked = askedOf(invoke, "model-4")?.messages[0].text ?? "";
 
     expect(asked.match(/Готово, тест зелений\./g)).toHaveLength(2);
-    // While the point works, both lines its work came by carry it — the one picked up out of
-    // the record among them, or the canvas would show the work coming from one supplier alone.
+    // While the point works, both lines its work came by carry it, including the one picked up from the record.
     const flowing = () =>
       Object.entries(result.current.linkLives)
         .filter(([, life]) => life === "running")
@@ -2158,13 +2145,13 @@ describe("useAgentChat as one stream", () => {
 
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
 
-    // The person switches the point off in the moment between the break and the repeat.
+    // The person switches the point off between the break and the repeat.
     rerender({
       project: POINT_OFF,
     });
     act(() => result.current.sayAgain(broken(result.current.messages)));
 
-    // The work read back out of the record has nowhere to go, and the stream says so.
+    // The work read back from the record has nowhere to go; the stream says so.
     await waitFor(() =>
       expect(
         result.current.messages.some(
@@ -2204,7 +2191,7 @@ describe("useAgentChat as one stream", () => {
     act(() => result.current.sayAgain(row("walk-nobody-holds")));
     await waitFor(() => expect(sent[READ_RUN_CHANNEL]?.length).toBe(1));
 
-    // The id found no question, so the repeat stands still: taking a neighbour would speak under somebody else.
+    // The id found no question, so the repeat stands still rather than speak under a neighbour.
     expect(sent[ASK_AGENT_CHANNEL]?.length ?? 0).toBe(asked);
   });
 
@@ -2217,7 +2204,7 @@ describe("useAgentChat as one stream", () => {
 
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
 
-    // An older run opened from the history stands in the stream's place, and takes the words.
+    // An older run opened from history replaces the stream and takes the words.
     act(() => result.current.goOnIn("run-9"));
     act(() => result.current.changeDraft("Додай опис"));
     act(() => result.current.send());
@@ -2242,7 +2229,7 @@ describe("useAgentChat as one stream", () => {
 
     act(() => result.current.letGo("run-1"));
 
-    // The stream was that record read out loud, so it goes with it and the next question is new.
+    // The stream was that record read out, so it goes with it and the next question is new.
     expect(result.current.messages).toEqual([]);
 
     act(() => result.current.changeDraft("Зовсім інше питання"));
@@ -2276,7 +2263,7 @@ describe("useAgentChat as one stream", () => {
 
     await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
 
-    // The same words would otherwise stand three times: as EDITOR's answer and in both chats it fed.
+    // Otherwise the same words would stand three times: as EDITOR's answer and in both chats it fed.
     expect(result.current.messages.filter((message) => message.from === "supplier")).toEqual([]);
     expect(result.current.messages.filter((message) => message.text === "Готово, тест зелений.")).toHaveLength(3);
   });

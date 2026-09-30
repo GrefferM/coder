@@ -8,9 +8,9 @@ export function App() {
   const [project, setProject] = useState<OpenProject | null>(null);
 
   useScrollMark();
-  // One law for the whole app, start screen included: Tab is the fields' key and nothing else's.
+  // Tab is the fields' key app-wide, start screen included.
   useFieldTab();
-  // And the other half of that law: a row of choices is one stop, and inside it the arrows choose.
+  // A row of choices is one tab stop; arrows choose inside it.
   useChoiceArrows();
 
   if (!project) {
@@ -18,9 +18,8 @@ export function App() {
   }
 
   /**
-   * The page is keyed by the folder, so picking another project builds it anew: everything the page holds — the chat in
-   * memory, the opened run, the selection, the view — belongs to one project. Rereading the same project's file keeps
-   * the key, and the page as it stands.
+   * Keyed by folder: another project rebuilds the page and everything it holds; rereading the same project's file keeps
+   * it.
    */
   return <MainPage key={project.directory} project={project} setProject={setProject} />;
 }

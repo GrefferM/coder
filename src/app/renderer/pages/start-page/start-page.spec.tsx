@@ -132,7 +132,7 @@ describe("StartPage", () => {
   });
 
   it("opens a folder that already holds a project without asking anything", async () => {
-    // Nothing is ever created over a project that exists, so a form whose one answer is «Відкрити» asks nothing.
+    // A form whose only answer is «Відкрити» asks nothing; nothing is created over an existing project.
     const invoke = stubApi({
       [LIST_RECENT_PROJECTS_CHANNEL]: () => [],
       [CHOOSE_DIRECTORY_CHANNEL]: () => "/Users/olena/code/coder-app",

@@ -1,4 +1,4 @@
-/** One run's outcome; the output and the failure go to the model, the line and the code to the record. */
+/** One run's outcome; output and failure go to the model, line and code to the record. */
 export interface CommandResult {
   /** The line as it ran, with the values already in it. */
   line: string;

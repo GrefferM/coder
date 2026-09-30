@@ -1,17 +1,13 @@
 import type { Point } from "../../../utils/math";
 
-/** Every act on a sphere: choosing one, putting one down, moving it, taking it away. */
+/** Every act on a sphere: choose, put down, move, remove. */
 export interface CanvasAgentActs {
   onSelectedAgentIdChange: (agentId: string | null) => void;
-  /**
-   * A press on a «+» chooses the sphere it stands over — «двох різних виборів на полотні не буває» —
-   * and does nothing else: the list it raises lives on the canvas, and the agent's tab is not touched at all.
-   */
+  /** A press on a «+» only chooses the sphere it stands over; the agent's tab is untouched. */
   onPick: (agentId: string) => void;
   /**
-   * A mark of the arc was pressed. The sphere is chosen by that same press — there are never two
-   * different choices — and the tab opens on the page of what that mark stood for: a command's grant, a server's
-   * functions. A line of the list a «+» raised comes through here as well, and to the same places.
+   * A mark of the arc was pressed: chooses the sphere and opens the tab on the page of what the mark stood for (a
+   * command's grant, a server's functions). A line of a «+» list comes here too.
    */
   onOpenTools: (agentId: string, group: string | null, grantId: string | null) => void;
   onAdd: (at: Point) => void;

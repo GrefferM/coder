@@ -1,4 +1,4 @@
-/** The first ancestor that both may scroll and has somewhere to scroll is the list the row lives in. */
+/** The row's list: the first ancestor that can scroll and has room to. */
 function listOf(node: HTMLElement): HTMLElement | null {
   for (let above = node.parentElement; above !== null; above = above.parentElement) {
     const flow = getComputedStyle(above).overflowY;
@@ -16,7 +16,7 @@ function px(length: string): number {
   return Number.parseFloat(length) || 0;
 }
 
-/** The list scrolls by exactly what the row is short of being wholly seen, and by nothing when it is. */
+/** Scrolls the list by exactly what the row lacks to be fully visible; not at all when it is. */
 export function keepInSight(node: HTMLElement): void {
   const list = listOf(node);
 
@@ -27,7 +27,7 @@ export function keepInSight(node: HTMLElement): void {
   const style = getComputedStyle(list);
   const row = node.getBoundingClientRect();
   const seen = list.getBoundingClientRect();
-  // The list keeps its own border and padding clear, so the row comes wholly in — its ring with it.
+  // The list's border and padding are kept clear, so the row and its ring come fully in.
   const top = seen.top + px(style.borderTopWidth) + px(style.paddingTop);
   const bottom = seen.bottom - px(style.borderBottomWidth) - px(style.paddingBottom);
 

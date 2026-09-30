@@ -14,7 +14,7 @@ import {
 } from "./constants";
 import type { DeletePromptConfirmProps } from "./interfaces";
 
-/** Prompt deletion question; its agents fall to the bare model and are named on chips. */
+/** Prompt-deletion question; its agents fall to the bare model and are named on chips. */
 export function DeletePromptConfirm({ prompt, agents, onConfirm, onDismiss }: DeletePromptConfirmProps) {
   return (
     <ConfirmDialog

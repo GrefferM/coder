@@ -53,7 +53,7 @@ function acts() {
 
 describe("SwitcherList", () => {
   it("stands the open project first and the remembered ones under it", () => {
-    // This project, then the others, then what can be done besides.
+    // This project, then the others, then the other actions.
     render(<SwitcherList project={project} others={[entry()]} walk={walk} {...acts()} />);
 
     expect(screen.getByText(SWITCHER_LIST_LABEL)).toBeInTheDocument();

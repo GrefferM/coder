@@ -1,4 +1,4 @@
-/** Which servers this machine dropped, and when — the only ids a sweep may ever touch. */
+/** Which servers this machine dropped, and when; the only ids a sweep may touch. */
 export interface McpDroppedStore {
   all(): Promise<{ serverId: string; droppedAt: number }[]>;
   put(serverId: string, droppedAt: number): Promise<void>;

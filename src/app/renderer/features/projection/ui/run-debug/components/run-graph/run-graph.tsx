@@ -14,10 +14,9 @@ import {
 import type { RunGraphProps } from "./interfaces";
 
 /**
- * One pass drawn flat — a sphere per turn, numbered, over a ruler of when each one began. It is
- * moved about with the canvas's own gestures alone and opens fitted, no closer than the scale a record is read at.
- * A sphere pressed opens its step; the sheet that opens stands over the field, so the pass neither
- * narrows nor lays itself out again.
+ * One pass drawn flat: a numbered sphere per turn over a ruler of when each began. Moves with the canvas's gestures,
+ * opens fitted and no closer than the record-reading scale. A pressed sphere opens its step; the sheet stands over the
+ * field.
  */
 export function RunGraph({ run, standings, openStepId, onOpen }: RunGraphProps) {
   const field = useRef<HTMLDivElement>(null);
@@ -35,7 +34,7 @@ export function RunGraph({ run, standings, openStepId, onOpen }: RunGraphProps) 
   const spots = drawing.turns.map((turn) => turn.at);
   const asked = run.askedAt.getTime();
 
-  // A pass arrives fitted, and so does the next one: the zoom is not carried from one pass to another.
+  // Each pass arrives fitted; zoom is not carried between passes.
   useEffect(() => {
     view.fitAll(spots, RUN_GRAPH_OPEN_SCALE);
   }, [asked]);
@@ -55,7 +54,7 @@ export function RunGraph({ run, standings, openStepId, onOpen }: RunGraphProps) 
         cursor: view.isPanning ? "grabbing" : undefined,
       }}
     >
-      {/* The faint line down every column, moving and scaling with the field it belongs to. */}
+      {/* Faint line down every column, moving and scaling with the field. */}
       <span
         style={{
           position: "absolute",
@@ -111,7 +110,7 @@ export function RunGraph({ run, standings, openStepId, onOpen }: RunGraphProps) 
           />
         ))}
       </div>
-      {/* The scale is said in the corner, and stepped from there, exactly as on the canvas. */}
+      {/* The scale is shown and stepped in the corner, as on the canvas. */}
       <ZoomToolbar
         scale={view.scale}
         stops={RUN_GRAPH_SCALE_STOPS}

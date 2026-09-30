@@ -1,4 +1,4 @@
-/** Taking the tie away is the only act here: what is gone is not restored. */
+/** Removing the tie is the only act; it is not restored. */
 export interface LostPromptProps {
   onRemove: () => void;
 }

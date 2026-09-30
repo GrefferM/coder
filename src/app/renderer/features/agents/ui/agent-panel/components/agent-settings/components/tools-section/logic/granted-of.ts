@@ -2,12 +2,12 @@ import { handleOf, sourceOf } from "../../../../../../../../../interfaces";
 import type { ToolGrant } from "../../../../../../../../../interfaces";
 import type { ToolChoice } from "../../../../../../../interfaces";
 
-/** The grant this row stands for, or nothing where the agent does not hold it — one handle against another. */
+/** The grant this row stands for, or null if the agent does not hold it. */
 export function grantedOf(option: ToolChoice, grants: ToolGrant[]): ToolGrant | null {
   return grants.find((grant) => handleOf(sourceOf(grant)) === option.key) ?? null;
 }
 
-/** A grant for this row, made fresh. A command's carries its pinned arguments; a server's and an agent's pin nothing. */
+/** A fresh grant for this row; a command's carries its pinned arguments, a server's and an agent's pin nothing. */
 export function grantFor(option: ToolChoice): ToolGrant {
   if (option.source === "command") {
     return {

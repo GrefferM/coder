@@ -35,7 +35,7 @@ import {
 } from "./constants";
 import type { AnswerCardProps } from "./interfaces";
 
-/** An agent answer — streaming or complete; cost is known only after the stream ends. */
+/** An agent answer, streaming or complete; cost is known only after the stream ends. */
 export function AnswerCard({
   agentName,
   agentColor,
@@ -47,7 +47,7 @@ export function AnswerCard({
   isFound,
   looked = "",
 }: AnswerCardProps) {
-  // What the counts are to be read against, where the turn ran under a ceiling at all.
+  // What the counts are read against, where the turn ran under a ceiling.
   const ceiling =
     answerCeiling === null ? "" : `${ANSWER_CARD_FACT_SEPARATOR}${ANSWER_CARD_CEILING_LABEL}${answerCeiling}`;
 
@@ -111,9 +111,8 @@ export function AnswerCard({
           </span>
         )}
         {/*
-         * A plain gap holds the step at the far end, not a hairline — the hairline repeated the handoff rule
-         * two rows up. A panel too narrow for the whole line drops the step to a line of its own, still at that end,
-         * rather than breaking a count or a price in half.
+         * A plain gap holds the step at the far end; a panel too narrow for the whole line drops the step to its own line at
+         * that end rather than splitting a count or price.
          */}
         {step !== null && (
           <span
@@ -133,7 +132,7 @@ export function AnswerCard({
           padding: AGENT_CHAT_CARD_PADDING,
           borderRadius: AGENT_CHAT_CARD_BORDER_RADIUS_PX,
           border: `1px solid ${AGENT_CHAT_CARD_BORDER_COLOR}`,
-          // The light that says where the search stopped, and lets go a moment later.
+          // The edge light marking where the search stopped; it fades a moment later.
           boxShadow: isFound === true ? AGENT_CHAT_FOUND_EDGE : AGENT_CHAT_FOUND_EDGE_GONE,
           transition: AGENT_CHAT_FOUND_FADE,
           background: AGENT_CHAT_CARD_BACKGROUND_COLOR,
@@ -142,7 +141,7 @@ export function AnswerCard({
           lineHeight: AGENT_CHAT_TEXT_LINE_HEIGHT,
           whiteSpace: "pre-wrap",
           overflowWrap: "anywhere",
-          // The model's own words are the one thing worth taking away, so selection lives here alone.
+          // The model's words are the only selectable part of the card.
           userSelect: "text",
           cursor: "text",
         }}

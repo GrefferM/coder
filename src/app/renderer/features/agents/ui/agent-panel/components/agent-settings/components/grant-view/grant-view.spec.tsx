@@ -62,7 +62,7 @@ describe("GrantView", () => {
     renderView(GRANT);
 
     expect(screen.getByText("EDITOR · run_tests")).toBeInTheDocument();
-    // The description stands twice — under the step's title and inside the schema the model reads.
+    // The description shows twice: under the step's title and in the schema the model reads.
     expect(screen.getAllByText("Прогнати тести проєкту й повернути звіт")).toHaveLength(2);
   });
 
@@ -106,8 +106,8 @@ describe("GrantView", () => {
     expect(screen.getByText("ЗАКРІПЛЕНО ЗА EDITOR")).toBeInTheDocument();
     expect(screen.getByDisplayValue("auth/*.spec.ts")).toBeInTheDocument();
     expect(screen.getAllByText("ЗАКРІПИТИ")).toHaveLength(1);
-    // What is fixed stands once — on its own row — and is gone from the schema the model is handed;
-    // what is left open stands twice, in the list and in that schema.
+    // A fixed argument shows once, on its own row, and leaves the model's schema; an open one shows in the list and the
+    // schema.
     expect(screen.getAllByText("pattern")).toHaveLength(1);
     expect(screen.getAllByText("timeout")).toHaveLength(2);
   });

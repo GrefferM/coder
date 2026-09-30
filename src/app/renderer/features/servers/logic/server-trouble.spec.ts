@@ -23,12 +23,12 @@ describe("serverTrouble", () => {
   });
 
   it("takes a server that is down and said nothing for one that simply fell", () => {
-    // Silence is not good health: the row must say «ПРОЦЕС УПАВ» about it and not name the kind of server it is.
+    // Silence is not good health: the row says «ПРОЦЕС УПАВ».
     expect(serverTrouble(aLook(null, false))?.kind).toBe("fell");
   });
 
   it("tells a server with no token from one that simply fell", () => {
-    // It neither fell nor answered — nobody has asked it, and «ПРОЦЕС УПАВ» would be a lie about it.
+    // Nobody has asked it, so it neither fell nor answered and «ПРОЦЕС УПАВ» would be wrong.
     expect(serverTrouble(aLook("Error: MCP_TOKEN_MISSING"))?.kind).toBe("tokenMissing");
     expect(serverTrouble(aLook("Error: spawn npx ENOENT"))?.kind).toBe("fell");
   });

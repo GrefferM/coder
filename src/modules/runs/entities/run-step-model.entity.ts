@@ -13,15 +13,15 @@ import { RunStepEntity } from "./run-step.entity";
 import type { RunStepModelRecord } from "../interfaces";
 
 /**
- * The `run_step_models` table row — which model answered the turn, whose provider it was, and what a million tokens of
- * it cost then; one per step.
+ * A row of `run_step_models`: the model that answered the turn, its provider and its cost per million tokens then; one
+ * per step.
  */
 @Entity(RUN_STEP_MODEL_TABLE_NAME)
 export class RunStepModelEntity implements RunStepModelRecord {
   @PrimaryGeneratedColumn("uuid")
   declare id: string;
 
-  /** Which model of the catalogue this was, so «then» can be held against «today». */
+  /** The catalogue model, to compare «then» with «today». */
   @Column({
     type: "varchar",
   })
@@ -49,14 +49,14 @@ export class RunStepModelEntity implements RunStepModelRecord {
   })
   declare outputPrice: number | null;
 
-  /** How long a turn that model took, in characters; a step that ran under none carries nothing. */
+  /** Turn length limit for that model, in characters; none for a step that ran under no model. */
   @Column({
     type: "integer",
     nullable: true,
   })
   declare contextCeiling: number | null;
 
-  /** How many tokens that model was allowed to say, as the provider was given it. */
+  /** Tokens the model was allowed to say, as given to the provider. */
   @Column({
     type: "integer",
     nullable: true,

@@ -4,6 +4,6 @@ import type { WaitingSupplierState } from "./waiting-supplier-state.type";
 export interface WaitingSupplier {
   agentId: string;
   state: WaitingSupplierState;
-  /** How long its turn took, in seconds, once it has answered; `null` until then. */
+  /** How long its turn took, seconds; `null` until it has answered. */
   seconds: number | null;
 }

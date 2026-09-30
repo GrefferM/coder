@@ -24,10 +24,8 @@ import { Clear } from "./components";
 import type { RunSearchProps } from "./interfaces";
 
 /**
- * The one search over the record, standing over the list. There are no filters beside it: the agent went
- * with the name into the head of the row, and the state is read in the row itself. The number stands inside the
- * field, because the field is what it is about — «142» while nothing is typed, «40 МІСЦЬ · 3 ЗАПУСКИ» once
- * something is.
+ * The one search over the record, above the list. The count stands inside the field: «142» at rest, «40 МІСЦЬ · 3
+ * ЗАПУСКИ» with a word.
  */
 export function RunSearch({ query, record, places, runs, onQuery }: RunSearchProps) {
   const { isLit, isFocused, handlers } = useInteraction();
@@ -82,10 +80,10 @@ export function RunSearch({ query, record, places, runs, onQuery }: RunSearchPro
           letterSpacing: RUN_HISTORY_QUIET_LETTER_SPACING_PX,
         }}
       >
-        {/* At rest the whole record is the number; with a word typed, what the word was found in. */}
+        {/* The whole record's count at rest; with a word, what it was found in. */}
         {foundCount(query, places, runs, record)}
       </span>
-      {/* The word goes out by a cross, which stands only while there is a word to take. */}
+      {/* The clear cross shows only while there is a word. */}
       {query !== "" && <Clear onClear={() => onQuery("")} />}
     </div>
   );

@@ -51,7 +51,7 @@ function run(walk: WholeStep[]): WholeRun {
     startedAt: new Date("2026-08-22T19:26:56"),
     askedAt: new Date("2026-08-22T19:26:56"),
     endedAt: new Date("2026-08-22T19:27:12"),
-    // The flow's questions, taken from the steps that name them — one row per question.
+    // The flow's questions taken from the steps naming them, one row per question.
     questions: [...new Set(walk.map((step) => step.questionId))].map((id, at) => {
       const grew = walk.filter((step) => step.questionId === id);
       const aimed = grew.find((step) => step.fromStepIds.length === 0) ?? grew[0];
@@ -118,7 +118,7 @@ describe("runStream", () => {
       ]),
     );
 
-    // A step nothing was handed to began from a person, so what it was asked is what they said.
+    // A step nothing was handed to began from a person, so its question is what they said.
     expect(said.filter((message) => message.from === "person").map((message) => message.text)).toEqual([
       "Розбий текст на тези",
       "Додай опис і постав рев'ювера",
@@ -140,7 +140,7 @@ describe("runStream", () => {
       ]),
     );
 
-    // Without this the repeat would stand in as a question the person asked.
+    // The repeat must not stand in as a question the person asked.
     expect(said.find((message) => message.id === "step-2")?.fedBy).toEqual(["step-1"]);
     expect(said.find((message) => message.id === "step-1")?.fedBy).toEqual([]);
   });
@@ -233,8 +233,8 @@ describe("runStream", () => {
       ]),
     );
 
-    // A walk stopped and asked again: the second row belongs over the turn that came of it, under the
-    // word about the one that was stopped, and not beside the first row over the supplier.
+    // A walk stopped and asked again: the second row goes over the turn that came of it, under the stopped one's word,
+    // not beside the first row over the supplier.
     expect(said.map((message) => `${message.from}:${message.id}`)).toEqual([
       "person:question-1:asked",
       "agent:step-1",
@@ -269,8 +269,8 @@ describe("runStream", () => {
       ]),
     );
 
-    // The link to agent-3 was never taken and left no step, so it is drawn under the step
-    // that made it; the link to agent-2 is drawn over the turn it started, and so is not drawn twice.
+    // The link to agent-3 was never taken and left no step, so it is drawn under its source step; the link to agent-2
+    // is drawn over the turn it started, not twice.
     expect(said.map((message) => `${message.from}:${message.otherAgentId ?? ""}:${message.stopReason ?? ""}`)).toEqual([
       "person::",
       "agent::",
@@ -294,8 +294,8 @@ describe("runStream", () => {
       ]),
     );
 
-    // A turn read back carries the step it was written as and the hour it began;
-    // the level itself is counted in the stream, off those same edges, for a live turn and this alike.
+    // A turn read back carries its written step and start hour; the level is counted in the stream, alike for live and
+    // read turns.
     expect(
       said.filter((message) => message.from === "agent").map((message) => [message.stepId, message.began]),
     ).toEqual([
@@ -365,7 +365,7 @@ describe("runStream", () => {
       ]),
     );
 
-    // While a ceiling and a cut-off lay in one word, a step came home from the record mute.
+    // A silent step read from the record carries the said-nothing note.
     expect(silent.find((message) => message.from === "agent")?.note).toBe(CHAT_SAID_NOTHING_NOTE);
     expect(ceiling.find((message) => message.from === "agent")?.note).toBe(answerCeilingNote(4096));
   });
@@ -418,7 +418,7 @@ describe("runStream", () => {
     expect(call.output).toBe("усе зелене");
     expect(call.exitCode).toBe(0);
     expect(call.endedAt - call.startedAt).toBe(2000);
-    // Read back out of the record, a call still says which values the person pinned.
+    // Read back from the record, a call still names the values the person pinned.
     expect(call.pinned).toEqual(["path"]);
   });
 
@@ -437,14 +437,14 @@ describe("runStream", () => {
     );
     const turn = said.find((message) => message.from === "agent")!;
 
-    // The card is read back off the end the step came to, and the words stand as they came.
+    // The card is read from the end the step came to; the words stand as they came.
     expect(turn.notStarted).toBe("noKey");
     expect(turn.text).toBe("Модель hy-mt2 належить провайдеру Tencent, а ключа до нього немає.");
     expect(turn.note).toBeNull();
-    // Nothing was sent, so there is no price under the card and nothing to ask the record for.
+    // Nothing was sent: no price under the card.
     expect(turn.cost).toBeNull();
     expect(turn.wouldGo).toBeNull();
-    // The question is there, so the repeat asks the same words and does not guess them.
+    // The question is present, so a repeat asks the same words.
     expect(turn.asked).toBe("Розбий текст на тези");
   });
 
@@ -462,7 +462,7 @@ describe("runStream", () => {
     );
     const turn = said.find((message) => message.from === "agent")!;
 
-    // The numbers are not kept — the prompt, the question and the model's ceiling are.
+    // The numbers are not kept; the prompt, the question and the model's ceiling are.
     expect(turn.notStarted).toBe("tooLong");
     expect(turn.wouldGo).toEqual({
       prompt: 8,

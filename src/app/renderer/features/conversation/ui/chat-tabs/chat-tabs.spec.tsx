@@ -54,7 +54,7 @@ describe("ChatTabs", () => {
       />,
     );
 
-    // Starting over belongs to the stream; the history is what has been and is not started over.
+    // Starting over belongs to the stream, not the history.
     expect(screen.queryByText(CHAT_TABS_FRESH_LABEL)).not.toBeInTheDocument();
   });
 
@@ -71,7 +71,7 @@ describe("ChatTabs", () => {
       />,
     );
 
-    // One act per tab — the stream is started over, the history is taken away.
+    // One act per tab: the stream starts over, the history is deleted.
     expect(screen.queryByText(`${CHAT_TABS_FORGET_PREFIX}2`)).not.toBeInTheDocument();
 
     rerender(
@@ -85,7 +85,7 @@ describe("ChatTabs", () => {
       />,
     );
 
-    // The number is in the name — «всі» with no number would lie under a filter.
+    // The count is in the name; «всі» alone would mislead under a filter.
     fireEvent.click(screen.getByText(`${CHAT_TABS_FORGET_PREFIX}2`));
 
     expect(onForgetAll).toHaveBeenCalled();
@@ -115,8 +115,7 @@ describe("ChatTabs", () => {
   });
 
   it("wears the quiet dot of another conversation on the history, and only while it stands closed", () => {
-    // The sign says «there is another list, look at it» — so it stands on that list, and goes out the
-    // moment it is opened, not when the cause is mended.
+    // The news sign stands on the other list and goes out when that list is opened, not when the cause is fixed.
     const { rerender } = render(
       <ChatTabs isNews active="stream" runs={2} onFresh={() => {}} onForgetAll={() => {}} onActiveChange={() => {}} />,
     );

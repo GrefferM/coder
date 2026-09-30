@@ -27,7 +27,7 @@ export class ProjectFolder {
     return path.join(PROMPTS_DIRECTORY_NAME, `${prompt.id}${PROMPT_FILE_EXTENSION}`);
   }
 
-  /** Whether the file is there at all; nothing is read to answer it. */
+  /** Whether the file exists; nothing is read. */
   async isThere(filePath: string): Promise<boolean> {
     try {
       await access(filePath);
@@ -38,7 +38,7 @@ export class ProjectFolder {
     }
   }
 
-  /** A file's text; nothing at all where it cannot be read, which is not the same as an empty one. */
+  /** A file's text; null where unreadable, distinct from empty. */
   async textOf(filePath: string): Promise<string | null> {
     try {
       return await readFile(filePath, "utf8");
@@ -64,7 +64,7 @@ export class ProjectFolder {
       });
       await rename(from, to);
     } catch {
-      // Missing source: the subsequent write creates the body at the new path.
+      // Missing source: the following write creates the body at the new path.
     }
   }
 

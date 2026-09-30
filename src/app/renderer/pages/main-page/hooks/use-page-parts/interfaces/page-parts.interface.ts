@@ -7,25 +7,22 @@ import type { ProvidersState } from "../../../../../features/providers";
 import type { ShownStream } from "../../use-shown-stream/interfaces";
 import type { RailStanding } from "../../use-rail-standing/interfaces";
 
-/**
- * Everything the open project's screen stands on, each part whole and named after what owns it — so a caller says
- * which one it reads instead of depending on every field of all of them.
- */
+/** The open project's screen parts, one per owner. */
 export interface PageParts {
   /** The rail's seven sections, wired to their panels. */
   items: SidePanelItem[];
-  /** What the machine knows: the providers, what each answered, and who is being asked. */
+  /** Providers, their answers, and who is being asked. */
   machine: ProvidersState;
-  /** The live conversation — every walk out, what has been said, and what is written. */
+  /** The live conversation: walks, messages, drafts. */
   chat: AgentChatState;
   /** The stream the panel shows, with its two forgetting paths. */
   stream: ShownStream;
-  /** The projection over the canvas — the pass it stands on, and the ways about it. */
+  /** The projection over the canvas: its pass and navigation. */
   pass: OpenedPassState;
-  /** Which section of the rail stands open, and every way in and out of it. */
+  /** The open rail section and its entry and exit paths. */
   rail: RailStanding;
-  /** The state of every agent, so the canvas and the panel say the same thing. */
+  /** State of every agent, shared by canvas and panel. */
   agentStates: Record<string, AgentState>;
-  /** What each declared server hands over right now — nothing of it is in the project file. */
+  /** What each declared server currently returns; not stored in the project file. */
   looks: Record<string, McpLook>;
 }

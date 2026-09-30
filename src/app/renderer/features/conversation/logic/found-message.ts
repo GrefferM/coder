@@ -2,8 +2,8 @@ import type { RunHit } from "../../record";
 import type { ChatMessage } from "../interfaces";
 
 /**
- * The message a hit names, by place and never by hour. A hit in a step names that step; one naming no step is
- * the person's own card in that question's block. Nothing where the stream does not hold that message.
+ * The message a hit names, by place, not by time: the hit's step, or else the person's own card in that question's
+ * block; null when the stream lacks it.
  */
 export function foundMessage(messages: ChatMessage[], found: RunHit | null): string | null {
   if (found === null) {

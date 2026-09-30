@@ -46,7 +46,7 @@ describe("linkTally", () => {
   });
 
   it("counts an agent with no lines all the same, and says so in zeroes", () => {
-    // The canvas decides for itself whether a pair of zeroes is worth drawing; the count is honest either way.
+    // A pair of zeroes is still counted; the canvas decides whether to show it.
     expect(linkTally(agent("stitcher"), LINKS)).toEqual({
       outgoing: 0,
       incoming: 0,

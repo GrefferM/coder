@@ -45,10 +45,10 @@ export function ProvidersPanel({
   onTakeUpModel,
 }: ProvidersPanelProps) {
   const [openProviderId, setOpenProviderId] = useState<string | null>(null);
-  // Nothing at all until somebody types or presses the cross; a key untouched is a key kept.
+  // Empty until a field is typed into or cleared; an untouched key is kept.
   const [draft, setDraft] = useState<ProviderDraft>(NOTHING_TYPED);
 
-  /** Set up when everything it asked for is here; a local one is, having a customary address behind the field. */
+  /** Set up when everything it asks for is present; a local provider always is, having a customary address. */
   const isFilled = (provider: ProviderState) => providerMissing(provider).length === 0;
   const isSilent = (provider: ProviderState) =>
     provider.kind === "local" && answers[provider.id]?.isAnswering === false;
@@ -94,9 +94,8 @@ export function ProvidersPanel({
   }
 
   /**
-   * A field nobody touched is not written: the field holds the key's hint and not the key, so an empty one
-   * means «unchanged» and never «take it off». Taking it off is the cross in the field, and the save after
-   * that writes the empty value that removes it.
+   * Untouched fields are not written: the key field holds only a hint, so empty means «unchanged»; taking a key off is
+   * the cross, then save writes the empty value.
    */
   async function save(provider: ProviderState) {
     if (draft.key !== null || draft.address !== null) {

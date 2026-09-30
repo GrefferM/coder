@@ -49,7 +49,7 @@ describe("useFoundFlash", () => {
       vi.advanceTimersByTime(AGENT_CHAT_FOUND_MS - 100);
     });
 
-    // The older moment is over and took nothing with it: the newer one is still standing.
+    // The older moment ending does not clear the newer one.
     expect(result.current).toBe("said-5");
   });
 
@@ -60,7 +60,7 @@ describe("useFoundFlash", () => {
   });
 
   it("lets a mark go however the place was reached — a walk with Enter no less than a pressed row", () => {
-    // The mark never holds: a light that never goes out is not a light.
+    // The mark never holds.
     const { result, rerender } = renderHook(({ found }) => useFoundFlash(found), {
       initialProps: {
         found: "said-2" as string | null,

@@ -4,11 +4,11 @@ import type { Agent, McpLook, OpenProject, ProviderState } from "../../../../../
 
 export interface AgentsSectionProps {
   project: OpenProject;
-  /** What every declared server hands over right now, so its functions can be given. */
+  /** What every declared server hands over now, so its functions can be given. */
   looks: Record<string, McpLook>;
   agents: AgentSelection;
   drafted: AgentDrafting;
-  /** The state of the selected agent, worked out once for the whole page. */
+  /** The selected agent's state, worked out once for the page. */
   state: AgentState;
   providers: ProviderState[];
   /** The agents whose lines come into this one. */
@@ -18,9 +18,9 @@ export interface AgentsSectionProps {
   isNamingCopy: boolean;
   /** Which place of the tab a card's act named. */
   mending: AgentMend | null;
-  /** The head the arc named, lit for a moment when the tab opens on it. */
+  /** The head the arc named, lit briefly when the tab opens on it. */
   toolsPress: ToolsPress | null;
-  /** The press on the sphere itself, which stands the tab back at the agent's settings. */
+  /** The press on the sphere itself, which returns the tab to the agent's settings. */
   agentPress: AgentPress | null;
   onCollapse: () => void;
   onRevert: () => void;

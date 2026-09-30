@@ -35,7 +35,7 @@ export function CatalogueAction({ label, isFilled = false, isDashed = false, onC
     : isLit
       ? CATALOGUE_ACTION_FILLED_HOVER_BACKGROUND_COLOR
       : INTERACTION_ACCENT_COLOR;
-  // The lit fill sits inside a border one step lighter than itself.
+  // The lit fill has a border one step lighter.
   const filledBorder = isLit ? CATALOGUE_ACTION_FILLED_HOVER_BORDER_COLOR : filledBackground;
   const outlinedBackground = isPressed
     ? INTERACTION_PRESSED_BACKGROUND_COLOR

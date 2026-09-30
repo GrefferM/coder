@@ -5,10 +5,7 @@ import { createDataSource } from "../../modules/data-source";
 import type { DataSource } from "typeorm";
 import type { TestDatabase } from "./interfaces";
 
-/**
- * The real SQLite and the real migrations, in a folder of its own, thrown away when the test lets it go. Nothing
- * here goes near the database a person's app keeps.
- */
+/** Real SQLite and real migrations in a private folder, discarded after the test; never the app's database. */
 export async function openTestDatabase(): Promise<TestDatabase> {
   const folder = await mkdtemp(path.join(os.tmpdir(), "coder-test-"));
   const dataSource = createDataSource(folder);
@@ -19,7 +16,7 @@ export async function openTestDatabase(): Promise<TestDatabase> {
   return {
     folder,
     dataSource,
-    /** The same folder read again, so a test can prove that what it wrote is in the file and not in a process. */
+    /** Reopens the same folder, proving data is in the file, not the process. */
     reopen: async (): Promise<DataSource> => {
       await dataSource.destroy();
 

@@ -87,7 +87,7 @@ describe("chatLevels", () => {
   });
 
   it("counts a live turn whose step is not written yet as one nobody fed", () => {
-    // The card is patched with its step id the moment the write comes back; until then it stands first.
+    // A card is patched with its step id when the write returns; until then it stands first.
     const levels = chatLevels([
       said({
         id: "one",

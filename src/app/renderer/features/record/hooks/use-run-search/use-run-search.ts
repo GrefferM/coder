@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { searchRuns } from "../../api";
 import type { RunSearchState } from "../../interfaces";
 
-/**
- * One word looked for through the whole record, asked again on every letter typed — the number over the
- * list and the list itself have to move with the hand, not with the Enter. An answer that comes back for a word the
- * person has already typed past is dropped: the list would otherwise flicker back to an older search.
- */
+/** One word searched through the whole record, asked again on every letter; an answer for an older word is dropped. */
 export function useRunSearch(directory: string, query: string, written: number): RunSearchState {
   const [state, setState] = useState<RunSearchState>({
     hits: [],
@@ -14,7 +10,7 @@ export function useRunSearch(directory: string, query: string, written: number):
   });
 
   useEffect(() => {
-    // An empty field is no search at all — the list stands whole and nobody is asking anything.
+    // An empty field is no search: the list stands whole.
     if (query.trim() === "") {
       setState({
         hits: [],

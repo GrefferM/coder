@@ -11,7 +11,7 @@ describe("PersonCard", () => {
   it("signs the person the way an agent is signed, in the colour of the text itself", () => {
     render(<PersonCard text="Полагодь тест, який упав" at={at} attached={[]} onDebug={null} />);
 
-    // The person is no sphere in the graph and takes no colour from the palette.
+    // The person is no sphere in the graph and takes no palette colour.
     expect(screen.getByText(PERSON_NAME)).toHaveStyle({
       color: PERSON_COLOR,
     });
@@ -21,7 +21,7 @@ describe("PersonCard", () => {
   it("stands the sign over the card, the way an answer's sign stands over its own", () => {
     render(<PersonCard text="Полагодь тест" at={at} attached={[]} onDebug={null} />);
 
-    // The card is the words alone; whose they are and when is said above it, outside the border.
+    // The card holds the words alone; author and time sit above it, outside the border.
     expect(screen.getByText(PERSON_NAME).parentElement).not.toHaveStyle({
       border: `1px solid ${AGENT_CHAT_CARD_BORDER_COLOR}`,
     });
@@ -47,7 +47,7 @@ describe("PersonCard", () => {
   });
 
   it("stands that way in under the text of the question, inside the card", () => {
-    // The band belongs to the question, so it stands with its words and not with the sign.
+    // The band sits with the words, not with the sign.
     render(<PersonCard text="Полагодь тест" at={at} attached={[]} onDebug={vi.fn()} />);
 
     const card = screen.getByText("Полагодь тест").parentElement;
@@ -57,7 +57,7 @@ describe("PersonCard", () => {
   });
 
   it("carries no way in where the question started no walk", () => {
-    // The question stands, but nothing went out of it, so there is no pass to look into.
+    // No pass to look into when nothing went out.
     render(<PersonCard text="Полагодь тест" at={at} attached={[]} onDebug={null} />);
 
     expect(screen.queryByText(DEBUG_BAND_LABEL)).not.toBeInTheDocument();
@@ -91,7 +91,7 @@ describe("PersonCard", () => {
     );
 
     expect(screen.getByText(AGENT_CHAT_ATTACHED_LABEL)).toBeInTheDocument();
-    // A folder wears a trailing slash so the eye sees at once where a tree rode in.
+    // A folder shows a trailing slash.
     expect(screen.getByText("auth/")).toBeInTheDocument();
     expect(screen.getByText("logout.log")).toBeInTheDocument();
   });

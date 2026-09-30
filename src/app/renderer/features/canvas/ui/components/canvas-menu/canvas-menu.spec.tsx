@@ -47,7 +47,7 @@ describe("CanvasMenu", () => {
   });
 
   it("is the sphere's own menu where the click fell on one", () => {
-    // The sphere is what was clicked, so adding another agent is not what is offered.
+    // A sphere was clicked, so adding another agent is not offered.
     render(
       <CanvasMenu
         {...props({
@@ -63,7 +63,7 @@ describe("CanvasMenu", () => {
   });
 
   it("puts the new agent where the menu was opened, not where the menu itself stands", async () => {
-    // The sphere lands exactly where the person clicked, and the two points differ.
+    // The sphere lands exactly where clicked; the two points differ.
     const said = props();
 
     render(<CanvasMenu {...said} />);

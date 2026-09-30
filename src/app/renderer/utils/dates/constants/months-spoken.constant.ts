@@ -1,4 +1,4 @@
-/** Months as a sentence says them, where the mono captions write «24 ЛИП». */
+/** Months as spoken in a sentence; the mono captions write «24 ЛИП». */
 export const MONTHS_SPOKEN = [
   "січня",
   "лютого",
@@ -14,5 +14,5 @@ export const MONTHS_SPOKEN = [
   "грудня",
 ];
 
-/** The day a sentence names as «від сьогоднішнього», not as a date. */
+/** Today as a sentence names it, «від сьогоднішнього». */
 export const TODAY_SPOKEN = "сьогоднішнього";

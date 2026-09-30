@@ -136,7 +136,7 @@ describe("server calls", () => {
 
     brokenMachine();
 
-    // Not a claim that nothing was typed in — the only honest thing to draw when the answer never came.
+    // When the answer never came, nothing is claimed about what was typed.
     expect(await serverSecretsHeld(SERVER.id)).toEqual({
       token: null,
       env: {},

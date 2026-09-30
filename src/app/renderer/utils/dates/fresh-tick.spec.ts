@@ -26,7 +26,7 @@ describe("freshTick", () => {
   });
 
   it("beats by the minute for a moment still to come, rather than not at all", () => {
-    // Clocks drift; the line says «щойно» meanwhile, and it must start counting the moment it is overtaken.
+    // A future time reads «щойно» and must start counting once overtaken.
     expect(after(-HOUR)).toBe(MINUTE);
   });
 });

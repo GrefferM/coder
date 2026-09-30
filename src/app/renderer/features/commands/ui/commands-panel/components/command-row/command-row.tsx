@@ -36,7 +36,7 @@ import {
 import type { CommandRowProps } from "./interfaces";
 import { focusRing } from "../../../../../../utils/focus";
 
-/** One declared command — closed: name and takes-facts; open: what the model reads and what runs. */
+/** One declared command: closed, its name and takes-facts; open, what the model reads and what runs. */
 export function CommandRow({ command, isOpen, onOpen, onEdit, onDelete }: CommandRowProps) {
   const { isPointedAt, isFocused, handlers } = usePressable(onOpen);
   const isLit = isPointedAt || isFocused || isOpen;

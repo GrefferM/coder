@@ -68,7 +68,7 @@ describe("runStandings", () => {
     expect(gone?.name).toBe("REVIEWER");
     expect(gone?.color).toBe("#ffb347");
     expect(gone?.isGone).toBe(true);
-    // Nothing was renamed: the record's name is what it is called, so there is no «was» to hold against it.
+    // Nothing was renamed, so there is no «was».
     expect(gone?.wasName).toBeNull();
   });
 

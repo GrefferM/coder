@@ -5,27 +5,27 @@ import { forgotten } from "../../../../utils/records";
 import type { LiveAnswer } from "../../interfaces";
 import type { CallOut, LiveCall } from "../../../../interfaces";
 
-/** Nothing has arrived for this turn — one object for every such turn, so a card reading it stands still. */
+/** Nothing has arrived: one shared object for every such turn, so a card reading it stays still. */
 const NOTHING: LiveAnswer = {
   text: "",
   calls: [],
 };
 
 /**
- * The words arriving this moment, by turn. They come tens of times a second, so they stand apart from the walk
- * state: only the card of that turn reads them, and the picture of the project is not redrawn by one of them.
+ * Words arriving now, by turn. Kept apart from the walk state: tens of updates a second, read only by that turn's card,
+ * never redrawing the project.
  */
 let arriving: Record<string, LiveAnswer> = {};
 let listening: Record<string, Set<() => void>> = {};
 
-/** Everyone drawing this turn is told; nobody else hears anything. */
+/** Tells everyone drawing this turn. */
 function tell(turnId: string): void {
   for (const listener of listening[turnId] ?? []) {
     listener();
   }
 }
 
-/** One piece of a turn's answer — the text grows by it, and a call stands for the rest of the turn. */
+/** One piece of a turn's answer: the text grows by it and a call stands for the rest of the turn. */
 export function sayPiece(turnId: string, text: string, call: LiveCall | null): void {
   const was = arriving[turnId] ?? NOTHING;
   const calls = call === null ? was.calls : standingCalls(was.calls, call);
@@ -34,7 +34,7 @@ export function sayPiece(turnId: string, text: string, call: LiveCall | null): v
     ...arriving,
     [turnId]: {
       text: `${was.text}${text}`,
-      // A call stands for the rest of the turn: it is an event, not a state.
+      // A call stands for the rest of the turn: an event, not a state.
       calls,
     },
   };
@@ -46,7 +46,7 @@ export function sayPiece(turnId: string, text: string, call: LiveCall | null): v
   }
 }
 
-/** The turn came back — what it said is a card of its own now, and nothing arrives for it any more. */
+/** The turn came back; its words are a card of their own and nothing arrives for it. */
 export function forgetLive(turnId: string): void {
   markCallOut(turnId, null);
 
@@ -59,8 +59,8 @@ export function forgetLive(turnId: string): void {
 }
 
 /**
- * Which function each turn has out this moment, and nothing else. It stands apart from the words because the
- * canvas draws off it: a call is an event a few times a turn, a token sixty times a second.
+ * The function each turn has out now. Apart from the words because the canvas draws off it: a call is an event a few
+ * times a turn, a token sixty times a second.
  */
 let callsOut: Record<string, CallOut> = {};
 let watching = new Set<() => void>();
@@ -68,8 +68,8 @@ let watching = new Set<() => void>();
 function markCallOut(turnId: string, call: LiveCall | null): void {
   const was = callsOut[turnId] ?? null;
   /**
-   * A call to a server is said by the **server's** name; a command and an agent have no server and are said by
-   * their own. The call carries both, so nothing is looked up here.
+   * A call to a server is named by the server; a command or an agent has no server and is named by its own name. The call
+   * carries both.
    */
   const now =
     call === null
@@ -79,7 +79,7 @@ function markCallOut(turnId: string, call: LiveCall | null): void {
           source: call.source,
         };
 
-  // The whole point of this store is that a token never redraws the canvas, so an equal call is no news.
+  // A token must never redraw the canvas, so an equal call is no news.
   if (was?.name === now?.name && was?.source === now?.source) {
     return;
   }
@@ -97,7 +97,7 @@ function markCallOut(turnId: string, call: LiveCall | null): void {
   }
 }
 
-/** What is out right now, by turn — a command by its name, a server by the server's. */
+/** What is out now, by turn: a command by its name, a server by the server's. */
 export function useCallsOut(): Record<string, CallOut> {
   const listen = useCallback((listener: () => void) => {
     watching = new Set(watching).add(listener);
@@ -111,14 +111,14 @@ export function useCallsOut(): Record<string, CallOut> {
 }
 
 /**
- * The last call to have ended on each server, by server id — the catalogue reads it and asks that server again.
- * The call's id and not a count: a piece of the same call arriving twice is the same call.
+ * The last call ended on each server, by server id; the catalogue reads it and asks that server again. Keyed by the
+ * call's id, so a piece of the same call arriving twice counts once.
  */
 let endedOn: Record<string, string> = {};
 let noticing = new Set<() => void>();
 
 function markCallEnded(call: LiveCall): void {
-  // A call still out has ended nothing; a command's call ended on no server at all.
+  // A call still out has ended nothing; a command's call ended on no server.
   if (call.serverId === null || call.state === RUN_CALL_RUNNING || endedOn[call.serverId] === call.id) {
     return;
   }
@@ -133,7 +133,7 @@ function markCallEnded(call: LiveCall): void {
   }
 }
 
-/** The last call that ended on each server, by server id — what makes the catalogue ask it again. */
+/** The last call ended on each server, by server id; makes the catalogue ask again. */
 export function useCallsEnded(): Record<string, string> {
   const listen = useCallback((listener: () => void) => {
     noticing = new Set(noticing).add(listener);
@@ -146,7 +146,7 @@ export function useCallsEnded(): Record<string, string> {
   return useSyncExternalStore(listen, () => endedOn);
 }
 
-/** What one turn has said so far and what it has run, redrawn where it stands and nowhere else. */
+/** What one turn has said and run so far, redrawn only where it stands. */
 export function useLiveAnswer(turnId: string): LiveAnswer {
   const listen = useCallback(
     (listener: () => void) => {

@@ -1,5 +1,5 @@
 export interface WaitPillProps {
-  /** The suppliers still to have their turn, as the person named them. */
+  /** Suppliers still to have their turn, by name. */
   awaitedNames: string[];
   /** The walk broke, so the pill names the repeat instead of a supplier. */
   isAwaitingRepeat: boolean;

@@ -32,7 +32,7 @@ function said(patch: Partial<ChatMessage>): ChatMessage {
   };
 }
 
-/** One walk of another row, with the words it said; the screen stands on «run-1». */
+/** One walk of another row with its words; the screen stands on «run-1». */
 function walk(words: ChatMessage[], runId: string | null = "run-2", patch: Partial<WalkState> = {}): WalkState {
   return {
     ...emptyWalk(),
@@ -64,7 +64,7 @@ describe("wordsAwaitingHand", () => {
   });
 
   it("names a question of another conversation that never went", () => {
-    // The row about a question that stayed carries the repeat, so it waits for the hand too.
+    // The row about a question that stayed carries the repeat, so it awaits the hand too.
     expect(
       wordsAwaitingHand(
         walk([
@@ -79,7 +79,7 @@ describe("wordsAwaitingHand", () => {
   });
 
   it("names a turn too long for the model: the ceiling is raised by a hand, and the same words then go", () => {
-    // No exception is left — that card carries the repeat like every other accident.
+    // That card carries the repeat like every other accident.
     expect(
       wordsAwaitingHand(
         walk([
@@ -94,7 +94,7 @@ describe("wordsAwaitingHand", () => {
   });
 
   it("says nothing of a conversation that ended well, though its words carry what was asked", () => {
-    // A calm end asks for no hand — and every answer keeps what it was asked, for a repeat further down.
+    // A calm end asks for no hand; every answer keeps its question for a repeat further down.
     expect(
       wordsAwaitingHand(
         walk([
@@ -108,7 +108,7 @@ describe("wordsAwaitingHand", () => {
   });
 
   it("puts what waits in this conversation on the other side: it is under the person's eyes", () => {
-    // The word is shown by standing here, so turning to another run later must not make news of it.
+    // A word shown by standing here must not become news after turning to another run.
     expect(
       wordsAwaitingHand(
         walk(

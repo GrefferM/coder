@@ -43,7 +43,7 @@ describe("LinkLayer", () => {
   });
 
   it("draws nothing for a link whose end is not among the agents", () => {
-    // A line to nowhere would be drawn from the origin, which reads as a real line to a reader.
+    // A line to nowhere must not be drawn from the origin.
     const { container } = render(
       <LinkLayer
         {...props({
@@ -81,7 +81,7 @@ describe("LinkLayer", () => {
   });
 
   it("dims a line whose end is being asked about, since it goes with the agent", () => {
-    // The question is about the agent, and its lines are what the answer would also take.
+    // The question is about the agent, and its lines go with it.
     const { container } = render(
       <LinkLayer
         {...props({
@@ -108,7 +108,7 @@ describe("LinkLayer", () => {
   });
 
   it("marks the chosen link with a handle at its middle", () => {
-    // The pill stands over the handle, so the line says where it was taken hold of.
+    // The pill stands over the handle, so the line marks where it was grabbed.
     const { container, rerender } = render(<LinkLayer {...props()} />);
 
     expect(container.querySelector("rect")).toBeNull();

@@ -5,7 +5,7 @@ const FOUND = ["three", "two", "one"];
 
 describe("standingIn", () => {
   it("stands on the first of them until a hand moves it, and the first is the freshest", () => {
-    // A word just typed lands on the last place it was said — «1 З 3», not «3 З 3».
+    // A just-typed word lands on its last occurrence: «1 З 3», not «3 З 3».
     expect(standingIn(FOUND, null, null)).toBe(0);
   });
 

@@ -165,16 +165,16 @@ describe("RunGraph", () => {
         onOpen={() => undefined}
       />,
     );
-    // The spheres are drawn of paths too, so the lines of the walk are taken by the paint they wear.
+    // Spheres are paths too, so the walk's lines are picked by their paint.
     const drawn = [...container.querySelectorAll("path")].filter(
       (line) => line.getAttribute("stroke") === RUN_GRAPH_REST_LINE_COLOR,
     );
 
-    // Three feeds, three runs: the head a turn draws for several lines is a point and not a run.
+    // Three feeds, three runs: the shared head is a point, not a run.
     expect(drawn).toHaveLength(3);
-    // The middle turn hangs in a lane of its own, so its two lines turn a corner each.
+    // The middle turn hangs in its own lane, so its two lines each turn a corner.
     expect(drawn.filter((line) => line.getAttribute("d")?.includes("Q"))).toHaveLength(2);
-    // Nothing is drawn on a slant — a corner is the only place a run is not on an axis.
+    // Nothing is drawn on a slant; only corners leave the axes.
     expect(drawn.some((line) => line.getAttribute("d")?.includes("C"))).toBe(false);
   });
 
@@ -207,7 +207,7 @@ describe("RunGraph", () => {
     );
     const heads = [...container.querySelectorAll("polygon")];
 
-    // Two identical points in one spot read as a single blot, so the receiver draws one.
+    // Identical heads at one spot would blot, so the receiver draws one.
     expect(heads).toHaveLength(2);
     expect(new Set(heads.map((head) => head.getAttribute("points")))).toHaveLength(2);
   });
@@ -231,9 +231,9 @@ describe("RunGraph", () => {
     });
     fireEvent.mouseUp(window);
 
-    // The field goes both ways at once, and the graph in it goes with it.
+    // The field pans both ways and the graph moves with it.
     expect(container.querySelector('[style*="translate(60px, 40px)"]')).toBeInTheDocument();
-    // The ruler follows across but stays at the top: slid down, it would name a column it left.
+    // The ruler follows horizontally but stays at the top.
     expect(ruler.style.left).toBe(`${60 + 150 * 1.2 - 60}px`);
     expect(ruler.style.top).toBe(stood);
   });
@@ -243,7 +243,7 @@ describe("RunGraph", () => {
       <RunGraph run={run([step()])} standings={[]} openStepId={null} onOpen={() => undefined} />,
     );
 
-    // A pass opens at 120% — no closer, however much room the field has for it.
+    // A pass opens at 120%, no closer.
     expect(screen.getByText("120%")).toBeInTheDocument();
     expect(container.querySelector('[style*="scale(1.2)"]')).toBeInTheDocument();
   });
@@ -260,7 +260,7 @@ describe("RunGraph", () => {
   });
 
   it("goes closer than the canvas ever does, since the spheres here are drawn small", () => {
-    // The projection's ends are its own — 150% at the near one, where the canvas stops at 100%.
+    // The projection's scale ends are its own: 150% at the near end, where the canvas stops at 100%.
     render(<RunGraph run={run([step()])} standings={[]} openStepId={null} onOpen={() => undefined} />);
 
     fireEvent.click(screen.getByLabelText(ZOOM_IN_LABEL));
@@ -275,7 +275,7 @@ describe("RunGraph", () => {
   it("walks back off the far end, so the way out is never one way", () => {
     render(<RunGraph run={run([step()])} standings={[]} openStepId={null} onOpen={() => undefined} />);
 
-    // Seven steps down from 120% is the floor; the button dies there, and its neighbour must not.
+    // Seven steps down from 120% is the floor: that button is disabled, its neighbour is not.
     for (let step = 0; step < 7; step += 1) {
       fireEvent.click(screen.getByLabelText(ZOOM_OUT_LABEL));
     }
@@ -298,7 +298,7 @@ describe("RunGraph", () => {
       deltaY: 1,
     });
 
-    // One notch of the wheel is one stop of the scale, the same step the canvas walks.
+    // One wheel notch is one scale stop, as on the canvas.
     expect(container.querySelector('[style*="scale(1.1)"]')).toBeInTheDocument();
   });
 
@@ -330,7 +330,7 @@ describe("RunGraph", () => {
       />,
     );
 
-    // The two that began together stand in columns of their own, so the same moment is marked twice.
+    // Turns that began together get their own columns, so the same moment is marked twice.
     expect(screen.getAllByText("0:12")).toHaveLength(2);
   });
 
@@ -362,9 +362,9 @@ describe("RunGraph", () => {
         name: "EDITOR",
       }),
     ).toHaveAttribute("aria-pressed", "true");
-    // The ring is the one round thing over the sphere that catches nothing; a mark of the ruler catches nothing either.
+    // The ring and the ruler marks ignore pointer events.
     expect(container.querySelector('div.rounded-circle[style*="pointer-events: none"]')).toBeInTheDocument();
-    // The field is never given a width of its own — it stays the whole box it stood in.
+    // The field gets no width of its own.
     expect(container.querySelector('[style*="width: 520px"]')).not.toBeInTheDocument();
   });
 });

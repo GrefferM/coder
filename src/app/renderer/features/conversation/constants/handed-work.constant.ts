@@ -1,2 +1,2 @@
-/** Where lines converge the answers stand one under another, a blank line between them and nothing else. */
+/** Answers where lines converge are separated by one blank line. */
 export const WORK_BLOCK_SEPARATOR = "\n\n";

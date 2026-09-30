@@ -19,7 +19,7 @@ describe("copiedAgentName", () => {
   });
 
   it("steps over a number another case of the same name already holds", () => {
-    // What the copy makes must not be what the settings tab would then refuse.
+    // The copy's name is one the settings tab accepts.
     expect(copiedAgentName("ТЕЗАР", ["ТЕЗАР", "Тезар 2"])).toBe("ТЕЗАР 3");
   });
 });

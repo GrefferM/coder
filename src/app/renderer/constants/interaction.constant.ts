@@ -1,7 +1,7 @@
 import { CONTROL_AT_REST_COLOR } from ".";
 import { BORDER_AT_REST_COLOR, FALLEN_COLOR, FIRST_LEVEL_TEXT_COLOR } from "./palette.constant";
 
-/** Colors and transition every pressable thing takes at rest, lit, and pressed. */
+/** Colors and transition of every pressable thing at rest, lit and pressed. */
 export const INTERACTION_REST_BACKGROUND_COLOR = "#171b26";
 export const INTERACTION_HOVER_BACKGROUND_COLOR = "#1b1f2c";
 export const INTERACTION_PRESSED_BACKGROUND_COLOR = "#141824";
@@ -18,10 +18,10 @@ export const INTERACTION_TRANSITION =
 /** Focus ring size and colours; destructive controls use their own. */
 export const INTERACTION_FOCUS_RING_PX = 2;
 export const INTERACTION_FOCUS_RING_COLOR = "#38a3ff44";
-/** The fallen shade at the ring's own opacity; the digits after it are the alpha and nothing else. */
+/** The fallen shade at the ring's opacity; the trailing digits are alpha. */
 export const INTERACTION_DANGER_FOCUS_RING_COLOR = `${FALLEN_COLOR}3d`;
 
-/** Hover backdrop of a bare text action; it is also the click boundary. */
+/** Hover backdrop of a bare text action; also its click boundary. */
 export const INTERACTION_TEXT_BACKDROP_RADIUS_PX = 5;
 export const INTERACTION_TEXT_BACKDROP_PADDING = "3px 7px";
 export const INTERACTION_TEXT_BACKDROP_MARGIN = "-3px -7px";

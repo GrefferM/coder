@@ -8,7 +8,7 @@ import type { OpenProject, UnsavedWork } from "../../../../interfaces";
 import type { WriteNote } from "../../interfaces";
 import type { ProjectFileState } from "./interfaces";
 
-/** The project's file changed under the app: read again unless a draft stands, and then asked about. */
+/** The project file changed externally: re-read unless a draft stands, in which case ask. */
 export function useProjectFile(
   project: OpenProject,
   setProject: Dispatch<SetStateAction<OpenProject | null>>,
@@ -49,10 +49,10 @@ export function useProjectFile(
     [project.config, project.directory, sayNote, setProject],
   );
 
-  /** «Лишити моє» writes nothing: it only takes the question away, and the draft is written when its own save is. */
+  /** «Лишити моє» writes nothing; it dismisses the question and the draft is written with its own save. */
   const keepMine = useCallback(() => setArrived(null), []);
 
-  /** «Взяти з диска»: the draft goes with the question, and what arrived becomes the project. */
+  /** «Взяти з диска»: the draft is dropped and what arrived becomes the project. */
   const takeArrived = useCallback(() => {
     if (arrived === null) {
       return;

@@ -66,7 +66,7 @@ export function RailButton({ glyph, label, isActive, side, onSelect }: RailButto
           className="text-nowrap"
           style={{
             position: "absolute",
-            // The rail sits at the window's edge, so the tooltip opens inwards, over the panel.
+            // The tooltip opens inwards, over the panel.
             [side === "right" ? "right" : "left"]: RAIL_BUTTON_SIZE_PX + RAIL_TOOLTIP_GAP_PX,
             padding: RAIL_TOOLTIP_PADDING,
             borderRadius: RAIL_TOOLTIP_BORDER_RADIUS_PX,

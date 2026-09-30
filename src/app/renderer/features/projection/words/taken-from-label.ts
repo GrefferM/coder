@@ -2,8 +2,8 @@ import { TAKEN_FROM_LABEL, TAKEN_FROM_PREFIX, TAKEN_FROM_SEPARATOR, TAKEN_QUESTI
 import type { WholeStep } from "../../record";
 
 /**
- * «ОТРИМАВ ВІД EDITOR» over what came into the open step — the question itself where the person started it,
- * every supplier in the order they stand in the pass, and no one where the work came from outside this pass.
+ * «ОТРИМАВ ВІД EDITOR» over what came into the open step: the question itself where the person started it, each
+ * supplier in pass order, or no one where the work came from outside this pass.
  */
 export function takenFromLabel(step: WholeStep, walk: WholeStep[]): string {
   if (step.fromStepIds.length === 0) {

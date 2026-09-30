@@ -1,6 +1,6 @@
 import { GRANT_VIEW_BLOCK_ICON_SIZE_PX } from "../../constants";
 
-/** What a hand has fixed — the block of pinned parameters wears a closed lock. */
+/** Pinned parameters: a closed lock. */
 export function PinnedIcon({ color }: { color: string }) {
   return (
     <svg
@@ -17,7 +17,7 @@ export function PinnedIcon({ color }: { color: string }) {
   );
 }
 
-/** What the model still fills in itself — the same lock, standing open. */
+/** Parameters the model fills in: an open lock. */
 export function OpenIcon({ color }: { color: string }) {
   return (
     <svg

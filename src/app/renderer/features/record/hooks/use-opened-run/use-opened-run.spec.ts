@@ -55,7 +55,7 @@ describe("useOpenedRun", () => {
       written: 1,
     });
 
-    // A run opened while its flow is still answering would otherwise stand at the steps it had.
+    // A run opened while its flow is still answering picks up later steps.
     await waitFor(() => expect(result.current.run?.walk).toHaveLength(4));
   });
 

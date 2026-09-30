@@ -13,9 +13,8 @@ import {
 import type { StepCardProps } from "./interfaces";
 
 /**
- * What the turn ran on, in one mono line — and under it, where a number of that step was never written,
- * the one line that says why, standing once per step and speaking for every dash above it. In the lower sheet the
- * head has room for the line, so it stands beside the name and the caption goes with it.
+ * What the turn ran on in one mono line, and under it, where a step's number was never written, one line saying why,
+ * for every dash above. In the lower sheet it sits beside the name with the caption.
  */
 export function StepCard({ step, isBeside }: StepCardProps) {
   const unknown = stepUnknownWord(step);

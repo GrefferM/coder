@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { UnsavedWork } from "../../interfaces";
 import type { HeldWayOut, WayOut, WayOutAsk } from "./interfaces";
 
-/** The one gate every way out of a panel passes through, «Скасувати» under the fields included. */
+/** The gate every way out of a panel passes through, «Скасувати» included. */
 export function useWayOut(unsaved: UnsavedWork | null): WayOut {
   const [held, setHeld] = useState<HeldWayOut | null>(null);
 
@@ -20,7 +20,7 @@ export function useWayOut(unsaved: UnsavedWork | null): WayOut {
     });
   }
 
-  /** «Зберегти»: the work is written and the way out taken; a blocked draft is neither written nor left. */
+  /** «Зберегти»: write the work and take the way out; a blocked draft does neither. */
   async function saveAndLeave() {
     if (unsaved === null || unsaved.blocked.length > 0) {
       return;
@@ -33,7 +33,7 @@ export function useWayOut(unsaved: UnsavedWork | null): WayOut {
     wayOut?.();
   }
 
-  /** «Не зберігати»: the work goes, and the way out is taken anyway. */
+  /** «Не зберігати»: drop the work and take the way out. */
   function discardAndLeave() {
     const wayOut = held?.run;
 
@@ -42,13 +42,13 @@ export function useWayOut(unsaved: UnsavedWork | null): WayOut {
     wayOut?.();
   }
 
-  /** «Лишитись тут»: the way out is dropped and nothing else moves. */
+  /** «Лишитись тут»: drop the way out, nothing else moves. */
   function stay() {
     setHeld(null);
   }
 
   return {
-    // A way out held while nothing is unsaved has nothing to ask about, so it never stands.
+    // A held way out with nothing unsaved never stands.
     isHeld: held !== null && unsaved !== null,
     ask: held?.ask ?? "leave",
     unsaved,

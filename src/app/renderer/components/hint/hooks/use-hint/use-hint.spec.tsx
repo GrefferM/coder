@@ -18,7 +18,7 @@ function Standing({ text = "Забути прогін" }: { text?: string }) {
 /** The waiting is the point of the thing, so the clock is ours. */
 beforeEach(() => {
   vi.useFakeTimers();
-  // The neighbour rule is one number for the whole app; a test standing right after another must not inherit it.
+  // The neighbour window is app-wide; clears it so one test does not inherit another's.
   vi.advanceTimersByTime(HINT_NEIGHBOUR_MS * 10);
 });
 
@@ -71,7 +71,7 @@ describe("useHint", () => {
 
     expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
 
-    // The cursor never left, so nothing has asked again — waiting alone brings it back nowhere.
+    // The cursor never left, so waiting alone does not bring it back.
     wait(HINT_DELAY_MS * 3);
 
     expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
@@ -87,7 +87,7 @@ describe("useHint", () => {
     });
 
     fireEvent.mouseLeave(screen.getByRole("button"));
-    // Longer than the neighbour rule, so this is an arrival and not the reading of a row.
+    // Longer than the neighbour window, so an arrival, not a row being read.
     wait(HINT_NEIGHBOUR_MS * 2);
     fireEvent.mouseEnter(screen.getByRole("button"));
     wait(HINT_DELAY_MS);

@@ -31,7 +31,7 @@ describe("modelBlocker", () => {
   });
 
   it("names both ceilings when neither is written", () => {
-    // A model is saved only once the person has written both numbers.
+    // A model is saved only once both numbers are written.
     expect(
       modelBlocker({
         ...FILLED,

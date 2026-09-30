@@ -11,7 +11,7 @@ describe("TroublePill", () => {
   });
 
   it("takes the same two colours the mark on the ring takes", () => {
-    // The ring and the pill say one thing, so they must never disagree about which it is.
+    // Ring and pill never disagree about break versus fact.
     const { rerender } = render(<TroublePill label="НЕМАЄ МОДЕЛІ" isBreak />);
 
     expect(screen.getByText("НЕМАЄ МОДЕЛІ")).toHaveStyle({

@@ -29,7 +29,7 @@ const GRANT: ToolGrant = {
   pinned: [],
 };
 
-/** A grant the project file kept after the command under it went. */
+/** A grant kept after its command was removed. */
 const LOST_GRANT: ToolGrant = {
   id: "grant-2",
   source: "command",
@@ -37,7 +37,7 @@ const LOST_GRANT: ToolGrant = {
   pinned: [],
 };
 
-/** A server's grant, which this section neither counts nor touches — it belongs to the section below. */
+/** A server's grant, which this section neither counts nor touches. */
 const SERVER_GRANT: ToolGrant = {
   id: "grant-3",
   source: "mcp",
@@ -79,10 +79,10 @@ function openList() {
 }
 
 describe("ToolsSection", () => {
-  it("says which порода it holds and how much of it, since «ІНСТРУМЕНТИ» said neither", () => {
+  it("says which kind it holds and how much of it, since «ІНСТРУМЕНТИ» said neither", () => {
     renderSection([GRANT, SERVER_GRANT]);
 
-    // The head of the commands is raised out of the list and stands over the section itself.
+    // The commands head stands over the section, not inside the list.
     expect(screen.getByText("КОМАНДИ · 1")).toBeInTheDocument();
     expect(screen.getByText("1 з 2 функцій")).toBeInTheDocument();
   });
@@ -124,7 +124,7 @@ describe("ToolsSection", () => {
   });
 
   it("keeps the servers' grants when its own tick writes the draft", () => {
-    // Both sections write into one draft: what is shown is narrowed, what is kept never is.
+    // Both sections write into one draft: the view is narrowed, what is kept never is.
     const onGrantsChange = renderSection([SERVER_GRANT]);
 
     openList();
@@ -188,7 +188,7 @@ describe("ToolsSection", () => {
   });
 
   it("stays shut on the press of a command's own mark, which opens that grant's page instead", () => {
-    // The mark names the grant behind it, so there is nothing to choose from — the tab goes straight to the page.
+    // The mark names its grant, so the tab goes straight to the grant page.
     renderSection([GRANT], COMMANDS, vi.fn(), {
       group: "commands",
       grantId: GRANT.id,
@@ -213,7 +213,7 @@ describe("ToolsSection", () => {
   });
 
   it("shuts the field where the model's provider carries no functions, and keeps what was granted listed", () => {
-    // The grants are the person's own and nobody took them away; what is gone is the way to give more.
+    // Existing grants stay; only the way to give more is gone.
     renderSection(
       [
         {

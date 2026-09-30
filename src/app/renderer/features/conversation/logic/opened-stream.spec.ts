@@ -25,7 +25,7 @@ function step(patch: Partial<WholeStep> = {}): WholeStep {
   });
 }
 
-/** A run of one question, asked at 19:26:56, with the steps given. */
+/** A run of one question, asked at 19:26:56, with the given steps. */
 function run(walk: WholeStep[], questions: { id: string; askedAt: string }[] = []): WholeRun {
   return {
     id: "run-1",
@@ -94,7 +94,7 @@ describe("openedStream", () => {
   });
 
   it("reads a walk the live stream began from the live stream alone, never twice", () => {
-    // The step is written already, so the record holds the walk too — and says nothing of it a second time.
+    // The step is written, so the record already holds the walk and it is not repeated.
     const stream = openedStream(run([step()]), [
       live({
         id: "asked-live",
@@ -117,7 +117,7 @@ describe("openedStream", () => {
   });
 
   it("keeps the record's question over a live repeat of it, since the repeat asks nothing of its own", () => {
-    // The question was asked in an earlier session; «СПИТАТИ ЩЕ РАЗ» here begins a walk of its own.
+    // The question was asked in an earlier session; «СПИТАТИ ЩЕ РАЗ» begins a walk of its own.
     const stream = openedStream(run([step()]), [
       live({
         id: "handoff-live",
@@ -145,7 +145,7 @@ describe("openedStream", () => {
   });
 
   it("shows a question asked here before its first step lands, once and not twice", () => {
-    // The question is in the record already (it is written the moment it is asked); its walk has no step yet.
+    // The question is already in the record (written when asked); its walk has no step yet.
     const stream = openedStream(
       run(
         [],

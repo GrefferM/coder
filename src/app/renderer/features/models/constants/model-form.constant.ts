@@ -1,4 +1,4 @@
-/** How the question about leaving names each field of a model's form. */
+/** How the leave-the-form question names each field of a model's form. */
 export const MODEL_TITLE_CHANGE_LABEL = "назва";
 export const MODEL_PROVIDER_CHANGE_LABEL = "провайдер";
 export const MODEL_CONTEXT_CEILING_CHANGE_LABEL = "стеля контексту";
@@ -6,7 +6,7 @@ export const MODEL_ANSWER_CEILING_CHANGE_LABEL = "стеля відповіді"
 export const MODEL_INPUT_PRICE_CHANGE_LABEL = "вхідна ціна";
 export const MODEL_OUTPUT_PRICE_CHANGE_LABEL = "вихідна ціна";
 
-/** A new model opens with both ceilings empty — the number is the person's, and nobody guesses it. */
+/** A new model opens with both ceilings empty. */
 export const EMPTY_MODEL_FORM_VALUES = {
   title: "",
   provider: "",

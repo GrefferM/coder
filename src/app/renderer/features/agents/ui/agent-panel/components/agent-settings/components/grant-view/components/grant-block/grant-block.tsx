@@ -12,7 +12,7 @@ import {
 import { Mark } from "../../../../../../../../../../components";
 import type { GrantBlockProps } from "./interfaces";
 
-/** One block of the grant — a label with its own mark, and the box of rows under it. */
+/** One block of the grant: a marked label and the box of rows under it. */
 export function GrantBlock({ color, icon, label, isDashed = false, background, children, note }: GrantBlockProps) {
   return (
     <div

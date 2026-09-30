@@ -25,7 +25,7 @@ import {
 } from "./constants";
 import type { SuppliersListProps } from "./interfaces";
 
-/** Who work can come from; off suppliers stay listed, the counter shows «1 / 2». */
+/** Who work can come from; off suppliers stay listed, the counter reads «1 / 2». */
 export function SuppliersList({ suppliers }: SuppliersListProps) {
   const live = suppliers.filter((supplier) => supplier.isActive).length;
   const count = live === suppliers.length ? String(live) : `${live}${SUPPLIERS_OF_SEPARATOR}${suppliers.length}`;

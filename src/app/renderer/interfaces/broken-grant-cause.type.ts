@@ -1,5 +1,2 @@
-/**
- * Why a grant cannot be honoured. The reason decides the sentence the panel says and
- * nothing else — for the wall and for the sphere's mark, a grant that has any reason at all is broken.
- */
+/** Why a grant cannot be honoured; the cause picks the panel's sentence, and any cause makes the grant broken. */
 export type BrokenGrantCause = "command" | "goneFunction" | "goneServer" | "goneAgent";

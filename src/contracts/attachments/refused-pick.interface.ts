@@ -1,15 +1,15 @@
 import type { AttachmentKind } from "./attachment-kind.type";
 
-/** A picked file or folder that was not attached, and why — said to the person instead of becoming a chip. */
+/** A picked file or folder that was not attached, and why; shown to the person instead of becoming a chip. */
 export interface RefusedPick {
   path: string;
   name: string;
   /** None where the path could not even be looked at. */
   kind: AttachmentKind | null;
-  /** Too big for the ceiling even at its fewest characters, or not ours to read. */
+  /** Too big for the ceiling even at its fewest characters, or unreadable. */
   reason: "tooBig" | "unread";
-  /** The system's own code for an unread one, such as `EACCES`; none where there was none. */
+  /** The system's code for an unreadable pick, such as `EACCES`, or null. */
   code: string | null;
-  /** The system's own words for an unread one; none for one too big. */
+  /** The system's message for an unreadable pick, or null. */
   message: string | null;
 }

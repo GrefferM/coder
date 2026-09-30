@@ -3,8 +3,8 @@ import { isOnScreen } from "./is-on-screen";
 import type { ChatMessage, WalkState } from "../interfaces";
 
 /**
- * An agent whose last turn of this conversation fell and has said nothing since, with the hour it fell. A fall
- * belongs to one conversation; the walls of the machine — off, silent, no model — stand in all of them alike.
+ * An agent whose last turn of this conversation fell and has said nothing since, with the hour it fell. The machine's
+ * walls (off, silent, no model) stand in every conversation.
  */
 export function fellAgents(walk: WalkState): Record<string, string> {
   const last: Record<string, ChatMessage> = {};

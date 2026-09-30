@@ -44,7 +44,7 @@ import type { StartPageProps } from "./interfaces";
 export function StartPage({ onProjectOpened }: StartPageProps) {
   const [recent, setRecent] = useState<ProjectEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
-  // The folder chosen for a new project, and the name being typed into it.
+  // The folder chosen for a new project.
   const [directory, setDirectory] = useState<string | null>(null);
   const [name, setName] = useState("");
 
@@ -54,7 +54,7 @@ export function StartPage({ onProjectOpened }: StartPageProps) {
       .catch((reason: unknown) => setError(projectFailureNote(reason)));
   }, []);
 
-  /** Opens a row's project, marking the row missing when its folder is gone. */
+  /** Opens a row's project; marks the row missing when its folder is gone. */
   const open = useCallback(
     async (directory: string) => {
       try {
@@ -86,7 +86,7 @@ export function StartPage({ onProjectOpened }: StartPageProps) {
     }
   }, [onProjectOpened]);
 
-  /** Drops a project from the list; the folder itself is left where it is. */
+  /** Drops a project from the list; the folder stays. */
   const forget = useCallback(async (directory: string) => {
     setError(null);
 
@@ -99,12 +99,8 @@ export function StartPage({ onProjectOpened }: StartPageProps) {
   }, []);
 
   /**
-   * «Новий проєкт» looks into the chosen folder before it asks anything.
-   *
-   * A folder that already holds a project has nothing to ask about: the form would stand there with the name it
-   * cannot change, a block reading out what is inside, and one button saying «Відкрити» — a question with a single
-   * answer. Nothing is created over a project that exists, so the only act left is the one taken straight away.
-   * The form stays for the case it was made for: an empty folder, which has to be named before it becomes one.
+   * «Новий проєкт» inspects the chosen folder first. A folder that already holds a project is opened straight away; the
+   * form is only for an empty folder, which must be named.
    */
   const chooseForForm = useCallback(async () => {
     const chosen = await chooseProjectDirectory();
@@ -123,7 +119,7 @@ export function StartPage({ onProjectOpened }: StartPageProps) {
       }
 
       setDirectory(chosen);
-      // The folder's own name is the first guess at the project's, and the person may type over it.
+      // The folder's name is the default project name, editable.
       setName(held.name);
     } catch (reason) {
       setError(projectFailureNote(reason));
@@ -135,7 +131,7 @@ export function StartPage({ onProjectOpened }: StartPageProps) {
     setName("");
   }, []);
 
-  /** Submit: the folder is empty by now — the form is only ever opened on one — so this always creates. */
+  /** The form only opens on an empty folder, so this always creates. */
   const submitForm = useCallback(async () => {
     if (directory === null) {
       return;

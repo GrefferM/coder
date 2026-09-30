@@ -21,7 +21,7 @@ const PROJECT: OpenProject = {
   view: null,
 };
 
-/** The writes, standing in for the project file: they answer, and the spec asks what they were told. */
+/** Writes stub standing in for the project file, recording calls. */
 function writes(): AgentWrites {
   return <AgentWrites>(<unknown>{
     createAgent: vi.fn(async () => "agent-new"),
@@ -58,7 +58,7 @@ function selection(
 
 describe("useAgentSelection · the hand on the canvas", () => {
   it("selects a sphere, and drops the copy's mark with the same press", () => {
-    // A sphere's click does not reach the window, so the mark on a copied agent is let go here or nowhere.
+    // A sphere click does not reach the window, so the copy's mark is released here.
     const { result, letGo } = selection();
 
     act(() => result.current.select("agent-1"));
@@ -77,7 +77,7 @@ describe("useAgentSelection · the hand on the canvas", () => {
   });
 
   it("keeps the claimed point until the agent is written, and puts the new sphere there", async () => {
-    // The right-click claims a place; the sphere appears only after the write, and stands where claimed.
+    // A right-click claims a place; the sphere appears there after the write.
     const { result, held } = selection();
 
     act(() =>
@@ -94,7 +94,7 @@ describe("useAgentSelection · the hand on the canvas", () => {
         y: 90,
       },
     });
-    // The claim is a place for something that is not there yet, so nothing stands selected under it.
+    // A claimed place selects nothing.
     expect(result.current.selectedAgentId).toBeNull();
 
     await act(() => result.current.createAgent("ТЕЗАР", "model-1"));
@@ -108,7 +108,7 @@ describe("useAgentSelection · the hand on the canvas", () => {
   });
 
   it("asks the canvas where its middle is at the moment of writing, not when the claim was made", async () => {
-    // The panel opening changes the width; the middle read at save time is the middle the person sees.
+    // The middle is read at save time, after the panel changes the width.
     const { result, held } = selection({
       canvasAt: {
         x: 640,
@@ -143,7 +143,7 @@ describe("useAgentSelection · the hand on the canvas", () => {
 
 describe("useAgentSelection · the question before deleting", () => {
   it("asks first, and the agent asked about stands selected while the question is up", () => {
-    // Deletion always asks, and the person sees which sphere the question is about.
+    // Deletion always asks, naming the sphere.
     const { result, held } = selection();
 
     act(() => result.current.requestDelete("agent-1"));
@@ -186,7 +186,7 @@ describe("useAgentSelection · the question before deleting", () => {
   });
 
   it("asks about nobody once the project no longer holds the agent the question named", () => {
-    // The agent went another way — a second window, an undo — while the question stood open here.
+    // The agent changes elsewhere (second window, undo) while the question is open.
     const { result } = selection();
 
     act(() => result.current.requestDelete("agent-gone"));

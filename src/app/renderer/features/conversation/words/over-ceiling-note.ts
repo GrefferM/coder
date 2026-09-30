@@ -10,8 +10,8 @@ import {
 import type { TurnLength } from "../interfaces";
 
 /**
- * What would have gone and what the model takes, both in characters. What we counted is grouped; the
- * ceiling is the person's own number and stands as they wrote it.
+ * What would have gone and what the model takes, in characters; the counted length is grouped, the ceiling is as the
+ * person wrote it.
  */
 export function overCeilingNote(modelTitle: string, length: TurnLength): string {
   const [one, few, many] = OVER_CEILING_CHARACTER_FORMS;

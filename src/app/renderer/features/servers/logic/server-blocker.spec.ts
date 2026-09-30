@@ -27,7 +27,7 @@ describe("serverBlocker", () => {
   });
 
   it("asks only for the half the switch points at", () => {
-    // The other half keeps whatever was typed in it, and a server owes nothing for a kind it is not.
+    // Only the half the switch points at is required; the other half is not owed.
     expect(
       serverBlocker(
         filled({

@@ -25,7 +25,7 @@ describe("deletedAgentNote", () => {
   });
 
   it("names the sphere the question is about, whichever half it says", () => {
-    // The form is «Заберемо ‹річ›. ‹Що піде або лишиться разом›.», and the thing is named in both.
+    // The thing is named in both halves of «Заберемо ‹річ›. ‹Що піде або лишиться разом›.»
     expect(deletedAgentNote("DOCS", [])).toContain("DOCS");
     expect(deletedAgentNote("DOCS", ["PLANNER"])).toContain("DOCS");
   });

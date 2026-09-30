@@ -13,7 +13,7 @@ import {
 } from "../../constants";
 import type { AimSearchProps } from "./interfaces";
 
-/** The search over the agents, which the list grows only when there are enough of them to hunt for one. */
+/** The search over agents; shown only when there are enough to hunt for one. */
 export function AimSearch({ asked, onAsk, onKeyDown }: AimSearchProps) {
   return (
     <span

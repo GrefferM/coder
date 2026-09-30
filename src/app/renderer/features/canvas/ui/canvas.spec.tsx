@@ -81,8 +81,8 @@ const AGENTS: Agent[] = [
 const LINKS: Link[] = [aLink()];
 
 /**
- * Every part of the canvas laid flat, so one case names only what it changes. The names of the acts are this
- * spec's own — `canvasWith` puts each back into the part that owns it.
+ * Every part of the canvas laid flat, so a case names only what it changes; `canvasWith` puts each act back into its
+ * owning part.
  */
 interface CanvasSays extends CanvasStanding, CanvasLiving, CanvasPicked, CanvasNotes {
   opening: CanvasPlace | null;
@@ -113,7 +113,7 @@ function stands(): CanvasSays {
     troubles: {},
     toolless: [],
     states: {},
-    // What the sources say of themselves; the arc is built from the grants, and this only names them.
+    // Names the sources; the arc itself is built from the grants.
     sources: {
       commands: [],
       servers: [],
@@ -225,7 +225,7 @@ function renderCanvas(overrides: Partial<CanvasSays> = {}) {
   return render(canvasWith(overrides));
 }
 
-/** One standing offer to put a deletion back, as the canvas is handed them. */
+/** One offer to put a deletion back. */
 function undoOffer(overrides: Partial<UndoOffer> = {}): UndoOffer {
   return {
     id: "offer-1",
@@ -430,7 +430,7 @@ describe("Canvas", () => {
       },
     });
 
-    // A sphere is the button that carries whether it is selected; the toolbar's two do not.
+    // Only a sphere carries `aria-pressed`; the toolbar's buttons do not.
     expect(screen.getAllByRole("button").filter((button) => button.hasAttribute("aria-pressed"))).toHaveLength(
       AGENTS.length,
     );
@@ -473,7 +473,7 @@ describe("Canvas", () => {
       dimmedModelId: "model-1",
     });
 
-    // The sphere's own wireframe, not the layer of links that also draws in `g` elements.
+    // The sphere's own wireframe, not the links layer, which also draws `g` elements.
     const sphere = screen.getByRole("button", {
       name: "EDITOR",
     });
@@ -490,7 +490,7 @@ describe("Canvas", () => {
       onSelectedAgentIdChange,
     });
 
-    // Grabbed 10 right of and 5 below its centre at (300, 200) — the sphere keeps that grip.
+    // Grabbed 10 right of and 5 below its centre at (300, 200); the sphere keeps that grip.
     fireEvent.mouseDown(
       screen.getByRole("button", {
         name: "EDITOR",
@@ -535,11 +535,11 @@ describe("Canvas", () => {
       y: 295,
     });
 
-    // The click the release fires lands on the canvas — it must not clear the selection.
+    // The click fired by the release lands on the canvas and must not clear the selection.
     fireEvent.click(container.firstElementChild as HTMLElement);
     expect(onSelectedAgentIdChange).not.toHaveBeenCalled();
 
-    // The save is a round trip to disk; until it comes back the sphere holds where it was dropped.
+    // Until the save returns, the sphere holds where it was dropped.
     expect(
       screen.getByRole("button", {
         name: "EDITOR",
@@ -581,7 +581,7 @@ describe("Canvas", () => {
 
     expect(onMoveAgent).toHaveBeenCalledOnce();
 
-    // The failed write lets the drop point go: the sphere stands where it is saved and catches the pointer again.
+    // A failed write releases the drop point: the sphere stands at its saved place.
     await waitFor(() =>
       expect(
         screen.getByRole("button", {
@@ -728,7 +728,7 @@ describe("Canvas", () => {
       top: "200px",
     });
 
-    // The point a right-click claims is read in the coordinates agents are stored in.
+    // A right-click point is read in agent coordinates.
     await userEvent.pointer({
       keys: "[MouseRight]",
       target: canvas,
@@ -849,7 +849,7 @@ describe("Canvas", () => {
     ).toHaveStyle({
       transform: "translate(0px, 0px) scale(0.9)",
     });
-    // The grid is drawn at the same scale as everything standing on it.
+    // The grid is drawn at the same scale as the content.
     expect(container.firstElementChild).toHaveStyle({
       backgroundSize: `${CANVAS_GRID_STEP_PX * 0.9}px ${CANVAS_GRID_STEP_PX * 0.9}px`,
     });
@@ -872,8 +872,7 @@ describe("Canvas", () => {
 
     await userEvent.dblClick(container.firstElementChild as HTMLElement);
 
-    // Both spheres, 340 by 220 apart, with 120 of room on every side, would fit at 130% — the ceiling
-    // stops them at 100%, and the graph is centred there.
+    // Both spheres (340 by 220 apart, 120 margin) would fit at 130%, but the ceiling stops at 100%, centred.
     expect(screen.getByText("100%")).toBeInTheDocument();
     expect(
       screen.getByRole("button", {
@@ -911,7 +910,7 @@ describe("Canvas", () => {
       clientY: 300,
     });
 
-    // (400, 300) stands on the same content point before and after: the pan takes up 400 − 400 × 0.9.
+    // (400, 300) stays on the same content point: the pan is 400 − 400 × 0.9.
     expect(canvas).toHaveStyle({
       backgroundPosition: "40px 30px",
     });
@@ -1037,7 +1036,7 @@ describe("Canvas", () => {
       onPastedDismiss,
     });
 
-    // The click that put the copy down is still on its way to the window as this mounts.
+    // The click that placed the copy is still on its way to the window at mount.
     window.dispatchEvent(new MouseEvent("mousedown"));
     expect(onPastedDismiss).not.toHaveBeenCalled();
 
@@ -1071,7 +1070,7 @@ describe("Canvas", () => {
     const { container } = renderCanvas();
     const lines = container.querySelectorAll("svg line");
 
-    // Three lines per link: the line, the drift laid over it, and the invisible click stroke.
+    // Three lines per link: the line, the drift over it, and the invisible click stroke.
     expect(lines).toHaveLength(3);
     expect(container.querySelectorAll("svg polygon")).toHaveLength(1);
     expect(lines[0]).toHaveAttribute("stroke", CANVAS_LINK_COLOR);
@@ -1091,10 +1090,10 @@ describe("Canvas", () => {
     });
     const lines = container.querySelectorAll("svg line");
 
-    // The lit link draws four lines — glow, line, drift, click stroke — and the grey one three.
+    // The lit link draws four lines (glow, line, drift, click stroke), the grey one three.
     expect(lines[1]).toHaveAttribute("stroke", mixWithTransparent(AGENTS[0].color, CANVAS_LINK_SELECTED_PERCENT));
     expect(lines[4]).toHaveAttribute("stroke", CANVAS_LINK_COLOR);
-    // The handle belongs to a link that was chosen itself, not to one lit by its agent.
+    // The handle belongs to a link chosen itself, not one lit by its agent.
     expect(container.querySelector("svg rect")).not.toBeInTheDocument();
   });
 
@@ -1129,7 +1128,7 @@ describe("Canvas", () => {
       isPanelOnAgent: false,
     });
 
-    // Choosing whom to write to is an every-minute act; half the screen does not go out for it.
+    // Choosing whom to write to is frequent, so no wide redraw.
     expect(
       screen.getByRole("button", {
         name: AGENTS[1].name,
@@ -1162,7 +1161,7 @@ describe("Canvas", () => {
     });
     const lines = container.querySelectorAll("svg line");
 
-    // The line and its click stroke: the drift does not run over a link that is about to go.
+    // The line and its click stroke; no drift on a link about to go.
     expect(lines).toHaveLength(2);
     expect(lines[0]).toHaveAttribute("stroke", CANVAS_LINK_DOOMED_COLOR);
     expect(lines[0]).toHaveAttribute("stroke-dasharray", CANVAS_LINK_DOOMED_DASH);
@@ -1213,8 +1212,7 @@ describe("Canvas", () => {
   });
 
   it("says which link stands chosen, so the page knows a destructive key is the link's", async () => {
-    // The chat keeps a sphere selected while a link is picked, and one press
-    // must not both take the link away and ask about the agent.
+    // One press must not both take the link away and ask about the agent.
     const onChosenLinkChange = vi.fn();
     const { container } = renderCanvas({
       onChosenLinkChange,
@@ -1251,8 +1249,8 @@ describe("Canvas", () => {
     expect(container.querySelector("svg rect")).not.toBeInTheDocument();
   });
 
-  it("draws a link whose agent is gone, and stands a dead sphere at its far end (50a)", () => {
-    // The file says one thing and the screen must not say another: the line is drawn as it is.
+  it("draws a link whose agent is gone, and stands a dead sphere at its far end", () => {
+    // The line is drawn as the file holds it.
     const { container } = renderCanvas({
       links: [
         ...LINKS,
@@ -1269,7 +1267,7 @@ describe("Canvas", () => {
   });
 
   it("raises the pill for a line with a dead end, naming the agent and the id the line carries", async () => {
-    // Choosing it must draw, not throw: the canvas stood blank when the pill asked where the dead end was.
+    // Choosing a dead-end line must draw, not throw.
     const { container } = renderCanvas({
       links: [
         ...LINKS,
@@ -1357,10 +1355,10 @@ describe("Canvas", () => {
 
     const lines = container.querySelectorAll("svg line");
 
-    // The drift line is gone while it moves, so the link is the line and its click stroke.
+    // No drift line while it moves: the link is the line and its click stroke.
     expect(lines).toHaveLength(2);
     expect(lines[0]).toHaveAttribute("stroke-dasharray", CANVAS_LINK_DRAGGED_DASH);
-    // agent-1 sits at (300, 200) and was dragged 400 down; the line leaves its edge on the way.
+    // agent-1 sits at (300, 200) and is dragged 400 down; the line leaves its edge.
     expect(Number(lines[0].getAttribute("y1"))).toBeGreaterThan(400);
   });
 
@@ -1368,7 +1366,7 @@ describe("Canvas", () => {
     const onAddLink = vi.fn();
     const onSelectedAgentIdChange = vi.fn();
 
-    // Nothing drawn between them yet: the line that already stands could not be drawn a second time.
+    // No line drawn between them yet.
     const { container } = renderCanvas({
       links: [],
       onAddLink,
@@ -1401,7 +1399,7 @@ describe("Canvas", () => {
     );
 
     expect(onAddLink).toHaveBeenCalledWith("agent-1", "agent-2");
-    // The click made a link, not a selection: the only word about the selection is the line's own, clearing it.
+    // The click made a link, not a selection; the only selection call is the line's own clearing.
     expect(onSelectedAgentIdChange).toHaveBeenCalledExactlyOnceWith(null);
     expect(screen.queryByText(LINK_DRAFT_HINT)).not.toBeInTheDocument();
   });
@@ -1430,7 +1428,7 @@ describe("Canvas", () => {
       }),
     );
 
-    // EDITOR → REVIEWER already stands, so the line back would be a ring — and the line is still being drawn.
+    // EDITOR → REVIEWER already stands, so the line back would be a ring; the line stays in draft.
     expect(onAddLink).not.toHaveBeenCalled();
     expect(screen.getByText(LINK_DRAFT_HINT)).toBeInTheDocument();
   });
@@ -1449,7 +1447,7 @@ describe("Canvas", () => {
         name: CANVAS_ADD_LINK_LABEL,
       }),
     );
-    // agent-2 stands at (640, 420); jsdom gives the canvas a zero box, so the pointer is content.
+    // agent-2 at (640, 420); jsdom gives a zero box, so the pointer is content.
     fireEvent.mouseMove(container.firstElementChild as HTMLElement, {
       clientX: 640,
       clientY: 420,
@@ -1459,7 +1457,7 @@ describe("Canvas", () => {
 
     expect(direction).toBeInTheDocument();
     expect(screen.queryByText(LINK_DRAFT_HINT)).not.toBeInTheDocument();
-    // Over the middle of the run, not over the sphere it is aimed at.
+    // Over the middle of the run, not over the target sphere.
     const middle = linkLine(AGENTS[0], AGENTS[1], SPHERE_SIZE_PX / 2).middle;
 
     expect(direction).toHaveStyle({
@@ -1478,7 +1476,7 @@ describe("Canvas", () => {
   it("lights only the sphere a line is drawn from, and closes the panel behind it", async () => {
     const onSelectedAgentIdChange = vi.fn();
 
-    // With no line standing between them, REVIEWER is somewhere this one may land.
+    // With no line between them, REVIEWER is a valid landing.
     renderCanvas({
       links: [],
       selectedAgentId: "agent-2",
@@ -1598,7 +1596,7 @@ describe("Canvas", () => {
     );
     await userEvent.click(container.querySelector("[role='presentation']") as HTMLElement);
 
-    // The neutral, the cross on the loose end, and the word for what happened.
+    // The neutral tone, the cross on the loose end, and the cancel label.
     expect(screen.getByText(LINK_DRAFT_CANCELLED_LABEL)).toBeInTheDocument();
     expect(container.querySelector("svg path")).toHaveAttribute("stroke", LINK_DRAFT_CANCELLED_CROSS_COLOR);
     expect(screen.queryByText(LINK_DRAFT_HINT)).not.toBeInTheDocument();
@@ -1639,7 +1637,7 @@ describe("Canvas", () => {
       onUndo,
     });
 
-    // The first deletion is not overwritten by the second, and keeps its own seconds.
+    // The first deletion is not overwritten by the second and keeps its own seconds.
     expect(screen.getByText("ЗВ’ЯЗОК ВИДАЛЕНО")).toBeInTheDocument();
     expect(screen.getByText("МОДЕЛЬ ВИДАЛЕНО")).toBeInTheDocument();
     expect(screen.getByText("27 С")).toBeInTheDocument();
@@ -1660,7 +1658,7 @@ describe("Canvas", () => {
       ),
     });
 
-    // Three rows stand, and the two oldest are one line saying how many wait behind them.
+    // Three rows stand; the two oldest collapse into one line with a count.
     expect(screen.queryByText("ВИДАЛЕНО 1")).not.toBeInTheDocument();
     expect(screen.queryByText("ВИДАЛЕНО 2")).not.toBeInTheDocument();
     expect(screen.getByText("ВИДАЛЕНО 3")).toBeInTheDocument();

@@ -11,14 +11,10 @@ import { FIELD_LABEL_GAP_PX } from "../../../../../../components/field/constants
 import type { EnvListProps } from "./interfaces";
 
 /**
- * «ЗМІННІ СЕРЕДОВИЩА». One variable is a name and a value, and they go to two different places — the
- * name into the project file, which travels into a repository, and the value into this machine's keychain, which
- * does not. A variable with no value anywhere says so on its own block, because a server missing one will
- * not start at all, and the catalogue's row says the same thing later in the same words.
+ * «ЗМІННІ СЕРЕДОВИЩА». A variable is a name and a value: the name goes into the project file, the value into this
+ * machine's keychain. One with no value says so on its block.
  *
- * Each variable is its own **box** and not a row: the tab is a narrow column, and three things in a line come
- * out too short to read a key in. The head carries the count, and the dashed row under the last block is both
- * the way to add a variable and the visible end of the list.
+ * Each variable is its own box. The head carries the count; the dashed row under the last block adds a variable.
  */
 export function EnvList({ names, drafts, held, onNamesChange, onValueChange }: EnvListProps) {
   function rename(at: number, name: string) {

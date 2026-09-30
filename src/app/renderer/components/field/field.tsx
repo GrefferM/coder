@@ -56,11 +56,7 @@ export function Field({
           gap: FIELD_UNIT_GAP_PX,
           padding: FIELD_PADDING,
           backgroundColor: isSunken ? FIELD_SUNKEN_BACKGROUND_COLOR : FIELD_BACKGROUND_COLOR,
-          /**
-           * A refusal outranks a warning and both outrank the focus border, so neither mark is hidden by the
-           * caret standing in the field: what the app is saying about the value does not depend on where the
-           * hand is.
-           */
+          /** A refusal outranks a warning, and both outrank the focus border. */
           border: `1px solid ${isInvalid ? FIELD_INVALID_BORDER_COLOR : isWarned ? FIELD_WARNED_BORDER_COLOR : isFocused ? FIELD_FOCUS_BORDER_COLOR : restingBorderColor}`,
           borderRadius: FIELD_BORDER_RADIUS_PX,
           transition: FIELD_INVALID_TRANSITION,
@@ -74,7 +70,7 @@ export function Field({
           min={isNumber ? FIELD_NUMBER_LEAST : undefined}
           value={value}
           placeholder={placeholder}
-          // A number field takes nothing below zero: the minus never goes in, by hand or by the arrows.
+          // A number field takes nothing below zero: no minus, by hand or by arrows.
           onKeyDown={(event) => {
             if (isNumber && event.key === FIELD_MINUS) {
               event.preventDefault();
@@ -102,7 +98,7 @@ export function Field({
         {unit !== undefined && <Mark spacing={FIELD_UNIT_LETTER_SPACING_PX}>{unit}</Mark>}
         {onClear !== undefined && <Clear onClear={onClear} />}
       </div>
-      {/* The line that taught the rule is the line that says it was broken; only its colour moves. */}
+      {/* The note turns trouble-coloured when the value is invalid. */}
       {note !== undefined && <QuietLine isTroubled={isInvalid}>{note}</QuietLine>}
     </FieldSlot>
   );

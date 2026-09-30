@@ -5,7 +5,7 @@ const TODAY = new Date(2026, 6, 24, 15, 10);
 
 describe("daySpoken", () => {
   it("says «сьогоднішнього» about today, whatever the hour", () => {
-    // The day stands inside a sentence — «від сьогоднішнього до 24 липня».
+    // The day inside a sentence: «від сьогоднішнього до 24 липня».
     expect(daySpoken(new Date(2026, 6, 24, 0, 1), TODAY)).toBe("сьогоднішнього");
     expect(daySpoken(new Date(2026, 6, 24, 23, 59), TODAY)).toBe("сьогоднішнього");
   });
@@ -17,7 +17,7 @@ describe("daySpoken", () => {
   });
 
   it("counts today by the day and not by how near the hours are", () => {
-    // Yesterday's last minute and today's first are an hour apart and are two different days.
+    // A minute either side of midnight are two different days.
     expect(daySpoken(new Date(2026, 6, 23, 23, 59), TODAY)).toBe("23 липня");
   });
 

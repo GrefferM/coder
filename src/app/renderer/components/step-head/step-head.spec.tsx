@@ -12,7 +12,7 @@ describe("StepHead", () => {
   });
 
   it("is itself the way back", async () => {
-    // The head is one button — the chevron and the name alike return to the list.
+    // The whole head is one button; chevron and name both go back.
     const onBack = vi.fn();
 
     render(<StepHead whose="Шукач" name="open_pr" backLabel="Назад до налаштувань" onBack={onBack} />);
@@ -26,7 +26,7 @@ describe("StepHead", () => {
   });
 
   it("names the way back where it leads, since two steps go back to two different places", () => {
-    // The label is what a screen reader says out loud, so «Назад» alone would be the same word in both.
+    // The label is what a screen reader says, so it names the destination.
     render(<StepHead whose="MCP" name="brave_search" backLabel="Назад до MCP" onBack={() => {}} />);
 
     expect(

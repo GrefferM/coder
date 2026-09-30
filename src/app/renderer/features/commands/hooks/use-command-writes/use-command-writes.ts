@@ -22,8 +22,8 @@ export function useCommandWrites(project: OpenProject, write: ProjectWrite): Com
         run: values.run.trim(),
         parameters: values.parameters,
       };
-      // A parameter taken off a command takes every argument fixed on it, in every agent. A server's function
-      // pins nothing, so a grant of one is passed over untouched.
+      // A parameter taken off a command takes every argument fixed on it in every agent; a server's function pins
+      // nothing, so its grants are left alone.
       const parameterIds = new Set(values.parameters.map((parameter) => parameter.id));
       const agents = project.config.agents.map((agent) => ({
         ...agent,

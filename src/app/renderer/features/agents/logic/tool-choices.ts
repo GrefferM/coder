@@ -4,12 +4,8 @@ import type { Agent, McpLook, ProjectCommand, ProjectMcpServer } from "../../../
 import type { ToolChoice } from "../interfaces";
 
 /**
- * Everything an agent may be given, in one list under heads. Commands come first, sorted by name and
- * independent of ticks; then each server in the order the project names them, with its functions in the order the
- * server itself gave them — that order is the server's own and we do not know better than it.
- *
- * A server that did not answer contributes nothing: it hands over no functions right now, and offering the list it
- * gave last time would be a tick on something nobody can call.
+ * Everything an agent may be given, in one list: commands sorted by name, then each server in project order with its
+ * functions in the server's order. A server that did not answer contributes nothing.
  */
 export function toolChoices(
   commands: ProjectCommand[],
@@ -55,7 +51,7 @@ export function toolChoices(
   return options;
 }
 
-/** Every other agent of the project as a tool to choose, by name; an agent is never offered itself. */
+/** Every other agent as a tool choice, by name; never the agent itself. */
 export function agentChoices(agents: Agent[], selfId: string | null): ToolChoice[] {
   return [...agents]
     .filter((agent) => agent.id !== selfId)

@@ -27,7 +27,7 @@ describe("WaitPill", () => {
   it("names the repeat once the walk under the point broke, since no supplier is on its way", () => {
     render(<WaitPill awaitedNames={[]} isAwaitingRepeat answered={1} ofSuppliers={2} color="#6fd3d8" />);
 
-    // The point holds what arrived and waits for a hand, not for anybody still working.
+    // Once the walk broke, the point waits for a hand, not for a supplier.
     expect(screen.getByText(/Чекає повтору · Відповів 1 з 2/i)).toBeInTheDocument();
   });
 });

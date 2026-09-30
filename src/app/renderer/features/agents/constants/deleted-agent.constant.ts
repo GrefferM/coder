@@ -1,13 +1,10 @@
-/** The first half of the undo line, present whether or not links went with the agent. */
+/** First half of the undo line, always present. */
 export const DELETED_AGENT_LABEL = "АГЕНТА ВИДАЛЕНО";
 
-/** The three forms a count of removed links takes, and the word that closes the line. */
+/** The three forms of the removed-links count, and the closing word. */
 export const DELETED_LINKS_SUFFIX = "ПРИБРАНО";
 
-/**
- * The one form every deletion question uses — «Заберемо ‹річ›. ‹Що піде або лишиться разом›.»
- * The sphere is named, because a question about a thing names the thing.
- */
+/** The shape of every deletion question: «Заберемо ‹річ›. ‹Що піде або лишиться разом›.» */
 export const DELETED_AGENT_NOTE_PREFIX = "Заберемо сферу ";
 export const DELETED_AGENT_NOTE_LINKS = " і її зв'язки.";
 export const DELETED_AGENT_NOTE_ALONE = ". Вона ні з ким не зв'язана.";

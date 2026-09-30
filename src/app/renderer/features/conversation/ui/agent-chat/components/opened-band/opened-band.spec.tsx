@@ -24,8 +24,7 @@ function head(patch: Partial<ChatHead> = {}): ChatHead {
 
 describe("OpenedBand", () => {
   it("names the state of the flow in the words the row of the history names it in, and when it last spoke", () => {
-    // The person comes here by pressing a row that names the state outright, and two namings of one flow read
-    // as two, so the band says it in the row's own words.
+    // The band uses the same words as the history row (`RUN_STATE_LABELS`).
     render(<OpenedBand head={head()} onExport={null} />);
 
     expect(screen.getByText(RUN_STATE_LABELS.done)).toBeInTheDocument();
@@ -33,7 +32,7 @@ describe("OpenedBand", () => {
   });
 
   it("says the fifth word too, and draws its dot as an empty place", () => {
-    // Nothing was sent, so the dot has no colour to carry — the outline says the place is empty.
+    // Nothing was sent: the dot has no colour, only an outline.
     const { container } = render(
       <OpenedBand
         head={head({

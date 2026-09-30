@@ -3,9 +3,9 @@ import type { RefObject } from "react";
 export interface StayAtBottom<T extends HTMLElement> {
   /** The scrolling box itself. */
   box: RefObject<T | null>;
-  /** Whether the end of it is in view — a pixel or two of rounding still counts as being there. */
+  /** Whether the end is in view, within rounding. */
   isAtEnd: boolean;
-  /** Lets the end go, so a ride to a place higher up is not pulled back to it. */
+  /** Lets the end go, so a ride to a higher place is not pulled back. */
   stopFollowing: () => void;
   /** Takes the box to its end. */
   goToEnd: () => void;

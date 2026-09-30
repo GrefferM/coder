@@ -12,11 +12,7 @@ import {
 import type { FieldChange } from "../../../interfaces";
 import type { ServerFormValues } from "../interfaces";
 
-/**
- * The fields of a server's form changed from the saved ones. The half the switch does not point at is
- * not compared: it is not what this server is, and naming it would put a change in the question that the file
- * will never hold.
- */
+/** The form fields changed from the saved ones; the half the switch does not point at is not compared. */
 export function serverChanges(saved: ServerFormValues, form: ServerFormValues): FieldChange[] {
   const written: FieldChange[] = [
     {

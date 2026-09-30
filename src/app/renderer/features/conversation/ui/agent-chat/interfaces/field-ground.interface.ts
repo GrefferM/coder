@@ -1,7 +1,7 @@
-/** How one state of the send field is painted — its ground, its edge, and the class its word takes. */
+/** How one state of the send field is painted: ground, edge, and the class its word takes. */
 export interface FieldGround {
   background: string;
   border: string;
-  /** Null where the word takes the app's own placeholder colour; a class where it says something quieter. */
+  /** `null` where the word takes the app's placeholder colour; else a class for a quieter one. */
   wordClass: string | null;
 }

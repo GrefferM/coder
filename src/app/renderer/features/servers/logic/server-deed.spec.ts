@@ -19,7 +19,7 @@ function aLook(patch: Partial<McpLook> = {}): McpLook {
 
 describe("serverDeed", () => {
   it("offers nothing in the head of a row whose server simply stands answering", () => {
-    // What there is to do with a living process is on its page, and the head holds states, not processes.
+    // An answering server offers nothing in the head; its process actions are on its page.
     expect(serverDeed(aLook())).toBeNull();
   });
 
@@ -36,7 +36,7 @@ describe("serverDeed", () => {
   });
 
   it("offers to fill in what is missing rather than to raise it again on the same hole", () => {
-    // Starting it again without the thing it was missing fails in exactly the same way.
+    // Restarting without the missing thing fails the same way.
     expect(
       serverDeed(
         aLook({
@@ -56,7 +56,7 @@ describe("serverDeed", () => {
   });
 
   it("offers a fresh connection to one that answers and works for nobody", () => {
-    // It never fell, so it is restarted and not started — and a new connection is a new chance.
+    // It never fell, so it is restarted, not started.
     expect(
       serverDeed(
         aLook({

@@ -54,18 +54,17 @@ import {
 } from "./constants";
 import type { CallRowProps } from "./interfaces";
 
-/** One call as a line opened by a click — open while it is out, folded once it is over. */
+/** One call as a line that opens on click. */
 export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
   const isRunning = call.state === RUN_CALL_RUNNING;
-  // The row is a line until the person opens it — while the call is out too, so a turn of a dozen calls
-  // stays a dozen lines. What they open stays open, and the chat is where that is remembered.
+  // Stays a line until opened, also while the call is out; the open state lives in the chat.
   const isOpen = openCalls.isOpen(call.id);
   const elapsed = useElapsed(call.startedAt);
   const saidNo = call.state === RUN_CALL_SAID_NO;
   const isCommand = call.source === "command";
   const isAgent = call.source === "agent";
 
-  /** The one number a server has in place of a code — how long it took to answer. */
+  /** How long a server took to answer, in place of an exit code. */
   function answeredIn(): string {
     const seconds = ((call.endedAt - call.startedAt) / 1_000).toFixed(CALL_ROW_SECONDS_DIGITS);
 
@@ -81,14 +80,13 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
       return CALL_ROW_REFUSED_LABEL;
     }
 
-    // «відмова — це відповідь, вона прийшла»; the time it took is as much a fact as any other answer's.
+    // A refusal is an answer; its time is shown like any other.
     if (saidNo) {
       return `${isAgent ? CALL_ROW_AGENT_FAILED_LABEL : CALL_ROW_SAID_NO_LABEL}${CALL_ROW_SEPARATOR}${answeredIn()}`;
     }
 
     /**
-     * «коду виходу немає · процесу не було». A server's call is named by the time it took to answer, and
-     * a command's by the code its process came back with — and neither ever stands in the other's place.
+     * «коду виходу немає · процесу не було». A server call shows its answer time, a command its exit code; never swapped.
      */
     return isCommand ? `${CALL_ROW_CODE_LABEL}${call.exitCode}` : `${CALL_ROW_ANSWERED_LABEL}${answeredIn()}`;
   }
@@ -114,12 +112,12 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
         onClick={() => openCalls.toggle(call.id)}
       >
         <span
-          // It breathes while the call is out, and stands still the moment the call is over.
+          // Breathes while the call is out.
           className={`flex-shrink-0${isRunning ? ` ${CALL_ROW_BREATH_CLASS}` : ""}`}
           style={{
             width: CALL_ROW_MARK_SIZE_PX,
             height: CALL_ROW_MARK_SIZE_PX,
-            // The mark is the source's own shape — a declared command square, a server or an agent round, as on the arc.
+            // Mark shape by source: command square, server or agent round.
             borderRadius: isCommand ? CALL_ROW_MARK_STILL_RADIUS_PX : "50%",
             background: isRunning ? agentColor : CALL_ROW_MARK_STILL_COLOR,
             boxShadow: isRunning ? `0 0 7px ${agentColor}` : "none",
@@ -136,7 +134,7 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
           {call.name}
         </span>
         <Mark
-          // The words name the end, so the words are what a troubled end colours.
+          // A troubled end colours the words.
           color={saidNo ? CALL_ROW_SAID_NO_COLOR : CALL_ROW_STATE_COLOR}
           spacing={CALL_ROW_STATE_LETTER_SPACING_PX}
           isUpperCase={false}
@@ -171,12 +169,12 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
             overflowY: "auto",
             whiteSpace: "pre-wrap",
             overflowWrap: "anywhere",
-            // What the call was given and what it printed is content too, so it is taken away like words.
+            // Arguments and output are selectable text.
             userSelect: "text",
             cursor: "text",
           }}
         >
-          {/* On the place of the line a command would carry stands where the call went. */}
+          {/* Stands where a command's line would be: where the call went. */}
           {!isCommand && (
             <div>
               <span
@@ -220,7 +218,7 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
               {CALL_ROW_NO_OUTPUT_YET_LABEL}
             </div>
           )}
-          {/* A server's or an agent's answer is named, and «СКОПІЮВАТИ» takes it away whole — never a part of it. */}
+          {/* A server's or an agent's answer is named and offers «СКОПІЮВАТИ» for the whole of it. */}
           {call.output !== "" && !isCommand && (
             <div
               className="d-flex align-items-center"

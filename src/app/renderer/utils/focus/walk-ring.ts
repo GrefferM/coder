@@ -1,6 +1,6 @@
 import { INTERACTION_FOCUS_RING_COLOR, INTERACTION_FOCUS_RING_PX } from "../../constants";
 
-/** The ring drawn inside the row, so the walk's mark is never cut by a list's edge nor lost under a neighbour. */
+/** A ring drawn inside the row, so the focus mark is not clipped by the list edge or hidden by a neighbour. */
 export function walkRing(isWalked: boolean): string | undefined {
   if (!isWalked) {
     return undefined;

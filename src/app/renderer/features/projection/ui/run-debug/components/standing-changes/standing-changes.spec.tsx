@@ -41,7 +41,7 @@ describe("StandingChanges", () => {
     );
 
     expect(screen.getByText(STANDING_CHANGES_GONE_LABEL)).toBeInTheDocument();
-    // What it ran on then is still there to read: the record keeps it whether or not the agent does.
+    // The model it ran on then is still shown; the record keeps it.
     expect(screen.getByText(/claude-sonnet-4\.5/)).toBeInTheDocument();
   });
 

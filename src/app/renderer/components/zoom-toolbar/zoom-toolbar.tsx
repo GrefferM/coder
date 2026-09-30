@@ -17,7 +17,7 @@ import {
 import { ZOOM_SCALE_PERCENT, ZOOM_SCALE_STOPS } from "../zoom-field";
 import type { ZoomToolbarProps } from "./interfaces";
 
-/** Corner toolbar — current scale with a step either side, dead at the surface's own ends. */
+/** Corner toolbar: current scale with a step either side, dead at the surface's ends. */
 export function ZoomToolbar({ scale, stops = ZOOM_SCALE_STOPS, onZoomOut, onZoomIn }: ZoomToolbarProps) {
   return (
     <div

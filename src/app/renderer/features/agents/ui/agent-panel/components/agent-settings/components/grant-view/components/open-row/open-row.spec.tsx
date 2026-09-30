@@ -23,7 +23,7 @@ describe("OpenRow", () => {
   });
 
   it("offers to fix it for this agent", async () => {
-    // A fixed argument leaves the model's schema, so the row is where that is decided.
+    // Pinning is decided on the row, taking the argument out of the model's schema.
     const onPin = vi.fn();
 
     render(<OpenRow parameter={parameter} onPin={onPin} />);

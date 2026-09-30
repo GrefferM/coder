@@ -20,20 +20,15 @@ import { RUN_HITS_LIMIT } from "../../../../../../contracts";
 import type { RunHistoryProps } from "./interfaces";
 
 /**
- * The history — one row is one run, newest first, under the day it began, and one search over them all.
- *
- * With a word typed the list becomes a flat one of places, ordered by the hour of each message alone and
- * grouped by nothing; a quiet rule names the run wherever the record jumps to another. The record itself is
- * untouched, so the field emptying brings the runs back.
+ * One row per run, newest first, grouped by start day, with one search over all. With a word typed the list is flat:
+ * places ordered by message hour, with a rule naming the run wherever the record changes runs.
  */
 export function RunHistory({ runs, agents, isFailed, onOpen, onForget, query, hits, onQuery }: RunHistoryProps) {
   const now = new Date();
   const looked = query.trim();
   /**
-   * Every place the word stands in is a card of its own, so a flow that said it eight times stands here
-   * eight times. The order is the record's own — by the hour of each message, newest first — and the list keeps it
-   * as given. A hit whose flow the list does not hold is dropped: it belongs to a record read a moment ago and
-   * swept since.
+   * One card per place the word stands in, in the given order (message hour, newest first); a hit whose flow the list no
+   * longer holds is dropped.
    */
   const found =
     looked === ""
@@ -90,7 +85,7 @@ export function RunHistory({ runs, agents, isFailed, onOpen, onForget, query, hi
         runs={new Set(found.map(({ run }) => run.id)).size}
         onQuery={onQuery}
       />
-      {/* Not «Історія порожня» (23h) — the record is right here, and it is this word that is in none. */}
+      {/* No «Історія порожня» here: the record exists, only the word is in none of it. */}
       {looked !== "" && found.length === 0 && (
         <div
           style={{
@@ -117,12 +112,12 @@ export function RunHistory({ runs, agents, isFailed, onOpen, onForget, query, hi
               gap: RUN_HISTORY_GAP_PX,
             }}
           >
-            {/* The address of the run, said only where the record jumped to another one. */}
+            {/* The run's address, shown only where the record changes runs. */}
             {(index === 0 || found[index - 1].run.id !== run.id) && <FoundRule run={run} now={now} />}
             <FoundRow agents={agents} found={hit} looked={looked} onOpen={() => onOpen(run, hit)} />
           </div>
         ))}
-      {/* The ceiling stands on places, so the sentence says what to do about places — add a letter. */}
+      {/* The limit counts places, so the sentence says to add a letter. */}
       {looked !== "" && found.length >= RUN_HITS_LIMIT && (
         <div
           style={{
@@ -142,7 +137,7 @@ export function RunHistory({ runs, agents, isFailed, onOpen, onForget, query, hi
       )}
       {looked === "" &&
         runs.map((run, index) => {
-          // The list is grouped by the day a flow last spoke, which is the day it is sorted by.
+          // Groups are by the day a flow last spoke, the same day the list is sorted by.
           const previous = index === 0 ? null : lastWord(runs[index - 1]);
           const isNewDay = previous === null || previous.toDateString() !== lastWord(run).toDateString();
 
@@ -165,7 +160,7 @@ export function RunHistory({ runs, agents, isFailed, onOpen, onForget, query, hi
             </div>
           );
         })}
-      {/* The note is about the record itself, so it stands under the record and not under a search. */}
+      {/* The note concerns the record, so it shows under the record and not under a search. */}
       {looked === "" && <HistoryFoot />}
     </div>
   );

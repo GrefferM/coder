@@ -5,7 +5,7 @@ import { LOST_TIE_LABEL } from "./constants";
 
 describe("LostTie", () => {
   it("names the loss, says what is gone, and stands the ties themselves under it", () => {
-    // A tie the project has lost — its own group, in the broken colour.
+    // A lost tie: its own group, in the broken colour.
     render(
       <LostTie note="Промпт, на якому стояв агент, видалено з проєкту">
         <span>Редактор</span>

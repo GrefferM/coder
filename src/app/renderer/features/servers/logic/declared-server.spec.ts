@@ -28,7 +28,7 @@ describe("declaredServer", () => {
   });
 
   it("writes a remote server as its address and its way in, with the local half left empty", () => {
-    // The form keeps the other half typed in — switching back costs nothing — and the file keeps none of it.
+    // The form keeps the other kind's typed half; the file keeps none of it.
     expect(
       declaredServer(
         filled({
@@ -46,7 +46,7 @@ describe("declaredServer", () => {
   });
 
   it("leaves a remote server that asks for nothing asking for nothing", () => {
-    // A public server is reached by its address alone: naming a token it never wanted would only refuse it.
+    // A public server is reached by address alone, with no token named.
     expect(
       declaredServer(
         filled({

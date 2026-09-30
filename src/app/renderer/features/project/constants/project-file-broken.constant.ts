@@ -1,15 +1,15 @@
 import type { BrokenPlaceKind } from "../../../../../contracts";
 
 /**
- * What the screen says in place of that code, with the broken thing named after it — a broken file cannot be
- * opened at all, so the person's only way on is to go to that thing and mend it themselves.
+ * What the screen says for that code, followed by the broken thing; a broken file cannot be opened, so the person goes
+ * to that thing and fixes it.
  */
 export const PROJECT_FILE_BROKEN_NOTE = "Файл проєкту не читається — ось що в ньому не так: ";
 
-/** Said where the refusal named no place, so the sentence is not left hanging on a colon. */
+/** Used where the refusal named no place. */
 export const PROJECT_FILE_BROKEN_NOWHERE_NOTE = "Файл проєкту не читається";
 
-/** How the broken line reads before the named things, and between them. */
+/** How the broken line reads before the named things and between them. */
 export const BROKEN_PLACE_PROJECT_WORD = "Проєкт";
 export const BROKEN_PLACE_STEP_SEPARATOR = " → ";
 export const BROKEN_PLACE_NAME_OPEN = " «";
@@ -29,7 +29,7 @@ export const BROKEN_PLACE_KIND_WORDS: Record<BrokenPlaceKind, string> = {
   link: "звʼязок",
 };
 
-/** The fields the screen has a human word for; anything else is said by its own key. */
+/** Fields with a human word; any other is said by its own key. */
 export const BROKEN_PLACE_FIELD_WORDS: Record<string, string> = {
   id: "ідентифікатор",
   title: "назва",
@@ -48,7 +48,7 @@ export const BROKEN_PLACE_FIELD_WORDS: Record<string, string> = {
   outputPrice: "ціна виходу",
 };
 
-/** What each broken rule means, in words; a rule with no word of its own is said plainly. */
+/** What each broken rule means; a rule without a phrase is said plainly. */
 export const BROKEN_PLACE_RULE_PHRASES: Record<string, string> = {
   isUuid: "має бути коректним ідентифікатором",
   isNotEmpty: "не заповнено",

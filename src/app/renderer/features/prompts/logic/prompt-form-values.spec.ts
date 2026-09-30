@@ -5,7 +5,7 @@ import { aPrompt } from "../../../testing";
 
 describe("promptFormValues", () => {
   it("takes the name and the body, and leaves the file the body was read from behind", () => {
-    // The editor writes words, not a path: where they are kept is the record's business.
+    // The editor holds words only, not a path.
     expect(
       promptFormValues(
         aPrompt({

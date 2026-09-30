@@ -11,10 +11,7 @@ import {
   SERVER_FORM_ENV_ADD_RADIUS_PX,
 } from "../../../../constants";
 
-/**
- * The dashed row under the last block. It is two things at once — the way to add a variable, and the
- * visible edge of the list, so a list of six blocks says where it ends without a rule of its own.
- */
+/** The dashed row under the last block: adds a variable and marks the list's end. */
 export function AddVariable({ onAdd }: { onAdd: () => void }) {
   const { isLit, isFocused, handlers } = useInteraction();
 

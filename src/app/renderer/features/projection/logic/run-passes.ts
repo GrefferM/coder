@@ -1,9 +1,6 @@
 import type { WholeRun } from "../../record";
 
-/**
- * The passes of one flow in the order they were asked, each named by its own question. A question that
- * started no walk is not a pass.
- */
+/** The flow's passes in the order asked, each named by its question; a question that started no walk is not a pass. */
 export function runPasses(run: WholeRun): string[] {
   return [...run.questions]
     .sort((one, other) => one.place - other.place)

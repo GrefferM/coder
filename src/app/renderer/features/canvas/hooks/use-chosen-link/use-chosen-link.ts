@@ -5,9 +5,8 @@ import { isTypedIn } from "../../../../utils/keyboard";
 import type { ChosenLinkState } from "./interfaces";
 
 /**
- * The link the person has picked. No panel opens for a link, so the canvas holds it, and the page is
- * told: while a link is chosen ⌫ belongs to the link and the selected agent's own stands down, the chat keeping a
- * sphere selected all the while. ⌫ is ignored while a field is being typed in.
+ * The link the person has picked, held by the canvas. While it is chosen ⌫ belongs to the link, not the selected agent;
+ * ignored while typing in a field.
  */
 export function useChosenLink(
   onChosenChange: (linkId: string | null) => void,

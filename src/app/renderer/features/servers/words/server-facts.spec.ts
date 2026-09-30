@@ -70,7 +70,7 @@ describe("serverFacts", () => {
   });
 
   it("a server that works for nobody says that in place of its kind, since it is the fact that matters", () => {
-    // The connection is whole and the catalogue is true — «каталог сервер віддав, роботу — ні».
+    // The connection is whole and the catalogue is true: «каталог сервер віддав, роботу — ні».
     expect(
       serverFacts(SERVER, {
         look: look({
@@ -115,7 +115,7 @@ describe("serverFacts", () => {
   });
 
   it("a server being asked says so with a clock, and keeps no count of last time's functions", () => {
-    // The number comes from an answer, and this one has not answered yet; the agents are ours to count.
+    // No count before an answer; the agents are still counted.
     expect(
       serverFacts(SERVER, {
         look: look({
@@ -129,7 +129,7 @@ describe("serverFacts", () => {
   });
 
   it("a server nobody has raised says its list is unknown, and no number is invented for it", () => {
-    // «33 ФУНКЦІЇ» without a rise would be a promise, and its kind is the least of it.
+    // No «33 ФУНКЦІЇ» without a rise.
     expect(
       serverFacts(SERVER, {
         look: null,
@@ -138,7 +138,7 @@ describe("serverFacts", () => {
         agentCount: 0,
       }),
     ).toBe("ФУНКЦІЇ НЕВІДОМІ");
-    // The grants stay counted through it: a person gave them, and the server was never asked about them.
+    // The grants stay counted: a person gave them.
     expect(
       serverFacts(SERVER, {
         look: null,

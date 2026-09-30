@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { App } from "./App";
 import type { OpenProject } from "./interfaces";
 
-/** The page's own handles, taken from the mocked pages so the test can open and then switch. */
+/** Handles to the mocked pages, so the test can open and then switch. */
 const held: {
   open: ((project: OpenProject) => void) | null;
   switch: ((project: OpenProject) => void) | null;
@@ -25,7 +25,7 @@ vi.mock("./pages", () => ({
 
     return <span>ПОЧАТОК</span>;
   },
-  // Whatever the page holds, it holds from the moment it was built — as its chat and its view do.
+  // State the page holds from construction, like its chat and view.
   MainPage: ({ project, setProject }: { project: OpenProject; setProject: (project: OpenProject) => void }) => {
     const [built] = useState(project.directory);
 
@@ -52,14 +52,14 @@ describe("App", () => {
 
     act(() => held.switch?.(project("/other")));
 
-    // A different folder is a different life on screen: the chat, the opened run and the view go with it.
+    // A different folder resets the chat, opened run and view.
     expect(screen.getByText("ТРИМАЄ /other")).toBeInTheDocument();
   });
 
   it("keeps the page as it stands when the same project is read again from its file", () => {
     render(<App />);
     act(() => held.open?.(project("/one")));
-    // The file changed on disk and was reread — the same project, so the page is not rebuilt.
+    // A file reread for the same project does not rebuild the page.
     act(() => held.switch?.(project("/one")));
 
     expect(screen.getByText("ТРИМАЄ /one")).toBeInTheDocument();

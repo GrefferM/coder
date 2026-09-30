@@ -1,4 +1,4 @@
-// A step, its calls and its links are the boundary's shapes: written once in `src/contracts`, read here.
+// A step, its calls and its links are the boundary's shapes, written once in `src/contracts`.
 export * from "../../../contracts/runs";
 export * from "./run-call-record.interface";
 export * from "./run-handoff-record.interface";

@@ -2,7 +2,7 @@ import type { ProjectModel } from "../../../interfaces";
 import type { ModelFormValues } from "../interfaces";
 import { EMPTY_MODEL_FORM_VALUES } from "../constants";
 
-/** A saved model as its form holds it, or empty fields for one that does not exist yet. */
+/** A saved model as its form holds it, or empty fields for a new one. */
 export function modelFormValues(model: ProjectModel | null): ModelFormValues {
   if (model === null) {
     return EMPTY_MODEL_FORM_VALUES;
@@ -11,7 +11,7 @@ export function modelFormValues(model: ProjectModel | null): ModelFormValues {
   return {
     title: model.title,
     provider: model.provider,
-    // A number nobody wrote opens the form as an empty field, not as the word «null».
+    // An unwritten number opens as an empty field, not «null».
     contextCeiling: typed(model.contextCeiling),
     answerCeiling: typed(model.answerCeiling),
     inputPrice: typed(model.inputPrice),
@@ -19,7 +19,7 @@ export function modelFormValues(model: ProjectModel | null): ModelFormValues {
   };
 }
 
-/** A number as the field holds it, and an empty field where the model carries none. */
+/** A number as the field holds it; empty where the model has none. */
 function typed(value: number | null): string {
   return value === null ? "" : String(value);
 }

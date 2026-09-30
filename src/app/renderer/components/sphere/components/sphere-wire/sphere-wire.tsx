@@ -24,7 +24,7 @@ const AMBIENT_GLOW_SIZE_PX = SPHERE_SIZE_PX * SPHERE_AMBIENT_GLOW_SCALE;
 /** The wireframe's paths, identical for every sphere. */
 const GRID_LINES = sphereGridLines(SPHERE_GRID_LINE_COUNT, SPHERE_RADIUS_PX, SPHERE_TILT_DEGREES);
 
-/** The wireframe itself — its glow, the ring under the pointer, and the breath of an aim. */
+/** The wireframe: glow, the ring under the pointer, and the breath of an aim. */
 export function SphereWire({ accentColor, glowColor, ambientGlowColor, isBreathing, isPointedAt }: SphereWireProps) {
   return (
     <div
@@ -42,7 +42,7 @@ export function SphereWire({ accentColor, glowColor, ambientGlowColor, isBreathi
           background: `radial-gradient(circle, ${ambientGlowColor} 0%, transparent 70%)`,
         }}
       />
-      {/* The aim breathes and nothing else moves; an off agent has no light to breathe. */}
+      {/* Only the aim breathes; an off agent has no light. */}
       {isBreathing && (
         <div
           className="sphere-breathe"

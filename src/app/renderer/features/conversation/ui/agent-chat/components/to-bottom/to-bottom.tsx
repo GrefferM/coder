@@ -29,11 +29,8 @@ import {
 import type { ToBottomProps } from "./interfaces";
 
 /**
- * The button down: one button, pressed to the right edge and above the field, because the centre is the eye's
- * path down the text and a button there would cover the last reply.
- *
- * News takes no button of its own — the quiet arrow becomes a pill with a number, since going back down and
- * looking at what came is one act.
+ * The button down: at the right edge above the field so it never covers the last reply; news turns the arrow into a
+ * pill with a number.
  */
 export function ToBottom({ news, onGo }: ToBottomProps) {
   const { isLit, isFocused, handlers } = useInteraction();

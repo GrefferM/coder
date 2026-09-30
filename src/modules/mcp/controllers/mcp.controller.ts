@@ -12,7 +12,7 @@ import {
 } from "../dto";
 import type { McpLook, McpSecretsHeld } from "../interfaces";
 
-/** The one door a screen reaches an MCP server through — what it hands over, and what this machine holds for it. */
+/** The one door a screen reaches an MCP server through: what it hands over and what this machine holds for it. */
 export class McpController {
   constructor(
     private readonly client: McpClient,
@@ -25,8 +25,8 @@ export class McpController {
     const look = await this.client.look(payload.server, payload.directory);
 
     /**
-     * What the server itself cannot say: when its list last changed, and what it used to be. Only an answer is
-     * remembered — a fall hands over nothing, and writing that down would say the list went to zero.
+     * What the server cannot say itself: when its list last changed and what it was before. Only an answer is remembered; a
+     * fall is not written down as an empty list.
      */
     return look.isUp
       ? {

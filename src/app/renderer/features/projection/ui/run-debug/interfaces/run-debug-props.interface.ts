@@ -2,14 +2,14 @@ import type { AgentStanding, WholeRun } from "../../../../record";
 import type { AgentChange } from "../../../interfaces";
 
 export interface RunDebugProps {
-  /** The run read whole from the record; `null` while it is being read or could not be. */
+  /** The run read whole from the record; `null` while being read or unreadable. */
   run: WholeRun | null;
   isFailed: boolean;
-  /** How each agent of the run stands today — what the spheres wear under their labels. */
+  /** How each of the run's agents stands today, for the pills under the spheres. */
   standings: AgentStanding[];
-  /** What the card under the graph holds against today; empty where nothing has moved. */
+  /** What the card under the graph compares with today; empty when nothing changed. */
   changes: AgentChange[];
-  /** Which pass of the flow stands open, counted from one, and how many passes it has. */
+  /** The open pass's position in the flow, from one, and the number of passes. */
   place: number;
   passes: number;
   onGo: (place: number) => void;

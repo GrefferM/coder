@@ -29,7 +29,7 @@ const ITEMS: SidePanelItem[] = [
   },
 ];
 
-/** Owns the active section the way `MainPage` does, so a rail click actually switches the panel. */
+/** Owns the active section as `MainPage` does, so a rail click switches the panel. */
 function Harness({
   isCollapsed = false,
   onCollapsedChange = () => {},
@@ -81,8 +81,7 @@ describe("SidePanel", () => {
   it("draws the rule once, before the first section that belongs to this machine", () => {
     const { getAllByRole } = render(<Harness />);
 
-    // Above the rule is what travels with the folder, below it what stays here. The rail
-    // is the one place that boundary is always on screen, so it is drawn once and not per button.
+    // One rule on the rail: above it what travels with the folder, below it what stays on this machine.
     expect(getAllByRole("separator")).toHaveLength(1);
   });
 

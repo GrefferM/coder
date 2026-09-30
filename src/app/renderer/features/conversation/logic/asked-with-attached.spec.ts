@@ -32,7 +32,7 @@ describe("askedWithAttached", () => {
   });
 
   it("sends the packed blocks alone where the question is empty", () => {
-    // The field will not let an empty question go, but the pack must not begin with blank lines if one ever does.
+    // An empty question must not make the pack begin with blank lines.
     expect(
       askedWithAttached("", [
         packed({

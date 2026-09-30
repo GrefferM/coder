@@ -19,7 +19,7 @@ describe("nameTaken", () => {
   });
 
   it("reads a name written in another case as the same name", () => {
-    // The canvas writes every label in capitals, so «Тезар» and «ТЕЗАР» are one picture on screen.
+    // Case-insensitive: the canvas writes labels in capitals, so «Тезар» and «ТЕЗАР» collide.
     expect(nameTaken("Тезар", ["ТЕЗАР"])).toBe(true);
     expect(nameTaken("READ_FILE", ["read_file"])).toBe(true);
   });

@@ -1,4 +1,4 @@
-/** The columns the `run_step_settings` table holds; the entity implements it. */
+/** Columns of `run_step_settings`; the entity implements it. */
 export interface RunStepSettingRecord {
   id: string;
   promptId: string | null;

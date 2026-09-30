@@ -10,17 +10,17 @@ import type { TakenThings, WriteNote } from "../../interfaces";
 import type { ProjectWrite } from "./interfaces";
 import type { Point } from "../../../../utils/math";
 
-/** Every write to the open project's file goes through here; a deletion also writes the history and offers a way back. */
+/** Every write to the open project's file goes through here; a deletion also writes the history and offers undo. */
 export function useProjectWrite(
   project: OpenProject,
   setProject: Dispatch<SetStateAction<OpenProject | null>>,
 ): ProjectWrite {
-  // Every deletion's way back stands on its own; a second deletion does not take the first one's down.
+  // Each deletion's undo stands on its own.
   const undo = useUndoOffers();
-  // The last write's note, with the config it wrote, so «ще раз» runs that same write.
+  // The last write's note with the config it wrote, so «ще раз» repeats that write.
   const [written, setWritten] = useState<{ note: WriteNote; config: ProjectConfig } | null>(null);
 
-  /** Puts what `change` works out over the open project's config as it stands at that moment. */
+  /** Applies what `change` computes to the open project's config as it stands at that moment. */
   const changeConfig = useCallback(
     (change: (standing: ProjectConfig) => ProjectConfig) =>
       setProject((open) =>
@@ -111,7 +111,7 @@ export function useProjectWrite(
     [changeConfig, project.config, project.directory, save, undo],
   );
 
-  /** Puts a deletion back and lets its history row go, so one thing cannot come back twice. */
+  /** Puts a deletion back and releases its history row, so it cannot come back twice. */
   const putBack = useCallback(
     async (taken: TakenThings, deletionId: string | null, label?: string) => {
       const back = withTakenBack(project.config, taken);
@@ -125,7 +125,7 @@ export function useProjectWrite(
     [project.config, save],
   );
 
-  /** The thing comes back where it stood, and its history row goes. */
+  /** The thing returns where it stood and its history row goes. */
   const undoOffer = useCallback(
     async (offerId: string) => {
       const taken = undo.take(offerId);
@@ -137,13 +137,13 @@ export function useProjectWrite(
       try {
         await putBack(taken.taken, taken.deletionId, taken.message);
       } catch {
-        // The line already says what stopped the write; the thing stays gone and stays in the history.
+        // The line already says what stopped the write; the thing stays deleted and in the history.
       }
     },
     [putBack, undo],
   );
 
-  /** ⌘Z takes the newest offer, the one drawn at the bottom of the stack. */
+  /** ⌘Z takes the newest offer, the one at the bottom of the stack. */
   const undoDelete = useCallback(async () => {
     const newest = undo.offers.at(-1);
 
@@ -154,7 +154,7 @@ export function useProjectWrite(
     await undoOffer(newest.id);
   }, [undo.offers, undoOffer]);
 
-  /** The way back taken from the history, not the canvas; the offer goes down with it when it names that deletion. */
+  /** Undo from the history rather than the canvas; the offer goes with it when it names that deletion. */
   const restoreDeletion = useCallback(
     async (deletionId: string, taken: TakenThings) => {
       await putBack(taken, deletionId);
@@ -163,7 +163,7 @@ export function useProjectWrite(
     [putBack, undo],
   );
 
-  /** A change that arrived from outside says so on the same line a write does. */
+  /** An external change is reported on the same line a write uses. */
   const sayNote = useCallback(
     (note: WriteNote) =>
       setWritten({

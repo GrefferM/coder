@@ -3,7 +3,9 @@ import { isCommandGrant } from "../../../interfaces";
 import type { ProjectConfig } from "../../../interfaces";
 import type { TakenThings } from "../interfaces";
 
-/** Puts a deletion back as the project stands now; a link with a gone end, or a grant on a gone command, stays gone. */
+/**
+ * Puts a deletion back into the current project; a link with a missing end or a grant on a missing command stays gone.
+ */
 export function withTakenBack(config: ProjectConfig, taken: TakenThings): ProjectConfig {
   const models = [
     ...config.models,
@@ -34,7 +36,7 @@ export function withTakenBack(config: ProjectConfig, taken: TakenThings): Projec
       .filter(
         (one) =>
           one.agentId === agent.id &&
-          // A grant needs the thing it points at: a command's command, a server's server.
+          // A grant needs its target: a command's command, a server's server.
           (isCommandGrant(one.grant) ? commandIds : serverIds).has(sourceOf(one.grant).id),
       )
       .map((one) => one.grant)
@@ -58,7 +60,7 @@ export function withTakenBack(config: ProjectConfig, taken: TakenThings): Projec
     commands,
     servers,
     agents,
-    // A line needs both its ends: the one that has since gone stays gone, and the line with it.
+    // A line needs both ends; one that is gone keeps the line gone.
     links: [
       ...config.links,
       ...taken.links.filter(

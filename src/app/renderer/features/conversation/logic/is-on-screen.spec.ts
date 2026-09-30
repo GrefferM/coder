@@ -4,7 +4,7 @@ import { begunWalk } from "./begun-walk";
 import { emptyWalk } from "./empty-walk";
 import type { WalkState } from "../interfaces";
 
-/** One walk of a stream, with the row it writes into and whether it was put away. */
+/** One walk with its row and whether it was put away. */
 function walk(isPutAway: boolean, runId: string | null, flowRunId: string | null): WalkState {
   return {
     ...emptyWalk(),
@@ -24,7 +24,7 @@ describe("isOnScreen", () => {
   });
 
   it("leaves out a walk of another conversation, whatever the screen is doing", () => {
-    // Another row is another conversation — it draws nothing here and no button here reaches it.
+    // Another row is another conversation: drawn nowhere here and unreachable from here.
     expect(isOnScreen(walk(false, "run-1", "run-2"), "walk-1")).toBe(false);
     expect(isOnScreen(walk(false, "run-1", null), "walk-1")).toBe(false);
   });
@@ -34,7 +34,7 @@ describe("isOnScreen", () => {
   });
 
   it("leaves out a walk let go with its stream while another row stands on screen", () => {
-    // It runs to its end and writes its record, and draws nothing here.
+    // Runs to its end and writes its record, draws nothing here.
     expect(isOnScreen(walk(true, "run-1", "run-2"), "walk-1")).toBe(false);
   });
 

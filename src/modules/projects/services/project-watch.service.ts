@@ -20,8 +20,8 @@ export class ProjectWatchService implements ProjectWatch {
   private settling: NodeJS.Timeout | null = null;
   private sweeping: NodeJS.Timeout | null = null;
   /**
-   * Reads of the folder run one after another. Two in flight both compare a folder that has already changed
-   * against the same old fingerprint, so both find it changed and the change is said twice.
+   * Reads run one at a time; two in flight would both see the change against the same old fingerprint and report it
+   * twice.
    */
   private reading: Promise<void> = Promise.resolve();
 
@@ -34,7 +34,7 @@ export class ProjectWatchService implements ProjectWatch {
     return this.queue(() => this.record(directory));
   }
 
-  /** Puts the watch down: nothing is followed and nothing is remembered until `follow` is called again. */
+  /** Puts the watch down: nothing is followed or remembered until `follow`. */
   unfollow(): void {
     this.stop();
     this.followed = null;
@@ -46,16 +46,15 @@ export class ProjectWatchService implements ProjectWatch {
       return;
     }
 
-    // A read waiting on our own write has nothing left to say: what it would have found we are about to record.
+    // A read waiting on our own write has nothing to report.
     this.forget();
 
     return this.queue(() => this.record(directory));
   }
 
   /**
-   * Takes the folder as it stands to be its new state, saying nothing about it — what a watch just taken up
-   * finds, and what our own write left behind. `known` is written here and in `read`, and nowhere else, so
-   * every write to it stands in the queue and none of them races another.
+   * Takes the folder as it stands as the new state, silently; `known` is written only here and in `read`, always inside
+   * the queue.
    */
   private async record(directory: string): Promise<void> {
     if (directory !== this.followed) {
@@ -67,7 +66,7 @@ export class ProjectWatchService implements ProjectWatch {
     this.sweep(directory);
   }
 
-  /** Debounce: several fs events for one change trigger one read after PROJECT_WATCH_SETTLE_MS of quiet. */
+  /** Debounce: events for one change trigger one read after PROJECT_WATCH_SETTLE_MS of quiet. */
   private settle(directory: string, isSweep = false): void {
     this.forget();
     this.settling = setTimeout(() => {
@@ -78,9 +77,8 @@ export class ProjectWatchService implements ProjectWatch {
   }
 
   /**
-   * Reads the folder and says so if it moved. A sweep asks for no sweep of its own: one read after a watch is
-   * taken up covers the gap, a second would question a quiet folder forever. Anything an event asks for does,
-   * so the folder taken up afresh is read once more after it next goes quiet.
+   * Reads the folder and reports if it moved. A sweep asks for no further sweep; an event's read does, so a re-armed
+   * watch is read once more after quiet.
    */
   private async tell(directory: string, isSweep = false): Promise<void> {
     return this.queue(() => this.read(directory, isSweep));
@@ -106,7 +104,7 @@ export class ProjectWatchService implements ProjectWatch {
     }
   }
 
-  /** Stands the work after whatever read is already going, so the two never overlap. */
+  /** Runs the work after any read already going. */
   private queue(work: () => Promise<void>): Promise<void> {
     this.reading = this.reading.then(work);
 
@@ -114,17 +112,8 @@ export class ProjectWatchService implements ProjectWatch {
   }
 
   /**
-   * One read the watch owes itself a settle after it was taken up, which no event will ever ask for.
-   *
-   * Starting to listen is not instant, and a change that lands between opening the watch and delivering from it
-   * is never queued for anybody — no waiting brings it. The folder is taken up afresh after every change, so that
-   * moment comes round again and again, and reading once, unasked, is the only thing that notices.
-   *
-   * It asks through the settle and never reads by itself. A read of its own would land whenever the timer says,
-   * and a folder somebody is writing into is read mid-write: a file truncated and not yet filled is a state
-   * nobody meant, and it differs from both the old text and the new — so it is said to have changed, and said
-   * again when the writing finishes. Going through the settle, it waits for the quiet like every other read,
-   * and an event that arrives meanwhile simply takes the read over.
+   * One read owed after a watch is taken up, since a change between opening and first delivery is never queued. It goes
+   * through the settle, so a half-written file is never read; an event meanwhile takes the read over.
    */
   private sweep(directory: string): void {
     this.sweeping = setTimeout(() => {
@@ -135,11 +124,9 @@ export class ProjectWatchService implements ProjectWatch {
   }
 
   /**
-   * Takes the watch up on the folder again: a rename leaves an inotify watch on a dead inode, and a second change
-   * after one must still be heard.
+   * Takes the watch up on the folder again, since a rename leaves an inotify watch on a dead inode.
    *
-   * The new watch is opened **before** the old one is closed — between a close and an open the folder is watched
-   * by nobody, and that is exactly when an editor or a `git pull` is most likely to write again.
+   * The new watch opens before the old one closes, so the folder is never unwatched.
    */
   private arm(directory: string): void {
     const standing = this.watcher;
@@ -162,7 +149,7 @@ export class ProjectWatchService implements ProjectWatch {
     this.forget();
   }
 
-  /** Drops both reads that are owed: an event supersedes the sweep, and a watch put down owes nothing at all. */
+  /** Drops both owed reads: an event supersedes the sweep, and a stopped watch owes nothing. */
   private forget(): void {
     if (this.settling !== null) {
       clearTimeout(this.settling);
@@ -191,7 +178,7 @@ export class ProjectWatchService implements ProjectWatch {
     return pieces.join("\0");
   }
 
-  /** The files in one part folder the app itself would have written, in a settled order; a missing folder is none. */
+  /** The app-written files in one part folder, in a settled order; a missing folder gives none. */
   private async names(at: string, pattern: RegExp): Promise<string[]> {
     try {
       return (await readdir(at)).filter((name) => pattern.test(name)).sort();

@@ -1,4 +1,4 @@
-/** The MCP section's icon — a plug, since a server is a thing you connect to rather than run. */
+/** The MCP section's icon, a plug. */
 export function ServersIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">

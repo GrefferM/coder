@@ -2,8 +2,8 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Min } from "class-v
 import { MODEL_ANSWER_CEILING_LEAST, MODEL_CONTEXT_CEILING_LEAST, MODEL_PRICE_LEAST } from "../constants";
 
 /**
- * One model in the project: which model it is, whose provider serves it, what it costs per million tokens and the two
- * ceilings it stands under. A number nobody has written yet is `null`, and never refuses the file.
+ * A model: which, its provider, cost per million tokens and two ceilings. An unwritten number is `null` and never
+ * refuses the file.
  */
 export class ProjectModelDto {
   @IsUUID()

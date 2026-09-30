@@ -3,10 +3,9 @@ import type { SphereScene, SphereStanding } from "../interfaces";
 import type { Agent } from "../../../interfaces";
 
 /**
- * How a sphere stands. While a line is being drawn everything is about that line — the sphere
- * it comes from is the picked one, and every sphere the line must not land on stands back; the aim says nothing then,
- * since a line is a moment and an aim stands for hours. Otherwise the picked sphere is the selection's, the aimed one
- * is the chat's, and the rest stand back only when the panel is about a selected agent or a link is chosen.
+ * How a sphere stands. While a line is drawn: the source is the picked sphere, spheres it must not land on stand back,
+ * the aim is ignored. Otherwise the picked sphere is the selection's, the aimed one the chat's, and the rest stand back
+ * only when the panel is about a selected agent or a link is chosen.
  */
 export function sphereStanding(agent: Agent, scene: SphereScene): SphereStanding {
   const { picked, drawnFrom, isLinkChosen, links } = scene;

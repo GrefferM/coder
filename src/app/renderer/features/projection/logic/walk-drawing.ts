@@ -17,10 +17,10 @@ import type { Point } from "../../../utils/math";
 import type { WalkDrawing, WalkLineSizes, WalkPlace } from "../interfaces";
 import type { WholeStep } from "../../record";
 
-/** The sphere's rim as it is drawn here — everything the line leaves and arrives by is measured off it. */
+/** The sphere's drawn radius, from which line offsets are measured. */
 export const WALK_SPHERE_RADIUS_PX = (SPHERE_SIZE_PX / 2) * WALK_SPHERE_SCALE;
 
-/** Every size the routing is built on — the rim, the air around it, the corner, the point. */
+/** Every size the routing is built on. */
 const LINE_SIZES: WalkLineSizes = {
   radius: WALK_SPHERE_RADIUS_PX,
   tailAir: WALK_SPHERE_RADIUS_PX * WALK_TAIL_AIR_SHARE,
@@ -30,7 +30,7 @@ const LINE_SIZES: WalkLineSizes = {
   wing: WALK_ARROW_HALF_WIDTH_PX,
 };
 
-/** Where one turn stands: its column across, its lane down from the top row. */
+/** A turn's spot: column across, lane down from the top row. */
 export function walkSpot(place: WalkPlace): Point {
   return {
     x: WALK_FIRST_COLUMN_X_PX + (place.number - 1) * WALK_COLUMN_WIDTH_PX,
@@ -39,9 +39,8 @@ export function walkSpot(place: WalkPlace): Point {
 }
 
 /**
- * A whole pass worked out for drawing — where every turn stands and how every line between them
- * runs. A feed from outside this pass is not drawn. Lines arriving at one turn rise on its one gutter and carry no head
- * of their own; the turn draws a single head for them all.
+ * A pass laid out for drawing. A feed from outside the pass is not drawn; lines into one turn share its gutter and the
+ * turn draws a single head.
  */
 export function walkDrawing(walk: WholeStep[]): WalkDrawing {
   const places = walkPlaces(walk);

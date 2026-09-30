@@ -17,13 +17,8 @@ import {
 import type { RunRowHeadProps } from "./interfaces";
 
 /**
- * The head of a row — a dot, the word of state, the quiet name of whom the flow was asked
- * last, and the hour with the work beside it. The name is the one the person addressed, not the first agent to walk:
- * many agents work inside one flow, and the head answers «with whom», while the state answers «whether to read on».
- * The name wears the agent's own colour: a row of grey words says who worked in it only to whoever reads them all,
- * and the colour is the one thing a person already knows their agents by. It stands from the moment of the
- * question, because the record keeps the addressee beside the question and not beside the first
- * step; an agent the project has let go has no colour left to wear, and is drawn quiet for that.
+ * A row's head: a dot, the state word, the quiet name of the last addressee in that agent's colour (colourless if the
+ * agent is gone), and the hour with the work beside it.
  */
 export function RunRowHead({ run, agents, isRunning, isRaised }: RunRowHeadProps) {
   const dot = RUN_HISTORY_STATE_DOTS[run.state];
@@ -36,7 +31,7 @@ export function RunRowHead({ run, agents, isRunning, isRaised }: RunRowHeadProps
         gap: RUN_HISTORY_HEAD_GAP_PX,
       }}
     >
-      {/* The state is said twice on one line — a dot, and the word beside it. */}
+      {/* The state is shown twice: a dot and a word. */}
       <Dot
         color={dot.color}
         border={dot.border}
@@ -54,7 +49,7 @@ export function RunRowHead({ run, agents, isRunning, isRaised }: RunRowHeadProps
       >
         {runStateLabel(run.state)}
       </span>
-      {/* Today's name in today's colour, and the record's — dimmer, colourless — for one who is gone. */}
+      {/* The agent's current name and colour; the record's name, dimmer and colourless, for a gone one. */}
       <span
         className="font-monospace text-truncate"
         style={{
@@ -76,7 +71,7 @@ export function RunRowHead({ run, agents, isRunning, isRaised }: RunRowHeadProps
       >
         {whenLabel(run)}
       </span>
-      {/* The cross's own place, held whether it is there or not, so the hour never moves. */}
+      {/* The cross's place, reserved whether or not it shows, so the hour never moves. */}
       <span
         className="flex-shrink-0"
         style={{

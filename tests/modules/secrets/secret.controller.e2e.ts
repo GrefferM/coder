@@ -44,7 +44,7 @@ describe("SecretController", () => {
   });
 
   it("writes a secret and answers with its hint, never with the secret", async () => {
-    // The key itself never comes back over the boundary; only the few characters that let a person recognise it.
+    // The key never crosses the boundary back; only a recognisable hint does.
     const hint = await controller().set(
       Object.assign(new SetSecretDto(), {
         key: "openrouter",
@@ -65,7 +65,7 @@ describe("SecretController", () => {
   });
 
   it("refuses a secret with no name, and one with nothing in it", async () => {
-    // An empty key would write a secret nobody can name again; an empty value is the removal, and has its own door.
+    // An empty key is refused; removal has its own door.
     await assert.rejects(() =>
       controller().set(
         Object.assign(new SetSecretDto(), {

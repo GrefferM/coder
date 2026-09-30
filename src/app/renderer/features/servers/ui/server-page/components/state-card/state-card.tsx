@@ -26,13 +26,8 @@ import {
 import type { StateCardProps } from "./interfaces";
 
 /**
- * The head of a server's page — its dot and facts, the one action about its **process**, how it is
- * reached, and how fresh its answer is. Boxed, because it is the state of the thing and the rest of the page is
- * what the thing hands over.
- *
- * The word of the action comes from the kind, because the kind decides the thing: a local server is our own
- * process and is put down and raised afresh; a remote one is a connection, and one only asks it again. Nothing
- * here stops a server: «ЗУПИНИТИ» is nowhere — a server stopped by hand is a declaration with nothing behind it.
+ * The boxed head of a server's page: dot, facts, the one process action, how it is reached, how fresh its answer is.
+ * The action word follows the kind: a local server is restarted, a remote one is asked again.
  */
 export function StateCard({ server, look, isAsking, agentCount, freshness, onRestart, onAskAgain }: StateCardProps) {
   const deed = pageDeed(look, server.isLocal, isAsking);

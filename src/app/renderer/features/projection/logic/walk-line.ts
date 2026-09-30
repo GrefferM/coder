@@ -2,9 +2,9 @@ import type { Point } from "../../../utils/math";
 import type { WalkLine, WalkLineSizes } from "../interfaces";
 
 /**
- * The line between two turns — horizontals and verticals, rounded where they meet. Down: out by the
- * sender's gutter, along the receiver's lane, in at its rim; up: along its own lane, up the receiver's gutter, a corner
- * into the row. Lines into one turn share that gutter; the head is drawn once, by the receiver (`walkHead`).
+ * The line between two turns: horizontals and verticals with rounded corners. Down: out by the sender's gutter, along
+ * the receiver's lane, in at its rim; up: along its own lane, up the receiver's gutter, a corner into the row. Lines
+ * into one turn share the gutter; the head is drawn by the receiver (`walkHead`).
  */
 export function walkLine(from: Point, to: Point, sizes: WalkLineSizes, isShared: boolean): WalkLine {
   const start = from.x + sizes.radius + sizes.tailAir;
@@ -43,25 +43,22 @@ export function walkLine(from: Point, to: Point, sizes: WalkLineSizes, isShared:
   };
 }
 
-/** The one head a turn with several lines into it draws for all of them. */
+/** The single head a turn draws for all lines into it. */
 export function walkHead(to: Point, sizes: WalkLineSizes): string {
   return headAt(to, sizes);
 }
 
-/** The gutter beside the sender: the air it leaves by, and room for the corner to turn in full. */
+/** Gutter beside the sender: the air it leaves by plus room for a full corner. */
 function gutterOut(sizes: WalkLineSizes): number {
   return sizes.tailAir + 2 * sizes.corner;
 }
 
-/**
- * The gutter before the receiver: the air, the head and room for the corner. The last stretch from the gutter to the
- * head's base is then two corners wide.
- */
+/** Gutter before the receiver: the air, the head and room for the corner. */
 function gutterIn(sizes: WalkLineSizes): number {
   return sizes.headAir + sizes.arrow + 2 * sizes.corner;
 }
 
-/** The arrowhead: it aims at the rim without touching it, standing off by the head's own air. */
+/** The arrowhead, aimed at the rim and standing off by the head's air. */
 function headAt(to: Point, sizes: WalkLineSizes): string {
   const tip = to.x - sizes.radius - sizes.headAir;
   const base = tip - sizes.arrow;
@@ -69,7 +66,7 @@ function headAt(to: Point, sizes: WalkLineSizes): string {
   return `${round(tip)},${round(to.y)} ${round(base)},${round(to.y - sizes.wing)} ${round(base)},${round(to.y + sizes.wing)}`;
 }
 
-/** The turns of the run, each corner cut back by as much as its two sides allow and rounded off. */
+/** The run's turns, each corner cut back as far as its two sides allow and rounded. */
 function bentPath(points: Point[], corner: number): string {
   const bends = points.slice(1, -1).map((bend, place) => {
     const before = points[place];
@@ -89,7 +86,7 @@ function bentPath(points: Point[], corner: number): string {
   return [`M ${round(points[0].x)} ${round(points[0].y)}`, ...bends, `L ${round(last.x)} ${round(last.y)}`].join(" ");
 }
 
-/** A tenth of a pixel is as fine as a drawn line needs; the rest is noise in the path. */
+/** Rounds to a tenth of a pixel. */
 function round(one: number): number {
   return Math.round(one * 10) / 10;
 }

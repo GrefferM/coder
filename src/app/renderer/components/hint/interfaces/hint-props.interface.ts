@@ -1,9 +1,9 @@
 export interface HintProps {
-  /** The words themselves; a hint with nothing to say is not shown at all. */
+  /** The hint's words; nothing is shown when empty. */
   text: string;
-  /** The reading kind wraps and grows down; the recognition kind stays one line and cuts with «…». */
+  /** The reading kind wraps and grows down; the recognition kind is one line cut with «…». */
   isReading: boolean;
-  /** Where the thing it is about stands, in the window's own coordinates. */
+  /** Where the thing it is about stands, in window coordinates. */
   at: {
     left: number;
     top: number;

@@ -9,7 +9,7 @@ import type { Dispatch, SetStateAction } from "react";
 import type { OpenProject } from "../../../../interfaces";
 import type { ProjectActions } from "./interfaces";
 
-/** Every subject's writes over the project's one writer — composed here, where the page hands each subject its own. */
+/** Composes each subject's writes over the project's single writer. */
 export function useProjectActions(
   project: OpenProject,
   setProject: Dispatch<SetStateAction<OpenProject | null>>,

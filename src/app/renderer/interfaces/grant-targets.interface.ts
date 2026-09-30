@@ -1,10 +1,10 @@
 import type { Agent, McpLook, ProjectCommand, ProjectMcpServer } from "../../../contracts";
 
-/** Everything a grant can point at: the declared commands, the servers and what each said, and the agents. */
+/** Everything a grant can point at: declared commands, servers with what each said, and agents. */
 export interface GrantTargets {
   commands: ProjectCommand[];
   servers: ProjectMcpServer[];
-  /** What each server said it hands over, by server id; a server that did not answer has no entry. */
+  /** What each server hands over, by server id; no entry for one that did not answer. */
   looks: Record<string, McpLook>;
   agents: Agent[];
 }

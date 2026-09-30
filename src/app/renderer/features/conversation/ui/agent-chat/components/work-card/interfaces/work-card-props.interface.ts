@@ -6,6 +6,6 @@ export interface WorkCardProps {
   agentColor: string;
   startedAt: number;
   calls: LiveCall[];
-  /** Which of them stand open — the chat's own memory, not this card's. */
+  /** Which calls are open; kept by the chat, not this card. */
   openCalls: OpenCalls;
 }

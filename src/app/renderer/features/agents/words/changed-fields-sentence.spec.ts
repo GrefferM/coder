@@ -19,7 +19,7 @@ describe("changedFieldsSentence", () => {
   });
 
   it("holds one wording for fields of any gender, which is why they stand as objects", () => {
-    // «колір» is masculine and «назва» feminine; an agreeing verb would have to pick one of them.
+    // «колір» is masculine and «назва» feminine, so the verb form is neutral.
     expect(changedFieldsSentence(["колір"])).toBe("Колір змінено й не збережено.");
   });
 });

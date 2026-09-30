@@ -38,7 +38,7 @@ export function TemplateField({
   const inputRef = useRef<HTMLInputElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [brace, setBrace] = useState<OpenBrace | null>(null);
-  // A brace hushed by Escape stays hushed until the line is typed into again.
+  // A brace dismissed by Escape stays dismissed until the line is typed into again.
   const [hushedAt, setHushedAt] = useState<number | null>(null);
   const restingBorderColor = wasValue === null ? FIELD_BORDER_COLOR : FIELD_SLOT_CHANGED_BORDER_COLOR;
   const textStyle = {
@@ -52,7 +52,7 @@ export function TemplateField({
   const isListOpen = brace !== null && slots !== undefined && brace.at !== hushedAt;
 
   useWindowDismiss(isListOpen, () => setBrace(null));
-  // The letters stay in the line while the arrows walk the offered names, and Enter takes the one they stand on.
+  // Letters stay in the line; arrows walk the offered names and Enter takes the current one.
   const walk = useListWalk(offered.length, isListOpen, (index) => pick(offered[index].name));
 
   /** A slot is a brace whose name is declared; with no declared list, every name in braces. */
@@ -130,7 +130,7 @@ export function TemplateField({
                 return;
               }
 
-              // An open list answers Escape itself; the panel underneath must not react.
+              // An open list answers Escape itself; the panel underneath does not react.
               if (event.key === "Escape") {
                 event.preventDefault();
                 event.stopPropagation();
@@ -160,7 +160,7 @@ export function TemplateField({
               position: "relative",
               border: "none",
               background: "transparent",
-              // The glyphs belong to the backdrop; the caret and the selection stay here.
+              // The backdrop draws the glyphs; the caret and selection stay here.
               color: "transparent",
               caretColor: FIELD_VALUE_COLOR,
               outline: "none",

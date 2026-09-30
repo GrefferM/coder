@@ -4,7 +4,7 @@ import type { PromptFormValues } from "../../../interfaces";
 export interface PromptEditorProps {
   values: PromptFormValues;
   wasName: string | null;
-  /** The name rule, over prompts: another prompt is already called this. */
+  /** Another prompt is already called this. */
   isNameTaken: boolean;
   isNew: boolean;
   hasUnsaved: boolean;

@@ -6,7 +6,7 @@ import { ProjectMcpServerDto } from "./project-mcp-server.dto";
 import { ProjectModelDto } from "./project-model.dto";
 import { ProjectPromptDto } from "./project-prompt.dto";
 
-/** The whole project file, as it is once parsed and raised to the version this build writes. */
+/** The whole project file, parsed and raised to the current version. */
 export class ProjectConfigDto {
   @IsInt()
   @Min(1)
@@ -38,7 +38,7 @@ export class ProjectConfigDto {
   @ArrayUnique((command: ProjectCommandDto) => command.id)
   declare commands: ProjectCommandDto[];
 
-  // Servers are named in the catalogue beside commands, so two may not share a name either.
+  // Servers share the commands' namespace, so names are unique across both.
   @IsArray()
   @ValidateNested({
     each: true,

@@ -2,8 +2,8 @@ import { isOnScreen } from "./is-on-screen";
 import type { ChatMessage, WalkState } from "../interfaces";
 
 /**
- * One block per question, in the order the questions were asked, each block's words in the order they were
- * said. Two questions of one millisecond are still two blocks: the id keeps them apart where the clock cannot.
+ * One block per question in the order asked, each block's words in the order said; the id separates questions of the
+ * same millisecond.
  */
 export function inStreamOrder(messages: ChatMessage[]): ChatMessage[] {
   return [...messages].sort(
@@ -13,8 +13,8 @@ export function inStreamOrder(messages: ChatMessage[]): ChatMessage[] {
 }
 
 /**
- * One stream for the whole project — every agent's turns of the walks standing on this screen, in
- * order, without what arrived down a line. A walk of another row is another conversation, and says nothing here.
+ * One stream for the project: every agent's turns of the walks standing on this screen, in order, without what arrived
+ * down a line; walks of another row are another conversation.
  */
 export function chatStream(walk: WalkState): ChatMessage[] {
   return inStreamOrder(

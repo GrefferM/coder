@@ -123,7 +123,7 @@ const CONFIG: ProjectConfig = aConfig({
   ],
 });
 
-/** The providers the machine offers, as much of them as this page ever shows. */
+/** The providers the machine offers, as far as this page shows them. */
 const PROVIDERS: ProviderState[] = [
   {
     id: "anthropic",
@@ -143,7 +143,7 @@ const PROJECT: OpenProject = {
   view: null,
 };
 
-/** The panel is the agent's settings already, so there is nothing to open. */
+/** The panel already is the agent's settings; nothing to open. */
 async function openSettings(_user: ReturnType<typeof userEvent.setup>): Promise<void> {
   await Promise.resolve();
 }
@@ -156,19 +156,19 @@ function findPanelBox(container: HTMLElement): Element {
   return panelBox;
 }
 
-/** The canvas: the one presentational box on the page, everything outside the panel and the switcher. */
+/** The canvas: the one presentational box, outside the panel and the switcher. */
 function findCanvas(container: HTMLElement): HTMLElement {
   return container.querySelector("[role='presentation']") as HTMLElement;
 }
 
-/** `MainPage` with the project it saves kept, the way `App` keeps it. */
+/** `MainPage` with the saved project kept, as `App` keeps it. */
 function OpenProjectHarness({ opened = PROJECT }: { opened?: OpenProject }) {
   const [project, setProject] = useState<OpenProject | null>(opened);
 
   return project === null ? null : <MainPage project={project} setProject={setProject} />;
 }
 
-/** The same project with a second agent, for what needs two spheres to happen between. */
+/** The same project with a second agent, for what needs two spheres. */
 const PAIRED: OpenProject = {
   ...PROJECT,
   config: {
@@ -189,9 +189,9 @@ const PAIRED: OpenProject = {
 };
 
 describe("MainPage", () => {
-  // The agents panel reads window.electronApi on mount, so every test here needs it defined.
+  // The agents panel reads window.electronApi on mount.
   beforeEach(() => {
-    // The providers channel answers with the machine's list, every other channel with nothing.
+    // The providers channel answers with the machine's list, every other with nothing.
     standInBridge({
       invoke: vi.fn(async (channel: string) => (channel === LIST_PROVIDERS_CHANNEL ? PROVIDERS : [])),
     });
@@ -200,7 +200,7 @@ describe("MainPage", () => {
   it("stands the rail's sections in order", () => {
     render(<MainPage project={PROJECT} setProject={() => {}} />);
 
-    // The order is agents, models, MCP, commands, prompts, store; the ones built so far keep those places.
+    // Rail order: agents, models, MCP, commands, prompts, store; built ones keep their places.
     const rail = ["Агенти", "Моделі", "Команди", "Промпти", "Чат", "Провайдери"];
 
     expect(
@@ -261,7 +261,7 @@ describe("MainPage", () => {
     );
     await user.type(screen.getByLabelText(AGENT_FORM_NAME_LABEL), "REVIEWER");
     await user.click(screen.getByText(MODEL_PICKER_PLACEHOLDER));
-    // The canvas names the same model under its own sphere, so the choice is made inside the list.
+    // The canvas names the same model under its sphere, so the choice is made inside the list.
     await user.click(within(screen.getByRole("listbox")).getByText("Claude Sonnet 4.5"));
     await user.click(screen.getByText(AGENT_FORM_CREATE_LABEL));
 
@@ -397,7 +397,7 @@ describe("MainPage", () => {
 
     await user.click(findCanvas(container));
 
-    // A search typed into it and a place scrolled to would go with it, and nothing asked for that.
+    // A typed search and a scroll position must not go with it.
     await waitFor(() => {
       expect(panelBox).toHaveStyle({
         width: `${RIGHT_SIDE_PANEL_WIDTH_PX}px`,
@@ -451,7 +451,7 @@ describe("MainPage", () => {
     await user.click(await screen.findByText(PROMPT_PICKER_NONE_LABEL));
     await user.keyboard("{Escape}");
 
-    // The rank: the list is the floor above the panel, and it answers first.
+    // The list is the floor above the panel and answers first.
     expect(screen.queryByPlaceholderText(PICKER_SEARCH_PLACEHOLDER)).not.toBeInTheDocument();
     expect(panelBox).toHaveStyle({
       width: `${RIGHT_SIDE_PANEL_WIDTH_PX}px`,
@@ -506,7 +506,7 @@ describe("MainPage", () => {
     await user.click(screen.getByLabelText(MODELS_PANEL_LABEL));
     await user.click(screen.getByText(MODELS_PANEL_NEW_LABEL));
     await user.type(screen.getByLabelText(/НАЗВА/), "Claude Opus");
-    // Every field: the button stays unpressable until a model is fully described.
+    // The button stays unpressable until a model is fully described.
     await user.click(await screen.findByText(PROVIDER_PICKER_PLACEHOLDER));
     await user.click(screen.getByText("Anthropic"));
     await user.type(screen.getByLabelText(/СТЕЛЯ КОНТЕКСТУ/), "200000");
@@ -576,7 +576,7 @@ describe("MainPage", () => {
     await openSettings(user);
     await user.type(await screen.findByLabelText(AGENT_SETTINGS_NAME_LABEL), "2");
 
-    // The canvas draws the unsaved name straight away — and the file has not been touched.
+    // The canvas draws the unsaved name at once; the file is untouched.
     expect(
       screen.getByRole("button", {
         name: "EDITOR2",
@@ -604,7 +604,7 @@ describe("MainPage", () => {
   it(
     "says what was saved once the write went through, and takes the word off by itself",
     {
-      // The note stands long enough to be read, so the wait for it to go outlasts a test's usual five seconds.
+      // The note stays long enough to read, so the wait outlasts the default five seconds.
       timeout: WRITE_NOTE_MS + WRITE_NOTE_OUT_MS + 5000,
     },
     async () => {
@@ -653,7 +653,7 @@ describe("MainPage", () => {
 
     expect(await screen.findByText(`${WRITE_FAILED_PREFIX}немає доступу до файла`)).toBeInTheDocument();
 
-    // The draft is still there to be written: a failed write clears nothing.
+    // A failed write clears nothing; the draft remains.
     expect(await screen.findByLabelText(AGENT_SETTINGS_NAME_LABEL)).toHaveValue("EDITOR2");
 
     standInBridge({
@@ -730,7 +730,7 @@ describe("MainPage", () => {
       }),
     );
 
-    // The question names the agent and what moved, and the panel is still on EDITOR.
+    // The question names the agent and what moved; the panel is still on EDITOR.
     expect(
       await screen.findByText(`${UNSAVED_AGENT_QUESTION_PREFIX}EDITOR2${UNSAVED_AGENT_QUESTION_SUFFIX}`),
     ).toBeInTheDocument();
@@ -791,7 +791,7 @@ describe("MainPage", () => {
       width: `${RIGHT_SIDE_PANEL_WIDTH_PX}px`,
     });
 
-    // The question is the one thing Escape reaches while it stands, and it means «лишитись тут».
+    // Escape reaches only the question while it stands, and means «лишитись тут».
     await user.keyboard("{Escape}");
 
     expect(
@@ -815,7 +815,7 @@ describe("MainPage", () => {
     await user.type(await screen.findByLabelText(AGENT_SETTINGS_NAME_LABEL), "2");
     await user.click(screen.getByText(AGENT_SETTINGS_REVERT_LABEL));
 
-    // The same box in its second voice, asking «Точно не зберігати?».
+    // The same box asking «Точно не зберігати?».
     expect(await screen.findByText(UNSAVED_AGENT_DROP_QUESTION)).toBeInTheDocument();
     expect(screen.getByLabelText(AGENT_SETTINGS_NAME_LABEL)).toHaveValue("EDITOR2");
 
@@ -901,7 +901,7 @@ describe("MainPage", () => {
         name: "REVIEWER",
       }),
     );
-    // Both the question and the panel's footer carry «Зберегти»; the question is drawn first.
+    // Question and panel footer both carry «Зберегти»; the question is drawn first.
     const [saveInQuestion] = await screen.findAllByText(UNSAVED_AGENT_SAVE_LABEL);
 
     await user.click(saveInQuestion);
@@ -1016,7 +1016,7 @@ describe("MainPage", () => {
       }),
     );
 
-    // Gone from the screen and out of the folder in the one breath; what stays is the way back.
+    // Gone from the screen and the folder at once; the way back remains.
     expect(
       screen.queryByRole("button", {
         name: "EDITOR",
@@ -1060,7 +1060,7 @@ describe("MainPage", () => {
     );
     await user.click(await screen.findByText("СКАСУВАТИ ⌘Z"));
 
-    // The agent is back on the canvas, and the folder is told to hold it again.
+    // The agent is back on the canvas and the folder holds it again.
     expect(
       screen.getByRole("button", {
         name: "EDITOR",
@@ -1091,7 +1091,7 @@ describe("MainPage", () => {
       }),
     );
 
-    // Selection is off everywhere but the chat and the fields; there it is somebody's to copy out.
+    // Selection is off except in the chat and fields.
     const said = document.createElement("p");
 
     said.textContent = "Готово, тест зелений.";
@@ -1143,7 +1143,7 @@ describe("MainPage", () => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
         directory: PROJECT.directory,
         config: expect.objectContaining({
-          // The copy carries the settings and the next number, and no links at all.
+          // The copy carries the settings and the next number, no links.
           agents: [
             ...PROJECT.config.agents,
             expect.objectContaining({
@@ -1165,7 +1165,7 @@ describe("MainPage", () => {
 
   it("takes the copy's mark away when another sphere is picked", async () => {
     const user = userEvent.setup();
-    // The mark names a copy that has to actually be on the canvas, so this one keeps the project.
+    // The mark names a copy that must be on the canvas, so this one keeps the project.
     const { container } = render(<OpenProjectHarness />);
 
     await user.pointer({
@@ -1213,7 +1213,7 @@ describe("MainPage", () => {
         "\u041a\u041e\u041f\u0406\u042f EDITOR \u00b7 \u0412\u0421\u0422\u0410\u0412\u041b\u0415\u041d\u041e",
       ),
     ).toBeInTheDocument();
-    // The one free place a step down and to the right of the original at 300, 200.
+    // The free place one step down and right of the original at 300, 200.
     expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
       directory: PROJECT.directory,
       config: expect.objectContaining({
@@ -1297,12 +1297,12 @@ describe("MainPage", () => {
       });
     });
 
-    /** The writes alone: the machine's own reading of the providers lands whenever it lands. */
+    /** The writes alone; the provider reading lands whenever it lands. */
     const written = () =>
       vi.mocked(window.electronApi.invoke).mock.calls.filter(([channel]) => channel === SAVE_PROJECT_CHANNEL);
     const saves = written().length;
 
-    // The same direction again is the link that already exists — nothing is written.
+    // The same direction again is the existing link; nothing is written.
     await drawLink();
 
     expect(written()).toHaveLength(saves);
@@ -1347,8 +1347,8 @@ describe("MainPage", () => {
   });
 
   it("gives ⌫ to the chosen link, and asks nothing about the agent the chat still holds", async () => {
-    // Aiming the chat at an agent keeps that sphere selected, and a link
-    // chosen after it takes the key for itself — one press cannot both take a link and raise a question.
+    // Aiming the chat keeps the sphere selected; a link chosen afterwards takes the key, so one press never both takes
+    // a link and raises a question.
     const user = userEvent.setup();
     const linked: OpenProject = {
       ...PAIRED,
@@ -1376,7 +1376,7 @@ describe("MainPage", () => {
       }),
     );
     await user.click(within(screen.getByRole("listbox")).getByText("EDITOR"));
-    // The link's own invisible hit stroke — the one a click on the line lands on.
+    // The link's invisible hit stroke, which a click on the line lands on.
     await user.click(container.querySelector("svg line[stroke='transparent']") as unknown as Element);
     fireEvent.keyDown(window, {
       key: "Delete",
@@ -1417,7 +1417,7 @@ describe("MainPage", () => {
       }),
     );
 
-    // Taking REVIEWER moves the focus off EDITOR2, so its draft is what stands in the way first.
+    // Taking REVIEWER moves focus off EDITOR2, so its draft blocks first.
     expect(
       await screen.findByText(`${UNSAVED_AGENT_QUESTION_PREFIX}EDITOR2${UNSAVED_AGENT_QUESTION_SUFFIX}`),
     ).toBeInTheDocument();
@@ -1618,7 +1618,7 @@ describe("MainPage", () => {
       }),
     );
 
-    // The prompt stands in the draft by name, and is written by «Зберегти».
+    // The prompt stands in the draft by name and is written by «Зберегти».
     expect(screen.getByText("Правки коду")).toBeInTheDocument();
 
     await user.click(screen.getByText(AGENT_SETTINGS_SAVE_LABEL));
@@ -1688,7 +1688,7 @@ describe("MainPage", () => {
       }),
     );
 
-    // The editor stands over the working area, so the rail moving on puts it away.
+    // The editor stands over the working area; moving the rail puts it away.
     expect(screen.queryByLabelText(PROMPT_EDITOR_TEXT_PLACEHOLDER)).not.toBeInTheDocument();
     expect(screen.getByText(COMMANDS_PANEL_NEW_LABEL)).toBeInTheDocument();
   });
@@ -1706,7 +1706,7 @@ describe("MainPage", () => {
     await user.type(screen.getByLabelText(COMMANDS_PANEL_NAME_FIELD_LABEL), "cd");
     await user.keyboard("{Escape}");
 
-    // The question stands, and the one answer it cannot offer is «Зберегти».
+    // The question cannot offer «Зберегти».
     expect(
       await screen.findByText(missingFieldsNote([COMMAND_DESCRIPTION_DROPPED_LABEL, COMMAND_RUN_DROPPED_LABEL])),
     ).toBeInTheDocument();
@@ -1745,7 +1745,7 @@ describe("MainPage", () => {
       }),
     );
 
-    // The form closes onto the list, and a command that takes nothing has no line under its name.
+    // The form closes onto the list; a command with no parameters has no line under its name.
     expect(await screen.findByText("run_tests")).toBeInTheDocument();
     expect(screen.queryByText("БЕЗ ПАРАМЕТРІВ")).not.toBeInTheDocument();
   });
@@ -1766,7 +1766,7 @@ describe("MainPage", () => {
 
     await user.click(screen.getByText(COMMAND_FORM_ADD_PARAMETER_LABEL));
 
-    // The command above carries «ОПИС ДЛЯ МОДЕЛІ» too, so the card's fields are reached inside the card.
+    // The command above also carries «ОПИС ДЛЯ МОДЕЛІ», so the card's fields are found inside the card.
     const card = screen.getByText(PARAMETER_FORM_NEW_TITLE).parentElement!.parentElement!;
 
     await user.type(within(card).getByLabelText(PARAMETER_FORM_NAME_LABEL), "pattern");
@@ -1783,10 +1783,10 @@ describe("MainPage", () => {
     );
     await user.click(screen.getByText(PARAMETER_FORM_CONFIRM_LABEL));
 
-    // The block under the row says what the model reads; a required parameter carries no «?».
+    // The block under the row says what the model reads; a required parameter has no «?».
     expect(screen.queryByText("НЕОБОВ'ЯЗКОВИЙ")).not.toBeInTheDocument();
     expect(screen.getByText("ОБОВ'ЯЗКОВИЙ")).toBeInTheDocument();
-    // «bool» stands twice — as the row's own chip, and as the type the preview hands the model.
+    // «bool» appears twice: the row's chip and the type in the preview.
     expect(screen.getAllByText("bool")).toHaveLength(2);
 
     await user.click(screen.getByText(COMMANDS_PANEL_DECLARE_LABEL));
@@ -1850,9 +1850,9 @@ describe("MainPage", () => {
       }),
     );
 
-    // Gone from the screen and out of the folder at once; the line offers the way back.
+    // Gone from the screen and the folder at once; the line offers the way back.
     expect(screen.queryByText("run_tests")).not.toBeInTheDocument();
-    // Nobody was granted it, so the line has no second half to carry.
+    // Nobody was granted it, so the line has no second half.
     expect(await screen.findByText(deletedCommandLabel(0))).toBeInTheDocument();
     expect(window.electronApi.invoke).toHaveBeenCalledWith(
       SAVE_PROJECT_CHANNEL,
@@ -1905,7 +1905,7 @@ describe("MainPage", () => {
       }),
     );
 
-    // A grant pointing at a command that is gone goes with it, and the line counts it out loud.
+    // A grant pointing at the deleted command goes with it, and the line counts it.
     expect(screen.queryByText("run_tests")).not.toBeInTheDocument();
     expect(await screen.findByText(deletedCommandLabel(1))).toBeInTheDocument();
     expect(window.electronApi.invoke).toHaveBeenCalledWith(
@@ -1955,16 +1955,16 @@ describe("MainPage", () => {
     await user.click(screen.getByText("Правки коду"));
     await user.click(screen.getByText(PROMPT_CARD_DELETE_LABEL));
 
-    // The box names the thing, then what stays with it — the agent falls to a bare model, it does not go.
+    // The box names the thing and what stays: the agent falls to a bare model, it does not go.
     expect(
       screen.getByText(/Заберемо промпт «Правки коду»\. 1 агент на ньому лишиться на голій моделі\./),
     ).toBeInTheDocument();
-    // Named on a chip of its own, beside the sphere that carries the same name on the canvas.
+    // Named on a chip of its own, beside the sphere of the same name on the canvas.
     expect(screen.getAllByText(CONFIG.agents[0].name)).toHaveLength(2);
 
     await user.click(screen.getByText(CONFIRM_DIALOG_YES_LABEL));
 
-    // Gone from the screen and the folder, its agents left standing without one, and the way back said out loud.
+    // Gone from the screen and the folder; its agents are left without one, and the way back is offered.
     expect(screen.queryByText("Правки коду")).not.toBeInTheDocument();
     expect(await screen.findByText(deletedPromptLabel(1))).toBeInTheDocument();
     expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
@@ -1992,7 +1992,7 @@ describe("MainPage", () => {
     };
     const { container } = render(<OpenProjectHarness opened={linked} />);
 
-    // The line itself, and the invisible stroke over it that is wide enough to be clicked.
+    // The line, and the invisible wide stroke over it that takes the click.
     await user.click(container.querySelectorAll("svg line")[2] as SVGLineElement);
     await user.click(
       screen.getByRole("button", {
@@ -2028,7 +2028,7 @@ describe("MainPage", () => {
     );
 
     expect(await screen.findByText(DELETE_AGENT_QUESTION)).toBeInTheDocument();
-    // The box names the sphere, so the spec asks for the whole sentence rather than half of it.
+    // The box names the sphere, so the whole sentence is asserted.
     expect(screen.getByText(deletedAgentNote("EDITOR", []))).toBeInTheDocument();
 
     await user.click(
@@ -2055,7 +2055,7 @@ describe("MainPage", () => {
     };
     const { container } = render(<OpenProjectHarness opened={linked} />);
 
-    // The line itself, and the invisible stroke over it that is wide enough to be clicked.
+    // The line, and the invisible wide stroke over it that takes the click.
     await user.click(container.querySelectorAll("svg line")[2] as SVGLineElement);
     await user.click(
       screen.getByRole("button", {
@@ -2063,7 +2063,7 @@ describe("MainPage", () => {
       }),
     );
 
-    // The line is gone and written away; both spheres stay where they were.
+    // The line is gone and written away; both spheres stay.
     expect(container.querySelectorAll("svg line")).toHaveLength(0);
     expect(
       screen.getByRole("button", {
@@ -2085,7 +2085,7 @@ describe("MainPage", () => {
   });
 
   it("draws an empty project rather than nothing at all", () => {
-    // A folder just made into a project has every list empty; nothing on the page may take that for missing.
+    // A freshly made project has every list empty; nothing on the page may read that as missing.
     render(
       <MainPage
         project={{
@@ -2123,7 +2123,7 @@ describe("MainPage", () => {
     );
     await user.click(findCanvas(container));
 
-    // Letting go here would take the one mark that says where a question goes.
+    // Letting go here would take the mark that says where a question goes.
     expect(
       screen.getByRole("button", {
         name: "EDITOR",
@@ -2151,7 +2151,7 @@ describe("MainPage", () => {
 
     await user.click(screen.getByLabelText(PROMPTS_PANEL_LABEL));
 
-    // A catalogue is about the project and about nobody: the canvas stands as if nothing were chosen.
+    // A catalogue concerns no agent: the canvas stands as if nothing were chosen.
     expect(container.querySelector(".sphere-breathe")).not.toBeInTheDocument();
   });
 
@@ -2202,9 +2202,9 @@ describe("MainPage", () => {
       }),
     );
 
-    // A click on a sphere keeps the rail in the chat; asking for the form is not that — it must show.
+    // A click on a sphere keeps the rail in the chat; asking for the form must show it.
     expect(screen.getByText(AGENT_FORM_TITLE)).toBeInTheDocument();
-    // And with the chat gone from the panel, the canvas says nothing about anybody.
+    // With the chat gone from the panel, the canvas says nothing about any agent.
     expect(container.querySelector(".sphere-breathe")).not.toBeInTheDocument();
   });
 
@@ -2229,7 +2229,7 @@ describe("MainPage", () => {
       />,
     );
 
-    // The zoom toolbar says the scale, and the section that stood open stands open again.
+    // The zoom toolbar shows the scale, and the section that was open opens again.
     expect(screen.getByText("70%")).toBeInTheDocument();
     expect(screen.getByPlaceholderText(MODELS_PANEL_SEARCH_PLACEHOLDER)).toBeInTheDocument();
   });
@@ -2263,8 +2263,8 @@ describe("MainPage", () => {
   });
 
   it("aims the chat at the sphere pressed, and moves both marks off the one before it", async () => {
-    // The bug this guards: the history moved the aim while the ring stayed where the person came from, so two
-    // spheres stood lit and the next press on the lit one did nothing at all.
+    // Guards against the history moving the aim while the ring stayed, which lit two spheres and made the next press on
+    // the lit one do nothing.
     const user = userEvent.setup();
 
     standInBridge({
@@ -2273,7 +2273,7 @@ describe("MainPage", () => {
           return PROVIDERS;
         }
 
-        // One row of this project's record, asked of the second agent — not of the one pressed first.
+        // One row of this project's record, asked of the second agent.
         const row = {
           id: "run-1",
           startedByAgentId: "agent-2",
@@ -2295,7 +2295,7 @@ describe("MainPage", () => {
           return [row];
         }
 
-        // The row opened is read whole — a run with no questions and no walk is not an empty list.
+        // The opened row is read whole; a run with no questions and no walk is not an empty list.
         return channel === READ_RUN_CHANNEL
           ? {
               ...row,
@@ -2344,11 +2344,11 @@ describe("MainPage", () => {
     await user.click(await screen.findByText("Знайди md-файли"));
 
     expect(aim()).toHaveTextContent("REVIEWER");
-    // Fixing and aiming are two marks of one agent — the sphere left behind holds neither.
+    // Fixing and aiming are two marks of one agent; the sphere left behind holds neither.
     expect(sphere("EDITOR")).toHaveAttribute("aria-pressed", "false");
     expect(sphere("REVIEWER")).toHaveAttribute("aria-pressed", "true");
 
-    // And back the other way, in one press: the sphere the person came from takes the aim again.
+    // And back in one press: the original sphere takes the aim again.
     await user.click(screen.getByText(CHAT_TABS_STREAM_LABEL));
     await user.click(sphere("EDITOR"));
 
@@ -2367,7 +2367,7 @@ describe("MainPage", () => {
     );
     await user.click(await screen.findByText(SWITCHER_CLOSE_LABEL));
 
-    // Nothing is handed over: one project is open at a time, and the main process knows which.
+    // Nothing is handed over: the main process knows the one open project.
     await waitFor(() => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(CLOSE_PROJECT_CHANNEL);
     });

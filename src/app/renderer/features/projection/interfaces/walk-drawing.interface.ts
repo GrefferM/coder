@@ -1,13 +1,13 @@
 import type { Point } from "../../../utils/math";
 import type { WalkPlace } from "./walk-place.interface";
 
-/** One turn of a pass and the spot it stands on, in the projection's own pixels. */
+/** One turn of a pass and its spot, in projection pixels. */
 export interface WalkTurn {
   place: WalkPlace;
   at: Point;
 }
 
-/** One line of the walk as it is drawn — its run, and the head it carries unless it shares one. */
+/** One drawn line: its run, and its head unless a shared one is drawn by the receiver. */
 export interface WalkDrawnLine {
   id: string;
   path: string;
@@ -20,7 +20,7 @@ export interface WalkDrawnHead {
   arrow: string;
 }
 
-/** A whole pass worked out for drawing — where every turn stands and how every line runs. */
+/** A pass laid out for drawing: every turn's spot and every line's run. */
 export interface WalkDrawing {
   turns: WalkTurn[];
   lines: WalkDrawnLine[];

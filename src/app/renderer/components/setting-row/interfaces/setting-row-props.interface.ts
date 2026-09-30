@@ -5,6 +5,6 @@ export interface SettingRowProps {
   label: string;
   children: ReactNode;
   wasValue?: string | null;
-  /** A line under the row saying in plain words what its numbers mean. */
+  /** A plain-words line under the row explaining its numbers. */
   hint?: string;
 }

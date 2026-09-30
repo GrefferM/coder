@@ -33,12 +33,12 @@ import type { ProviderPickerProps } from "./interfaces";
 export function ProviderPicker({ providers, providerId, wasProviderId, isInvalid, onChange }: ProviderPickerProps) {
   const nameOf = (id: string) => providers.find((provider) => provider.id === id)?.name ?? id;
   const chosen = providers.find((provider) => provider.id === providerId) ?? null;
-  // A provider the file names and nobody declared — the same broken tie every other field shows.
+  // A provider the file names but nobody declared: the usual broken tie.
   const isLost = chosen === null && providerId !== "";
   // The was-value shows the display name, not the file's word.
   const wasValue = wasProviderId === null ? null : nameOf(wasProviderId);
 
-  /** Line under a provider's name: its kind and, for a remote one, whatever it is still short of. */
+  /** Line under a provider's name: its kind and, for a remote one, what it still lacks. */
   function note(provider: ProviderState): string {
     if (provider.kind === "local") {
       return PROVIDER_LOCAL_LABEL;

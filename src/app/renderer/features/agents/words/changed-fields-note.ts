@@ -1,7 +1,7 @@
 import { changedFieldsSentence } from "./changed-fields-sentence";
 import { CHANGED_FIELDS_NOTE_LEAVE_TAIL } from "../constants";
 
-/** The leave-question line — what changed plus the leave tail; no changes gives an empty string. */
+/** The leave-question line: what changed plus the leave tail; empty when nothing changed. */
 export function changedFieldsNote(labels: string[]): string {
   const sentence = changedFieldsSentence(labels);
 

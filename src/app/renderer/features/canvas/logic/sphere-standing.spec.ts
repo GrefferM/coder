@@ -53,7 +53,7 @@ describe("sphereStanding", () => {
   });
 
   it("stands the rest back while the panel is about a selected agent", () => {
-    // The panel is about one agent, and the canvas says which by standing the others back.
+    // The panel is about one agent; the others stand back.
     const standing = sphereStanding(agent("linter"), {
       picked: picked({
         selectedAgentId: "editor",
@@ -69,7 +69,7 @@ describe("sphereStanding", () => {
   });
 
   it("stands everything back while a link is chosen: the act belongs to the link", () => {
-    // Choosing a link closes the panel, and the canvas is about that link until it is let go.
+    // Choosing a link closes the panel and the canvas is about that link.
     expect(
       sphereStanding(agent("editor"), {
         picked: picked(),
@@ -81,7 +81,7 @@ describe("sphereStanding", () => {
   });
 
   it("says nothing of the aim while a line is being drawn: a line is a moment, an aim stands for hours", () => {
-    // Everything is about the line — where it comes from, and where it may not land.
+    // Everything is about the line: its source, and where it may not land.
     const standing = sphereStanding(agent("editor"), {
       picked: picked({
         aimedAgentId: "editor",
@@ -96,7 +96,7 @@ describe("sphereStanding", () => {
   });
 
   it("stands back every sphere the line must not land on", () => {
-    // A line that closes a ring or repeats one already drawn takes no drop.
+    // A line that closes a ring or repeats a drawn one takes no drop.
     expect(
       sphereStanding(agent("linter"), {
         picked: picked(),

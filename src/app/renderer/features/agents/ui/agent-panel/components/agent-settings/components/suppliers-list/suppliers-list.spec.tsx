@@ -38,7 +38,7 @@ describe("SuppliersList", () => {
   });
 
   it("counts the living alone where somebody is off, and plainly where all are living", () => {
-    // An off supplier stays in the list, since the line is still drawn — it just does not count.
+    // An off supplier stays listed, since its line is still drawn, but is not counted.
     const { rerender } = render(
       <SuppliersList
         suppliers={[

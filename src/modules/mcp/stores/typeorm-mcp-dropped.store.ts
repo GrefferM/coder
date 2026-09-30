@@ -3,7 +3,7 @@ import { McpDroppedServerEntity } from "../entities";
 import type { Repository } from "typeorm";
 import type { McpDroppedStore } from "../interfaces";
 
-/** The servers dropped on this machine, in this machine's own database. */
+/** The servers dropped on this machine, in its own database. */
 export class TypeormMcpDroppedStore implements McpDroppedStore {
   constructor(private readonly dropped: Repository<McpDroppedServerEntity>) {}
 

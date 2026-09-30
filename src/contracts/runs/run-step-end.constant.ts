@@ -1,7 +1,4 @@
-/**
- * How one agent's turn ended; each end keeps its own word. The main process writes it into the record and the
- * renderer reads it back, so the word is one and stands here.
- */
+/** How one agent's turn ended; each end has its own word. */
 export const RUN_STEP_DONE = "done";
 export const RUN_STEP_FAILED = "failed";
 export const RUN_STEP_STOPPED = "stopped";
@@ -15,8 +12,7 @@ export const RUN_STEP_CALLS = "calls";
 export const RUN_STEP_TOO_LONG = "tooLong";
 
 /**
- * The ends of a turn that actually ran. The list is closed, and a step whose end is not in it never began
- * — the words never left, so it has no duration, no tokens and nothing spent.
+ * The ends of a turn that actually ran; a step with any other end never began, so it has no duration, tokens or cost.
  */
 export const RUN_STEP_RAN_ENDS: string[] = [
   RUN_STEP_DONE,

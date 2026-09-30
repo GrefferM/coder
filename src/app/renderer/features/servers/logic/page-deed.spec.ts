@@ -19,7 +19,7 @@ function aLook(patch: Partial<McpLook> = {}): McpLook {
 
 describe("pageDeed", () => {
   it("takes the word from the kind, because the kind decides the thing", () => {
-    // A local server is our own process and is raised afresh; a remote one is a connection, and is asked.
+    // A local server is raised afresh; a remote one is asked again.
     expect(pageDeed(aLook(), true, false)).toBe("raiseAgain");
     expect(pageDeed(aLook(), false, false)).toBe("askAgain");
   });
@@ -39,7 +39,7 @@ describe("pageDeed", () => {
   });
 
   it("offers nothing about the process where the hole is a missing token or value", () => {
-    // No doing with a process mends a hole; the door that does is «Змінити» in the foot of the page.
+    // A missing token or value offers no process action; «Змінити» in the page foot fixes it.
     expect(
       pageDeed(
         aLook({

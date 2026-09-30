@@ -1,5 +1,5 @@
 import { BROKEN_COLOR, CONTROL_AT_REST_COLOR, FALLEN_COLOR } from "../../../constants";
-/** How a tie left without its own file is shown — a group of its own, struck through, in the broken colour. */
+/** Label of a tie left without its file: a group of its own, struck through, in the broken colour. */
 export const LOST_TIE_LABEL = "НЕ ІСНУЄ БІЛЬШЕ";
 export const LOST_TIE_GAP_PX = 8;
 export const LOST_TIE_HEAD_GAP_PX = 7;
@@ -8,7 +8,7 @@ export const LOST_TIE_ICON_SIZE_PX = 10;
 export const LOST_TIE_COLOR = FALLEN_COLOR;
 export const LOST_TIE_RULE_COLOR = "#4a2530";
 
-/** Row: the name struck through, and whatever the tie carries with it; no tick, no chevron. */
+/** Row: the name struck through plus whatever the tie carries; no tick, no chevron. */
 export const LOST_TIE_ROW_PADDING = "8px 10px";
 export const LOST_TIE_ROW_GAP_PX = 9;
 export const LOST_TIE_ROW_BORDER_RADIUS_PX = 9;
@@ -16,7 +16,7 @@ export const LOST_TIE_ROW_BACKGROUND_COLOR = "#1f1a20";
 export const LOST_TIE_ROW_NAME_COLOR = BROKEN_COLOR;
 export const LOST_TIE_ROW_NAME_FONT_SIZE_PX = 11.5;
 
-/** The note under the rows, and the one act that takes the whole broken tie away. */
+/** The note under the rows, and the act that removes the whole tie. */
 export const LOST_TIE_NOTE_FONT_SIZE_PX = 11.5;
 export const LOST_TIE_NOTE_LINE_HEIGHT = 1.55;
 export const LOST_TIE_NOTE_COLOR = CONTROL_AT_REST_COLOR;

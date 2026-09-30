@@ -3,12 +3,12 @@ import type { AgentTool, ChatTurn, ReachableAgent } from "../llm";
 import type { ProjectMcpServer } from "../project";
 import type { WrittenStep } from "../runs";
 
-/** Every channel that names a folder names it the same way: the project's own directory. */
+/** Every channel naming a folder names it by the project's directory. */
 export interface OfProject {
   directory: string;
 }
 
-/** Every channel that names one row names it by its id, and by nothing else. */
+/** Every channel naming one row names it by id only. */
 export interface OfOne {
   id: string;
 }
@@ -21,7 +21,7 @@ export interface SaveProject extends OfProject {
   config: ProjectConfig;
 }
 
-/** The view is kept as the text this machine wrote, so an unreadable note is simply not a view. */
+/** The view is stored as text, so an unreadable one is not a view. */
 export interface RememberProjectView extends OfProject {
   view: string;
 }
@@ -37,23 +37,23 @@ export interface AskProvider {
 }
 
 /**
- * One server to reach. Its reach travels from the screen, as a command's line does: the project file is the
- * screen's, and the main process starts what it is handed rather than reading the folder again.
+ * One server to reach. Its reach comes from the screen, which owns the project file; the main process does not re-read
+ * the folder.
  */
 export interface LookMcpServer extends OfProject {
   server: ProjectMcpServer;
 }
 
-/** Both writing a key and writing an address take the same two things; only the channel differs. */
+/** Shared by writing a key and writing an address; only the channel differs. */
 export interface SaveProviderValue {
   providerId: string;
   value: string;
 }
 
-/** One turn asked of the machine. The provider's key is looked up on the far side and never sent. */
+/** One turn asked of the machine. The provider's key is looked up in the main process and never sent. */
 export interface AskAgent {
   turnId: string;
-  /** Whose turn this is; an agent-tool calling it back would close a ring. */
+  /** The agent whose turn it is; excluded from its own tools, which would close a cycle. */
   agentId: string;
   providerId: string;
   model: string;
@@ -64,7 +64,7 @@ export interface AskAgent {
   systemPrompt: string | null;
   messages: ChatTurn[];
   tools: AgentTool[];
-  /** The reach of every server whose function stands among the tools. */
+  /** The reach of every server whose functions are among the tools. */
   servers: ProjectMcpServer[];
   /** Every agent reachable as a tool from this one, by id. */
   agents: ReachableAgent[];
@@ -77,7 +77,7 @@ export interface StopAgent {
 export interface OpenRun extends OfProject {
   questionId: string;
   startedByAgentId: string;
-  /** What the agent was called and coloured then, so the row is named before its first step lands. */
+  /** The agent's name and colour at start, so the row is named before its first step lands. */
   startedByAgentName: string;
   startedByAgentColor: string;
   asked: string;
@@ -89,7 +89,7 @@ export interface AskAgain {
   runId: string;
   questionId: string;
   asked: string;
-  /** Whom the question is put to, and what they are called now — both lie down with the question. */
+  /** The agent asked and its current name, stored with the question. */
   askedAgentId: string;
   askedAgentName: string;
   askedAt: number;
@@ -112,17 +112,17 @@ export interface ProjectChanged {
   directory: string;
 }
 
-/** Which server this machine is being asked about, or written for. */
+/** The server this machine is asked about or written for. */
 export interface OfServer {
   serverId: string;
 }
 
-/** The token typed into the one field; an empty value takes it off this machine. */
+/** The token typed into the field; an empty value removes it from this machine. */
 export interface SaveMcpToken extends OfServer {
   value: string;
 }
 
-/** One variable's value, named so the machine knows which of the server's values this is. */
+/** One variable's value, by the variable's name. */
 export interface SaveMcpEnvValue extends SaveMcpToken {
   name: string;
 }

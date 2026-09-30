@@ -5,7 +5,7 @@ import { FIELD_SLOT_DOT_COLOR, FIELD_SLOT_DOT_SIZE_PX } from "../../constants";
 
 describe("DraftDot", () => {
   it("is the accent dot beside a field the draft has moved", () => {
-    // The first of the three marks, and the one that stands beside the field's own name.
+    // The first of the three draft marks, beside the field's name.
     const { container } = render(<DraftDot />);
 
     expect(container.firstElementChild).toHaveStyle({

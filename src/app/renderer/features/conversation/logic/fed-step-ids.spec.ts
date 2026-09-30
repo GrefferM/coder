@@ -53,7 +53,7 @@ describe("fedStepIds", () => {
   });
 
   it("keeps the steps the record already names, and does not look them up again", () => {
-    // A walk picked up out of the record comes with the steps it grew from written on it.
+    // A walk picked up from the record carries the steps it grew from.
     expect(
       fedStepIds(
         ledger({

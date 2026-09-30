@@ -11,7 +11,7 @@ import type {
   RunStepSettingEntity,
 } from "../entities";
 
-/** The nine tables one record is spread over, each named — so no caller can hand them over in the wrong order. */
+/** The nine tables of one record, named so callers cannot pass them in the wrong order. */
 export interface RunTables {
   runs: Repository<RunEntity>;
   steps: Repository<RunStepEntity>;
@@ -19,7 +19,7 @@ export interface RunTables {
   feeds: Repository<RunStepFeedEntity>;
   handoffs: Repository<RunHandoffEntity>;
   questions: Repository<RunQuestionEntity>;
-  /** Who ran the step, what it ran on, and what it was given — one row each, beside the step. */
+  /** Who ran the step, what it ran on and what it was given; one row each beside the step. */
   who: Repository<RunStepAgentEntity>;
   ran: Repository<RunStepModelEntity>;
   given: Repository<RunStepSettingEntity>;

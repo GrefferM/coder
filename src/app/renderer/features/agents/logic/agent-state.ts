@@ -17,10 +17,10 @@ import {
 import type { Agent } from "../../../interfaces";
 import type { AgentState, StateFacts } from "../interfaces";
 
-/** The state by priority — working, waiting, off, a break, provider, a lost model, a fall, «готовий». */
+/** State by priority: working, waiting, off, break, provider, lost model, fall, «готовий». */
 export function agentState(agent: Agent, facts: StateFacts): AgentState {
   const { config, providers, answers, looks } = facts;
-  // Whether this agent is the one working or the one waiting is asked of the lists by its own id.
+  // Working and waiting are matched by agent id.
   const fellAt = facts.fellAt[agent.id] ?? null;
 
   if (facts.working.some((one) => one.agentId === agent.id)) {
@@ -32,7 +32,7 @@ export function agentState(agent: Agent, facts: StateFacts): AgentState {
     };
   }
 
-  // Alive, but it is not the one working — the dot is grey, not green.
+  // Alive but not working: a grey dot.
   if (facts.waiting.some((one) => one.agentId === agent.id)) {
     return {
       label: STATE_WAITING_LABEL,

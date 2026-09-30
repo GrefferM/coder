@@ -16,7 +16,7 @@ describe("FieldSlot", () => {
   });
 
   it("ties its name to a field of its own where there is one to tie it to", () => {
-    // A name tied to its field means a press on the name reaches the field, which a bare span cannot do.
+    // A name tied to its field: a press on the name reaches the field.
     render(
       <FieldSlot label="ІМʼЯ" htmlFor="agent-name">
         <input id="agent-name" />
@@ -27,7 +27,7 @@ describe("FieldSlot", () => {
   });
 
   it("says what the field was while the draft has moved it", () => {
-    // The dot at the name and «БУЛО · …» under the field, together.
+    // The dot at the name and «БУЛО · …» under the field appear together.
     render(
       <FieldSlot label="МОДЕЛЬ" wasValue="claude-haiku-4.5">
         <button type="button">claude-sonnet-4.5</button>
@@ -38,7 +38,7 @@ describe("FieldSlot", () => {
   });
 
   it("stands an act of its own at the name's right edge", () => {
-    // The act belongs to the slot, not to the field — «+ ДОДАТИ» beside the label.
+    // The action belongs to the slot, beside the label.
     render(
       <FieldSlot label="ЗНАРЯДДЯ" action={<button type="button">+ ДОДАТИ</button>}>
         <span>нічого</span>

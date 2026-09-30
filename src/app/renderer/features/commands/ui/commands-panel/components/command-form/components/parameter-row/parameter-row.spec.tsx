@@ -46,7 +46,7 @@ describe("ParameterRow", () => {
   });
 
   it("says of a parameter the run line never names that it is not in the line at all", () => {
-    // Declared and never substituted is neither required nor optional — it simply does nothing.
+    // Declared but never substituted is neither required nor optional.
     render(<ParameterRow parameter={parameter()} isUsed={false} onOpen={() => {}} onRemove={() => {}} />);
 
     expect(screen.getByText(PARAMETER_ROW_UNUSED_LABEL)).toBeInTheDocument();

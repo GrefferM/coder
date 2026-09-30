@@ -3,10 +3,8 @@ import type { NamedAgent } from "../../../interfaces";
 import type { WholeRun } from "../interfaces";
 
 /**
- * A run wearing the names and colours its agents go by now. The rule is `runStandings`' own, so the
- * projection and the conversation read the same run the same way. Everything else a step froze is left where it is:
- * the model, the prompt, the numbers and the prices are what the turn ran on, and they are the whole point of holding
- * «then» against «today».
+ * A run wearing the names and colours its agents have now, by `runStandings`' rule. Everything a step froze (model,
+ * prompt, numbers, prices) is left as is.
  */
 export function runNamedToday(run: WholeRun, today: NamedAgent[]): WholeRun {
   const standings = runStandings(run, today);

@@ -3,14 +3,14 @@ import type { WalkState } from "../interfaces";
 import type { WaitingAgent, WaitingSupplier } from "../../../interfaces";
 
 /**
- * Every point of the conversation on screen holding work while lines converge, and where each supplier stands:
- * answered, still out, or settled with nothing. Suppliers keep the order their lines were drawn in.
+ * Every point of the conversation on screen holding work while lines converge, with each supplier's state: answered,
+ * still out, or settled with nothing; suppliers in line-drawing order.
  */
 export function waitingAgents(walk: WalkState): WaitingAgent[] {
   const shown: Record<string, WaitingAgent & { askedAt: number }> = {};
 
   for (const [runKey, held] of Object.entries(walk.walks)) {
-    // The canvas is one conversation's — a point of another one is not drawn and not counted here.
+    // The canvas shows one conversation; a point of another is not drawn or counted.
     if (!isOnScreen(walk, runKey)) {
       continue;
     }

@@ -47,7 +47,7 @@ function controller(): RunController {
     one: took("one", null),
   });
   const search = <RunSearch>(<unknown>{
-    // The search is asked with two arguments, so this one keeps both rather than only the first.
+    // Keeps both arguments of the two-argument search.
     find: async (directory: string, query: string) => {
       asked.push({
         name: "find",
@@ -65,7 +65,7 @@ function controller(): RunController {
   return new RunController(writer, reader, search, keeper);
 }
 
-/** A payload as the boundary builds it: a real dto instance, since a plain object carries no rules to read. */
+/** A payload as the boundary builds it: a real dto instance, since a plain object carries no rules. */
 function dto<TDto extends object>(shape: new () => TDto, fields: Record<string, unknown>): TDto {
   return Object.assign(new shape(), fields);
 }
@@ -99,7 +99,7 @@ describe("RunController · what it hands on", () => {
   });
 
   it("asks the search for the folder and the word, and hands the word on as it was typed", async () => {
-    // Frame 23t: the door carries the word whole — trimming or lowering it here would search for another thing.
+    // The word is passed whole; trimming or lowercasing would search for another thing.
     const door = controller();
 
     await door.find(
@@ -116,7 +116,7 @@ describe("RunController · what it hands on", () => {
   });
 
   it("asks the reader by the folder alone, and for one run by its id alone", async () => {
-    // The dto is the door's shape, not the service's: what goes further in is the thing itself.
+    // The dto is the door's shape, not the service's.
     const door = controller();
 
     await door.list(
@@ -194,7 +194,7 @@ describe("RunController · what it refuses at the door", () => {
   });
 
   it("refuses an agent id that is no id at all, and writes nothing", async () => {
-    // Every thing is found by its own id (and the record keeps that id for ever); a word in its place is refused here.
+    // Things are found by id; a word in its place is refused.
     await assert.rejects(() =>
       controller().open(
         opening({

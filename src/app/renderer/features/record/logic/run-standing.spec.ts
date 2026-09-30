@@ -9,8 +9,7 @@ describe("runStanding", () => {
   });
 
   it("reads the whole walk, so a turn that fell does not hide behind one that answered after it", () => {
-    // The bug this guards: the word was taken from the turn that came back last, and a fallen branch stood under
-    // «ГОТОВО» whenever another branch happened to finish after it.
+    // A fallen branch is «УПАВ» even when another branch finishes after it.
     expect(runStanding(["failed", "done"])).toBe(RUN_FAILED);
     expect(runStanding(["done", "failed"])).toBe(RUN_FAILED);
   });
@@ -23,7 +22,7 @@ describe("runStanding", () => {
   });
 
   it("takes the worse word where the turns ended differently, a fall being worse than nothing sent", () => {
-    // «УПАВ» stands before «НЕ ПІШОВ» — being sent and broken is news of another kind.
+    // «УПАВ» outranks «НЕ ПІШОВ».
     expect(runStanding(["unreachable", "failed"])).toBe(RUN_FAILED);
     expect(runStanding(["failed", "silent"])).toBe(RUN_FAILED);
   });
@@ -34,18 +33,18 @@ describe("runStanding", () => {
   });
 
   it("lets a hand explain only what it stopped, so anything beside it is the news", () => {
-    // A stop is a person's act, and it says nothing about the branch that fell next to it.
+    // A stop says nothing about a branch that fell beside it.
     expect(runStanding(["stopped", "failed"])).toBe(RUN_FAILED);
     expect(runStanding(["stopped", "unreachable"])).toBe(RUN_NOT_SENT);
   });
 
   it("counts an end word it does not know as a fall, a new end never being a gentle one", () => {
-    // Silence would be the dangerous answer here: a word nobody has taught this rule must not read as «ГОТОВО».
+    // An unknown end word counts as a fall, never «ГОТОВО».
     expect(runStanding(["somethingNew"])).toBe(RUN_FAILED);
   });
 
   it("takes the ends the record keeps for an answer cut short as falls, the words having gone out", () => {
-    // The ceiling and the calls both ran — something was sent, and nothing whole came back.
+    // The ceiling and the calls both ran: something was sent and nothing whole came back.
     expect(runStanding(["ceiling"])).toBe(RUN_FAILED);
     expect(runStanding(["calls"])).toBe(RUN_FAILED);
   });

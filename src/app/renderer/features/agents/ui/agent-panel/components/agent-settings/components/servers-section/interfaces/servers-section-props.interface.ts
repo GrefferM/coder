@@ -2,14 +2,14 @@ import type { McpLook, ProjectMcpServer, ToolGrant } from "../../../../../../../
 
 export interface ServersSectionProps {
   servers: ProjectMcpServer[];
-  /** What each server hands over right now; a server that did not answer offers nothing to connect to. */
+  /** What each server offers now; one that did not answer offers nothing to connect. */
   looks: Record<string, McpLook>;
-  /** The whole draft's grants: this section changes only the servers' and leaves the commands' alone. */
+  /** The whole draft's grants; this section changes only the servers'. */
   grants: ToolGrant[];
   wasValue: string | null;
-  /** The model's provider carries no functions, so nothing here may be connected; what stands, stands. */
+  /** The model's provider has no functions: nothing can be connected, existing grants stay. */
   isLocked: boolean;
   onGrantsChange: (grants: ToolGrant[]) => void;
-  /** A connected server opens as a step of its own, the way an opened grant does. */
+  /** Opens a connected server as a step of its own. */
   onOpenServer: (serverId: string) => void;
 }

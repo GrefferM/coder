@@ -8,7 +8,7 @@ describe("attachWeightLabel", () => {
   });
 
   it("keeps one place after the point while there are few of a unit, and drops it past ten", () => {
-    // A small file reads to a tenth; a big one has no need of the place and stands whole.
+    // A small file shows a tenth; a big one shows whole.
     expect(attachWeightLabel(Math.round(2.1 * 1024))).toBe("2.1 КБ");
     expect(attachWeightLabel(184 * 1024)).toBe("184 КБ");
   });

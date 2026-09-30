@@ -26,7 +26,7 @@ import {
 } from "../../constants";
 import type { SlotListProps } from "./interfaces";
 
-/** The names a «{» offers — what is declared, narrowed by what has been typed since the brace. */
+/** The names a «{» offers: the declared ones, narrowed by what was typed since the brace. */
 export function SlotList({ offered, walk, onPick }: SlotListProps) {
   return (
     <div

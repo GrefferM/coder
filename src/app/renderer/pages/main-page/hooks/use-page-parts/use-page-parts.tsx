@@ -32,22 +32,22 @@ import type { SidePanelItem } from "../../../../components";
 import type { PageSubjects } from "../../interfaces";
 import type { PageParts } from "./interfaces";
 
-/** Everything the open project's screen stands on, composed once: the machine, the chat, the stream and the rail. */
+/** Composes the open project's machine, chat, stream and rail. */
 export function usePageParts(
   subjects: PageSubjects,
-  /** A copy has just been put down, so the agent's tab opens on its name. */
+  /** The agent's tab opens on its name after a copy is made. */
   isNamingCopy: boolean,
   onDeleteAgent: (agentId: string) => void,
 ): PageParts {
   const { project, agents, models, commands, servers: section, prompts, drafted, wayOut, actions } = subjects;
   const machine = useProviders();
-  /** Every server the project declares, asked what it hands over; nothing of it is written down. */
+  /** Every declared server, looked up live; nothing is persisted. */
   const servers = useServers(project.directory, project.config.servers);
 
-  // A call that ended is the one thing that changes a server's row, so the catalogue asks it afresh.
+  // A finished call refreshes the catalogue's look.
   useLookAfterCall(servers.look);
   const { sayNote } = actions;
-  /** A pick the chat would not attach is said on the line a write is — red, with nothing to try again. */
+  /** A refused pick is reported as a red write line, with no retry. */
   const sayRefused = useCallback(
     (words: string) =>
       sayNote({
@@ -66,7 +66,7 @@ export function usePageParts(
     servers.looks,
     sayRefused,
   );
-  /** The agent the stream is aimed at; when it is the selected one, its unsaved draft stands in. */
+  /** The agent the stream targets; the selected one uses its unsaved draft. */
   const aimed =
     chat.aimedAgentId === agents.selectedAgentId && drafted.draft !== null
       ? drafted.draft
@@ -74,17 +74,17 @@ export function usePageParts(
   const stream = useShownStream(project.directory, project.config.agents, chat, agents.select);
   /** The pass whose projection stands over the canvas. */
   const pass = useOpenedPass(project.config.agents, project.config.models, chat.written);
-  /** Which section of the rail stands open, and every way in and out of it. */
+  /** The open rail section and its entry and exit paths. */
   const rail = useRailStanding(subjects, pass);
-  // The catalogue's one way into the chat — the call its row is talking about, opened where it happened.
+  // Opens the call a catalogue row refers to, in the chat.
   const showCall = useShowCall(stream, rail, chat.openCalls);
 
-  /** The projection is opened from the walk whose pass it shows; a stream with no row has none. */
+  /** Opens the projection for the run's pass; `null` when the stream has no row. */
   function openDebug(runId: string | null): ((questionId: string) => void) | null {
     return runId === null ? null : (questionId: string) => pass.open(runId, questionId);
   }
 
-  /** Which state every agent is in, worked out once for the whole page. */
+  /** Every agent's state, computed once per page. */
   const states = agentStates({
     config: project.config,
     providers: machine.providers,
@@ -95,7 +95,7 @@ export function usePageParts(
     fellAt: chat.fellAt,
   });
 
-  // The rail's order is agents, models, MCP, commands, prompts, store; the built ones keep those places.
+  // Rail order: agents, models, MCP, commands, prompts, store.
   const items: SidePanelItem[] = [
     {
       id: AGENTS_SECTION_ID,
@@ -203,14 +203,14 @@ export function usePageParts(
       glyph: <ChatIcon />,
       label: CHAT_PANEL_LABEL,
       hasUnsaved: false,
-      // The header says whom the stream is aimed at, and lets the person aim it from there.
+      // Header pill showing the stream's target and letting the person change it.
       pill: (
         <AimPicker
           agents={project.config.agents}
           aimedAgentId={chat.aimedAgentId}
           onAim={(agentId) =>
             wayOut.guard(() => {
-              // Choosing from the list aims the chat straight away, even at the agent already selected.
+              // Picking from the list aims the chat even at the already selected agent.
               agents.select(agentId);
               chat.aim(agentId);
             })

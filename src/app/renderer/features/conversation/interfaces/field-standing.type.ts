@@ -1,2 +1,2 @@
-/** The three states of the send field — the ground and the edge tell them apart, the word says which two. */
+/** The send field's three states, told apart by ground and edge; the word names which two. */
 export type FieldStanding = "open" | "walking" | "stitched";

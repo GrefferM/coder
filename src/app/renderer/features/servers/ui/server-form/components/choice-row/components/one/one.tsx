@@ -10,7 +10,7 @@ import {
 } from "../../../../constants";
 import type { OneProps } from "./interfaces";
 
-/** One choice. The chosen one says so with `aria-pressed`, which is also how the keyboard's road finds it. */
+/** One choice; the chosen one says so with `aria-pressed`, which the keyboard order also reads. */
 export function One({ isChosen, label, onChoose }: OneProps) {
   const { isLit, handlers } = useInteraction();
 

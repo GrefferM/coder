@@ -11,7 +11,7 @@ import {
 import { NamingOverlay, SwitcherButton, SwitcherList } from "./components";
 import type { ProjectSwitcherProps } from "./interfaces";
 
-/** Open project and the way to another; picking a row opens it in place. */
+/** The open project and the way to another; picking a row opens it in place. */
 export function ProjectSwitcher({ project, onProjectChange, onClose }: ProjectSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false);
   const close = useCallback(() => setIsOpen(false), []);
@@ -21,7 +21,7 @@ export function ProjectSwitcher({ project, onProjectChange, onClose }: ProjectSw
   useWindowDismiss(isOpen, close);
 
   const others = known.filter((entry) => entry.directory !== project.directory);
-  // Everything the list can act on is walked, in the order it is drawn; the open project is not one of them.
+  // Everything the list can act on, in drawn order; the open project is excluded.
   const walkable = [
     ...others.map((entry) => (entry.exists === false ? () => undefined : () => void switchTo(entry.directory))),
     () => void chooseFolder(),
@@ -74,7 +74,7 @@ export function ProjectSwitcher({ project, onProjectChange, onClose }: ProjectSw
       )}
 
       {naming !== null && (
-        // A folder chosen anew replaces the one being named, so the typed name starts over with it.
+        // A newly chosen folder replaces the one being named and resets the typed name.
         <NamingOverlay
           key={naming.directory}
           directory={naming.directory}

@@ -8,6 +8,6 @@ export const SETTING_ROW_BACKGROUND_COLOR = "#171b26";
 export const SETTING_ROW_LABEL_COLOR = FIRST_LEVEL_TEXT_COLOR;
 export const SETTING_ROW_LABEL_FONT_SIZE_PX = 13;
 
-/** The line under a row: the mark's own type, in the same quiet grey every explaining line uses. */
+/** The line under a row: the mark's type in the quiet grey of every explaining line. */
 export const SETTING_ROW_HINT_COLOR = QUIET_MARK_COLOR;
 export const SETTING_ROW_HINT_LINE_HEIGHT = 1.6;

@@ -20,17 +20,17 @@ describe("foundCount", () => {
   });
 
   it("says the record rather than a nought where the word is in nothing", () => {
-    // The second number is what was searched, so the reader knows the record is there and this word is not.
+    // Nothing found: the second number is the record, not a nought.
     expect(foundCount("ялина", 0, 0, 142)).toBe("0 МІСЦЬ · 142 ЗАПУСКИ");
   });
 
   it("says the ceiling with a word, counting having stopped", () => {
-    // A second number there would be a lie — nobody counted past the ceiling.
+    // At the limit there is no second number, since counting stopped.
     expect(foundCount("а", RUN_HITS_LIMIT, 3, 142)).toBe(`${RUN_HITS_LIMIT} МІСЦЬ · СТЕЛЯ`);
   });
 
   it("spells the ceiling in its note as the number the record actually cuts at", () => {
-    // The note says «більше за триста» in words; if the ceiling ever moves, the sentence must move with it.
+    // The note says «більше за триста» in words, so it must follow the limit.
     expect(RUN_HITS_LIMIT).toBe(300);
   });
 });

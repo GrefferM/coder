@@ -27,7 +27,7 @@ function row(id: string): RunRow {
   };
 }
 
-/** The machine's record, answering each channel with what the spec put there. */
+/** The machine's record, answering each channel with the spec's values. */
 function machine(answers: Record<string, unknown>) {
   const asked: string[] = [];
   const invoke = vi.fn(async (channel: string) => {
@@ -70,7 +70,7 @@ describe("useRunHistory", () => {
   });
 
   it("reads it again on every write, since a walk going writes into it", async () => {
-    // The row of a run under way is alive — it can only be alive if the list is read again.
+    // A row of a run under way is alive, so the list is re-read.
     const { listCalls } = machine({
       [LIST_RUNS_CHANNEL]: [row("run-1")],
     });
@@ -122,7 +122,7 @@ describe("useRunHistory", () => {
   });
 
   it("lets a read it has left behind come back to nothing", async () => {
-    // The tab was opened over one project and then another: the older read must not land on the newer list.
+    // Tab opened over one project then another: the older read must not land on the newer list.
     let releaseFirst = (rows: RunRow[]) => {
       void rows;
     };
@@ -165,7 +165,7 @@ describe("useRunHistory", () => {
   });
 
   it("drops a deleted row where it stands, without reading the record again", async () => {
-    // The list is redrawn from what it already holds; a second window learns it on its own.
+    // The list is redrawn from what it holds; a second window learns on its own.
     const { listCalls } = machine({
       [LIST_RUNS_CHANNEL]: [row("run-1"), row("run-2")],
       [FORGET_RUN_CHANNEL]: true,
@@ -197,7 +197,7 @@ describe("useRunHistory", () => {
   });
 
   it("empties the list when every ended run went, and leaves it standing when the record refused", async () => {
-    // «× ЗАБРАТИ N» answers with how many went; a refusal answers with nothing at all.
+    // «× ЗАБРАТИ N» answers with how many went; a refusal answers with nothing.
     machine({
       [LIST_RUNS_CHANNEL]: [row("run-1")],
       [FORGET_RUNS_CHANNEL]: null,

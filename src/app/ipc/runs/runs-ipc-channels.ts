@@ -27,13 +27,13 @@ import {
   SEARCH_RUNS_CHANNEL,
 } from "../../../contracts";
 
-/** Run-record channels; each handler rebuilds a real DTO instance from the cloned payload. */
+/** Run-record channels; each handler rebuilds a DTO instance from the cloned payload. */
 export const RUNS_IPC_CHANNELS: IpcChannelMap<RunController> = {
   [OPEN_RUN_CHANNEL]: (controller, payload) => controller.open(Object.assign(new OpenRunDto(), payload)),
   [ADD_RUN_STEP_CHANNEL]: (controller, payload) => {
     const step = Object.assign(new AddStepDto(), payload);
 
-    // The calls come cloned as plain objects; each is rebuilt so its own decorators are readable.
+    // Calls arrive as plain objects; each is rebuilt so its decorators are readable.
     step.calls = (step.calls ?? []).map((call) => Object.assign(new AddCallDto(), call));
     step.handoffs = (step.handoffs ?? []).map((handoff) => Object.assign(new AddHandoffDto(), handoff));
 

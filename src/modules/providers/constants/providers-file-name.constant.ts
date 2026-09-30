@@ -1,2 +1,2 @@
-/** Where the addresses live: beside the app's own database, never in a project, and in the clear. */
+/** Addresses file: beside the app's database, never in a project, unencrypted. */
 export const PROVIDERS_FILE_NAME = "providers.json";

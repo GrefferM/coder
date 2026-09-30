@@ -137,8 +137,7 @@ describe("oneWalk", () => {
   });
 
   it("says nothing was sent of a pass whose model answered with nothing, and never says it finished", () => {
-    // The turn ran whole and came back empty — no answer arrived, so the pass is not «ГОТОВО». The bug
-    // this guards: an end the pass had no word for was read as «done», and the projection called it «ГОТОВО».
+    // A turn that ran whole and came back empty has no answer, so the pass is not «ГОТОВО».
     const said = step({
       id: "step-2",
       questionId: "question-2",

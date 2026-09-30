@@ -11,7 +11,7 @@ const command: ProjectCommand = aCommand({});
 
 describe("DeleteCommandConfirm", () => {
   it("names the command and says what happens to the agents it was granted to", () => {
-    // The grant stays behind and calls what is no longer there — the question says so.
+    // The grant stays behind and points at nothing; the question says so.
     render(<DeleteCommandConfirm command={command} onConfirm={() => {}} onDismiss={() => {}} />);
 
     expect(screen.getByText(DELETE_COMMAND_QUESTION)).toBeInTheDocument();

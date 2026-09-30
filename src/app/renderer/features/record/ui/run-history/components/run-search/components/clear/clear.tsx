@@ -15,10 +15,10 @@ import {
 } from "../../../../constants";
 import type { ClearProps } from "./interfaces";
 
-/** The cross that takes the word out of the field — the same act as emptying it by hand. */
+/** Clears the word, the same as emptying the field by hand. */
 export function Clear({ onClear }: ClearProps) {
   const { isLit, isFocused, handlers } = useInteraction();
-  // A wordless control says what it is in the app's own window, and never in the browser's `title`.
+  // A wordless control gives its hint in the app's own window, not the browser `title`.
   const said = useHint<HTMLButtonElement>(RUN_SEARCH_CLEAR_LABEL, isLit, isFocused);
 
   return (

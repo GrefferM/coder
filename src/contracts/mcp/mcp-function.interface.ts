@@ -1,12 +1,10 @@
 /**
- * One function an MCP server hands over, as the server describes it. The name is the only handle there is: a
- * grant holds that name, and a function that leaves the list leaves the grant standing and lost.
- *
- * Never written to a file — asked of the server each time.
+ * One function an MCP server offers, as the server describes it. The name is the only handle: a grant holds it, and a
+ * function that leaves the list leaves the grant lost. Asked of the server each time, never written to a file.
  */
 export interface McpFunction {
   name: string;
   description: string;
-  /** The JSON Schema of what it takes, handed to the model as it came from the server. */
+  /** The JSON Schema of its arguments, passed to the model as the server gave it. */
   parameters: Record<string, unknown>;
 }

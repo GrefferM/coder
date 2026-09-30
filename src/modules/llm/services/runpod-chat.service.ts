@@ -23,17 +23,9 @@ interface RunPodSaid {
 }
 
 /**
- * A model served by a RunPod serverless endpoint, reached through the queue that endpoint answers on. There is
- * no library for it and no OpenAI door on such an endpoint: a job is thrown into the queue, asked about until it
- * is over, and the answer is read out of it whole.
- *
- * Whole, and not word by word, on purpose. The queue does say the words as they are written — but a job asked to
- * stream never carries the token counts, neither in its pieces nor afterwards, and a turn whose tokens nobody
- * counted has no price to write down. The counts are worth more than the seconds: the sphere says «працює» and
- * counts them meanwhile, and the answer lands as one.
- *
- * The endpoint serves one model and the queue's job says nothing about which: the model's title in the project
- * is the person's own word for it, and it is not sent anywhere.
+ * A model served by a RunPod serverless endpoint, reached through its queue: a job is submitted, polled until over, and
+ * the answer read whole. Not streamed: a streamed job carries no token counts, so the turn would have no price. The
+ * endpoint serves one model; the project's model title is never sent.
  */
 export class RunPodChat extends BaseChatModel {
   constructor(private readonly opening: RunPodOpening) {
@@ -44,7 +36,7 @@ export class RunPodChat extends BaseChatModel {
     return RUNPOD_CLIENT_NAME;
   }
 
-  /** The whole turn: thrown into the queue, waited out, and read back with what it cost. */
+  /** The whole turn: submitted to the queue, waited out, read back with its cost. */
   async _generate(messages: BaseMessage[], options: this["ParsedCallOptions"]): Promise<ChatResult> {
     const jobId = await this.thrown(messages, options.signal);
     const answer = await this.waited(jobId, options.signal);
@@ -57,7 +49,7 @@ export class RunPodChat extends BaseChatModel {
           text: said?.message?.content ?? "",
           message: new AIMessage({
             content: said?.message?.content ?? "",
-            // The ceiling's own word, under the name every other provider says it by.
+            // The ceiling reason, under the name every other provider uses.
             response_metadata: {
               finish_reason: said?.finish_reason ?? null,
             },
@@ -72,7 +64,7 @@ export class RunPodChat extends BaseChatModel {
     };
   }
 
-  /** The job thrown into the queue; what comes back is its id and nothing else. */
+  /** Submits the job; returns its id. */
   private async thrown(messages: BaseMessage[], signal: AbortSignal | undefined): Promise<string> {
     const thrown = await this.asked(RUNPOD_RUN_PATH, {
       method: "POST",
@@ -91,10 +83,7 @@ export class RunPodChat extends BaseChatModel {
     return String(thrown.id ?? "");
   }
 
-  /**
-   * The job asked about until it is over. A hand on «ЗУПИНИТИ» takes the job off the queue as well: a job left
-   * running answers to nobody and is paid for all the same.
-   */
+  /** Polls the job until over. A stop also takes the job off the queue, since a running one is paid for anyway. */
   private async waited(jobId: string, signal: AbortSignal | undefined): Promise<RunPodAnswer> {
     for (;;) {
       if (signal?.aborted === true) {
@@ -112,7 +101,7 @@ export class RunPodChat extends BaseChatModel {
       }
 
       if (!RUNPOD_WAITING.includes(status)) {
-        // The worker's own words where it left any, and the status alone where it did not.
+        // The worker's own words where it left any, else the status alone.
         throw new Error(`${RUNPOD_ENDED_PREFIX}${this.endedOn(stood, status)}`);
       }
 
@@ -120,14 +109,14 @@ export class RunPodChat extends BaseChatModel {
     }
   }
 
-  /** The job taken off the queue; a queue that no longer has it says so, and there is nothing to answer to that. */
+  /** Takes the job off the queue; a queue that no longer has it is ignored. */
   private async dropped(jobId: string): Promise<void> {
     await this.asked(`${RUNPOD_CANCEL_PATH}${jobId}`, {
       method: "POST",
     }).catch(() => undefined);
   }
 
-  /** One ask of the queue, with the key on it; a queue that refused answers with its own status and words. */
+  /** One ask of the queue, with the key; a refusal carries the queue's status and words. */
   private async asked(path: string, sent: RequestInit): Promise<Record<string, unknown>> {
     const answer = await fetch(`${this.opening.address}${path}`, {
       ...sent,
@@ -146,9 +135,8 @@ export class RunPodChat extends BaseChatModel {
   }
 
   /**
-   * What a finished job holds: the worker answers with a list of its own, and the answer is its first. A job can
-   * finish and still hold no answer — the worker writes down what its own insides refused, and that sentence is
-   * the only thing worth saying to the person, so it is thrown rather than handed on as an empty turn.
+   * What a finished job holds: the worker's list, whose first item is the answer. A finished job may hold only the
+   * worker's own refusal, which is thrown rather than returned as an empty turn.
    */
   private answerOf(output: unknown): RunPodAnswer {
     const held = Array.isArray(output) ? output[0] : output;
@@ -161,7 +149,7 @@ export class RunPodChat extends BaseChatModel {
     return answer;
   }
 
-  /** The worker's own words about a job that carried no answer: its `error`, the line itself, or all it wrote. */
+  /** The worker's words about a job without an answer: its `error`, the line itself, or everything it wrote. */
   private refusalIn(held: unknown): string {
     if (typeof held === "string" && held !== "") {
       return held;
@@ -172,14 +160,14 @@ export class RunPodChat extends BaseChatModel {
     return typeof said === "string" && said !== "" ? said : JSON.stringify(held ?? null);
   }
 
-  /** Why a job ended where it did: the queue's own `error`, or the status it wears. */
+  /** Why a job ended: the queue's `error`, or its status. */
   private endedOn(stood: Record<string, unknown>, status: string): string {
     const said = stood.error ?? stood.output;
 
     return typeof said === "string" && said !== "" ? said : status;
   }
 
-  /** One message as the worker takes it; the roles are OpenAI's own, which is what its chat template reads. */
+  /** One message as the worker takes it; roles are OpenAI's, which its chat template reads. */
   private saidBy(message: BaseMessage): RunPodSaid {
     const kind = message.getType();
 

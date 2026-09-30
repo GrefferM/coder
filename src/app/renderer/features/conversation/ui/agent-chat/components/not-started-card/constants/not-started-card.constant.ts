@@ -1,7 +1,7 @@
 import type { IconTone } from "../../../../../../../components";
 import { FALLEN_COLOR, SECOND_LEVEL_TEXT_COLOR } from "../../../../../../../constants";
 
-/** The card standing where a turn would have been — pink like a stop, but nothing was tried. */
+/** Stands where the turn would have been; pink like a stop, but nothing was tried. */
 export const NOT_STARTED_CARD_GAP_PX = 9;
 export const NOT_STARTED_CARD_PADDING_PX = 12;
 export const NOT_STARTED_CARD_BORDER_RADIUS_PX = 10;
@@ -15,13 +15,13 @@ export const NOT_STARTED_CARD_ICON_WIDTH = 2;
 export const NOT_STARTED_CARD_TITLE_FONT_SIZE_PX = 12.5;
 
 export const NOT_STARTED_CARD_FOOT_GAP_PX = 12;
-/** The card's own act — first level at rest, the family's accent under the pointer. */
+/** The card's act: first level at rest, the family's accent under the pointer. */
 export const NOT_STARTED_CARD_ACT_TONE: IconTone = {
   rest: "#dde1ee",
   lit: NOT_STARTED_CARD_ACCENT_COLOR,
 };
 
-/** The breakdown of what would have gone, under the sentence that says how much it was. */
+/** The breakdown of what would have gone, under the sentence giving the amount. */
 export const NOT_STARTED_CARD_BREAKDOWN_BACKGROUND_COLOR = "#0d0f16";
 export const NOT_STARTED_CARD_BREAKDOWN_BORDER_RADIUS_PX = 9;
 export const NOT_STARTED_CARD_BREAKDOWN_PADDING = "11px 12px";

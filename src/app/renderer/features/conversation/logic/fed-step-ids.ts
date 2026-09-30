@@ -1,8 +1,8 @@
 import type { IncomingWork, RunLedger } from "../interfaces";
 
 /**
- * The steps a turn's work came from — the ones the record names for a walk picked up out of it,
- * otherwise the supplier's own last step in this walk. A walk with no row open yet names nothing.
+ * The steps a turn's work came from: those the record names for a walk picked up from it, else the supplier's own last
+ * step in this walk; none while no row is open.
  */
 export function fedStepIds(ledger: RunLedger | null, incoming: IncomingWork[]): string[] {
   if (ledger === null) {

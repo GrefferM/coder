@@ -1,4 +1,4 @@
-/** One deletion as a screen lists it; `taken` holds everything it took, and the module never opens it. */
+/** One deletion as a screen lists it; `taken` holds everything it took and the module never opens it. */
 export interface Deletion {
   id: string;
   kind: string;

@@ -13,9 +13,9 @@ import { PROJECT_NOT_FOUND } from "../../../contracts";
 import { FolderContents, KnownProject, ProjectFileStore, ProjectHistory, ProjectWatch } from "../interfaces";
 import { Refusal } from "../../../utils/refusals";
 
-/** Opens and creates projects and keeps this machine's list of them; the config lives in the project's folder. */
+/** Opens and creates projects and keeps this machine's list; the config lives in the project's folder. */
 export class ProjectService {
-  /** The save running in each project directory, with the next one chained onto it. */
+  /** The save running in each project directory, with the next chained onto it. */
   private readonly saving = new Map<string, Promise<void>>();
 
   constructor(
@@ -25,7 +25,7 @@ export class ProjectService {
     private readonly projectHistory: ProjectHistory,
   ) {}
 
-  /** Writes an empty project into the folder and remembers it; a folder that holds one already is refused. */
+  /** Writes an empty project into the folder and remembers it; a folder already holding one is refused. */
   async create(payload: CreateProjectDto): Promise<ProjectConfigDto> {
     const { directory, name } = payload;
 
@@ -37,7 +37,7 @@ export class ProjectService {
     await this.remember(directory, name);
     await this.projectWatch.follow(directory);
 
-    // What the folder now holds, not what was handed to it: the file is the truth.
+    // Returns what the folder holds, not what was handed in.
     return this.projectFileStore.read(directory);
   }
 
@@ -46,7 +46,7 @@ export class ProjectService {
     return this.projectFileStore.glance(payload.directory);
   }
 
-  /** Opens the chosen folder, making it a project if it is not one yet. */
+  /** Opens the chosen folder, creating a project there if none exists. */
   async openOrCreate(payload: OpenProjectDto): Promise<ProjectConfigDto> {
     const { directory } = payload;
 
@@ -60,7 +60,7 @@ export class ProjectService {
     });
   }
 
-  /** Reads the project in the folder and moves it to the top of the recent list. */
+  /** Reads the folder's project and moves it to the top of the recent list. */
   async open(payload: OpenProjectDto): Promise<ProjectConfigDto> {
     const { directory } = payload;
 
@@ -76,20 +76,17 @@ export class ProjectService {
     return config;
   }
 
-  /**
-   * The open project is put down: nothing is followed until a project is opened again. A folder nobody has open
-   * is a folder nobody is told about, so the watch goes down with the project rather than outliving it.
-   */
+  /** Closes the open project; the watch goes down with it. */
   close(): void {
     this.projectWatch.unfollow();
   }
 
-  /** Writes the whole config back to the project's folder; saves of one folder run one after another. */
+  /** Writes the whole config to the project's folder; saves of one folder run in sequence. */
   async save(payload: SaveProjectDto): Promise<void> {
     const { directory, config } = payload;
     const standing = this.saving.get(directory) ?? Promise.resolve();
     const saving = standing.then(() => this.writeAndRemember(directory, config));
-    // The chain carries on past a failed save, which is answered to its own caller alone.
+    // The chain continues past a failed save, which is reported to its own caller only.
     const settled = saving.catch(() => undefined);
 
     this.saving.set(directory, settled);
@@ -101,7 +98,7 @@ export class ProjectService {
     }
   }
 
-  /** Every project this machine has opened, most recent first, each saying whether it is still there. */
+  /** Every project this machine has opened, most recent first, each with whether it still exists. */
   async findRecent(): Promise<KnownProject[]> {
     const entries = await this.projectEntryRepository.find({
       order: {
@@ -126,7 +123,7 @@ export class ProjectService {
     );
   }
 
-  /** Where this machine was looking in that folder last time, or nothing if it has never been noted. */
+  /** Last view in that folder, or null if never noted. */
   async viewOf(payload: OpenProjectDto): Promise<string | null> {
     const entry = await this.projectEntryRepository.findOneBy({
       directory: payload.directory,
@@ -135,7 +132,7 @@ export class ProjectService {
     return entry?.view ?? null;
   }
 
-  /** Notes where this machine is looking. A folder this machine does not know is not remembered for. */
+  /** Notes where this machine is looking; an unknown folder is ignored. */
   async rememberView(payload: RememberProjectViewDto): Promise<void> {
     const entry = await this.projectEntryRepository.findOneBy({
       directory: payload.directory,
@@ -150,7 +147,7 @@ export class ProjectService {
     });
   }
 
-  /** Hard-deletes the project's entry and its deletion history; the folder itself is left alone. */
+  /** Hard-deletes the project's entry and deletion history; the folder is untouched. */
   async forget(payload: ForgetProjectDto): Promise<void> {
     const { directory } = payload;
     const entry = await this.projectEntryRepository.findOneBy({
@@ -164,13 +161,13 @@ export class ProjectService {
     await this.projectHistory.forgetProject(directory);
   }
 
-  /** One save: the folder written, then what now stands in it taken as the app's own. */
+  /** One save: writes the folder, then takes what stands in it as the app's own. */
   private async writeAndRemember(directory: string, config: ProjectConfigDto): Promise<void> {
     await this.projectFileStore.write(directory, config);
     await this.projectWatch.remember(directory);
   }
 
-  /** Drops a folder's chain once its last save is done, so nothing is held for a folder nobody is saving. */
+  /** Drops a folder's chain once its last save is done. */
   private forgetSaving(directory: string, settled: Promise<void>): void {
     if (this.saving.get(directory) === settled) {
       this.saving.delete(directory);
@@ -206,7 +203,7 @@ export class ProjectService {
     return this.projectEntryRepository.save(entry);
   }
 
-  /** The folder's last path segment, used as the new project's name. */
+  /** The folder's last path segment, the new project's name. */
   private folderName(directory: string): string {
     return directory.split("/").filter(Boolean).at(-1) ?? directory;
   }

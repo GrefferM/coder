@@ -32,10 +32,10 @@ import {
 
 app.setName(APP_NAME);
 
-/** The one client every MCP server is reached through; nothing is up until a server is asked for. */
+/** The one client every MCP server is reached through; null until a server is asked for. */
 let mcpClient: McpClient | null = null;
 
-/** Opens the app's SQLite database, applies any pending migration, and registers every domain's IPC channels. */
+/** Opens the SQLite database, applies pending migrations, registers every domain's IPC channels. */
 async function initializeIpc(): Promise<void> {
   const dataSource = createDataSource(app.getPath("userData"));
 
@@ -53,14 +53,14 @@ async function initializeIpc(): Promise<void> {
   );
   const { controller: runController, keeper: runKeeper } = createRunModule(dataSource);
 
-  // A walk cannot outlive the window it ran in: a run left open by a closing app is closed on waking.
+  // Closes a run left open by a closing app.
   await runKeeper.settleOpen();
-  // The thirty days are counted at the one moment the app is certainly awake.
+  // Counts the thirty days at startup.
   await runKeeper.sweep();
 
   const { runner: commandRunner } = createCommandsModule();
 
-  // A local server is a process this app started, so it is this app that lets it go.
+  // A local server is a process this app started, so this app stops it.
   const { controller: mcpController, client } = createMcpModule(secretService, dataSource);
 
   mcpClient = client;
@@ -99,12 +99,12 @@ async function createWindow(): Promise<void> {
   await window.loadURL(RENDERER_DEV_SERVER_URL);
 }
 
-/** Sets the app's Dock icon on macOS; a packaged build takes its icon from the bundle. */
+/** Sets the Dock icon on macOS; a packaged build takes it from the bundle. */
 function applyDockIcon(): void {
   app.dock?.setIcon(APP_ICON_PATH);
 }
 
-/** Names in a system dialog what stopped the app from starting, then quits; a failed start leaves no window. */
+/** Names the startup failure in a system dialog, then quits. */
 function failToStart(failure: unknown): void {
   dialog.showErrorBox(STARTUP_FAILURE_TITLE, failure instanceof Error ? failure.message : String(failure));
   app.quit();

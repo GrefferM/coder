@@ -19,9 +19,8 @@ import {
 import type { DeadSphereProps } from "./interfaces";
 
 /**
- * The end of a line that names nobody (50a). A dashed ring with nothing inside it: the wireframe is the thing
- * itself, and here the thing is gone — so no name, no model, no colour of its own, and no «?» on the ring
- * either, since that mark points at a part that is missing and here everything is.
+ * The end of a line that names nobody: a dashed ring with nothing inside, no name, model or colour, and no «?» since
+ * the whole agent is missing.
  */
 export function DeadSphere({ agentId, at }: DeadSphereProps) {
   return (

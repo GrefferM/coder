@@ -22,7 +22,7 @@ import type { RunHit } from "../../interfaces";
 import type { NamedAgent } from "../../../../interfaces";
 import type { RunRow } from "../../interfaces";
 
-// The project as it stands today — the row's name is looked up here by the agent's id.
+// The project's agents; row names are looked up by agent id.
 const AGENTS: NamedAgent[] = [
   {
     id: "agent-1",
@@ -56,7 +56,7 @@ function run(patch: Partial<RunRow> = {}): RunRow {
   };
 }
 
-/** What the search found in one run — the found words themselves, and where a press should land. */
+/** A search hit in one run: the found words and where a press lands. */
 function hit(patch: Partial<RunHit> = {}): RunHit {
   return {
     runId: "run-1",
@@ -91,7 +91,7 @@ describe("the search over the history", () => {
   });
 
   it("says how many runs the record holds while nothing is typed, and the places and runs found once something is", () => {
-    // «142» at rest, «12 З 142» with a word — the second number says the record is there either way.
+    // «142» at rest, «12 З 142» with a word: the second number is the record's count either way.
     const { rerender } = render(
       <RunHistory
         runs={[
@@ -130,13 +130,12 @@ describe("the search over the history", () => {
       />,
     );
 
-    // One place, and it lies in one of the two runs — the second number is not the record's count.
+    // One place in one of two runs: the second number is not the record's count.
     expect(screen.getByText(foundCount("кеш", 1, 1, 2))).toBeInTheDocument();
   });
 
   it("stands a card for every place the word was found, and holds no run the word is in none of", () => {
-    // A flow that said the word eight times has eight places to walk to, and one card for the flow would
-    // hide seven of them.
+    // Every place a word stands in is its own card, even several in one flow.
     render(
       <RunHistory
         runs={[
@@ -157,9 +156,9 @@ describe("the search over the history", () => {
     );
 
     expect(screen.getByText(/Поклав/)).toBeInTheDocument();
-    // A run the word stands in nowhere is not in the list at all — neither as a place nor as a rule over one.
+    // A run without the word is absent, as a place and as a rule.
     expect(screen.queryByText("Зовсім інше питання")).not.toBeInTheDocument();
-    // The run that holds the place is named once, on the rule: forty rows without an address do not read.
+    // The run holding the place is named once, on the rule.
     expect(screen.getAllByText("Розбий текст на тези")).toHaveLength(1);
   });
 
@@ -216,8 +215,7 @@ describe("the search over the history", () => {
   });
 
   it("carries neither the cross nor the flow's numbers on a found place", () => {
-    // A cross on a card that looks like one message would take the whole record of the flow away; and the
-    // hour, the steps and the money are the flow's four facts, said over and over where only the words differ.
+    // A place card has no forget cross and no flow facts (hour, steps, money).
     render(
       <RunHistory
         runs={[run()]}
@@ -237,8 +235,7 @@ describe("the search over the history", () => {
   });
 
   it("signs a found place with the agent whose message it is, and not with whom the flow was asked last", () => {
-    // The row is the address of one message. The flow was asked «Тезар» last, but these words are
-    // «Кодер»'s, and eight steps of one run signed alike would tell the reader nothing.
+    // The row is signed by its own message's agent, not the flow's last addressee.
     render(
       <RunHistory
         runs={[run()]}
@@ -269,7 +266,7 @@ describe("the search over the history", () => {
       />,
     );
 
-    // «КРОК 2 · 14:26», the hour being the message's own and not the flow's 15:10.
+    // «КРОК 2 · 14:26»: the hour is the message's, not the flow's 15:10.
     expect(screen.getByText(foundAddress(2, timeLabel(new Date("2026-09-07T14:26:00"))))).toBeInTheDocument();
   });
 
@@ -296,9 +293,9 @@ describe("the search over the history", () => {
       />,
     );
 
-    // The question is the person speaking, signed the way the stream signs them.
+    // The question is signed as the person, like in the stream.
     expect(screen.getByText(PERSON_NAME)).toBeInTheDocument();
-    // The person's words stand on no step of the walk, but they were said at an hour like any other message.
+    // The person's words have no step but still carry an hour.
     expect(screen.getByText(timeLabel(new Date("2026-08-22T15:10:00")))).toBeInTheDocument();
     expect(screen.queryByText(/КРОК/)).not.toBeInTheDocument();
   });
@@ -330,7 +327,7 @@ describe("the search over the history", () => {
       />,
     );
 
-    // The order is the record's own — by the hour of the message alone, and the list does not rearrange it.
+    // Order is by message hour alone; the list does not rearrange it.
     const said = screen.getAllByLabelText(RUN_HISTORY_OPEN_HINT).map((card) => card.textContent ?? "");
 
     expect(said[0]).toContain("Пізніше про кеш");
@@ -373,7 +370,7 @@ describe("the search over the history", () => {
       />,
     );
 
-    // «0 МІСЦЬ · 1 ЗАПУСК» — the second number says the record is there and this word is not in it.
+    // «0 МІСЦЬ · 1 ЗАПУСК»: the second number says the record has the run but not the word.
     expect(screen.getByText(foundCount("ялина", 0, 0, 1))).toBeInTheDocument();
   });
 
@@ -402,7 +399,7 @@ describe("the search over the history", () => {
       />,
     );
 
-    // Counting stopped, so the second number is a word, and the sentence says «add a letter».
+    // Counting stopped at the limit: the second number becomes a word and the sentence says «add a letter».
     expect(screen.getByText(foundCount("кеш", RUN_HITS_LIMIT, 1, 1))).toBeInTheDocument();
     expect(screen.getByText(FOUND_CEILING_NOTE)).toBeInTheDocument();
   });
@@ -430,8 +427,7 @@ describe("the search over the history", () => {
       />,
     );
 
-    // The address is said once for the run, not once for every place — eight copies of one question are
-    // the very trouble the trimmed card was made to end.
+    // The address is said once per run, not once per place.
     expect(screen.getAllByText(run().asked)).toHaveLength(1);
   });
 
@@ -466,7 +462,7 @@ describe("the search over the history", () => {
       />,
     );
 
-    // Two runs braided, so the first is named twice — «where am I now» comes back every time it jumps.
+    // Two interleaved runs: the first is named again each time the list jumps back.
     expect(screen.getAllByText(run().asked)).toHaveLength(2);
     expect(screen.getAllByText(other.asked)).toHaveLength(1);
   });
@@ -485,7 +481,7 @@ describe("the search over the history", () => {
       />,
     );
 
-    // The rule is the run's address — «СЬОГОДНІ 15:10» — while the row wears its own message's 14:26.
+    // The rule carries the run's address («СЬОГОДНІ 15:10»); the row carries its message's 14:26.
     const asked = run().askedAt;
 
     expect(screen.getByText(`${dayLabel(asked, new Date())} ${timeLabel(asked)}`)).toBeInTheDocument();
@@ -505,13 +501,13 @@ describe("the search over the history", () => {
       />,
     );
 
-    // One place, so one pressable — the rule over it is words and nothing else.
+    // One place is one pressable; the rule over it is text only.
     expect(screen.getAllByLabelText(RUN_HISTORY_OPEN_HINT)).toHaveLength(1);
     expect(screen.getByText(run().asked).closest("button")).toBeNull();
   });
 
   it("says in one sentence, with the word in it, that this word is in nothing — and not that the record is empty", () => {
-    // «Історія порожня» would be a lie — the record is right here, it is the word that is in none.
+    // A word found nowhere shows no «Історія порожня».
     render(
       <RunHistory
         runs={[run()]}
@@ -564,7 +560,7 @@ describe("the search over the history", () => {
 
     await user.click(screen.getByLabelText(RUN_SEARCH_CLEAR_LABEL));
 
-    // The record is never touched — the word goes, and the whole list comes back.
+    // Clearing the word brings the whole list back.
     expect(onQuery).toHaveBeenCalledWith("");
   });
 
@@ -652,7 +648,7 @@ describe("RunHistory", () => {
   });
 
   it("says what was asked, how long it took, what it cost — and whom it was asked last", () => {
-    // The head names the addressee of the last question, in the colour that agent goes by.
+    // The head names the last question's addressee in that agent's colour.
     render(
       <RunHistory
         runs={[run()]}
@@ -693,7 +689,7 @@ describe("RunHistory", () => {
 
     await user.click(screen.getByText("Розбий текст на тези"));
 
-    // A row pressed with no word typed opens the run whole, with no place to drive to.
+    // A row pressed with no word opens the run whole, with no place.
     expect(onOpen).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "run-1",
@@ -750,7 +746,7 @@ describe("RunHistory", () => {
 
     await user.hover(screen.getByLabelText(RUN_HISTORY_OPEN_HINT));
 
-    // The box behind the glyph is the row's own hover, arriving with it.
+    // The box behind the glyph shares the row's hover.
     expect(cross).toHaveStyle({
       background: RUN_HISTORY_FORGET_BACKGROUND_COLOR,
     });
@@ -801,7 +797,7 @@ describe("RunHistory", () => {
       }),
     );
 
-    // The press that deletes is not the press that opens: one row, two acts, and they do not mix.
+    // Forgetting and opening are separate presses.
     expect(onForget).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "run-1",
@@ -828,7 +824,7 @@ describe("RunHistory", () => {
       />,
     );
 
-    // The row is a heading — the whole of it stands in the stream, not in the list.
+    // The row is a heading showing the whole question.
     expect(screen.getByText(/Дуже довге питання/)).toHaveStyle({
       overflow: "hidden",
     });
@@ -904,7 +900,7 @@ describe("RunHistory", () => {
       />,
     );
 
-    // The row rose to the top on the new question, so it is that question's hour and span.
+    // A run re-asked rises to the top with the new question's hour and span.
     expect(screen.getByText("15:10 · 44 c")).toBeInTheDocument();
     expect(screen.getByText(new RegExp(`${RUN_HISTORY_STARTED_PREFIX}20 СЕР`))).toBeInTheDocument();
   });
@@ -923,7 +919,7 @@ describe("RunHistory", () => {
       />,
     );
 
-    // In its own group the day it began is the day over its head already, and the line would repeat it.
+    // Inside its own day group the started-on line is omitted.
     expect(screen.queryByText(new RegExp(RUN_HISTORY_STARTED_PREFIX))).not.toBeInTheDocument();
   });
 

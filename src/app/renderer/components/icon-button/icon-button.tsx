@@ -8,7 +8,7 @@ const QUIET_TONE: IconTone = {
   lit: FIRST_LEVEL_TEXT_COLOR,
 };
 
-/** A bare glyph that is a button — no box, lit under the pointer, a ring under the keyboard. */
+/** A bare glyph button: no box, lit under the pointer, ringed under the keyboard. */
 export function IconButton({ label, onPress, children, tone = QUIET_TONE, isDisabled = false }: IconButtonProps) {
   const press = useInteraction();
   const color = isDisabled ? (tone.dead ?? tone.rest) : press.isLit ? tone.lit : tone.rest;

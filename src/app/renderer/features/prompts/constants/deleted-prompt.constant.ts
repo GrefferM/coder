@@ -2,8 +2,8 @@
 export const DELETED_PROMPT_QUESTION_PREFIX = "Видалити промпт «";
 export const DELETED_PROMPT_QUESTION_SUFFIX = "»?";
 /**
- * «Заберемо ‹річ›. ‹Що піде або лишиться разом›.» — the prompt named, then what its agents are
- * left standing on. They do not go with it: a bare model is a working agent, not a broken one.
+ * «Заберемо ‹річ›. ‹Що піде або лишиться разом›.»: the prompt named, then what its agents are left on; they stay, on
+ * the bare model.
  */
 export const DELETED_PROMPT_NOTE_PREFIX = "Заберемо промпт «";
 export const DELETED_PROMPT_NOTE_NAMED = "». ";

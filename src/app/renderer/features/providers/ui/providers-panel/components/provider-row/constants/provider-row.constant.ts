@@ -6,7 +6,7 @@ import {
   SECOND_LEVEL_TEXT_COLOR,
 } from "../../../../../../../constants";
 
-/** Closed provider row — lit dot and full strength when the provider is set up; dim ring when not. */
+/** Closed provider row: lit dot and full strength when set up, dim ring when not. */
 export const PROVIDER_ROW_PADDING = "11px 12px";
 export const PROVIDER_ROW_GAP_PX = 9;
 export const PROVIDER_ROW_BORDER_RADIUS_PX = 10;

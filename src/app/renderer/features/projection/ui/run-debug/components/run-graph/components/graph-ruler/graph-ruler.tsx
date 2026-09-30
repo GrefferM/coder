@@ -11,8 +11,8 @@ import type { GraphRulerProps } from "./interfaces";
 const RULER_HALF_PX = RUN_GRAPH_RULER_WIDTH_PX / 2;
 
 /**
- * A mark over every column, saying when that turn began, counted from the moment the question was
- * asked. It goes with the field across, keeps its own size and never leaves the top.
+ * A mark over every column: when that turn began, counted from when the question was asked. Follows the field across,
+ * keeps its size, stays at the top.
  */
 export function GraphRuler({ turns, askedAt, pan, scale }: GraphRulerProps) {
   return (

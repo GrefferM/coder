@@ -1,6 +1,6 @@
 import type { ProjectConfig } from "../../../interfaces";
 
-/** Whom a converging point waits for — only a supplier that is live and that this run reaches. */
+/** Whom a converging point waits for: suppliers that are live and reached by this run. */
 export function awaitedSuppliers(config: ProjectConfig, startAgentId: string, agentId: string): string[] {
   const reached = reachedFrom(config, startAgentId);
 
@@ -9,7 +9,7 @@ export function awaitedSuppliers(config: ProjectConfig, startAgentId: string, ag
   ];
 }
 
-/** Every agent the run can reach, walking the lines out of the one the person spoke to. */
+/** Every agent the run reaches, following lines out of the one the person spoke to. */
 function reachedFrom(config: ProjectConfig, startAgentId: string): Set<string> {
   const live = new Set(config.agents.filter((agent) => agent.isActive).map((agent) => agent.id));
   const reached = new Set<string>();

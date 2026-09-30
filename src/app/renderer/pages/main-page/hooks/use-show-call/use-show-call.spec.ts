@@ -65,7 +65,7 @@ describe("useShowCall", () => {
       led = await result.current(CALL_ID);
     });
 
-    // The press is told the way was there, so the block goes on offering it.
+    // The press is told the way exists, so the block keeps offering it.
     expect(led).toBe(true);
     expect(held.openRun).toHaveBeenCalledTimes(1);
     expect(held.openRun.mock.calls[0][0].id).toBe(RUN_ID);
@@ -74,13 +74,13 @@ describe("useShowCall", () => {
       stepId: "step-1",
       isCall: true,
     });
-    // The one place a row opens with no hand on it — the hand was there, just in another room.
+    // The one place a row opens without a press.
     expect(held.open).toHaveBeenCalledWith(CALL_ID);
     expect(held.openChat).toHaveBeenCalledTimes(1);
   });
 
   it("leads nowhere for a call the record can no longer place", async () => {
-    // A run forgotten takes its calls with it, and a call written before the record kept ids has another one.
+    // A forgotten run takes its calls with it; a call from before ids were recorded has none.
     vi.mocked(callPlace).mockResolvedValue(null);
 
     const held = parts();
@@ -92,7 +92,7 @@ describe("useShowCall", () => {
       led = await result.current(CALL_ID);
     });
 
-    // Said out loud rather than swallowed: the block puts a word where the way was.
+    // Reported as `false` rather than swallowed, so the block can say so.
     expect(led).toBe(false);
     expect(held.openRun).not.toHaveBeenCalled();
     expect(held.openChat).not.toHaveBeenCalled();

@@ -11,9 +11,9 @@ export const HANDOFF_ROW_LETTER_SPACING_PX = 1.5;
 export const HANDOFF_ROW_ARROW_WIDTH_PX = 16;
 export const HANDOFF_ROW_ARROW_HEIGHT_PX = 8;
 
-/** Variant when the handoff did not happen: dashed rules, no colour, reason shown. */
+/** The handoff did not happen: dashed rules, no colour, reason shown. */
 export const HANDOFF_ROW_STOPPED_LABEL = "Не передає";
-/** The person's own question that never went; the one it was for keeps its own colour. */
+/** The person's own question that never went; the agent it was for keeps its colour. */
 export const HANDOFF_ROW_NOT_SENT_LABEL = "Питання не пішло";
 export const HANDOFF_ROW_STOPPED_COLOR = QUIET_MARK_COLOR;
 export const HANDOFF_ROW_REASON_SEPARATOR = " · ";

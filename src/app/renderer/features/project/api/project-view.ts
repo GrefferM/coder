@@ -16,7 +16,7 @@ function isView(held: unknown): held is ProjectView {
   );
 }
 
-/** Where this machine was looking in that folder, or nothing — an unreadable note is nothing. */
+/** Where this machine was looking in that folder; `null` if none or unreadable. */
 export async function projectView(directory: string): Promise<ProjectView | null> {
   const held = await window.electronApi.invoke(PROJECT_VIEW_CHANNEL, {
     directory,
@@ -33,7 +33,7 @@ export async function projectView(directory: string): Promise<ProjectView | null
       return null;
     }
 
-    // A note written before the field could be pulled says nothing about it, and nothing is not a height.
+    // A note written before the field could be pulled has no height.
     return {
       ...read,
       fieldHeight: typeof read.fieldHeight === "number" ? read.fieldHeight : null,

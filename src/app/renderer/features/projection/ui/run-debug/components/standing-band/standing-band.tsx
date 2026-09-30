@@ -13,9 +13,8 @@ import {
 import type { StandingBandProps } from "./interfaces";
 
 /**
- * The head says which half of this screen is «then» and which is «now» — the circumstances of every turn
- * are the record's, the names are the project's. It stands only over a run where the two have actually parted, which
- * is the same moment a sphere below wears a pill: a rule said over every run would be read over none of them.
+ * Says which half of the screen is «then» and which «now»: turn circumstances are the record's, names the project's.
+ * Shown only when the two differ.
  */
 export function StandingBand({ standings }: StandingBandProps) {
   if (!standings.some((standing) => standing.isGone || standing.wasName !== null)) {

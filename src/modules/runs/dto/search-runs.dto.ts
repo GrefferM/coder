@@ -6,7 +6,7 @@ export class SearchRunsDto {
   @IsNotEmpty()
   declare directory: string;
 
-  /** An empty field is not a search, and the door lets it through: the searcher answers with nothing found. */
+  /** An empty field passes validation; the searcher finds nothing. */
   @IsString()
   declare query: string;
 }

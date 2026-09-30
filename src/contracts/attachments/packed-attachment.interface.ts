@@ -1,9 +1,8 @@
 import type { AttachmentKind } from "./attachment-kind.type";
 
 /**
- * A picked file or folder packed into one block of text for a question. It is packed when the question goes, and
- * never past what the model's ceiling can hold: a pack that reached the ceiling stops there, over it, so the
- * ceiling's own wall answers it.
+ * A picked file or folder packed into one text block when the question goes, never past the model's ceiling; a pack
+ * that reaches it stops just over it.
  */
 export interface PackedAttachment {
   /** The path the person picked, as they picked it. */

@@ -4,8 +4,8 @@ import { ProjectFileReader } from "./project-file-reader.service";
 import { ProjectFileWriter } from "./project-file-writer.service";
 
 /**
- * The one door `ProjectService` asks the folder through. Reading and writing are two subjects — one merges part
- * files under their entries, the other takes them apart — and both stand over one `ProjectFolder`.
+ * The one door `ProjectService` asks the folder through: reading merges part files under their entries, writing takes
+ * them apart, both over one `ProjectFolder`.
  */
 export class ProjectFileService {
   constructor(

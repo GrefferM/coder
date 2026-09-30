@@ -1,4 +1,4 @@
-/** «назавжди» about many rows at once — the same box as one row's question, with the number in it. */
+/** The many-runs form of the forget question, with the number in it. */
 export const FORGET_RUNS_QUESTION_PREFIX = "Видалити всі ";
 export const FORGET_RUNS_QUESTION_SUFFIX = " назавжди?";
 export const FORGET_RUNS_YES_PREFIX = "ВИДАЛИТИ ";

@@ -6,8 +6,7 @@ import { AGENT_CHAT_LIST_GAP_PX } from "../../constants";
 import type { WorkingTurnProps } from "./interfaces";
 
 /**
- * One turn still out: what it has said so far, in its agent's name and colour, with the pill counting seconds.
- * The words arrive here and nowhere else — this card redraws token by token while the stream stands still.
+ * One turn still out: what it has said so far, in its agent's name and colour, with a seconds pill; redraws per token.
  */
 export function WorkingTurn({ turn, agents, agentName, agentColor, openCalls }: WorkingTurnProps) {
   const spoke = agents.find((agent) => agent.id === turn.agentId) ?? null;

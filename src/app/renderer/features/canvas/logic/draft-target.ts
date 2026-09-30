@@ -3,8 +3,8 @@ import type { Agent } from "../../../interfaces";
 import type { Point } from "../../../utils/math";
 
 /**
- * The sphere a line being drawn is over — the end it would take if it were let go now. The line's own
- * sphere is never it, and «over» means the pointer is inside the sphere's own circle, not merely near it.
+ * The sphere a line being drawn is over, i.e. the end it would take if let go now. Never the line's own sphere; «over»
+ * means the pointer is inside the sphere's circle.
  */
 export function draftTarget(agents: Agent[], fromAgentId: string, at: Point): Agent | null {
   return (

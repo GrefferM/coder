@@ -12,7 +12,7 @@ const BOX = {
   height: 600,
 };
 
-/** A canvas of a known size and place, since every point here is counted against its box. */
+/** A canvas of known size and place; every point is counted against its box. */
 function boxed() {
   const element = document.createElement("div");
 
@@ -83,7 +83,7 @@ describe("useZoomField · where the view stands", () => {
   });
 
   it("holds a noted scale inside its bounds, however the note came to hold that number", () => {
-    // The note is a file on this machine; it can be older than the bounds, or edited by hand.
+    // A noted file can be older than the bounds, or hand-edited.
     expect(
       view({
         pan: ZOOM_UNMOVED,
@@ -121,7 +121,7 @@ describe("useZoomField · where the view stands", () => {
 
 describe("useZoomField · scaling", () => {
   it("holds still whatever is under the pointer while the scale steps", () => {
-    // The canvas zooms around the hand, not around its own corner — the thing pointed at does not run away.
+    // Zooms around the pointer, keeping the pointed-at thing still.
     const { result } = view({
       pan: {
         x: -60,
@@ -166,7 +166,7 @@ describe("useZoomField · scaling", () => {
   });
 
   it("leaves an empty project's canvas exactly as it stands", () => {
-    // A double click on nothing fits nothing; the view must not jump to some middle of no points.
+    // A double click on nothing fits nothing; the view does not jump.
     const { result } = view({
       pan: {
         x: -60,
@@ -185,7 +185,7 @@ describe("useZoomField · scaling", () => {
   });
 
   it("brings the whole graph into the box and puts its middle in the middle", () => {
-    // A double click fits the graph — at the largest stop where it still stands inside, with room around it.
+    // A double click fits the graph at the largest stop where it still stands inside, with room around it.
     const { result } = view();
     const points = [
       {
@@ -218,7 +218,7 @@ describe("useZoomField · scaling", () => {
   });
 
   it("comes no closer than the ceiling, however small the graph is", () => {
-    // Two spheres side by side would fit at any scale; the canvas still stops at 100%.
+    // Two spheres would fit at any scale; the canvas still stops at 100%.
     const { result } = view();
 
     act(() =>
@@ -238,7 +238,7 @@ describe("useZoomField · scaling", () => {
   });
 
   it("stands no lower than the floor, however wide the graph is spread", () => {
-    // A graph too wide for the floor does not fit — and the canvas does not go below its floor to make it.
+    // A graph too wide for the floor does not fit; the canvas stays at its floor.
     const { result } = view();
 
     act(() =>
@@ -260,7 +260,7 @@ describe("useZoomField · scaling", () => {
 
 describe("useZoomField · the hand on empty space", () => {
   it("stays a click while the hand has not really left the place it pressed", () => {
-    // A press that trembles is still a press; panning begins only past the threshold.
+    // Panning begins only past the threshold; a trembling press is still a press.
     const { result, onDragStart } = view();
 
     act(() => result.current.grabField(press(300, 250)));
@@ -309,7 +309,7 @@ describe("useZoomField · the hand on empty space", () => {
   });
 
   it("does not take the canvas by any button but the left one", () => {
-    // The right button belongs to the menu that claims a place for a new agent.
+    // The right button belongs to the menu that places a new agent.
     const { result, onDragStart } = view();
 
     act(() => result.current.grabField(press(300, 250, 2)));

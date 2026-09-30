@@ -1,7 +1,7 @@
 import { ServersPanel } from "../../../../features/servers";
 import type { ServersSectionProps } from "./interfaces";
 
-/** The catalogue of servers, and the form standing over it while one is being declared. */
+/** The catalogue of servers, and the form over it while one is declared. */
 export function ServersSection({ project, state, section, wayOut, onShowCall }: ServersSectionProps) {
   return (
     <ServersPanel

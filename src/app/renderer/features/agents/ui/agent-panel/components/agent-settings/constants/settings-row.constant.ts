@@ -1,8 +1,4 @@
-/**
- * One row of the settings, drawn twice — a granted function under the field, and a server this agent is
- * held to. Two drawings of the same row must not each keep their own copy of its shape, so the shape stands
- * here, where both of them can see it and neither of them owns it.
- */
+/** Shape of a settings row, shared by a granted function under the field and a held server. */
 export const SETTINGS_ROW_PADDING = "8px 10px";
 export const SETTINGS_ROW_GAP_PX = 9;
 export const SETTINGS_ROW_BORDER_RADIUS_PX = 9;

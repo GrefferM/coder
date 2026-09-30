@@ -69,7 +69,7 @@ describe("ContextMenu", () => {
 
     render(<ContextMenu at={AT} items={[]} onDismiss={onDismiss} />);
 
-    // Exactly what the opening click does once the menu is on screen: reach `window`.
+    // What the opening click does once the menu is on screen: reaches `window`.
     window.dispatchEvent(new MouseEvent("click"));
 
     expect(onDismiss).not.toHaveBeenCalled();
@@ -175,7 +175,7 @@ describe("ContextMenu", () => {
       />,
     );
 
-    // A disabled line is drawn but not offered, so it is found by its words, not its role.
+    // A disabled line is found by its text, not its role.
     const item = screen.getByText("Вставити агента").closest("button");
 
     await userEvent.click(item as HTMLElement);

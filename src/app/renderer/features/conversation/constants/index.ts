@@ -1,4 +1,4 @@
-// The refusal codes and the denied codes are the boundary's: written once in `src/contracts`, matched here.
+// Refusal and denied codes are written once in `src/contracts` and matched here.
 export * from "../../../../../contracts/attachments";
 export * from "../../../../../contracts/llm";
 export * from "./stream-search.constant";

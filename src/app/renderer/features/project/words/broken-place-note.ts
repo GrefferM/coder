@@ -13,8 +13,8 @@ import {
 import type { BrokenPlace, BrokenStep } from "../../../interfaces";
 
 /**
- * The broken place as a line a person can act on: the named things down to the wrong field, then the field and
- * what is wrong with it — «Команда «fetch» → параметр «url»: поле «ідентифікатор» — має бути коректним…».
+ * The broken place as an actionable line: the named things down to the wrong field, then what is wrong with it —
+ * «Команда «fetch» → параметр «url»: поле «ідентифікатор» — має бути коректним…».
  */
 export function brokenPlaceNote(place: BrokenPlace): string {
   const things = place.trail.length === 0 ? BROKEN_PLACE_PROJECT_WORD : capitalized(trailWords(place.trail));
@@ -24,7 +24,7 @@ export function brokenPlaceNote(place: BrokenPlace): string {
   return `${things}${BROKEN_PLACE_FIELD_PREFIX}${field}${BROKEN_PLACE_FIELD_SUFFIX}${rule}`;
 }
 
-/** The named things in order, each its kind and its own name where it has one. */
+/** The named things in order, each as its kind and its name where it has one. */
 function trailWords(trail: BrokenStep[]): string {
   return trail
     .map((step) => {

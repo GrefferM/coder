@@ -1,6 +1,6 @@
 import type { Point } from "../../../utils/math";
 
-/** Where a field stands: what it is moved by, and how close it is. */
+/** Where a field stands: its pan and its scale. */
 export interface ZoomPlace {
   pan: Point;
   scale: number;

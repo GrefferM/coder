@@ -14,7 +14,7 @@ import {
 } from "../dto";
 import type { CallPlace, Run, RunHit, RunOpened, RunWhole } from "../interfaces";
 
-/** The entry point to the record of a run: writing one as it goes, and reading it afterwards. */
+/** Entry point to a run's record: written as it goes, read afterwards. */
 export class RunController {
   constructor(
     private readonly writer: RunWriter,
@@ -59,7 +59,7 @@ export class RunController {
     return this.reader.placeOfCall(payload.callId);
   }
 
-  /** Every run of this project the word stands in, each with the found words themselves. */
+  /** Every run of this project containing the word, with the found words. */
   @Validate()
   async find(payload: SearchRunsDto): Promise<RunHit[]> {
     return this.search.find(payload.directory, payload.query);

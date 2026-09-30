@@ -2,10 +2,8 @@ import type { NamedAgent } from "../../../interfaces";
 import type { AgentStanding, WholeRun } from "../interfaces";
 
 /**
- * Every agent this run walked with, held against the project as it stands now. This is the one place that
- * decides what a run's agent is called: today's name and colour win, the record's stand for an agent that is gone,
- * and what the record kept is carried along rather than overwritten. Prices, models and prompts are never touched
- * here — those the step keeps, and they are what «тоді проти сьогодні» is made of.
+ * Every agent this run walked with, held against the project now; the one place deciding an agent's on-screen name:
+ * today's name and colour win, the record's stand for a gone agent. Prices, models and prompts are not touched.
  */
 export function runStandings(run: WholeRun | null, today: NamedAgent[]): AgentStanding[] {
   if (run === null) {

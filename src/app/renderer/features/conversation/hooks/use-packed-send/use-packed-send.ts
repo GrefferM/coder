@@ -4,9 +4,8 @@ import type { PackedSendHands } from "./interfaces";
 import type { PackedSend } from "../../interfaces";
 
 /**
- * A question sent with files attached. The files are read only now, and no further than the ceiling allows; the
- * question then goes in the stream it was typed in, or comes back to its field where the pack failed or the
- * person has left that stream meanwhile. While a stream's question is being packed, that stream sends nothing else.
+ * Sends a question with files: files are read only now, up to the ceiling; the question then goes in its typed stream,
+ * or returns to its field if packing failed or the person left that stream. A stream being packed sends nothing else.
  */
 export function usePackedSend(streamNow: () => string): PackedSendHands {
   const packing = useRef(new Set<string>());

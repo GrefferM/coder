@@ -1,5 +1,2 @@
-/**
- * How much of the found thing travels. The card draws two lines and cuts with «…», so the whole output of a call
- * has no business crossing the boundary for a snippet nobody will read.
- */
+/** Characters of the found thing that cross the boundary; the card draws two lines. */
 export const RUN_FOUND_LENGTH = 240;

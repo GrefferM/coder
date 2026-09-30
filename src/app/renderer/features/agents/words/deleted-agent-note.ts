@@ -9,8 +9,8 @@ import {
 } from "../constants";
 
 /**
- * «Заберемо сферу EDITOR і її зв'язки. PLANNER і REVIEWER лишаться, кожен сам по собі.» — the
- * thing named first, then what goes or stays with it. A sphere nobody is tied to says the second half itself.
+ * «Заберемо сферу EDITOR і її зв'язки. PLANNER і REVIEWER лишаться, кожен сам по собі.»: the thing first, then what
+ * goes or stays; a sphere with no ties has no second half.
  */
 export function deletedAgentNote(name: string, neighbourNames: string[]): string {
   const last = neighbourNames.at(-1);

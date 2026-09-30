@@ -10,24 +10,17 @@ import type {
 import type { RunHit, RunStore } from "../interfaces";
 
 /**
- * One word looked for through a project's whole record — every question, what every step said, and the calls.
- *
- * Every place the word stands in is a hit of its own: a word is looked for to reach the place it was said, and a
- * flow that said it eight times has eight such places. The price is real — a record where the same sentence
- * stands in every step answers a short word with a great many rows — so the answer is cut at `RUN_HITS_LIMIT`.
- *
- * The list is ordered by the hour of each message alone, newest first, and the run it stands in does not group it:
- * a run that ran for an hour would otherwise sink its freshest message under one that ended before it began. The
- * ceiling cuts off the same order, so what falls away is always the oldest.
+ * One word searched through a project's whole record: every question, what every step said, and the calls. Each
+ * occurrence place is its own hit, cut at `RUN_HITS_LIMIT`; ordered by message hour alone, newest first.
  */
 export class RunSearch {
   constructor(private readonly store: RunStore) {}
 
-  /** Every run of this project the word stands in, each with the found words themselves. */
+  /** Every run of this project containing the word, with the found words. */
   async find(directory: string, query: string): Promise<RunHit[]> {
     const looked = query.trim().toLocaleLowerCase();
 
-    // An empty field is not a search that found nothing: the list stands whole, and nobody is asking anything.
+    // An empty query is no search: the list is returned whole.
     if (looked === "") {
       return [];
     }
@@ -37,8 +30,7 @@ export class RunSearch {
     const asked = await this.store.askedInRuns(runIds);
     const walked = await this.store.walksOf(runIds);
     const stepIds = walked.map((step) => step.id);
-    // Each table is read once for the whole project: a query per run — or worse, per row — on every typed letter is
-    // the one thing this search cannot afford.
+    // Each table is read once for the whole project, not per run or row.
     const made = await this.store.callsIn(stepIds);
     const who = await this.store.whoIn(stepIds);
     const feeds = await this.store.feedsIn(stepIds);
@@ -60,15 +52,11 @@ export class RunSearch {
       );
     }
 
-    // The freshest message first, whichever flow it stands in. Two places of one message — a command and its output
-    // — share an hour, and the sort holds their order, which is the order the walk ran.
+    // Newest message first across flows; the stable sort keeps the walk's order for places of one message.
     return hits.sort((one, other) => other.at.getTime() - one.at.getTime()).slice(0, RUN_HITS_LIMIT);
   }
 
-  /**
-   * Every place the word stands in one run, in the order the walk ran. One place is one hit: a step that says the
-   * word twice is still the one message to walk to.
-   */
+  /** Every place of the word in one run, in walk order; a step saying it twice is one hit. */
   private hitsIn(
     looked: string,
     runId: string,
@@ -81,8 +69,7 @@ export class RunSearch {
     const hits: RunHit[] = [];
 
     for (const question of [...asked].sort((one, other) => one.place - other.place)) {
-      // A match in the question itself gets no row — the rule over the group is already the question, so
-      // the rule becomes the place. It is still a place, and still counted.
+      // A match in the question gets a hit without a step, since the group rule is already the question.
       if (holds(question.asked, looked)) {
         hits.push({
           runId,
@@ -90,7 +77,7 @@ export class RunSearch {
           stepId: null,
           agentId: null,
           agentName: null,
-          // The person's own words stand on no step of the walk, but they were said at an hour like any.
+          // The question stands on no step but has an hour.
           step: null,
           at: question.askedAt,
           found: foundIn(question.asked, looked, true),
@@ -104,8 +91,7 @@ export class RunSearch {
 
       for (const step of steps) {
         const stood = named.get(step.id) ?? null;
-        // The address of the message, read where its card reads it — the step of the walk it
-        // stood on and the hour it began.
+        // The message's address as its card reads it: the step it stood on and its start hour.
         const address = {
           agentId: stood?.agentId ?? null,
           agentName: stood?.name ?? null,
@@ -124,7 +110,7 @@ export class RunSearch {
           });
         }
 
-        // A call says itself with its command and its output, and both are searched the same way.
+        // A call's command and output are searched alike.
         for (const call of made
           .filter((one) => one.step.id === step.id)
           .sort((one, other) => one.place - other.place)) {
@@ -135,7 +121,7 @@ export class RunSearch {
                 questionId: question.id,
                 stepId: step.id,
                 ...address,
-                // A call's output has no sentences, so the found thing starts at the start of its line.
+                // A call's output has no sentences, so the found thing starts at the line start.
                 found: foundIn(words, looked, false),
                 isCall: true,
               });
@@ -149,16 +135,12 @@ export class RunSearch {
   }
 }
 
-/** The word is caught inside a word too («сесії» on «сесі»), and the case it was typed in says nothing. */
+/** Matches inside words too («сесії» on «сесі»), case-insensitively. */
 function holds(words: string, looked: string): boolean {
   return words.toLocaleLowerCase().includes(looked);
 }
 
-/**
- * Which step of the walk each turn stood on. The rule is `levelsOf`'s — the same one the stream and the
- * projection count by — and what belongs here is that a step is named by its own id and fed by the rows the
- * record keeps beside it, gathered across every run the search crossed.
- */
+/** The step level of each turn, by `levelsOf`'s rule (as in the stream and projection), across every run searched. */
 function levelsIn(walked: RunStepEntity[], feeds: RunStepFeedEntity[]): Record<string, number> {
   const fedBy = new Map<string, string[]>();
 
@@ -176,8 +158,8 @@ function levelsIn(walked: RunStepEntity[], feeds: RunStepFeedEntity[]): Record<s
 }
 
 /**
- * The found thing itself — from the start of the sentence it stands in, or of the line where there are no
- * sentences. Only the left edge is cut here; where the words end is the card's business.
+ * The found thing from the start of its sentence (or line, without sentences); only the left edge is cut, the right is
+ * the card's.
  */
 function foundIn(words: string, looked: string, hasSentences: boolean): string {
   const at = words.toLocaleLowerCase().indexOf(looked);

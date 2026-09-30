@@ -79,12 +79,8 @@ export const SWITCHER_ACTION_PADDING = "8px 10px";
 export const SWITCHER_ACTION_FONT_SIZE_PX = 12.5;
 
 /**
- * Two acts over a folder, alike to look at and different underneath. The first asks nothing — a folder
- * with a project in it opens, an empty one becomes a project under the folder's own name. The second looks first,
- * and an empty folder it asks to have named.
- *
- * Neither wears three dots, and the start screen's pair does not either: every door in this app opens
- * something, so dots on two of them would say a difference that is not there.
+ * Two acts over a folder: the first opens a folder with a project or turns an empty one into a project under the
+ * folder's name; the second looks first and asks to name an empty folder.
  */
 export const SWITCHER_OPEN_FOLDER_LABEL = "Відкрити папку";
 export const SWITCHER_NEW_PROJECT_LABEL = "Новий проєкт";
@@ -92,7 +88,7 @@ export const SWITCHER_NEW_PROJECT_LABEL = "Новий проєкт";
 /** Puts the project down and goes back to the start screen. */
 export const SWITCHER_CLOSE_LABEL = "Закрити проєкт";
 
-/** Shows the open project's folder in the system's file manager. */
+/** Shows the open project's folder in the file manager. */
 export const SWITCHER_REVEAL_LABEL = "Показати у Finder";
 
 export const SWITCHER_REVEAL_PADDING = "7px 10px 8px";
@@ -104,7 +100,7 @@ export const SWITCHER_REVEAL_COLOR = SECOND_LEVEL_TEXT_COLOR;
 /** Color a failed reveal or a failed switch is reported in. */
 export const SWITCHER_ERROR_COLOR = "#ff6b6b";
 
-/** What the page goes under while a new project is being named: the canvas stays visible, and stays untouchable. */
+/** Backdrop over the page while a new project is being named; the canvas stays visible but inert. */
 export const SWITCHER_SCRIM_COLOR = "rgba(8, 10, 16, 0.72)";
 
 /** Shown when a project's folder no longer holds one. */

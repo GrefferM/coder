@@ -9,8 +9,8 @@ import {
 } from "../constants";
 
 /**
- * «Заберемо промпт «Правки коду». 3 агенти на ньому лишаться на голій моделі.» — the thing
- * named, then its load. A prompt nobody was given says the second half of itself: nothing goes with it.
+ * «Заберемо промпт «Правки коду». 3 агенти на ньому лишаться на голій моделі.»: the prompt named, then its agents; with
+ * none, it says nothing goes with it.
  */
 export function deletedPromptNote(name: string, agentCount: number): string {
   const named = `${DELETED_PROMPT_NOTE_PREFIX}${name}${DELETED_PROMPT_NOTE_NAMED}`;

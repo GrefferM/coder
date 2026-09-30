@@ -2,7 +2,7 @@ import { BORDER_AT_REST_COLOR, CONTROL_AT_REST_COLOR } from "../../../constants"
 
 /** Stepper metrics. */
 export const STEPPER_STEP = 1;
-/** A whole number by default; a fractional value says how many places it is written to. */
+/** Whole number by default; a fractional value says how many places it is written to. */
 export const STEPPER_PLACES = 0;
 export const STEPPER_GAP_PX = 8;
 export const STEPPER_BUTTON_SIZE_PX = 22;

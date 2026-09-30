@@ -39,7 +39,7 @@ function turn(id: string, secondsIn: number, x: number): WalkTurn {
 
 describe("GraphRuler", () => {
   it("says over every column when that turn began, counted from the question", () => {
-    // A wall clock would say nothing; what a reader wants is how far in it was.
+    // Marks show elapsed time, not wall-clock time.
     render(
       <GraphRuler
         turns={[turn("step-1", 0, 100), turn("step-2", 95, 300)]}

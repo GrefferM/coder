@@ -83,7 +83,7 @@ describe("takenBetween", () => {
       }),
     );
 
-    // The prompt itself never stood in the library here — what went is the agent's hold on it.
+    // The prompt was never in the library here; what went is the agent's hold on it.
     expect(taken.prompts).toEqual([]);
     expect(taken.promptTakenFrom).toEqual([
       {
@@ -122,7 +122,7 @@ describe("takenBetween", () => {
   });
 
   it("counts an agent that went whole once, and not its grants a second time", () => {
-    // The agent is in `agents`; listing its grants again would offer to put back what has no owner.
+    // The agent is in `agents`; listing its grants again would restore what has no owner.
     const taken = takenBetween(
       config({
         agents: [
@@ -142,7 +142,7 @@ describe("takenBetween", () => {
 });
 
 describe("takenBetween on a server", () => {
-  it("takes the server and the grants on it, so the undo can hand both back (36i)", () => {
+  it("takes the server and the grants on it, so the undo can hand both back", () => {
     const server = {
       id: "server-1",
       name: "playwright-mcp",

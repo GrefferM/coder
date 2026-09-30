@@ -10,10 +10,7 @@ import {
 import { Mark } from "../../../../../../../../components";
 import type { SaidBlockProps } from "./interfaces";
 
-/**
- * Words of the open step in a row under a mono label — what came into it, and what it answered. No box
- * around them: a box is how the chat speaks, and this is a record.
- */
+/** Words of the open step in a row under a mono label: what came in, or what it answered. No box. */
 export function SaidBlock({ label, text, isAnswer }: SaidBlockProps) {
   return (
     <div

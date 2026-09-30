@@ -12,7 +12,7 @@ import {
 import type { DataSource } from "typeorm";
 import type { RunTables } from "../interfaces";
 
-/** Every table the record writes into, off one connection — the module and a test both stand the store on this. */
+/** Every table the record writes to, from one connection; shared by the module and tests. */
 export function runTablesOf(dataSource: DataSource): RunTables {
   return {
     runs: dataSource.getRepository(RunEntity),

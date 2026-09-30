@@ -2,7 +2,7 @@ import { AgentChat, ChatTabs } from "../../../../features/conversation";
 import { RunHistory } from "../../../../features/record";
 import type { ChatSectionProps } from "./interfaces";
 
-/** The chat's own section — the two faces of it, the live stream and the list of what has been. */
+/** The chat section: the live stream and the list of past runs. */
 export function ChatSection({
   chat,
   stream,
@@ -24,7 +24,7 @@ export function ChatSection({
         active={stream.tab}
         onFresh={stream.fresh}
         runs={stream.endedRuns.length}
-        // The quiet dot of another conversation, on the list it speaks about.
+        // The quiet dot of another conversation, on the list.
         isNews={chat.isNewsElsewhere}
         onForgetAll={stream.armForgetAll}
         onActiveChange={stream.showTab}
@@ -41,12 +41,11 @@ export function ChatSection({
           said={{
             messages: stream.messages,
             agents: stream.agents,
-            // What is out belongs to the conversation on screen — a run opened out of the
-            // history is a stream like any other, and each turn stands in its own question's block.
+            // What is out belongs to the conversation on screen; each turn stands in its question's block.
             working: chat.working,
             openCalls: chat.openCalls,
             saidAgain: chat.saidAgain,
-            // The message the search stands on — the row's promise, or the match Enter walked to.
+            // The message the search stands on: the row's promise, or the match Enter walked to.
             foundId: stream.foundId,
           }}
           field={{
@@ -63,12 +62,11 @@ export function ChatSection({
           }}
           band={{
             head: stream.head,
-            // There is nothing to write out of an empty stream, so the act stands only where a turn does.
+            // An empty stream has nothing to export.
             onExport: stream.messages.length === 0 ? null : stream.exportChat,
             /*
-              The stream's own field stands over the stream, under the band — one word for both faces of the
-              section, and the count here is this stream's own matches and not the record's.
-            */
+             * The stream's field stands over the stream, one for both faces; the count is this stream's matches, not the record's.
+             */
             search: {
               query: stream.query,
               isTyping: stream.isTyping,

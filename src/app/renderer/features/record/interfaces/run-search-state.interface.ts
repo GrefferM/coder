@@ -1,9 +1,9 @@
 import type { RunHit } from "./index";
 
-/** What the one search over the record hands the list — the hit of every run the word stands in. */
+/** What the search hands the list: the hit of every run containing the word. */
 export interface RunSearchState {
-  /** One hit per run, and the runs the word is not in are simply not here. */
+  /** One hit per run; runs without the word are absent. */
   hits: RunHit[];
-  /** The word this answer was found for — an answer for an older word must not paint the list. */
+  /** The word this answer was found for; an answer for an older word must not paint the list. */
   found: string;
 }

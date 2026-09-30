@@ -25,7 +25,7 @@ describe("Template", () => {
 
     expect(container.firstElementChild).toHaveClass("d-flex", "flex-column", "flex-fill");
   });
-  /** jsdom drops `-webkit-app-region: no-drag` from the style attribute, so the box's presence is what is checked. */
+  /** jsdom drops `-webkit-app-region: no-drag` from the style attribute, so only the box's presence is checked. */
   it("stands its pill in a box of its own, outside the header the window is dragged by", () => {
     const { getByText, container } = render(
       <Template label="Чат" pill={<button type="button">ТЕЗАР</button>}>

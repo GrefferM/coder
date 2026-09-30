@@ -1,6 +1,6 @@
 import type { DataSource } from "typeorm";
 
-/** A test's own database: where it stands, the connection to it, and the two ways to be done with it. */
+/** A test's own database: its location, its connection and the two ways to dispose of it. */
 export interface TestDatabase {
   folder: string;
   dataSource: DataSource;

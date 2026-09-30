@@ -5,11 +5,11 @@ import type { OpenProject } from "../../../../interfaces";
 import type { ProjectWrite } from "../../../project";
 import type { LinkWrites } from "./interfaces";
 
-/** Every write the links make to the project's file, over the project's one writer. */
+/** Every write links make to the project file, through the project's one writer. */
 export function useLinkWrites(project: OpenProject, write: ProjectWrite): LinkWrites {
   const { save, defer } = write;
 
-  /** A link is `from → to`. A line that already stands, or would close a ring, is not drawn. */
+  /** A link is `from → to`; a line that already exists or would close a ring is not drawn. */
   const addLink = useCallback(
     async (fromAgentId: string, toAgentId: string) => {
       if (cannotDrawLink(project.config.links, fromAgentId, toAgentId)) {
@@ -31,7 +31,7 @@ export function useLinkWrites(project: OpenProject, write: ProjectWrite): LinkWr
     [project.config, save],
   );
 
-  /** Takes the link alone, with the same thirty seconds every deletion has. */
+  /** Deletes the link alone, with the usual thirty seconds to undo. */
   const deleteLink = useCallback(
     async (linkId: string) => {
       const gone = project.config.links.find((link) => link.id === linkId) ?? null;

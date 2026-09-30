@@ -1,2 +1,2 @@
-/** Where the pill stands over the field: along its bottom, or along its top where the app's own word is said. */
+/** Where the pill stands: along the bottom, or along the top for the app's own note. */
 export type CanvasPillPlace = "top" | "bottom";

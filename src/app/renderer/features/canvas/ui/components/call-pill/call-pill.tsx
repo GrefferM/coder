@@ -15,14 +15,8 @@ import {
 import type { CallPillProps } from "./interfaces";
 
 /**
- * What the agent is calling this moment, said beside its sphere and nowhere else. No mini-sphere grows, fills or
- * glows for it: the general sphere already says the agent is working.
- *
- * It stands beside the sphere and not beside a mini-sphere, so a call from a source the arc does not show is
- * announced just the same.
- *
- * A call to a server is said by the **server's** name and never by the function's — which function it was is the
- * page's to say. The colour is that source's own, so the pill and the mark the call came from agree.
+ * What the agent is calling now, beside its sphere: a command by its name, a server by the server's name, never the
+ * function. Coloured by the source, like its mark on the arc; also shown for sources the arc does not show.
  */
 export function CallPill({ name, source }: CallPillProps) {
   const color = ARMED_SOURCE_COLOR[source];
@@ -33,8 +27,7 @@ export function CallPill({ name, source }: CallPillProps) {
       style={{
         position: "absolute",
         left: SPHERE_SIZE_PX + CALL_PILL_GAP_PX,
-        // The arc is a circle around this box's own middle, so its highest point is the one place a pill can stand
-        // and stay there while the arc grows and shrinks.
+        // The arc's highest point, the one place where the pill stays fixed as the arc grows or shrinks.
         top: SPHERE_SIZE_PX / 2 - SPHERE_ORB_RADIUS_PX,
         gap: CALL_PILL_GAP_PX,
         padding: CALL_PILL_PADDING,

@@ -12,10 +12,8 @@ import type { ScaleStops, Point } from "../../utils/math";
 import type { ZoomField, ZoomPlace } from "./interfaces";
 
 /**
- * A pan-and-zoom field — pan, scale, box↔content arithmetic, and the left-button drag over empty space.
- *
- * It knows nothing of what stands on it: the canvas draws agents here and the debug projection draws a run,
- * and the field is the same primitive under both. The stops are its own unless a surface keeps its own.
+ * A pan-and-zoom field: pan, scale, box-to-content arithmetic, and the left-button drag over empty space. It knows
+ * nothing of what stands on it.
  */
 export function useZoomField(
   fieldRef: RefObject<HTMLDivElement | null>,
@@ -24,7 +22,7 @@ export function useZoomField(
   opening: ZoomPlace | null,
   stops: ScaleStops = ZOOM_SCALE_STOPS,
 ): ZoomField {
-  // Where this machine last left the view, if it did; the scale is held inside its bounds whatever was noted.
+  // The view as this machine last left it; the scale is held within bounds whatever was noted.
   const [pan, setPan] = useState<Point>(opening?.pan ?? ZOOM_UNMOVED);
   const [isPanning, setIsPanning] = useState(false);
   const [scale, setScale] = useState(
@@ -51,7 +49,7 @@ export function useZoomField(
     };
   }
 
-  /** Scales around a box point, holding what is under it still; callers ask for a step or a fit, never a raw scale. */
+  /** Scales around a box point, keeping what is under it still; callers ask for a step or a fit, never a raw scale. */
   function scaleAround(wanted: number, at: Point) {
     const next = roundedTo(Math.min(stops.max, Math.max(stops.min, wanted)), ZOOM_SCALE_PLACES);
     const held = {
@@ -72,8 +70,8 @@ export function useZoomField(
   }
 
   /**
-   * Double click fits the whole of what stands here; nothing standing leaves the field as it is. The ceiling
-   * is the field's own unless the caller keeps a lower one — the debug projection does.
+   * Double click fits everything; with nothing there the field stays. The ceiling is the field's own unless the caller
+   * passes a lower one.
    */
   function fitAll(points: Point[], ceiling = stops.max) {
     const box = fieldRef.current?.getBoundingClientRect();
@@ -111,7 +109,7 @@ export function useZoomField(
     };
   }
 
-  /** Below the threshold the press stays a click; move/release are watched on the window. */
+  /** Below the threshold the press stays a click; move and release are watched on the window. */
   function grabField(event: MouseEvent) {
     if (event.button !== 0) {
       return;

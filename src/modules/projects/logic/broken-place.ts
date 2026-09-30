@@ -3,13 +3,11 @@ import type { BrokenPlace, BrokenStep } from "../../../contracts";
 import type { ValidationError } from "class-validator";
 
 /**
- * Where a project file first goes wrong, named the way the screen will say it: the named things on the way down
- * to the wrong field, then the field and the rule it broke. Null where the validator refused but named nothing.
+ * Where a project file first goes wrong, as the screen says it: the named things down to the wrong field, then the
+ * field and the broken rule; null where the validator named nothing.
  *
- * The validator answers with a tree, and only its leaves say what is actually wrong — a branch above one merely
- * says that something under it is. So the walk goes down the first failing branch to the first leaf. A branch
- * whose property is a list (`commands`, `parameters`, …) is a named thing: the row under it carries the thing
- * itself, so its name is taken there and the walk goes on inside it.
+ * Walks the first failing branch to its first leaf; a list-valued property (`commands`, `parameters`, …) is a named
+ * thing whose name is read from the row under it.
  */
 export function brokenPlace(errors: ValidationError[]): BrokenPlace | null {
   const trail: BrokenStep[] = [];
@@ -48,7 +46,7 @@ export function brokenPlace(errors: ValidationError[]): BrokenPlace | null {
   return null;
 }
 
-/** A thing's own name, where the row that failed carries the thing: a model's title, a command's name. */
+/** A thing's own name where the failed row carries it: a model's title, a command's name. */
 function nameOf(value: unknown): string | null {
   if (typeof value !== "object" || value === null) {
     return null;

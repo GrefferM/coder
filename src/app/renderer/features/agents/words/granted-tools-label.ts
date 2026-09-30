@@ -21,10 +21,9 @@ import type {
 } from "../../../interfaces";
 
 /**
- * An agent's grants as one line, each name with what is fixed on it; none said in words.
+ * An agent's grants as one line, each name with what is fixed on it; none in words.
  *
- * This line is how a grant is compared with the one saved, so everything that can be granted has to reach it:
- * a grant left out of it can be added or taken away and the tab would never call itself changed.
+ * This line is how a grant is compared with the saved one, so every grantable thing must reach it.
  */
 export function grantedToolsLabel(
   grants: ToolGrant[],
@@ -50,7 +49,7 @@ function grantSaid(grant: ToolGrant, naming: Pick<GrantTargets, "commands" | "se
   return serverSaid(grant, naming.servers);
 }
 
-/** A command by its name, with every value fixed on it in brackets after it. */
+/** A command by name, its fixed values in brackets. */
 function commandSaid(grant: CommandToolGrant, commands: ProjectCommand[]): string {
   const command = commands.find((item) => item.id === grant.commandId) ?? null;
   const name = command?.name ?? grant.commandId;
@@ -70,7 +69,7 @@ function commandSaid(grant: CommandToolGrant, commands: ProjectCommand[]): strin
   return `${name}${GRANTED_TOOLS_PINNED_OPEN}${pinned}${GRANTED_TOOLS_PINNED_CLOSE}`;
 }
 
-/** An agent given as a tool, by its name; one the project no longer holds stands as its id. */
+/** An agent given as a tool, by name; its id when no longer in the project. */
 function agentSaid(grant: AgentToolGrant, agents: Agent[]): string {
   const agent = agents.find((item) => item.id === grant.agentId) ?? null;
 
@@ -78,9 +77,8 @@ function agentSaid(grant: AgentToolGrant, agents: Agent[]): string {
 }
 
 /**
- * A server's function, named after the server it belongs to: the name alone is not its handle — two servers
- * may both call a function `search`, and one swapped for the other has to read as the change it is. A server
- * the project no longer declares stands as its id, the way a command gone stands as its own.
+ * A server's function, named with its server, since two servers may both have `search`; a server no longer declared
+ * shows as its id.
  */
 function serverSaid(grant: McpToolGrant, servers: ProjectMcpServer[]): string {
   const server = servers.find((item) => item.id === grant.serverId) ?? null;

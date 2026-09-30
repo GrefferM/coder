@@ -36,7 +36,7 @@ describe("callOut", () => {
     expect(callOut([held("turn-1", "agent-1")], {}, "agent-1")).toBeNull();
   });
 
-  it("says what this agent's turn has out, and which порода it came from", () => {
+  it("says what this agent's turn has out, and which kind it came from", () => {
     expect(
       callOut(
         [held("turn-1", "agent-1")],
@@ -49,7 +49,7 @@ describe("callOut", () => {
   });
 
   it("reads the same turn the work pill wears where an agent holds several at once", () => {
-    // The rows stand oldest first, and the sphere is no list of works.
+    // Rows stand oldest first.
     const working = [held("turn-1", "agent-1"), held("turn-2", "agent-1")];
 
     expect(

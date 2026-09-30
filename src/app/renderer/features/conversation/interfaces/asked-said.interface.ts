@@ -10,6 +10,6 @@ export interface AskedSaid {
   questionId: string;
   askedAt: number;
   at: number;
-  /** A repeat says nothing again — the words it picks up already stand in the stream. */
+  /** A repeat says nothing again; its words already stand in the stream. */
   isAgain: boolean;
 }

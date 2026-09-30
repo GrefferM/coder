@@ -11,7 +11,7 @@ describe("LinkCounts", () => {
   });
 
   it("leaves an empty direction unsaid rather than saying nought", () => {
-    // The plate names what there is; a direction with nothing in it is not a line of the plate.
+    // An empty direction is not a line of the plate.
     render(<LinkCounts outgoing={2} incoming={0} color="#6fd3d8" />);
 
     expect(screen.getByText("2 вихідні")).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe("LinkCounts", () => {
   });
 
   it("draws the outgoing sample in the agent's own colour", () => {
-    // An outgoing line wears the agent's colour, so its sample must wear it too.
+    // An outgoing line wears the agent's colour, and so does its sample.
     const { container } = render(<LinkCounts outgoing={1} incoming={1} color="#6fd3d8" />);
     const [outgoing] = Array.from(container.querySelectorAll("line"));
 

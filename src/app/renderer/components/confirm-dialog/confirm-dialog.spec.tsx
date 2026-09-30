@@ -53,7 +53,7 @@ describe("ConfirmDialog", () => {
       onDismiss,
     });
 
-    // The scrim is the outer layer, the box it holds is the second.
+    // The outer layer is the scrim, the second the box.
     const [layer, box] = screen.getAllByRole("presentation");
 
     await userEvent.click(layer);

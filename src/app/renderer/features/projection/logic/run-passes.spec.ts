@@ -83,7 +83,7 @@ describe("runPasses", () => {
   });
 
   it("leaves out a question that started no walk, since there is no pass to step into", () => {
-    // Three questions stand in the flow, but only two of them ever went.
+    // Three questions in the flow, only two ever went.
     const passes = runPasses(
       run([
         step(),

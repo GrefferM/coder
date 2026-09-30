@@ -2,12 +2,12 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { withoutColors } from "./without-colors";
 
-/** The escape character a terminal's colours begin with; built here so no control character stands in the source. */
+/** The escape character terminal colours begin with; built so no control character stands in the source. */
 const ESCAPE = String.fromCharCode(27);
 
 describe("withoutColors", () => {
   it("takes the terminal's paint off a server's answer", () => {
-    // Playwright's own call log comes through the server painted, and «[2m» is not a word it said.
+    // Playwright's call log comes through painted; «[2m» is not a word it said.
     assert.equal(
       withoutColors(`${ESCAPE}[2m  - navigating to "https://example.com/"${ESCAPE}[22m`),
       '  - navigating to "https://example.com/"',

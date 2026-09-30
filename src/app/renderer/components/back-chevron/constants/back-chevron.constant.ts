@@ -1,2 +1,2 @@
-/** How big the way back is drawn: one size for every step, so the target is the same wherever it stands. */
+/** Size of the back chevron, the same for every step. */
 export const BACK_CHEVRON_SIZE_PX = 14;

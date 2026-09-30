@@ -1,9 +1,9 @@
-// Plain JavaScript: Electron loads a preload script directly, before bootstrap.js's ts-node registration.
-// One generic bridge over every domain's channels.
+// Plain JavaScript: Electron loads a preload directly, before bootstrap.js registers ts-node. One generic bridge over
+// every domain's channels.
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electronApi", {
-  // A channel answers with a value, never by rejecting; a refusal or failure becomes an error here, in the window.
+  // A refusal or failure answer becomes an error here, in the window.
   invoke: async (channel, payload) => {
     const answer = await ipcRenderer.invoke(channel, payload);
 
@@ -17,7 +17,7 @@ contextBridge.exposeInMainWorld("electronApi", {
 
     return answer.value;
   },
-  // The other direction: the main process speaks first; the listener hears what was said, not the event.
+  // Main-to-renderer direction; the listener gets the message, not the event.
   subscribe: (channel, listener) => {
     const relay = (_event, payload) => listener(payload);
 

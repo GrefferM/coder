@@ -1,6 +1,6 @@
 import type { TurnCall } from "../runs";
 
-/** What the main process says one turn came to: the words, how it ended, and what it counted. */
+/** What one turn came to: the words, how it ended, and what it counted. */
 export interface SaidTurn {
   text: string;
   isStopped: boolean;

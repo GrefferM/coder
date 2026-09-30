@@ -1,6 +1,6 @@
 import { IsString, IsUUID } from "class-validator";
 
-/** The token for one remote server, by the server's own id. An empty value takes the token away. */
+/** The token for one remote server, by its id; an empty value removes it. */
 export class SaveMcpTokenDto {
   @IsUUID()
   declare serverId: string;

@@ -73,7 +73,7 @@ function refusingMachine(failure: string) {
   return invoke;
 }
 
-/** One turn as it is asked, with what the case is about patched into it. */
+/** One turn as asked, with the case's fields patched in. */
 /** A project that declares nothing: neither a command nor a server. */
 const NOTHING_DECLARED: GrantTargets = {
   commands: [],
@@ -111,7 +111,7 @@ function ask(asked = "Розбий текст на тези") {
 
 describe("answerTurn · before the model is troubled", () => {
   it("does not ask the machine at all when a wall stands before the turn", async () => {
-    // Every wall is the walk's own, so it is met here and the model never hears about it.
+    // Walls belong to the walk and are met before the model is asked.
     const invoke = machine(said());
     const answer = await answerTurn(
       turn({
@@ -151,7 +151,7 @@ describe("answerTurn · before the model is troubled", () => {
       temperature: 0.3,
       answerCeiling: 4_096,
       systemPrompt: "Знайди що просять.",
-      // A turn carries the prompt and what was asked, and nothing standing behind it.
+      // A turn carries the prompt and what was asked, nothing more.
       messages: [
         {
           from: "person",
@@ -159,7 +159,7 @@ describe("answerTurn · before the model is troubled", () => {
         },
       ],
       tools: [],
-      // The reach of every declared server rides along, so a granted function finds its own by id.
+      // Every declared server's reach rides along, so a granted function finds its server by id.
       servers: [],
       agents: [],
     });
@@ -185,7 +185,7 @@ describe("answerTurn · what comes back", () => {
   });
 
   it("says the app's own word about a turn that ended without the agent saying its piece", async () => {
-    // The note is ours and stands apart; the cut turn's own text is not made into an answer.
+    // The app's note stands apart; the cut turn's text is not turned into an answer.
     machine(
       said({
         isStopped: true,
@@ -200,22 +200,21 @@ describe("answerTurn · what comes back", () => {
   });
 
   it("reads a refusal at the door as a turn that never began, not as a fall", async () => {
-    // The main process refused before anything was tried — nothing was tried, so nothing failed.
+    // The main process refused before trying, so nothing failed.
     refusingMachine(LLM_NO_KEY);
 
     const answer = await ask();
 
     expect(answer.notStarted).toBe("noKey");
     expect(answer.isFailure).toBe(false);
-    // The sentence stands as the card's own text and not as a note beside it: there are no words of the model to
-    // stand beside, so the card is the sentence.
+    // The sentence is the card's own text, since there are no model words.
     expect(answer.text).toContain("deepseek-v4-flash");
     expect(answer.text).toContain("OpenRouter");
     expect(answer.note).toBeNull();
   });
 
   it("reads any other fall as a fall, and brings nothing back from it", async () => {
-    // The agent wears «упав» until one of its own goes through; what it ran before the fall is lost.
+    // The agent wears «упав» until one of its turns succeeds; calls run before the fall are lost.
     refusingMachine("socket hang up");
 
     const answer = await ask();
@@ -228,7 +227,7 @@ describe("answerTurn · what comes back", () => {
   });
 
   it("brings the provider's own sentence back with the fall, on the rule and for the record", async () => {
-    // A fall that says only that it fell sends the person to a terminal to learn why.
+    // A fall that only says it fell sends the person to a terminal to learn why.
     refusingMachine("404 page not found");
 
     const answer = await ask();
@@ -252,7 +251,7 @@ describe("stopTurn", () => {
   });
 
   it("says nothing about a turn the machine no longer has", async () => {
-    // Stopping what has already come back is not an error to show anyone.
+    // Stopping a turn that already returned is not an error to show.
     refusingMachine("no such turn");
 
     expect(await stopTurn("turn-1")).toBeUndefined();

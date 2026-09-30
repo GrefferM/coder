@@ -1,7 +1,7 @@
 import { walkRing } from "../../utils/focus";
 import type { WalkedRowProps } from "./interfaces";
 
-/** Where the keyboard stands wears the ring — and the pointer moving over a row takes the walk with it. */
+/** The row where the keyboard stands wears the ring; the pointer moving over a row takes the walk with it. */
 export function WalkedRow({ walk, index, borderRadius, children }: WalkedRowProps) {
   const isWalked = index === walk.walked;
 
@@ -16,7 +16,7 @@ export function WalkedRow({ walk, index, borderRadius, children }: WalkedRowProp
       }}
     >
       {children}
-      {/* The ring lies over the row, not under it: a row with a ground of its own would otherwise cover it. */}
+      {/* The ring lies over the row so a row with its own ground does not cover it. */}
       <span
         aria-hidden
         style={{

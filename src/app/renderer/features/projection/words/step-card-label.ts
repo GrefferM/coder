@@ -7,9 +7,8 @@ import { STEP_NOT_STARTED_SPAN, STEP_NOT_STARTED_TOKENS, STEP_SEPARATOR } from "
 import type { WholeStep } from "../../record";
 
 /**
- * «qwen2.5-coder · 48 c · 6 120 ТКН · ЛОКАЛЬНО» — what the turn ran on, what it took and what it cost. A
- * turn that never went out has no span to name, so the time is a dash; its tokens and its money are noughts, and
- * they are true ones — the model was never asked, so there is nothing the record could have failed to keep.
+ * «qwen2.5-coder · 48 c · 6 120 ТКН · ЛОКАЛЬНО»: what the turn ran on, what it took and its cost. A turn that never
+ * went out shows a dash for time and true noughts for tokens and money.
  */
 export function stepCardLabel(step: WholeStep): string {
   const began = stepBegan(step.state);

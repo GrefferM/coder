@@ -27,18 +27,18 @@ import {
 import { ForgetCross, RunRowHead } from "./components";
 import type { RunRowLineProps } from "./interfaces";
 
-/** One run — a heading of what was asked, and the press that opens it in the stream. */
+/** One run: a heading with what was asked, and the press that opens it in the stream. */
 export function RunRowLine({ run, agents, now, onOpen, onForget }: RunRowLineProps) {
   const { isLit, isFocused, handlers } = useInteraction();
-  // What a row does is said in the app's own window, and never in the browser's `title`.
+  // The hint shows in the app's own window, not the browser `title`.
   const said = useHint<HTMLButtonElement>(RUN_HISTORY_OPEN_HINT, isLit, isFocused);
   const forget = useInteraction();
   const started = startedLabel(run, now);
   const isRunning = run.state === RUN_RUNNING;
-  // One step is the walk itself and is not counted — but where nothing was sent it is not a walk,
-  // it is the one line the record keeps of a question that reached nobody, and the row says so.
+  // One step is not counted, except when nothing was sent: that row is the record's only line of a question that
+  // reached nobody.
   const countsSteps = run.steps > 1 || run.state === RUN_NOT_SENT;
-  // The cross stands over the row, so a pointer on it has left the row — one word covers both.
+  // The cross is outside the row, so either one under the pointer raises the row.
   const isRaised = isLit || forget.isLit || forget.isFocused;
 
   return (
@@ -90,8 +90,8 @@ export function RunRowLine({ run, agents, now, onOpen, onForget }: RunRowLinePro
         </Mark>
         {said.hint}
       </button>
-      {/* Beside the row, not inside it — a press to open is not a press to delete. */}
-      {/* A run still going has no delete: the record is being written, and half a record is nobody's. */}
+      {/* Beside the row, not inside it, so opening and deleting are separate presses. */}
+      {/* A running run has no delete, as its record is still being written. */}
       {!isRunning && <ForgetCross press={forget} isRaised={isRaised} onForget={onForget} />}
     </div>
   );

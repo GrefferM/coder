@@ -116,7 +116,7 @@ describe("ProviderPicker", () => {
   });
 
   it("shows the broken tie where the file names a provider nobody declared", () => {
-    // The same broken tie every other field shows, and the field itself stands empty.
+    // A broken tie shows as on every other field, and the field stays empty.
     render(
       <ProviderPicker
         providers={[provider()]}

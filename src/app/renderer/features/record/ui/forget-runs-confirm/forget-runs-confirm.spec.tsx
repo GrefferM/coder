@@ -53,7 +53,7 @@ describe("ForgetRunsConfirm", () => {
   });
 
   it("names the days the list spans, newest first", () => {
-    // The question is about exactly what the list shows, so it says how far back that reaches.
+    // The question says how far back the list reaches.
     const now = new Date();
     const newest = new Date(2026, 8, 6, 10, 0);
     const oldest = new Date(2026, 8, 2, 10, 0);

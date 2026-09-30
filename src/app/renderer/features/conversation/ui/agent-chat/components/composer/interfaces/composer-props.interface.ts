@@ -1,25 +1,25 @@
 import type { PickedAttachment } from "../../../../../../../interfaces";
 
 export interface ComposerProps {
-  /** Whom the stream is aimed at — null while nobody is, and then a question has nowhere to go. */
+  /** The agent the stream is aimed at; `null` when none, so nothing can be sent. */
   agentId: string | null;
   agentName: string;
   isAgentActive: boolean;
-  /** This conversation has a walk out, so the hand under the field is «ЗУПИНИТИ» and nothing is sent. */
+  /** A walk is out: the control is «ЗУПИНИТИ» and nothing is sent. */
   isWalking: boolean;
-  /** What stands typed in this stream; it belongs to the stream, not to the agent. */
+  /** The text typed in this stream; it belongs to the stream, not the agent. */
   draft: string;
   onDraftChange: (draft: string) => void;
-  /** What is attached under the field, shown as chips; none where empty and then no chip row stands. */
+  /** Attachments shown as chips; no chip row when empty. */
   attachments: PickedAttachment[];
-  /** «+ ПРИКРІПИТИ» — opens the native pick; the button stands only while the field is open. */
+  /** «+ ПРИКРІПИТИ»: opens the native pick; shown only while the field is open. */
   onAttach: () => void;
   /** The × on a chip — takes one attachment off by its own path. */
   onDetach: (path: string) => void;
   onSend: () => void;
   onStop: () => void;
-  /** How tall the person pulled the field, or nothing where they never did; then it stands at its least. */
+  /** The height the person pulled the field to; `null` means the least height. */
   fieldHeight: number | null;
-  /** Told at the end of a pull, not on every pixel of it — this is what the machine's note is written from. */
+  /** Called at the end of a pull, not on every pixel. */
   onFieldHeight: (height: number) => void;
 }

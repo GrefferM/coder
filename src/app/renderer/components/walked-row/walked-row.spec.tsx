@@ -12,7 +12,7 @@ function walkStanding(walked: number, walkTo = vi.fn()): ListWalk {
   };
 }
 
-/** The ring is the last thing the row draws, over everything under it. */
+/** The ring is drawn last, over everything under it. */
 function ringOf(name: string): string {
   return (screen.getByText(name).parentElement?.lastElementChild as HTMLElement).style.boxShadow;
 }

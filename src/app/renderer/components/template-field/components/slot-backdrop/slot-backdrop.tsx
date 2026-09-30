@@ -8,13 +8,13 @@ import {
 } from "../../constants";
 import type { SlotBackdropProps } from "./interfaces";
 
-/** The coloured pieces under the transparent glyphs — a declared name in braces is drawn as a slot. */
+/** The coloured pieces under the transparent glyphs; a declared name in braces is drawn as a slot. */
 export function SlotBackdrop({ value, isSlot }: SlotBackdropProps) {
   return (
     <>
       {templateParts(value).map((part, index) => (
         <span
-          // Parts are positional pieces of one string; the index is the identity.
+          // Parts are positional pieces of one string, so the index is the identity.
           key={index}
           style={
             isSlot(part)

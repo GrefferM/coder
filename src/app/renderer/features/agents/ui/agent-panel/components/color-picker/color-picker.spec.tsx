@@ -6,7 +6,7 @@ import { AGENT_COLORS } from "../../../../constants";
 
 describe("ColorPicker", () => {
   it("offers the five colours an agent may take, and no others", () => {
-    // The palette is closed — a colour is how an agent is told apart, not a free choice.
+    // The palette is closed: a colour tells agents apart, not a free choice.
     render(<ColorPicker color={AGENT_COLORS[0]} onColorChange={() => {}} />);
 
     expect(screen.getAllByRole("button")).toHaveLength(AGENT_COLORS.length);

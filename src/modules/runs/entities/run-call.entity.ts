@@ -13,7 +13,7 @@ import { RunStepEntity } from "./run-step.entity";
 import type { RunCallRecord } from "../interfaces";
 import type { ToolSource } from "../../../contracts";
 
-/** The `run_calls` table row — one call inside a step, whichever end it came to. */
+/** A row of `run_calls`: one call inside a step. */
 @Entity(RUN_CALL_TABLE_NAME)
 export class RunCallEntity implements RunCallRecord {
   @PrimaryGeneratedColumn("uuid")
@@ -35,14 +35,13 @@ export class RunCallEntity implements RunCallRecord {
   })
   declare name: string;
 
-  // What the model sent, as JSON, with the pinned values already in it.
+  // What the model sent, as JSON, pinned values included.
   @Column({
     type: "text",
   })
   declare arguments: string;
 
-  // Which of those the person pinned, as JSON — without it a call read back cannot tell a value somebody
-  // fixed from one the model chose.
+  // Which arguments the person pinned, as JSON; tells fixed values from the model's.
   @Column({
     type: "text",
   })
@@ -58,20 +57,20 @@ export class RunCallEntity implements RunCallRecord {
   })
   declare output: string;
 
-  // The words the check said when it refused the call; empty for a call that ran.
+  // The check's words when it refused the call; empty for a call that ran.
   @Column({
     type: "text",
   })
   declare refusal: string;
 
-  // No process, no code: a refused or stopped call has none, and the card draws that absence.
+  // No process, no code: a refused or stopped call has none.
   @Column({
     type: "integer",
     nullable: true,
   })
   declare exitCode: number | null;
 
-  // Which server the call went to, and its name then; a command's call has neither.
+  // The server the call went to and its name then; none for a command's call.
   @Column({
     type: "varchar",
     nullable: true,

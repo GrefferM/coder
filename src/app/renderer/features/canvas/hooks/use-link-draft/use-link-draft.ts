@@ -6,9 +6,8 @@ import type { DrawnLine, LinkDraftState } from "./interfaces";
 import type { Point } from "../../../../utils/math";
 
 /**
- * The line being drawn on the canvas. It leaves a sphere, follows the pointer, and ends one of three ways
- * — drawn onto a sphere that took it, crossed out where it was let go over nothing, or dropped by Escape. A cancelled
- * line is kept only while it fades.
+ * The line being drawn: leaves a sphere, follows the pointer, ends on a sphere, crossed out over nothing, or dropped by
+ * Escape. A cancelled line is kept only while it fades.
  */
 export function useLinkDraft(): LinkDraftState {
   const [drawn, setDrawn] = useState<DrawnLine | null>(null);

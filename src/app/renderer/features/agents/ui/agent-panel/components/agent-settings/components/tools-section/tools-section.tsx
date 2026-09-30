@@ -30,12 +30,8 @@ import type { ToolChoice } from "../../../../../../interfaces";
 import type { ToolsSectionProps } from "./interfaces";
 
 /**
- * The tools of an agent, upper half: the project's **declared commands**. A command is written by hand, one at a
- * time, into the project's own file, so it is chosen by hand here too — the tick grants and revokes, and what is
- * granted stands as a row under the field with the way into its pinned arguments.
- *
- * The servers live in their own section below, connected whole: thirty-three functions of a server and four
- * written commands are not the same kind of thing, and one list of both reads as a heap.
+ * The tools' upper half: the project's declared commands. The tick grants and revokes; each grant is a row under the
+ * field leading to its pinned arguments. Servers are connected whole in their own section.
  */
 export function ToolsSection({
   commands,
@@ -47,17 +43,13 @@ export function ToolsSection({
   onGrantsChange,
   onOpenGrant,
 }: ToolsSectionProps) {
-  /**
-   * Only the grey rest opens this list now. A command's own corner mark names the grant behind it and
-   * opens that grant's page, a server's circle opens the server's own — and the rest, which stands for no one
-   * thing, has nowhere to go but the section it was folded out of.
-   */
+  /** Only the grey rest opens this list; a command's mark opens its grant and a server's circle opens the server. */
   const mine = press !== null && press.group === null ? press : null;
 
   const options = toolChoices(commands, [], {});
   const held = grants.filter(isCommandGrant);
   const chosen = options.filter((option) => grantedOf(option, grants) !== null);
-  // A grant can outlive the command under it, and a broken one is counted nowhere.
+  // A grant can outlive its command; a broken one is counted nowhere.
   const broken = brokenGrants(held, {
     commands,
     servers: [],
@@ -66,7 +58,7 @@ export function ToolsSection({
   });
   const brokenIds = new Set(broken.flatMap((group) => group.rows.map((row) => row.id)));
 
-  /** Tick: grants if not held, revokes if held. It writes the whole draft, so the servers' grants stand. */
+  /** Grants if not held, revokes if held; writes the whole draft, so the servers' grants stand. */
   function toggle(option: ToolChoice) {
     const granted = grantedOf(option, grants);
 
@@ -75,7 +67,7 @@ export function ToolsSection({
     );
   }
 
-  // A grant outlives its command, so the lost group stands even where there is nothing to give at all.
+  // The lost group shows even when there is nothing to give.
   if (options.length === 0) {
     return (
       <FieldSlot label={<SourceGlyph source="command" />} wasValue={wasValue}>

@@ -29,7 +29,7 @@ function ledger(walkId: string, runId: string | null = null): RunLedger {
   };
 }
 
-/** The machine's answers, each channel held or given back as the test needs it. */
+/** The machine's answers, each channel held or given back as the test needs. */
 function machine(held: string[] = []) {
   const releases: Record<string, () => void> = {};
   const sent: Record<string, unknown[]> = {};
@@ -80,8 +80,8 @@ function writer() {
 
 describe("useRecordWriter · the row a question is written into", () => {
   it("keeps the row the first question opened for the second, though the stream was emptied between them", async () => {
-    // Two questions in one breath. The row is settled when each is asked, so «+ НОВИЙ ЧАТ»
-    // reaching the writer in between cannot leave the second one standing without a record.
+    // Two questions in one breath: the row is settled when each is asked, so «+ НОВИЙ ЧАТ» in between cannot leave the
+    // second without a record.
     const { sent, release } = machine([OPEN_RUN_CHANNEL]);
     const { result } = writer();
     const second = ledger("walk-2");
@@ -103,8 +103,7 @@ describe("useRecordWriter · the row a question is written into", () => {
 
 describe("useRecordWriter · what a walk waits for", () => {
   it("waits for its own writes and not for another conversation's", async () => {
-    // A repeat reads the record of its own walk. A row of another conversation still closing is none of
-    // its business — waiting for it would hold the repeat for as long as that conversation goes on writing.
+    // A repeat reads its own walk's record and does not wait for another conversation's row still closing.
     const { release } = machine([CLOSE_RUN_CHANNEL]);
     const { result } = writer();
     let isOtherSettled = false;
@@ -117,12 +116,12 @@ describe("useRecordWriter · what a walk waits for", () => {
 
     await result.current.settled("walk-2");
 
-    // Its own writes are through while the other conversation's closing is still held by the machine.
+    // Its own writes are through while the other conversation's closing is still held.
     expect(isOtherSettled).toBe(false);
 
     act(() => release(CLOSE_RUN_CHANNEL));
 
-    // And the other one is not forgotten either — it settles the moment its own write comes back.
+    // The other one settles when its own write comes back.
     await waitFor(() => expect(isOtherSettled).toBe(true));
   });
 });

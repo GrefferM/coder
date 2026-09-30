@@ -2,8 +2,8 @@
 export interface ToolComplaint {
   /** The parameter the check stopped at. */
   name: string;
-  /** What the type asked for; the call's grey line says this and nothing more. */
+  /** What the type asked for; the call's grey line says only this. */
   wrong: string;
-  /** What came instead, and the list it had to be from — only the model's note carries it. */
+  /** What came instead and the list it had to be from; only the model's note carries it. */
   told: string;
 }

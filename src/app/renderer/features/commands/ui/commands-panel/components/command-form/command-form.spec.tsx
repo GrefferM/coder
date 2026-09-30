@@ -146,10 +146,9 @@ describe("CommandForm", () => {
 
     await user.type(within(card).getByLabelText(PARAMETER_FORM_NAME_LABEL), "print $5");
 
-    // The field says what is wrong; nothing is taken out of the name behind the person.
+    // The field says what is wrong; the name is not altered.
     expect(within(card).getByLabelText(PARAMETER_FORM_NAME_LABEL)).toHaveValue("print $5");
-    // The refusal takes the rule's place — the rule is already on the screen, and saying it again
-    // says nothing new.
+    // The refusal replaces the rule line, which is already on screen.
     expect(screen.getByText(PARAMETER_FORM_NAME_REFUSAL)).toBeInTheDocument();
     expect(screen.queryByText(PARAMETER_FORM_NAME_NOTE)).not.toBeInTheDocument();
     expect(within(card).getByLabelText(PARAMETER_FORM_NAME_LABEL).parentElement).toHaveStyle({
@@ -168,7 +167,7 @@ describe("CommandForm", () => {
 
     await user.type(within(card).getByLabelText(PARAMETER_FORM_NAME_LABEL), "file_2");
 
-    // The rule stands under the name always; what goes away is the refusal.
+    // The rule always stays under the name; only the refusal goes away.
     expect(screen.queryByText(PARAMETER_FORM_NAME_REFUSAL)).not.toBeInTheDocument();
     expect(screen.getByText(PARAMETER_FORM_NAME_NOTE)).toBeInTheDocument();
   });
@@ -214,7 +213,7 @@ describe("CommandForm", () => {
     );
 
     expect(screen.getByText(NAME_TAKEN_COMMAND_NOTE)).toBeInTheDocument();
-    // The box around the input is what carries the field's border, and the mark with it.
+    // The box around the input carries the border and the mark.
     expect(screen.getByLabelText(COMMANDS_PANEL_NAME_FIELD_LABEL).parentElement).toHaveStyle({
       borderColor: FIELD_INVALID_BORDER_COLOR,
     });
@@ -238,7 +237,7 @@ describe("CommandForm", () => {
 
     expect(screen.getByText(COMMAND_RUN_FACTS_LABEL)).toBeInTheDocument();
 
-    // The words get reworded; the spec asks that each of the three stands, not what they say.
+    // Asserts that each of the three facts stands, not their wording.
     for (const fact of COMMAND_RUN_FACTS) {
       expect(screen.getByText(fact)).toBeInTheDocument();
     }
@@ -256,7 +255,7 @@ describe("CommandForm", () => {
       />,
     );
 
-    // The app joins the line and escapes nothing, so the border is said outright.
+    // The app joins the line without escaping, so the border is stated outright.
     expect(screen.getByText(COMMANDS_PANEL_RUN_FIELD_NOTE)).toBeInTheDocument();
   });
 
@@ -272,7 +271,7 @@ describe("CommandForm", () => {
       />,
     );
 
-    // The heaviest text in the app reads where the eye already is — right after the line it is about.
+    // The facts block stands right after the run line it is about.
     const facts = screen.getByText(COMMAND_RUN_FACTS_LABEL);
     const parameters = screen.getByText(COMMAND_FORM_PARAMETERS_LABEL);
 

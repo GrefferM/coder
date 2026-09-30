@@ -36,7 +36,7 @@ describe("walkDrawing", () => {
       walkSpot(drawing.turns[0].place),
       walkSpot(drawing.turns[1].place),
     ]);
-    // The second turn stands a column to the right of the first, in the same top row.
+    // The second turn is a column right of the first, in the same top row.
     expect(drawing.turns[1].at.x).toBeGreaterThan(drawing.turns[0].at.x);
     expect(drawing.turns[1].at.y).toBe(drawing.turns[0].at.y);
   });
@@ -57,7 +57,7 @@ describe("walkDrawing", () => {
   });
 
   it("gives a turn several lines arrive at one head, and takes their own away", () => {
-    // Two identical points in one spot read as a single blot, so the receiver draws it.
+    // Identical heads at one spot would blot, so the receiver draws one.
     const drawing = walkDrawing([step("one", 1), step("two", 2, ["one"]), step("three", 3, ["one", "two"])]);
 
     expect(drawing.heads.map((head) => head.id)).toEqual(["three"]);

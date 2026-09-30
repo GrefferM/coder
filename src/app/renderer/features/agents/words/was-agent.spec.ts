@@ -35,7 +35,7 @@ const PROMPTS: ProjectPrompt[] = [
   }),
 ];
 
-/** The catalogues a field's words are read from — an id becomes the name the person sees. */
+/** Catalogues a field's words are read from, turning ids into names. */
 const NAMING: AgentNaming = {
   models: MODELS,
   prompts: PROMPTS,
@@ -71,7 +71,7 @@ describe("wasAgent", () => {
   });
 
   it("says what a changed field was, in the words its own field shows", () => {
-    // A model and a prompt by their names, the numbers as they are written, the switch as its own word.
+    // A model and prompt by name, numbers as written, the switch as its own word.
     const was = wasAgent(
       draft({
         name: "REVIEWER",
@@ -86,7 +86,7 @@ describe("wasAgent", () => {
     expect(was.name).toBe("EDITOR");
     expect(was.prompt).toBe("Редактор");
     expect(was.maxCalls).toBe("10");
-    // The word says what the field WAS: the draft switched the agent off, so it stood on.
+    // The word says what the field was: the draft switched the agent off, so it was on.
     expect(was.isActive).toBe(AGENT_ACTIVE_ON_LABEL);
   });
 
@@ -136,7 +136,7 @@ describe("wasAgent", () => {
       NAMING,
     );
 
-    // Only the server's field moved, so only it says what it was — and it says nothing of the command.
+    // Only the server field changed, so the command field says nothing.
     expect(was.commandTools).toBe(null);
     expect(was.serverTools).toBe("без інструментів");
   });

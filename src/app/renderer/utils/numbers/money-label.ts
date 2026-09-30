@@ -8,7 +8,7 @@ import {
   UNKNOWN_NUMBER,
 } from "./constants";
 
-/** Money label: two decimals, one width everywhere; a sum under a cent is «<$0.01», so it never reads as nothing. */
+/** Two decimals, one width everywhere; a sum under a cent is «<$0.01», never zero. */
 export function moneyLabel(money: number | null): string {
   if (money === null) {
     return UNKNOWN_NUMBER;
@@ -22,9 +22,8 @@ export function moneyLabel(money: number | null): string {
 }
 
 /**
- * The same sum with nothing rounded away — for the pointer, where a cent's parts still count. Four places
- * throughout, and under the smallest of them the same «<» the step's head uses: «$0.0000» is a lie a spent sum must
- * never tell, so a nought is written only for a true nought.
+ * The sum with four decimals, for the pointer; under the smallest it gives «<», so «$0.0000» is written only for a true
+ * zero.
  */
 export function wholeMoneyLabel(money: number | null): string {
   if (money === null) {

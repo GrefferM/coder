@@ -7,7 +7,7 @@ import {
 } from "../../constants";
 import type { TroubleMarkProps } from "./interfaces";
 
-/** The mark on the ring that says something is missing — a fact or a break, in its own colour. */
+/** The mark on the ring for something missing, a fact or a break, in its own colour. */
 export function TroubleMark({ isBreak, markScale }: TroubleMarkProps) {
   return (
     <span
@@ -21,7 +21,7 @@ export function TroubleMark({ isBreak, markScale }: TroubleMarkProps) {
         color: isBreak ? SPHERE_TROUBLE_BREAK_COLOR : SPHERE_TROUBLE_FACT_COLOR,
         fontSize: SPHERE_TROUBLE_MARK_SIZE_PX,
         lineHeight: 1,
-        // Grows around its own middle, so the mark stays where it sits on the ring.
+        // Scales around its middle, staying where it sits on the ring.
         transform: `scale(${markScale})`,
       }}
     >

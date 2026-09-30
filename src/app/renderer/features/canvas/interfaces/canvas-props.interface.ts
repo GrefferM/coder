@@ -8,9 +8,8 @@ import type { CanvasViewStanding } from "./canvas-view.interface";
 import type { CanvasWriteActs } from "./canvas-write-acts.interface";
 
 /**
- * What the canvas is handed, each part named after what owns it: what stands on it, what is alive on it this
- * moment, what the person has singled out, what it says along its bottom, where it stands — and, apart from
- * those, the acts, grouped by what each acts upon.
+ * What the canvas is handed, by owner: what stands on it, what is alive, what is picked, its bottom notes, its place,
+ * and the acts grouped by target.
  */
 export interface CanvasProps {
   standing: CanvasStanding;

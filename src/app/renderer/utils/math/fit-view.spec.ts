@@ -54,7 +54,7 @@ describe("fitView", () => {
       120,
     );
 
-    // 240 across with the padding, in a box of 480: twice over, which is the ceiling anyway.
+    // 240 wide plus padding in a 480 box gives scale 2, the ceiling.
     expect(fitted?.scale).toBeCloseTo(2);
     expect(fitted?.pan).toEqual({
       x: expect.closeTo(240 - 2000),

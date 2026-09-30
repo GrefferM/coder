@@ -49,8 +49,7 @@ describe("walkPlaces", () => {
   });
 
   it("hangs below what a line goes past, and keeps in the row what it cannot go past", () => {
-    // The line from the first to the third goes along the row, so the second —
-    // which that line goes past — steps down into a lane of its own instead of being flown over.
+    // The line from the first to the third goes along the row, so the second steps down into its own lane.
     const places = walkPlaces([step("one", 1), step("two", 2, ["one"]), step("three", 3, ["one", "two"])]);
 
     expect(places.map((place) => [place.step.id, place.number, place.lane])).toEqual([
@@ -72,8 +71,7 @@ describe("walkPlaces", () => {
   });
 
   it("gives a lane back once its branch has come home, so two branchings in turn share one", () => {
-    // Lanes are reused as a graph of commits reuses them — the height follows the branches
-    // running at once, not every branch of the pass.
+    // Lanes are reused like a commit graph's: height follows the branches running at once.
     const places = walkPlaces([
       step("one", 1),
       step("two", 2, ["one"]),
@@ -86,8 +84,7 @@ describe("walkPlaces", () => {
   });
 
   it("brings a turn where the roads have met back up into the row, when nothing would fly over it", () => {
-    // The third turn was fed by both the first and the second, so it is a joining and not a
-    // branch; the line it seemed to be in the way of travels below anyway, so the row is free for it.
+    // The third turn is a join, not a branch, so it stays in the row.
     const places = walkPlaces([
       step("one", 1),
       step("two", 2, ["one"]),
@@ -99,7 +96,7 @@ describe("walkPlaces", () => {
   });
 
   it("counts the turns of the pass from one, whatever place they hold in the whole flow", () => {
-    // The pass was the flow's second question, so its turns are the flow's fourth, fifth and sixth.
+    // The pass is the flow's second question, so its turns are numbered 4, 5 and 6.
     const places = walkPlaces([step("one", 4), step("two", 5, ["one"]), step("three", 6, ["two"])]);
 
     expect(places.map((place) => place.number)).toEqual([1, 2, 3]);

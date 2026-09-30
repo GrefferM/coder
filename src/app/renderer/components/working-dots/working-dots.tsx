@@ -1,7 +1,7 @@
 import { WORKING_DOTS, WORKING_DOTS_CYCLE_MS, WORKING_DOTS_GAP_PX, WORKING_DOTS_STEP_MS } from "./constants";
 import type { WorkingDotsProps } from "./interfaces";
 
-/** The three dots that run while a turn is out — each fades on its own delay. */
+/** Three dots running while a turn is out, each fading on its own delay. */
 export function WorkingDots({ color, size }: WorkingDotsProps) {
   return (
     <span

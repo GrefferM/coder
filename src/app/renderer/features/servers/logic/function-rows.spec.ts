@@ -50,7 +50,7 @@ describe("functionRows", () => {
   });
 
   it("counts the agents holding each function, and says nothing where none holds it", () => {
-    // «N АГ.» is a count and not a tick — the catalogue hands nothing out.
+    // «N АГ.» is a count, not a tick.
     const rows = functionRows(SERVER_ID, aLook(), [
       holding("agent-1", ["pulls.list"]),
       holding("agent-2", ["pulls.list"]),
@@ -73,15 +73,14 @@ describe("functionRows", () => {
   });
 
   it("says nothing of a grant pointing at a name the server no longer hands over", () => {
-    // It is the agent's trouble and is told in the agent's own tab, where it can be mended. Here it would only
-    // make the head's count disagree with the list's.
+    // A grant on a function the server no longer names is not listed; it is the agent's trouble.
     const rows = functionRows(SERVER_ID, aLook(), [holding("agent-1", ["pulls.merge"])]);
 
     expect(rows.map((row) => row.name)).toEqual(["pulls.create", "pulls.list"]);
   });
 
   it("gives a server that did not answer no lines at all", () => {
-    // A fallen server hands nothing over this time, and that is not the same as its functions having gone.
+    // A fallen server hands nothing over this time, which is not its functions being gone.
     const rows = functionRows(
       SERVER_ID,
       aLook({

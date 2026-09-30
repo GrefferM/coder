@@ -7,10 +7,7 @@ import type { PromptSection } from "../../../features/prompts";
 import type { ProjectActions } from "../hooks/use-project-actions/interfaces";
 import type { WayOut } from "../../../hooks/use-way-out/interfaces";
 
-/**
- * The subjects the open project's screen is worked through, gathered once by the page. Its own hooks take this
- * whole rather than nine or eleven arguments in a row, where nobody could tell which was which.
- */
+/** The subjects the open project's screen works through, gathered once by the page and passed whole to its hooks. */
 export interface PageSubjects {
   project: OpenProject;
   agents: AgentSelection;
@@ -21,8 +18,8 @@ export interface PageSubjects {
   commands: CommandSection;
   servers: ServerSection;
   prompts: PromptSection;
-  /** Every write to the project's file, each subject through its own. */
+  /** Every write to the project file, one per subject. */
   actions: ProjectActions;
-  /** The question an unsaved draft asks before anything takes the person elsewhere. */
+  /** The question an unsaved draft asks before leaving. */
   wayOut: WayOut;
 }

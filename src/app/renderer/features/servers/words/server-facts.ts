@@ -19,17 +19,16 @@ import type { McpLook, ProjectMcpServer } from "../../../interfaces";
 import type { ServerStanding } from "../interfaces";
 
 /**
- * The one line under a server's name — what it is, how much it hands over, and how many agents hold any
- * of it. A server that fell says so in place of its kind, because that is the fact that matters about it just then:
- * «ПРОЦЕС УПАВ · 12 ФУНКЦІЙ · 1 АГЕНТ», where the count is what it handed over while it still stood.
+ * The line under a server's name: what it is, how much it hands over, how many agents hold any of it. A fallen server
+ * says so in place of its kind: «ПРОЦЕС УПАВ · 12 ФУНКЦІЙ · 1 АГЕНТ», the count being what it handed over while it
+ * stood.
  */
 export function serverFacts(server: ProjectMcpServer, stands: ServerStanding): string {
   const { look, clock, functionCount, agentCount } = stands;
 
   /**
-   * A count is given only by a server that has just answered. One nobody has a token for was
-   * never asked, and one being raised right now has not answered yet — in both, last time's number is a number
-   * somebody might believe. The agents stay counted through either: a grant is a person's own doing.
+   * A count comes only from a server that has just answered; never-asked or being-raised servers show none. The agents
+   * stay counted.
    */
   const hasNoCount = clock !== null || serverTrouble(look)?.kind === "tokenMissing";
 
@@ -42,17 +41,17 @@ export function serverFacts(server: ProjectMcpServer, stands: ServerStanding): s
     .join(SERVER_FACTS_SEPARATOR);
 }
 
-/** What the server is, or what has become of it; being asked wins over both, since neither is known yet. */
+/** What the server is, or what became of it; being asked wins over both. */
 function standing(server: ProjectMcpServer, look: McpLook | null, clock: string | null): string {
   if (clock !== null) {
-    // A clock counting up and no bar — how much is left is nobody's to know, and a bar would say it is.
+    // A clock counting up, no bar.
     return `${SERVER_STARTING_LABEL}${SERVER_FACTS_SEPARATOR}${clock}`;
   }
 
   const trouble = serverTrouble(look);
 
   if (trouble !== null) {
-    // A server that never started is not a fallen one, and each reason has its own sentence.
+    // A server that never started is not a fallen one; each reason has its own sentence.
     if (trouble.kind === "tokenMissing") {
       return SERVER_TOKEN_MISSING_LABEL;
     }
@@ -64,15 +63,12 @@ function standing(server: ProjectMcpServer, look: McpLook | null, clock: string 
     return trouble.kind === "unreachable" ? SERVER_UNREACHABLE_LABEL : SERVER_FELL_LABEL;
   }
 
-  /**
-   * A server that has not been raised says that plainly: its kind is the least of what anybody wants to know,
-   * and «ЛОКАЛЬНИЙ» alone read as a server standing quietly in good order.
-   */
+  /** A server not yet raised says so in place of its kind. */
   if (look === null) {
     return SERVER_UNKNOWN_LABEL;
   }
 
-  // What a server is matters less than that it works for nobody, so this stands in place of its kind.
+  // A server that works for nobody says so in place of its kind.
   if (noneAnswered(look)) {
     return `${SERVER_ALIVE_LABEL}${SERVER_FACTS_SEPARATOR}${SERVER_NONE_ANSWERED_LABEL}`;
   }
@@ -80,7 +76,7 @@ function standing(server: ProjectMcpServer, look: McpLook | null, clock: string 
   return server.isLocal ? SERVER_LOCAL_LABEL : SERVER_REMOTE_LABEL;
 }
 
-/** A count in the Ukrainian forms; none at all is said by leaving the fact out, never as a zero. */
+/** A count in Ukrainian forms; zero is left out, never said. */
 function countOf(count: number, forms: [string, string, string]): string | null {
   if (count === 0) {
     return null;

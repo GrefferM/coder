@@ -1,4 +1,4 @@
-/** The rail's chat — one stream for the whole project, under the rule with the machine's own. */
+/** The rail's chat: one stream for the whole project. */
 export function ChatIcon() {
   return (
     <svg

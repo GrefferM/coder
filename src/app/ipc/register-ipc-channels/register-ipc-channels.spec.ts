@@ -158,7 +158,7 @@ describe("registerIpcChannels", () => {
 
     console.error = reported;
 
-    // A library's error object carries the provider's headers and cookies; a terminal is not for those.
+    // A library's error carries the provider's headers and cookies, which must not be logged.
     assert.equal(
       said[0].every((part) => typeof part === "string"),
       true,

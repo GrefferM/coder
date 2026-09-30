@@ -1,7 +1,7 @@
 import type { UnsavedWork } from "../../../interfaces";
 import type { WayOutAsk } from "./way-out-ask.type";
 
-/** The gate every way out of a panel passes through, and the three answers the question has. */
+/** The gate and the three answers to its question. */
 export interface WayOut {
   isHeld: boolean;
   ask: WayOutAsk;

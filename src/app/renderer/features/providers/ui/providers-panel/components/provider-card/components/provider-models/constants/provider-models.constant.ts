@@ -7,7 +7,7 @@ import {
   SECOND_LEVEL_TEXT_COLOR,
 } from "../../../../../../../../../constants";
 
-/** Heading for the models a local provider reports, in the order it gave them. */
+/** Heading for the models a local provider reports, in its order. */
 export const PROVIDER_MODELS_LABEL = "МОДЕЛІ ПРОВАЙДЕРА";
 export const PROVIDER_MODELS_REFRESH_LABEL = "ОНОВИТИ СПИСОК";
 /** Retry label for a provider that said nothing. */
@@ -20,7 +20,7 @@ export const PROVIDER_MODELS_NAME_SEPARATOR = " · ";
 export const PROVIDER_MODELS_SHOWN_LIMIT = 8;
 export const PROVIDER_MODELS_SHOW_ALL_LABEL = "ПОКАЗАТИ ВСІ";
 export const PROVIDER_MODELS_MORE_PREFIX = " · ще ";
-/** Action taking an installed but undeclared model up into the catalogue. */
+/** Takes an installed but undeclared model into the catalogue. */
 export const PROVIDER_MODELS_TAKE_UP_LABEL = "ДОДАТИ В КАТАЛОГ";
 export const PROVIDER_MODELS_CATALOGUE_NOTE =
   "Це те, що лежить на машині. Працюють лише моделі, оголошені в каталозі проєкту.";

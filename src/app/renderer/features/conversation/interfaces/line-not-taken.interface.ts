@@ -6,9 +6,9 @@ export interface LineNotTaken {
   fromId: string;
   /** The agent at its far end — the one that will never be asked. */
   to: Agent;
-  /** The live suppliers the agent at the far end waits for; under two it is no converging point. */
+  /** Live suppliers the far-end agent waits for; under two it is no converging point. */
   awaited: string[];
-  /** The agent the person spoke to, from which the walk's reach is worked out. */
+  /** The agent the person spoke to; the walk's reach is computed from it. */
   startAgentId: string;
   /** The walk this line belongs to, by its own key. */
   runKey: string;

@@ -18,19 +18,15 @@ import {
 import type { WriteNoteProps } from "./interfaces";
 
 /**
- * Write result line. Done: green check, auto-dismisses. Failed: reason and retry, stays until answered. Refused:
- * a red cross and the reason, nothing to retry, and it leaves by itself once it has had time to be read.
+ * Write result line. Done: green check, auto-dismisses. Failed: reason and retry, stays until answered. Refused: red
+ * cross and reason, no retry, leaves by itself after a while.
  */
 export function WriteNote({ note, onRetry, onDismiss }: WriteNoteProps) {
   const isDone = note.reason === null;
-  /** Leaves by itself: a done note at once, a refusal once it has been read; a failed write waits to be answered. */
+  /** Leaves by itself: a done note at once, a refusal after a longer time; a failed write waits to be answered. */
   const leavesAfter = isDone ? WRITE_NOTE_MS : note.isRefusal ? WRITE_NOTE_REFUSAL_MS : null;
   const [isLeaving, setIsLeaving] = useState(false);
-  /**
-   * The note is what the timer stands on, never the hand that takes it away. A caller passing an inline arrow
-   * would hand a fresh hand on every render of the page above, and the two timers would restart under it for as
-   * long as the page kept rendering — a note that never leaves. Held in a ref, as the window's own dismiss is.
-   */
+  /** Held in a ref, so an inline `onDismiss` does not restart the timers on every render. */
   const dismiss = useRef(onDismiss);
 
   useEffect(() => {

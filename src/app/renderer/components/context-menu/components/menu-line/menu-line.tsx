@@ -24,7 +24,7 @@ import {
 } from "../../constants";
 import type { MenuLineProps } from "./interfaces";
 
-/** One menu line — lit on hover, darker and shifted 1px down when pressed. */
+/** One menu line: lit on hover, darker and shifted 1px down when pressed. */
 export function MenuLine({ item, isWalked, onWalk }: MenuLineProps) {
   const { isLit, isPressed, handlers } = useInteraction();
   const isHeld = isPressed && !item.isDisabled;

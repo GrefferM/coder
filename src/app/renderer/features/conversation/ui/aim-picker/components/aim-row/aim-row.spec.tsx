@@ -24,7 +24,7 @@ function acts() {
 
 describe("AimRow", () => {
   it("names the agent as ordinary words, the colour belonging to the dot", () => {
-    // The name is not painted in the agent's colour — the dot carries that.
+    // The name is not painted in the agent's colour; the dot carries it.
     render(<AimRow agent={agent()} isAimed={false} isWalked={false} {...acts()} />);
 
     expect(screen.getByText("Шукач")).toHaveStyle({

@@ -22,7 +22,7 @@ import {
 } from "../../constants";
 import type { AimButtonProps } from "./interfaces";
 
-/** The header's own press — whom the chat is aimed at, and the way to the list. */
+/** The header's press: shows the aimed agent and opens the list. */
 export function AimButton({ aimed, isOpen, onPress }: AimButtonProps) {
   const { isLit, isFocused, handlers } = useInteraction();
 

@@ -29,7 +29,7 @@ describe("linkLine", () => {
 
     expect(line.middle.x).toBe((line.x1 + line.x2) / 2);
     expect(line.middle.y).toBe(0);
-    // The two gaps differ, so the drawn run's middle is not the midpoint between the spheres.
+    // The two gaps differ, so the run's middle is not the spheres' midpoint.
     expect(line.middle.x).not.toBe(TO.x);
   });
 

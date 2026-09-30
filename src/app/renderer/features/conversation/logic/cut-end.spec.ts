@@ -90,7 +90,7 @@ describe("cutEnd", () => {
   });
 
   it("says «stopped» before anything else, since a person's hand ends the turn whatever it had done", () => {
-    // A stopped turn may also have run out of calls; what the record must say is that it was stopped.
+    // A stopped turn may also have run out of calls; the record says stopped.
     expect(
       cutEnd(
         said({

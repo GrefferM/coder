@@ -31,7 +31,7 @@ function entry(directory: string, patch: Partial<ProjectEntry> = {}): ProjectEnt
   };
 }
 
-/** The machine, answering each channel with what the spec put there; a failing channel throws its own reason. */
+/** The machine answers each channel with what the spec supplies; a failing channel throws its reason. */
 function machine(answers: Record<string, unknown> = {}, failing: Record<string, string> = {}) {
   const sent: { channel: string; payload: unknown }[] = [];
   const invoke = vi.fn(async (channel: string, payload?: unknown) => {
@@ -122,7 +122,7 @@ describe("useKnownProjects · what it does over the list", () => {
   });
 
   it("marks the row of a folder that is gone from the disk, rather than saying nothing", async () => {
-    // The project is in the machine's list and no longer on the disk — the row itself must say so.
+    // A project in the machine's list but gone from disk; its row must say so.
     machine(
       {
         [LIST_RECENT_PROJECTS_CHANNEL]: [entry("/tmp/coder"), entry("/tmp/gone")],
@@ -139,7 +139,7 @@ describe("useKnownProjects · what it does over the list", () => {
 
     expect(result.current.known.find((one) => one.directory === "/tmp/gone")?.exists).toBe(false);
     expect(result.current.known.find((one) => one.directory === "/tmp/coder")?.exists).toBe(true);
-    // The list stays open on a row that could not be opened: closing it would hide what just went wrong.
+    // The list stays open on a row that could not be opened.
     expect(onProjectChange).not.toHaveBeenCalled();
     expect(result.current.error).toBeNull();
   });
@@ -163,7 +163,7 @@ describe("useKnownProjects · what it does over the list", () => {
   });
 
   it("takes a chosen folder as a project, whether one is already there or not", async () => {
-    // Opening a folder and starting a project are one act — a folder with no project in it gets one.
+    // Opening a folder and starting a project are one act: a folder without a project gets one.
     const held = machine({
       [LIST_RECENT_PROJECTS_CHANNEL]: [],
       [CHOOSE_DIRECTORY_CHANNEL]: "/tmp/chosen",

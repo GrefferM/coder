@@ -48,7 +48,7 @@ const CONFIG: ProjectConfig = aConfig({
   links: [aLink()],
 });
 
-/** What one deletion took, worked out the way the screen works it out. */
+/** What one deletion took, computed as the screen computes it. */
 function taking(without: ProjectConfig) {
   return takenBetween(CONFIG, without);
 }
@@ -70,7 +70,7 @@ describe("withTakenBack", () => {
       agents: [CONFIG.agents[0]],
       links: [],
     };
-    // REVIEWER was deleted, and then EDITOR too: the line between them has nowhere to come back to.
+    // REVIEWER then EDITOR deleted: the line between them has nowhere to return.
     const alone: ProjectConfig = {
       ...without,
       agents: [],
@@ -120,7 +120,7 @@ describe("withTakenBack", () => {
     };
     const back = withTakenBack(alsoWithoutCommand, taken);
 
-    // The agent comes back as it was — with a grant on nothing, which the sphere marks.
+    // The agent returns as it was, with a grant on nothing, which the sphere marks.
     expect(back.agents.map((one) => one.name)).toEqual(["REVIEWER", "EDITOR"]);
     expect(back.commands).toEqual([]);
     expect(back.agents[1].tools).toEqual(CONFIG.agents[0].tools);
@@ -144,7 +144,7 @@ describe("withTakenBack", () => {
 });
 
 describe("withTakenBack on a server", () => {
-  it("puts the server back with the grants that went with it (36i)", () => {
+  it("puts the server back with the grants that went with it", () => {
     const server = {
       id: "server-1",
       name: "playwright-mcp",

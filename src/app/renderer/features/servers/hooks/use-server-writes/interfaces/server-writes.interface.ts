@@ -1,8 +1,8 @@
 import type { ServerFormValues } from "../../../interfaces";
 
-/** A server declared or changed, and a server taken away with its grants and its secrets. */
+/** A server declared or changed, and a server removed with its grants and secrets. */
 export interface ServerWrites {
-  /** Hands back the server's id: a new one is only named here, and its secrets are held by that name alone. */
+  /** Returns the server's id; a new one is named here and its secrets are held by that name. */
   saveServer: (serverId: string | null, values: ServerFormValues) => Promise<string>;
   deleteServer: (serverId: string) => Promise<void>;
 }

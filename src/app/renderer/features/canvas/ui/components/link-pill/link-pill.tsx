@@ -49,7 +49,7 @@ export function LinkPill({ from, to, at, onDelete }: LinkPillProps) {
         background: LINK_PILL_BACKGROUND_COLOR,
         boxShadow: LINK_PILL_SHADOW,
         whiteSpace: "nowrap",
-        // The layer it stands in lets the pointer through; the pill itself must take it.
+        // The layer it stands in passes the pointer through; the pill must take it.
         pointerEvents: "auto",
       }}
     >

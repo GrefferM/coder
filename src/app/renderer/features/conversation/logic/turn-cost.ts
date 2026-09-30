@@ -17,12 +17,12 @@ export function turnCost(
   return {
     inputTokens,
     outputTokens,
-    // A price nobody wrote is not a zero price, so the turn is counted and its money is not named.
+    // An unwritten price is not zero: the turn is counted, its money is not named.
     money: moneyOf(inputTokens, outputTokens, prices),
   };
 }
 
-/** What the turn came to at those prices, per million tokens; nothing where either price was never written. */
+/** The money at those prices, per million tokens; none where either price is unwritten. */
 function moneyOf(
   inputTokens: number,
   outputTokens: number,

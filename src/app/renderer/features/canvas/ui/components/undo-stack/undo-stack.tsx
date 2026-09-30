@@ -13,7 +13,7 @@ import {
 } from "../undo-line/constants";
 import type { UndoStackProps } from "./interfaces";
 
-/** Every deletion's way back — newest at the bottom and lit, those above dimmer, each on its own clock. */
+/** Every deletion's undo: newest at the bottom and lit, older ones above dimmer, each on its own clock. */
 export function UndoStack({ offers, onUndo }: UndoStackProps) {
   const shown = offers.slice(-UNDO_STACK_SHOWN_MAX);
   const folded = offers.length - shown.length;

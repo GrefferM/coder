@@ -1,6 +1,6 @@
 import { BORDER_AT_REST_COLOR, QUIET_MARK_COLOR, SECOND_LEVEL_TEXT_COLOR } from "../../../../../../../../../constants";
 
-/** Agents whose links come in; a switched-off supplier stays listed, dimmed and uncounted. */
+/** Agents whose links come in; a switched-off one stays listed, dimmed and uncounted. */
 export const SUPPLIERS_LABEL = "ПОСТАЧАЛЬНИКИ";
 export const SUPPLIERS_COUNT_SEPARATOR = " · ";
 export const SUPPLIERS_OF_SEPARATOR = " / ";

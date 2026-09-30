@@ -12,7 +12,7 @@ describe("SaidBlock", () => {
   });
 
   it("stands the turn's own words bright and what came into it quieter", () => {
-    // One is what this step said; the other is another's, carried in.
+    // One is this step's own words, the other is another's carried in.
     const { rerender } = render(<SaidBlock label="ВІДПОВІВ" text="ЗНАЙДЕНО" isAnswer />);
 
     expect(screen.getByText("ЗНАЙДЕНО")).toHaveStyle({

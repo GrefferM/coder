@@ -24,7 +24,7 @@ function slot(patch: Partial<TemplateSlot> = {}): TemplateSlot {
 
 describe("SlotList", () => {
   it("offers the declared names with what each may hold", () => {
-    // «{» offers what is declared, so the line is written out of the command's own parameters.
+    // «{» offers the declared names.
     render(<SlotList offered={[slot()]} walk={walk} onPick={() => {}} />);
 
     expect(screen.getByRole("option")).toHaveTextContent("branch");
@@ -76,7 +76,7 @@ describe("SlotList", () => {
   });
 
   it("keeps the field's own focus, so the letters go on being typed while the list stands", () => {
-    // The arrows walk the names while the line stays the thing being written.
+    // Arrows walk the names while the line stays the thing being written.
     const { container } = render(<SlotList offered={[slot()]} walk={walk} onPick={() => {}} />);
     const list = container.querySelector('[role="listbox"]');
     const held = new MouseEvent("mousedown", {

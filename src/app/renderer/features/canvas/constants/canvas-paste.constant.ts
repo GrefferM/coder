@@ -17,5 +17,5 @@ export const CANVAS_PASTED_PADDING = "4px 9px";
 export const CANVAS_PASTED_FONT_SIZE_PX = 9;
 export const CANVAS_PASTED_LETTER_SPACING_PX = 1.5;
 
-/** Label offset right of the copy's middle — just clear of the ring. */
+/** Label offset right of the copy's middle, clear of the ring. */
 export const CANVAS_PASTED_LABEL_OFFSET_X_PX = 116;

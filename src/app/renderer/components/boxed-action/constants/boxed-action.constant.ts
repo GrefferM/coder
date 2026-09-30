@@ -1,7 +1,4 @@
-/**
- * A plain action in a box of its own — «СКАСУВАТИ» beside the ceiling, «ПЕРЕПИТАТИ» on the
- * state row. Neither accent nor danger: it is a plain doing, and the colour says as much.
- */
+/** A plain action in its own box — «СКАСУВАТИ», «ПЕРЕПИТАТИ»; neither accent nor danger. */
 export const BOXED_ACTION_PADDING = "4px 9px";
 export const BOXED_ACTION_BORDER_RADIUS_PX = 7;
 export const BOXED_ACTION_BORDER_COLOR = "#262b3a";

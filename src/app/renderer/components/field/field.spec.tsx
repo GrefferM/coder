@@ -6,7 +6,7 @@ import { Field } from "./field";
 
 const LABEL = "ВХІДНА · $/1M";
 
-/** The field is controlled: what it refuses never reaches the value it is given back. */
+/** The field is controlled: what it refuses never reaches the value. */
 function TypedField({ type }: { type: "text" | "number" }) {
   const [value, setValue] = useState("");
 
@@ -20,7 +20,7 @@ describe("Field", () => {
     render(<TypedField type="number" />);
     await user.type(screen.getByLabelText(LABEL), "-1.5");
 
-    // The minus never goes in, so what stands is the number without it.
+    // The minus never goes in.
     expect(screen.getByLabelText(LABEL)).toHaveValue(1.5);
   });
 
@@ -42,7 +42,7 @@ describe("Field", () => {
   it("keeps the system dictionary off a field that holds a name or a line, and on one that holds prose", () => {
     const { rerender } = render(<Field label={LABEL} value="npm test -- {pattern}" onChange={() => {}} />);
 
-    // «npm» is not a misspelling; a red line under it would say a mistake where there is none.
+    // Spellcheck is off: «npm» is not a misspelling.
     expect(screen.getByLabelText(LABEL)).toHaveAttribute("spellcheck", "false");
 
     rerender(<Field label={LABEL} value="Прогнати тести проєкту" isProse onChange={() => {}} />);

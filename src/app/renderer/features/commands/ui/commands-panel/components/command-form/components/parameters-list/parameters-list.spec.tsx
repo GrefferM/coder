@@ -65,7 +65,7 @@ describe("ParametersList", () => {
   });
 
   it("says of a parameter that it is written nowhere in the run line", () => {
-    // A parameter the line never spells out is one the command cannot actually take.
+    // A parameter the line never spells out cannot actually be taken.
     render(<ParametersList run="" parameters={[parameter()]} usedNames={[]} openParameterId={null} {...acts()} />);
 
     expect(screen.getByText(PARAMETER_ROW_UNUSED_LABEL)).toBeInTheDocument();

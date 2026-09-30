@@ -28,7 +28,7 @@ function step(id: string, place: number, agentName: string): WholeStep {
   });
 }
 
-// Handed in the wrong order on purpose: the pass is read by `place`, not by the order the record gave.
+// Given out of order: the pass is read by `place`.
 const WALK = [step("step-3", 3, "REVIEWER"), step("step-1", 1, "EDITOR"), step("step-2", 2, "TESTER")];
 
 describe("stepPlace", () => {

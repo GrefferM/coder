@@ -24,7 +24,7 @@ describe("not-started notes", () => {
   });
 
   it("names the provider whose address is empty, whoever runs it", () => {
-    // RunPod is somebody else's machine and its address is still the person's own to write.
+    // RunPod is someone else's machine, but its address is still the person's to write.
     expect(noAddressNote("ollama")).toBe("У провайдера ollama порожнє поле адреси — стукати нікуди.");
     expect(noAddressNote("RunPod")).toBe("У провайдера RunPod порожнє поле адреси — стукати нікуди.");
   });
@@ -61,13 +61,13 @@ describe("notStartedNote", () => {
   });
 
   it("falls back to what the model says where the provider is not there to be named", () => {
-    // Without a declared provider there is no name to use, so the model's own word for it stands.
+    // Without a declared provider the model's own word is used.
     expect(notStartedNote("noKey", model, null)).toBe(noKeyNote("hy-mt2", "tencent"));
     expect(notStartedNote("noAddress", model, null)).toBe(noAddressNote("tencent"));
   });
 
   it("says the sentence about the machine where the provider is declared but silent", () => {
-    // A silent provider has nothing to name — it is the machine that is not answering.
+    // A silent provider has nothing to name.
     expect(notStartedNote("silent", model, provider)).toBe(CHAT_PROVIDER_SILENT_NOTE);
   });
 });

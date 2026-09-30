@@ -71,7 +71,7 @@ describe("runChanges", () => {
   });
 
   it("says nothing about an agent nothing has moved about", () => {
-    // The card is a comparison, and a thing held against itself says nothing.
+    // An unchanged agent yields no change.
     const same = aStep({
       agentId: "agent-1",
       model: "claude-opus-4.1",

@@ -3,10 +3,7 @@ import { MCP_SIGN_INS } from "../constants";
 import { McpSignIn } from "../interfaces";
 import { COMMAND_NAME_PATTERN } from "../../../contracts";
 
-/**
- * One MCP server the project declares — only how to reach it. Everything that moves is live and written to no
- * file, and a token never stands here: it goes to this machine's keychain.
- */
+/** An MCP server the project declares, only how to reach it; a token goes to the keychain, never here. */
 export class ProjectMcpServerDto {
   @IsUUID()
   declare id: string;
@@ -29,7 +26,7 @@ export class ProjectMcpServerDto {
   @IsIn(MCP_SIGN_INS)
   declare signIn: McpSignIn;
 
-  /** The names of the environment variables the process is started with, and the names alone. */
+  /** Names of the environment variables the process starts with, names only. */
   @IsArray()
   @IsString({
     each: true,

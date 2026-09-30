@@ -2,13 +2,9 @@ import type { ProjectMcpServer } from "../../../interfaces";
 import type { ServerFormValues } from "../interfaces";
 
 /**
- * What the project file holds for one kind of server. The switch in the head of the form says
- * which kind this is, and only that kind's truth is written: the other half of the form keeps whatever was typed
- * in it — switching back must cost nothing — but the file holds the other kind's fields **empty rather than
- * absent**, because one shape reads either way round.
- *
- * A remote server may be signed in to by a token, through the browser, or not at all: a public one exists, and
- * `none` is what the file calls that. A local server signs in to nothing either way.
+ * What the project file holds for one kind of server: only that kind's fields are filled, the other kind's are empty
+ * rather than absent. A remote server signs in by token, through the browser, or not at all (`none`); a local one signs
+ * in to nothing.
  */
 export function declaredServer(values: ServerFormValues): Omit<ProjectMcpServer, "id"> {
   const name = values.name.trim();

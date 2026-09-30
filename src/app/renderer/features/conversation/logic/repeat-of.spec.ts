@@ -43,7 +43,7 @@ function run(walk: WholeStep[]): WholeRun {
       place: at + 1,
       asked: "Розбий текст на тези",
       askedAt: new Date("2026-08-22T19:26:56"),
-      // Whom this question stood before — the agent a repeat of it goes back to.
+      // The agent this question stood before, which a repeat goes back to.
       askedAgentId: walk.find((one) => one.questionId === id)?.agentId ?? "agent-1",
     })),
     steps: walk.length,
@@ -71,13 +71,13 @@ describe("repeatOf", () => {
     expect(repeat?.runKey).toBe("walk-new");
     expect(repeat?.askedAt).toBe(new Date("2026-08-22T19:26:56").getTime());
     expect(repeat?.startAgentId).toBe("agent-1");
-    // The turn that ended in anything but an answer is what runs again.
+    // A turn that ended in anything but an answer runs again.
     expect(repeat?.left.again.map((one) => one.agentId)).toEqual(["agent-1"]);
   });
 
   it("goes back to the agent that very question stood before, and not to the one the flow began with", () => {
-    // The bug this guards: a repeat started the walk from the flow's first agent, so a question handed on to
-    // another agent was asked again of somebody it had never been put to.
+    // Guards a repeat starting from the flow's first agent, which re-asked a question handed on to another agent of
+    // someone it was never put to.
     const repeat = repeatOf(
       run([
         step({
@@ -101,7 +101,7 @@ describe("repeatOf", () => {
   });
 
   it("stands still where the record holds no such question", () => {
-    // A record deleted or rewritten by hand has nothing to pick up, and the repeat says so by doing nothing.
+    // A record deleted or hand-edited has nothing to pick up; the repeat does nothing.
     expect(repeatOf(run([step()]), "question-gone", null, "walk-new")).toBeNull();
   });
 
@@ -126,7 +126,7 @@ describe("repeatOf", () => {
   });
 
   it("carries whom a question that never went was aimed at", () => {
-    // No step was written for it, so the repeat has to be told the address.
+    // No step was written for it, so the repeat is given the address.
     const repeat = repeatOf(run([step()]), "question-1", "agent-2", "walk-new");
 
     expect(repeat?.notSentTo).toBe("agent-2");

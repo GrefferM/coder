@@ -32,8 +32,8 @@ const COMMAND: ProjectCommand = aCommand({
   run: "find .",
 });
 
-/** One turn as it is asked, with what the case is about patched into it. */
-/** A project that declares this one command and no server at all. */
+/** One turn as it is asked, with the case's fields patched in. */
+/** A project declaring this one command and no server. */
 const ONLY_COMMANDS = {
   commands: [COMMAND],
   agents: [],
@@ -59,7 +59,7 @@ function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
   };
 }
 
-/** What the wall said, named by the word it wears — a turn that never began, or the way through. */
+/** What the wall said, by its word: a turn that never began, or the way through. */
 function wall(patch: Partial<Agent> = {}, model: ProjectModel | null = MODEL, prompt: ProjectPrompt | null = null) {
   return turnWall(
     turn({
@@ -78,7 +78,7 @@ function wall(patch: Partial<Agent> = {}, model: ProjectModel | null = MODEL, pr
 
 const SERVER_ID = "99999999-9999-4999-8999-999999999999";
 
-/** A project that declares one server, and what that server said when it was asked. */
+/** A project declaring one server, and what that server said when asked. */
 const WITH_SERVER = {
   commands: [COMMAND],
   agents: [],
@@ -144,7 +144,7 @@ describe("turnWall", () => {
   });
 
   it("stands the turn on a granted function the server no longer gives", () => {
-    // «хід не йде без функції» — passing it over silently would be another walk under the same question.
+    // «хід не йде без функції»: skipping it silently would make another walk under the same question.
     const stood = turnWall(
       turn({
         agent: {
@@ -187,7 +187,7 @@ describe("turnWall", () => {
   });
 
   it("lets the turn through while the server has not answered yet", () => {
-    // A starting server's functions are unknown this moment, not gone, and a grant on it is whole.
+    // A starting server's functions are unknown, not gone, so a grant on it is whole.
     const way = turnWall(
       turn({
         agent: {
@@ -212,7 +212,7 @@ describe("turnWall", () => {
   });
 
   it("stops a turn whose provider carries no functions while the agent holds grants", () => {
-    // Dropping them quietly would read as an answer made with the tools the person granted.
+    // Dropping them silently would pass off an answer as made with the granted tools.
     const stood = turnWall(
       turn({
         agent: {

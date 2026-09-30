@@ -1,5 +1,5 @@
 export interface ChosenLinkState {
-  /** The link standing chosen; no panel opens for a link, so the canvas holds it. */
+  /** The chosen link; the canvas holds it because no panel opens for a link. */
   chosenLinkId: string | null;
   choose: (linkId: string | null) => void;
 }

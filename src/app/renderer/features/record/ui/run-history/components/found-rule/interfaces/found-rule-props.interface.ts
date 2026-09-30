@@ -1,8 +1,8 @@
 import type { RunRow } from "../../../../../interfaces";
 
 export interface FoundRuleProps {
-  /** The run the rows under this rule belong to — its day, its hour and the start of its question. */
+  /** The run the rows under the rule belong to. */
   run: RunRow;
-  /** Today, so «СЬОГОДНІ» can be said as a word rather than as a date. */
+  /** Today, so «СЬОГОДНІ» can be a word rather than a date. */
   now: Date;
 }

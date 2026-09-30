@@ -1,6 +1,6 @@
 import { IsInt, IsNotEmpty, IsString, IsUUID, Min } from "class-validator";
 
-/** A run beginning: the project it belongs to, whom the person asked, and what they asked. */
+/** A run beginning: its project, whom the person asked, and what. */
 export class OpenRunDto {
   @IsString()
   @IsNotEmpty()
@@ -9,21 +9,21 @@ export class OpenRunDto {
   @IsUUID()
   declare startedByAgentId: string;
 
-  /** What that agent was called and coloured then — the row is named by this and not by a later step. */
+  /** That agent's name and colour then; the row is named by this, not a later step. */
   @IsString()
   declare startedByAgentName: string;
 
   @IsString()
   declare startedByAgentColor: string;
 
-  /** The question's own id, minted the moment it was asked — the record keeps it, not another. */
+  /** The question's own id, minted when it was asked. */
   @IsUUID()
   declare questionId: string;
 
   @IsString()
   declare asked: string;
 
-  /** When the person asked, not when the first step landed: a run begins with the question. */
+  /** When the person asked, not when the first step landed. */
   @IsInt()
   @Min(0)
   declare startedAt: number;

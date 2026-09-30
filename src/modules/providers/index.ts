@@ -1,4 +1,4 @@
-// The `providers` module's surface: the known providers and what this machine holds for each.
+// The known providers and what this machine holds for each.
 export * from "./constants";
 export * from "./dto";
 export * from "./interfaces";

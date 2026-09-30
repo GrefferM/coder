@@ -24,7 +24,7 @@ import {
 } from "./constants";
 import type { UndoLineProps } from "./interfaces";
 
-/** What a deletion took, its way back, and the seconds that way back has left. */
+/** What a deletion took, its undo, and the seconds left. */
 export function UndoLine({ message, secondsLeft, isOlder = false, onUndo }: UndoLineProps) {
   return (
     <div

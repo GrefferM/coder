@@ -1,8 +1,8 @@
 import type { ChatMessage, HandoffSaid } from "../interfaces";
 
 /**
- * The row one link becomes in the stream: «ПЕРЕДАЄ» where the work went down it, «НЕ ПЕРЕДАЄ · ВИМКНЕНИЙ»
- * where it could not, and with no sender a row about the person's own question. It is the app speaking.
+ * The stream row for one link, spoken by the app: «ПЕРЕДАЄ» where work went down it, «НЕ ПЕРЕДАЄ · ВИМКНЕНИЙ» where it
+ * could not, and for no sender a row about the person's own question.
  */
 export function handoffCard(said: HandoffSaid): ChatMessage {
   const spoke = said.fromAgentId ?? said.toAgentId;
@@ -24,7 +24,7 @@ export function handoffCard(said: HandoffSaid): ChatMessage {
     wouldGo: null,
     began: null,
     stepId: null,
-    // The walk this row belongs to, so a repeat finds its question by the walk and not by the clock.
+    // The walk this row belongs to, so a repeat finds its question by walk rather than by time.
     walkId: said.runKey,
     note: null,
     asked: null,

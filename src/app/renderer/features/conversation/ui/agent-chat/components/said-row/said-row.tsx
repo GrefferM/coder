@@ -22,8 +22,8 @@ import { Mark } from "../../../../../../components";
 import type { SaidRowProps } from "./interfaces";
 
 /**
- * What the app itself says about a turn — on the rule, never in a card. The repeat stands under
- * that rule, and alone where there are no words.
+ * What the app itself says about a turn, on the rule rather than in a card; the repeat sits under the rule, alone when
+ * there are no words.
  */
 export function SaidRow({ words, onAskAgain = null }: SaidRowProps) {
   const again = useInteraction();

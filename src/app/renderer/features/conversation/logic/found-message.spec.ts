@@ -51,7 +51,7 @@ describe("foundMessage", () => {
   });
 
   it("names the person's own card where the hit stands in the question itself", () => {
-    // A hit with no step is one in the words the person wrote, and that card is where the press lands.
+    // A hit with no step is in the person's own words, and that card is the target.
     const messages = [
       said({
         id: "asked-1",
@@ -78,7 +78,7 @@ describe("foundMessage", () => {
   });
 
   it("names nothing where the stream does not hold that message at all", () => {
-    // A run read out of the record whose stream is another one's: there is nowhere to ride, and nothing is marked.
+    // A run read from the record whose stream is another's: nothing to scroll to, nothing marked.
     expect(
       foundMessage(
         [said()],

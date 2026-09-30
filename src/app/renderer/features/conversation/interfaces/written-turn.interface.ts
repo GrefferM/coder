@@ -2,7 +2,7 @@ import type { Agent, ProjectModel, TurnCall, TurnHandoff } from "../../../interf
 import type { ChatCost } from "./chat-cost.interface";
 import type { IncomingWork } from "./incoming-work.interface";
 
-/** One finished turn as the record takes it — what it ran with, what it said, and where it went. */
+/** One finished turn as the record takes it: what it ran with, what it said, where it went. */
 export interface WrittenTurn {
   agent: Agent;
   model: ProjectModel | null;

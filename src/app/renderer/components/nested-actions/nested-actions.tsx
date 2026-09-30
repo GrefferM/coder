@@ -22,7 +22,7 @@ import {
 } from "./constants";
 import type { NestedActionsProps } from "./interfaces";
 
-/** Cancel/confirm pair of a nested block — mono, right-aligned, distinct from the panel's own actions. */
+/** Cancel/confirm pair of a nested block: mono, right-aligned, distinct from the panel's own actions. */
 export function NestedActions({
   cancelLabel,
   confirmLabel,

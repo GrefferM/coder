@@ -1,13 +1,8 @@
 import type { LevelNode } from "./level-node.interface";
 
 /**
- * Which step of the walk each turn stands on: a turn nobody fed on the first, every other one below the deepest
- * that fed it, turns that ran at once on the same step.
- *
- * The rule is one, and three places ask it — the stream counts it over its own cards, the projection over the
- * steps of a run, and the record's search over the steps of many runs at once. Two of those are in the window and
- * one is behind the bridge, which is why the rule stands here: counted apart it could be corrected once, and then
- * a turn would stand on one step in the stream and another in the search, about the same walk.
+ * The step of the walk each turn stands on: unfed turns on the first, others below the deepest that fed them,
+ * simultaneous turns on the same step. Shared by the stream, the projection and the record's search.
  */
 export function levelsOf(nodes: LevelNode[]): Record<string, number> {
   const stood = new Map(nodes.filter((node) => node.at !== null).map((node) => [node.at, node]));

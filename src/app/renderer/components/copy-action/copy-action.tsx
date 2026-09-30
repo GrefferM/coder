@@ -3,11 +3,7 @@ import { TextAction } from "../text-action";
 import { COPY_ACTION_LABEL, COPY_ACTION_TAKEN_LABEL, COPY_ACTION_TAKEN_MS } from "./constants";
 import type { CopyActionProps } from "./interfaces";
 
-/**
- * «копіюємо відповідь і мовчимо» — a text taken away whole, and nothing done to it and nothing
- * suggested about it. The word swaps for a moment after the press, because an action that answers nothing is
- * pressed again.
- */
+/** Copies a text whole, silently; the label swaps briefly after the press. */
 export function CopyAction({ text }: CopyActionProps) {
   const [isTaken, setIsTaken] = useState(false);
 
@@ -28,8 +24,7 @@ export function CopyAction({ text }: CopyActionProps) {
         void navigator.clipboard
           ?.writeText(text)
           .then(() => setIsTaken(true))
-          // A clipboard the machine refuses is not this row's business: the word stands as it was, and the
-          // refusal is caught here rather than thrown at the app, which would take a turn down with it.
+          // A refused clipboard write leaves the label as it was and is caught here.
           .catch(() => setIsTaken(false));
       }}
     />

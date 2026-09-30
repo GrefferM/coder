@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 import { type SidePanelRealm } from "./side-panel-realm.type";
 
-/** One rail item: button, panel content, unsaved flag, and scope — the rail draws a rule between the two scopes. */
+/** One rail item: button, panel content, unsaved flag, and scope (the rail draws a rule between scopes). */
 export interface SidePanelItem {
   id: string;
   realm: SidePanelRealm;

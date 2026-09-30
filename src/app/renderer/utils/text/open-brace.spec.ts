@@ -25,7 +25,7 @@ describe("openBrace", () => {
   });
 
   it("takes nothing where a space has ended the brace: a name has no spaces in it", () => {
-    // What a parameter may be named is letters, digits and «_» — a space is not one of them.
+    // A parameter name is letters, digits and «_»; a space is not allowed.
     expect(openBrace("say {hello there", 16)).toBeNull();
   });
 

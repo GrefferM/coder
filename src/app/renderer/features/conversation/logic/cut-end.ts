@@ -5,8 +5,8 @@ import { RUN_STEP_CALLS, RUN_STEP_CEILING, RUN_STEP_SILENT, RUN_STEP_STOPPED } f
 import type { CutEnd, SaidTurn } from "../interfaces";
 
 /**
- * Four ways a turn ends without the agent saying its piece, each with an end of its own; a turn that
- * came to none of them said something, and its own words stand instead.
+ * The four ways a turn ends without the agent saying its piece, each with its own end; otherwise null and its own words
+ * stand.
  */
 export function cutEnd(said: SaidTurn, maxCalls: number, answerCeiling: number): CutEnd | null {
   if (said.isStopped) {

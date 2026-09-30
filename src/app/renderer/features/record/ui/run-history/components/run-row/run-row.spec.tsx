@@ -19,7 +19,7 @@ import type { RunRow } from "../../../../interfaces";
 const NOW = new Date(2026, 8, 6, 18, 0);
 const ASKED_AT = new Date(2026, 8, 6, 14, 5);
 
-// The project as it stands today — the head of the row looks its name up here, by the agent's id.
+// The project's agents; the head looks the name up by id.
 const AGENTS: NamedAgent[] = [
   {
     id: "agent-1",
@@ -50,7 +50,7 @@ function row(patch: Partial<RunRow> = {}): RunRow {
 
 describe("RunRowLine", () => {
   it("names the money as a word where nothing was spent, «—» reading as a sum nobody counted", () => {
-    // A flow that sent nothing spent nothing, and the row says so in words rather than in a dash.
+    // A flow that sent nothing says so in words, not a dash.
     render(
       <RunRowLine
         run={row({
@@ -69,8 +69,7 @@ describe("RunRowLine", () => {
   });
 
   it("counts the one step of a flow that sent nothing, that step being no walk but the record of a question", () => {
-    // One step is the walk itself and goes uncounted — but where nothing went there was no walk,
-    // and the line would otherwise say only what was not spent.
+    // One step goes uncounted, except when nothing was sent.
     render(
       <RunRowLine
         run={row({
@@ -112,7 +111,7 @@ describe("RunRowLine", () => {
   });
 
   it("says when a flow began where that is not the day it stands under", () => {
-    // A flow asked again today is grouped by today, so it says under itself where it started.
+    // A flow re-asked today says under itself where it started.
     const began = new Date(2026, 8, 4, 9, 0);
 
     render(
@@ -145,7 +144,7 @@ describe("RunRowLine", () => {
   });
 
   it("offers no deletion while the run is still going, half a record being nobody's", async () => {
-    // The cross stands beside the row, and only over a record that is finished.
+    // The cross stands beside the row, only over a finished record.
     const onForget = vi.fn();
     const { rerender } = render(
       <RunRowLine

@@ -38,7 +38,7 @@ describe("Dot", () => {
   });
 
   it("says what it stands for where it stands alone, and says nothing beside a word", () => {
-    // A dot that is a sign of its own is named for a reader who cannot see it.
+    // A dot that stands alone is named for readers who cannot see it.
     const { getByLabelText, container, rerender } = render(<Dot color="#f0a5ac" size={5} label="Щось чекає руки" />);
 
     expect(getByLabelText("Щось чекає руки")).toBeInTheDocument();

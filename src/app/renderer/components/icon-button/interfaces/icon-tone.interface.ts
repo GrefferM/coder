@@ -1,4 +1,4 @@
-/** The colours of a glyph button: at rest, lit under the pointer or the keyboard, and dead where it cannot be pressed. */
+/** Glyph button colours: at rest, lit (pointer or keyboard), and dead. */
 export interface IconTone {
   rest: string;
   lit: string;

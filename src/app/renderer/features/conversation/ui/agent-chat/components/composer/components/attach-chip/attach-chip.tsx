@@ -26,7 +26,7 @@ import {
 } from "../../../../constants";
 import type { AttachChipProps } from "./interfaces";
 
-/** One attached file or folder, before the question goes: its icon, name, weight, and the × that takes it off. */
+/** One attached file or folder: icon, name, weight and a × that detaches it. */
 export function AttachChip({ attachment, onDetach }: AttachChipProps) {
   const close = useInteraction();
   const name = attachedName(attachment.name, attachment.kind);

@@ -1,19 +1,16 @@
 /**
- * What each of the agent's fields was before this draft changed it, said in the words the field itself
- * shows. Null where the field stands as it was saved — and everything is null while nothing is saved yet.
+ * What each field was before this draft changed it, worded as the field shows it; null where unchanged or nothing is
+ * saved yet.
  */
 export interface WasAgent {
   name: string | null;
   purpose: string | null;
   model: string | null;
   prompt: string | null;
-  /**
-   * The commands and the server's functions are two fields on the tab, so each says what it was on its own —
-   * one word for both would show every server's function under «КОМАНДИ» and every command under «MCP».
-   */
+  /** Commands and server functions are separate tab fields, each worded on its own. */
   commandTools: string | null;
   serverTools: string | null;
-  /** The agents granted as tools are a third field of their own, said apart from commands and servers. */
+  /** Agents granted as tools, a field of their own. */
   agentTools: string | null;
   color: string | null;
   maxCalls: string | null;

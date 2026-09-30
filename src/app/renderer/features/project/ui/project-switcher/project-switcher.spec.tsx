@@ -126,7 +126,7 @@ describe("ProjectSwitcher", () => {
       config: expect.objectContaining({
         name: "docs-pipeline",
       }),
-      // This machine has no note about that folder, and a project with none opens at home.
+      // No note for that folder: the project opens at home.
       view: null,
     });
     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
@@ -153,7 +153,7 @@ describe("ProjectSwitcher", () => {
   });
 
   it("opens a folder that already holds a project instead of asking to name one", async () => {
-    // Nothing is created over a project that exists, so «Новий проєкт» on such a folder has nothing to ask.
+    // «Новий проєкт» on a folder that already holds a project asks nothing.
     const user = userEvent.setup();
     const onProjectChange = vi.fn();
     const invoke = stubApi({
@@ -180,7 +180,7 @@ describe("ProjectSwitcher", () => {
   });
 
   it("asks for a name over the open project when the chosen folder is empty", async () => {
-    // A project is named by the person, and the canvas underneath is not put down to ask.
+    // The person names the project, and the canvas underneath stays open.
     const user = userEvent.setup();
     const onProjectChange = vi.fn();
     const invoke = stubApi({
@@ -455,7 +455,7 @@ describe("ProjectSwitcher", () => {
 
     const rows = screen.getByText("project-10").closest("[style*='overflow']");
 
-    // Four stand; the rest are held by a box that scrolls, so none of them is dropped.
+    // Four rows show; the rest sit in a scrolling box.
     expect(rows).toHaveStyle({
       maxHeight: `${SWITCHER_LIST_MAX_HEIGHT_PX}px`,
       overflowY: "auto",

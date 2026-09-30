@@ -5,7 +5,7 @@ import { aStep } from "../../../testing";
 
 describe("agentThread", () => {
   it("makes a pair of a step that answered, and none of a step that did not", () => {
-    // Three turns of one agent: one answered, one was cut by the ceiling, one fell. Only the first is a pair.
+    // Three turns of one agent: answered, cut by the ceiling, fell; only the first is a pair.
     const thread = agentThread(
       [
         aStep({

@@ -1,6 +1,6 @@
 import { CONTROL_AT_REST_COLOR, FALLEN_COLOR, SECOND_LEVEL_TEXT_COLOR } from "../../../constants";
 
-/** State line — dot, word, at most one moment after it; green live work, grey rest, pink a stop. */
+/** State line: dot, word, at most one moment; green live, grey rest, pink stop. */
 export const STATE_READY_LABEL = "готовий";
 export const STATE_WORKING_LABEL = "працює";
 export const STATE_WAITING_LABEL = "чекає постачальника";

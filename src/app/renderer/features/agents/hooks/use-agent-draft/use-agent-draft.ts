@@ -7,11 +7,7 @@ import type { OpenProject } from "../../../../interfaces";
 import type { AgentDraft } from "../../interfaces";
 import type { AgentWrites } from "../use-agent-writes";
 
-/**
- * What the person has written into the selected agent's tab and not saved. The edits are held
- * against the agent they were made on, so leaving that agent discards them — coming back finds the fields as they
- * stand written, which is what «Скасувати» would have done anyway.
- */
+/** The selected agent's unsaved tab edits, held against that agent's id; leaving it discards them. */
 export function useAgentDraft(
   project: OpenProject,
   writes: AgentWrites,
@@ -24,7 +20,7 @@ export function useAgentDraft(
   const saved = selectedAgent === null ? null : agentDraft(selectedAgent, null);
   const changes = saved === null || draft === null ? [] : agentChanges(saved, draft, project.config);
   const isDirty = changes.length > 0;
-  // A name is what the person calls this sphere; two spheres with one name name neither, so the write is refused.
+  // A name already used by another agent is refused.
   const isNameTaken =
     draft !== null &&
     nameTaken(
@@ -32,12 +28,12 @@ export function useAgentDraft(
       project.config.agents.filter((agent) => agent.id !== selectedAgentId).map((agent) => agent.name),
     );
 
-  // Leaving an agent discards its unsaved edits; until this runs they are already ignored, being held against its id.
+  // Discards the edits on leaving an agent.
   useEffect(() => setEdits(null), [selectedAgentId]);
 
   /** Writes the whole draft; nothing unsaved remains. */
   async function save() {
-    // A nameless agent is not written — by this path or by the leaving question — and neither is a name already taken.
+    // Nothing is written for a nameless agent or a taken name.
     if (selectedAgentId === null || draft === null || agentBlocked(draft).length > 0 || isNameTaken) {
       return;
     }

@@ -1,7 +1,7 @@
 import type { ProjectModel, UnsavedWork } from "../../../../../interfaces";
 import type { ModelFormValues } from "../../../interfaces";
 
-/** Model catalogue page state; The marks come from `saved` against `form`. */
+/** Model catalogue page state; marks come from `saved` against `form`. */
 export interface ModelSection {
   openModelId: string | "new" | null;
   openModel: ProjectModel | null;

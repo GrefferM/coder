@@ -2,25 +2,22 @@ import type { ArmedMarkRow } from "./armed-mark-row.interface";
 import type { OrbHint } from "./orb-hint.interface";
 import type { ToolSource } from "../../../interfaces";
 
-/** One mini-sphere on the arc over an agent — one source, or its порода's «+» that folds the rest. */
+/** One mini-sphere on an agent's arc: a single source, or its kind's «+» that folds the rest. */
 export interface ArmedOrb {
-  /** Which source this one stands for; nothing at all for a «+», which stands for no one source. */
+  /** The source this stands for; null for a «+». */
   group: string | null;
-  /** The one grant behind a command's mark, by its own id; nothing for a server's mark and for a «+». */
+  /** The grant behind a command's mark; null for a server's mark and a «+». */
   grantId: string | null;
-  /** The colour of the source, and on a «+» the colour of the порода it folds. */
+  /** The source's colour; on a «+», the colour of the kind it folds. */
   color: string;
-  /** Set only on a «+», and it counts marks of one порода — «+5», «+3». */
+  /** Set only on a «+»: the count of marks in one kind, e.g. «+5». */
   more: string | null;
-  /** What a «+» hides, so a press can raise the list of it; null on a mark of its own. */
+  /** What a «+» hides; null on a mark of its own. */
   folded: ArmedMarkRow[] | null;
-  /** The kind of source, which the mark's shape says; a «+» wears the kind it folds. */
+  /** The kind of source, shown by the mark's shape; a «+» takes the kind it folds. */
   source: ToolSource;
-  /**
-   * Everything this mark stands for points at nothing — the source was granted and the grant
-   * has since lost what it pointed at. On a «+» it means at least one source behind it is in that state.
-   */
+  /** Everything this mark stands for points at nothing; on a «+», at least one source behind it does. */
   isBroken: boolean;
-  /** What it says under the cursor — the mark itself says nothing at all. */
+  /** What it says under the cursor. */
   hint: OrbHint;
 }

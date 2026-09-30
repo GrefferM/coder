@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 
 export interface GrantBlockProps {
-  /** The block's own colour — the pinned block takes the accent, the open one the quiet mark. */
+  /** The block's colour: accent for pinned, quiet mark for open. */
   color: string;
   icon: ReactNode;
   label: string;
-  /** An open parameter is not held by anything, and its box is drawn as a dashed one. */
+  /** Draws the box dashed, for open parameters. */
   isDashed?: boolean;
   background?: string;
   children: ReactNode;

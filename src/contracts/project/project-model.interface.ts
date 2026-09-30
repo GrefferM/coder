@@ -1,6 +1,6 @@
 /**
- * One model in the open project: which it is, whose provider serves it, its prices and its two ceilings. A number
- * nobody wrote stands as `null` — the model is unfinished and says so, and nothing is filled in for it.
+ * One model in the open project: its provider, prices and two ceilings. An unwritten number is `null`; nothing is
+ * filled in.
  */
 export interface ProjectModel {
   id: string;

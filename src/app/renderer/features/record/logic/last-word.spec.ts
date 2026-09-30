@@ -29,7 +29,7 @@ describe("lastWord", () => {
   });
 
   it("takes the question's own hour while the flow is still out", () => {
-    // Nothing has come back yet, so the question is the last word there is.
+    // Nothing has come back yet, so the question is the last word.
     expect(
       lastWord(
         run({

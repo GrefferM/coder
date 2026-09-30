@@ -6,7 +6,7 @@ import type { AgentWrites } from "../use-agent-writes";
 import type { AgentSelection } from "./interfaces";
 import type { Point } from "../../../../utils/math";
 
-/** The agent under the hand; writes go through the agents' own `AgentWrites`. */
+/** The selected agent; writes go through `AgentWrites`. */
 export function useAgentSelection(
   project: OpenProject,
   writes: AgentWrites,
@@ -18,7 +18,7 @@ export function useAgentSelection(
   // The agent whose deletion is being asked about.
   const [armedAgentId, setArmedAgentId] = useState<string | null>(null);
   const doomedAgentId = project.config.agents.some((agent) => agent.id === armedAgentId) ? armedAgentId : null;
-  /** Deletes the agent and clears the selection that pointed at it; its unsaved edits go with the selection. */
+  /** Deletes the agent and clears its selection together with its unsaved edits. */
   async function removeAgent(agentId: string) {
     setSelectedAgentId(null);
     await writes.deleteAgent(agentId);
@@ -29,7 +29,7 @@ export function useAgentSelection(
     setSelectedAgentId(agentId);
     // Selecting anything else withdraws the deletion question.
     setArmedAgentId(null);
-    // A sphere's click does not reach the window, so the copy's mark is dropped here too.
+    // A sphere click does not reach the window, so the copy's mark is dropped here.
     onLetGoOfCopy();
     // Any selection change abandons the creation claim.
     setPending(null);
@@ -53,7 +53,7 @@ export function useAgentSelection(
 
   /** Writes the new agent; the sphere appears only after the write. */
   async function createAgent(name: string, modelId: string) {
-    // The middle is read at save time, when the canvas has its final width.
+    // Middle read at save time, when the canvas has its final width.
     const at =
       pending?.kind === "point"
         ? pending.at
@@ -87,7 +87,7 @@ export function useAgentSelection(
     setArmedAgentId(null);
   }
 
-  /** What collapsing the panel clears: the selection, the claim and the question; the edits go with the selection. */
+  /** Clears the selection, the claim and the question; edits go with the selection. */
   function reset() {
     setSelectedAgentId(null);
     setPending(null);
@@ -95,7 +95,7 @@ export function useAgentSelection(
   }
 
   return {
-    /** What the page hands the clipboard — a copy put down is selected, and no claim stands. */
+    /** A pasted copy becomes selected and no claim stands. */
     takePut: (agentId: string) => {
       setPending(null);
       setSelectedAgentId(agentId);

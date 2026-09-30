@@ -1,16 +1,13 @@
 import type { ProjectMcpServerDto } from "../../projects";
 
-/** One call of one function: which server holds it, where that server is started, and what it was given. */
+/** One call of one function: which server holds it, where that server starts, and what it was given. */
 export interface McpCall {
   server: ProjectMcpServerDto;
-  /** The project's own folder — a server is started where the project stands. */
+  /** The project's own folder, where a server is started. */
   directory: string;
-  /** The name the server itself gave the function; there is no other handle on it. */
+  /** The name the server gave the function. */
   functionName: string;
-  /**
-   * The id this call wears everywhere else — in the record, in the stream, on the row. The client keeps no record
-   * of its own, but what it counts has to be findable, and «ПОКАЗАТИ ВИКЛИК» is what finds it.
-   */
+  /** The id this call wears in the record, the stream and the row; «ПОКАЗАТИ ВИКЛИК» finds it by this. */
   callId: string;
   arguments: Record<string, unknown>;
   /** Aborts the request the moment the turn is stopped. */

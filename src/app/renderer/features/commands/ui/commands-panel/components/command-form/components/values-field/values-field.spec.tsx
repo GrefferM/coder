@@ -11,7 +11,7 @@ import {
 
 describe("ValuesField", () => {
   it("stands every allowed value as its own chip, and says what Enter does", () => {
-    // An enum is a closed list, so each value is a thing that can be taken away by itself.
+    // An enum is a closed list; each value can be removed on its own.
     render(<ValuesField values={["dot", "tree"]} onChange={() => {}} />);
 
     expect(screen.getByText(VALUES_FIELD_LABEL)).toBeInTheDocument();

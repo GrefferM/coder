@@ -11,10 +11,10 @@ function orb(more: string | null = null, group: string | null = "commands"): Sph
   return {
     color: COLOR,
     group,
-    // The id of the grant behind the mark; a server's mark and the grey rest stand for no single grant.
+    // Id of the grant behind the mark; a server's mark and the grey rest have none.
     grantId: null,
     more,
-    // A globe unless a test says otherwise — the shape is the source's kind, and most of these are servers.
+    // A globe (server) unless a test says otherwise.
     source: "mcp",
   };
 }
@@ -27,7 +27,7 @@ describe("SphereOrbs", () => {
   });
 
   it("draws a command as a square with a prompt in it, and a server as the globe", () => {
-    // The shape says where a tool came from, and it says it without a word being written.
+    // The shape alone says where a tool came from.
     const { container } = render(
       <SphereOrbs
         orbs={[
@@ -42,14 +42,14 @@ describe("SphereOrbs", () => {
 
     expect(container.querySelectorAll("rect")).toHaveLength(1);
     expect(container.querySelectorAll("circle")).toHaveLength(1);
-    // The prompt is drawn inside the square and nowhere else, so one path is one command.
+    // The prompt is drawn only inside the square: one path per command.
     expect(container.querySelectorAll("path")).toHaveLength(1);
   });
 
   it("stands one mini-sphere per place, each in its source's colour", () => {
     const { container } = render(<SphereOrbs orbs={[orb(), orb(), orb()]} />);
 
-    // The colour is the source's and never the agent's, so four tools from two places are seen at once.
+    // Colour is the source's, never the agent's.
     expect(container.querySelectorAll("circle")).toHaveLength(3);
     expect(container.querySelectorAll(`[stroke="${COLOR}"]`).length).toBeGreaterThan(0);
   });
@@ -58,7 +58,7 @@ describe("SphereOrbs", () => {
     const { container } = render(<SphereOrbs orbs={[orb()]} />);
     const only = container.firstElementChild as HTMLElement;
 
-    // The arc opens around the top, so one alone stands where the arc's middle would be.
+    // The arc opens around the top, so a single mark sits at its middle.
     expect(only.style.left).toBe(`${SPHERE_SIZE_PX / 2 - SPHERE_ORB_SIZE_PX / 2}px`);
     expect(only.style.top).toBe(`${SPHERE_SIZE_PX / 2 - SPHERE_ORB_RADIUS_PX - SPHERE_ORB_SIZE_PX / 2}px`);
   });
@@ -76,7 +76,7 @@ describe("SphereOrbs", () => {
     );
     const tops = [...container.children].map((one) => Number.parseFloat((one as HTMLElement).style.top));
 
-    // The top arc leaves the bottom of the sphere to the label and its sides to the links.
+    // The arc leaves the sphere's bottom to the label and its sides to the links.
     expect(Math.max(...tops)).toBeLessThan(SPHERE_SIZE_PX / 2);
   });
 
@@ -94,9 +94,8 @@ describe("SphereOrbs", () => {
     expect(only.style.width).toBe(`${SPHERE_ORB_SIZE_PX}px`);
   });
 
-  it("draws a «+» as its порода's own shape, dashed and dimmed, with the number inside", () => {
-    // The «+» wears the shape and colour of what it folds — the grey one is gone, because two identical
-    // grey ones side by side read as a single heap. The wire inside a mark says «a source», and a heap is not one.
+  it("draws a «+» as its kind's own shape, dashed and dimmed, with the number inside", () => {
+    // The «+» takes the shape and colour of what it folds, as a bare outline without the inner wire.
     const { container } = render(
       <SphereOrbs
         orbs={[
@@ -109,7 +108,7 @@ describe("SphereOrbs", () => {
       />,
     );
 
-    // A command's «+» is the bare square without the prompt inside it; a server's is the bare circle without rings.
+    // A command's «+» is the bare square without the prompt; a server's the bare circle without rings.
     expect(container.querySelectorAll("path")).toHaveLength(0);
     expect(container.querySelectorAll("ellipse")).toHaveLength(0);
     expect(container.querySelectorAll("[stroke-dasharray]")).toHaveLength(2);
@@ -117,8 +116,7 @@ describe("SphereOrbs", () => {
   });
 
   it("stands every mini-sphere at one size, whatever the agent is doing", () => {
-    // A call moves nothing here — no swelling, no fill, no glow, and no name of its own. What
-    // the canvas says about a call is one pill beside the sphere, and that pill is the canvas's own.
+    // A call changes nothing here: no swelling, fill, glow or name.
     const { container } = render(<SphereOrbs orbs={[orb(), orb()]} />);
     const [one, other] = [...container.children] as HTMLElement[];
 
@@ -130,8 +128,8 @@ describe("SphereOrbs", () => {
   });
 
   it("hands back the very mark that was pressed, and the mark's own button with it", async () => {
-    // A window opened from a mark is bound to that mark and stands over it, so the press hands the
-    // button itself — the window takes its place on the screen from it — and the mark rather than a name of it.
+    // A press hands over the button itself, which positions the window opened over the mark, and the mark rather than a
+    // name.
     const pressed: (string | null)[] = [];
     const buttons: HTMLElement[] = [];
 
@@ -158,7 +156,7 @@ describe("SphereOrbs", () => {
     const { container } = render(<SphereOrbs orbs={[orb()]} scale={0.5} onPress={() => {}} />);
     const target = container.querySelector("button") as HTMLElement;
 
-    // The layer is scaled by half, so 52 canvas pixels are 26 on the screen — the same 26 as at full.
+    // The layer is scaled by half, so 52 canvas pixels are 26 on screen, the same as at full scale.
     expect(target.style.width).toBe("52px");
     expect(target.style.height).toBe("52px");
   });

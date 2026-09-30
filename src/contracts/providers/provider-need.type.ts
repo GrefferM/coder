@@ -1,5 +1,5 @@
 /**
- * What a provider asks of the person before anything can be sent to it. Anthropic and OpenRouter ask for a key,
- * Ollama for an address, RunPod for both: the key is the person's, and the address is their own endpoint's.
+ * What a provider asks of the person before anything can be sent: Anthropic and OpenRouter a key, Ollama an address,
+ * RunPod both.
  */
 export type ProviderNeed = "key" | "address";

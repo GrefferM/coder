@@ -3,7 +3,7 @@ import { dayLabel, timeLabel } from "../../../../utils/dates";
 import { FORGET_RUN_NOTE_PREFIX, FORGET_RUN_NOTE_SUFFIX, FORGET_RUN_QUESTION } from "./constants";
 import type { ForgetRunConfirmProps } from "./interfaces";
 
-/** The run is the only thing the app deletes with no way back, so it asks. */
+/** Asks before deleting a run, the one irreversible deletion. */
 export function ForgetRunConfirm({ run, onConfirm, onDismiss }: ForgetRunConfirmProps) {
   const when = `${dayLabel(run.startedAt, new Date())} ${timeLabel(run.startedAt)}`;
 

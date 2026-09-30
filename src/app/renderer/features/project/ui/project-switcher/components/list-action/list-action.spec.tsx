@@ -20,7 +20,7 @@ describe("ListAction", () => {
   });
 
   it("takes the measures the quieter rows are given", () => {
-    // «Показати у Finder» stands apart, smaller and tighter than the acts above it.
+    // «Показати у Finder» is smaller and tighter than the acts above it.
     render(<ListAction label="Показати у Finder" onSelect={() => {}} padding="4px 10px" fontSize={11} />);
 
     expect(screen.getByRole("menuitem")).toHaveStyle({

@@ -3,7 +3,7 @@ import type { WholeStep } from "../interfaces";
 
 const STEP_STARTED_AT = new Date("2026-08-31T15:05:00");
 
-/** One turn as the record hands it back, built whole; a spec patches what it is about. */
+/** A whole record turn; a spec patches what it covers. */
 export function aStep(patch: Partial<WholeStep> = {}): WholeStep {
   return {
     id: "step-1",

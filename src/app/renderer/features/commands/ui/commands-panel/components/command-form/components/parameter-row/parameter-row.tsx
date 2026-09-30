@@ -28,7 +28,7 @@ import {
 } from "../../constants";
 import type { ParameterRowProps } from "./interfaces";
 
-/** One declared parameter; one the run line never names says so, wears a dashed edge, is not substituted. */
+/** One declared parameter; one the run line never names is marked with a dashed edge and is not substituted. */
 export function ParameterRow({ parameter, isUsed, onOpen, onRemove }: ParameterRowProps) {
   const row = useInteraction();
 

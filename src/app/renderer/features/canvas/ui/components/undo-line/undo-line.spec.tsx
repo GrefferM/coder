@@ -24,7 +24,7 @@ describe("UndoLine", () => {
 
     rerender(<UndoLine message="АГЕНТА ВИДАЛЕНО" secondsLeft={27} isOlder onUndo={vi.fn()} />);
 
-    // An older row is quieter, but it is not a picture — its way back still works.
+    // An older row is dimmer, but its undo still works.
     expect(screen.getByText(UNDO_ACTION_LABEL)).toHaveStyle({
       color: UNDO_LINE_OLDER_ACTION_COLOR,
     });

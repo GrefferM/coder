@@ -1,8 +1,8 @@
 import type { AskedSaid, ChatMessage } from "../interfaces";
 
 /**
- * The cards the words a turn was given become: the person's own question, or what arrived down each line, one
- * card each in the order the lines were drawn. A repeat says nothing again — those words already stand above it.
+ * The cards for the words a turn was given: the person's question, or what arrived down each line, one card per line in
+ * drawing order. A repeat adds none.
  */
 export function askedCards(said: AskedSaid): ChatMessage[] {
   return (said.isAgain ? [] : said.incoming).map((one, at) => ({
@@ -27,7 +27,7 @@ export function askedCards(said: AskedSaid): ChatMessage[] {
     note: null,
     asked: null,
     fedBy: [],
-    // A person's question carries the files attached to it; work down a line carries none.
+    // A person's question carries its attached files; work down a line carries none.
     attached: one.attached.map((file) => ({
       name: file.name,
       kind: file.kind,

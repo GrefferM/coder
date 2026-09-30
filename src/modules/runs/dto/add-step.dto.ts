@@ -12,7 +12,7 @@ import {
 import { AddCallDto } from "./add-call.dto";
 import { AddHandoffDto } from "./add-handoff.dto";
 
-/** One agent's turn, written when it ends: the agent as it stood then, what it said, and every call. */
+/** One agent's turn, written when it ends: the agent as it then stood, what it said, every call. */
 export class AddStepDto {
   @IsUUID()
   declare runId: string;
@@ -20,7 +20,7 @@ export class AddStepDto {
   @IsUUID()
   declare questionId: string;
 
-  /** The walk this turn ran in; every step of one walk carries the same id. */
+  /** The walk this turn ran in; shared by every step of the walk. */
   @IsUUID()
   declare walkId: string;
 
@@ -44,7 +44,7 @@ export class AddStepDto {
   @IsString()
   declare providerId: string;
 
-  /** Nothing where the model carried no such number, so the turn keeps the gap instead of a made-up zero. */
+  /** Empty where the model carried no such number, rather than a made-up zero. */
   @IsOptional()
   @IsNumber()
   @Min(0)
@@ -88,10 +88,7 @@ export class AddStepDto {
   @IsString()
   declare said: string;
 
-  /**
-   * How the turn ended, in the screen's own word. The record holds no list of them: a list here could only fall
-   * behind the screen's and refuse a turn the person already saw.
-   */
+  /** How the turn ended, in the screen's word; unchecked against a list so it cannot refuse a turn. */
   @IsString()
   @IsNotEmpty()
   declare state: string;

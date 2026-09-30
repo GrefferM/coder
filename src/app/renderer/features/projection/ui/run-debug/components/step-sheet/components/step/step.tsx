@@ -8,7 +8,7 @@ import {
 } from "../../constants";
 import type { StepProps } from "./interfaces";
 
-/** One end of the foot — the step before or after this one, named by its number and whose turn it was. */
+/** One end of the foot: the step before or after, by number and whose turn it was. */
 export function Step({ step, isBack, onGo }: StepProps) {
   const arrow = (
     <svg

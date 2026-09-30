@@ -1,6 +1,6 @@
 import type { ToolSource } from "../project";
 
-/** One call of a step, read back from the record; a refused one has no output and no code. */
+/** One call of a step read back from the record; a refused one has no output and no code. */
 export interface WholeCall {
   id: string;
   /** What the call went to. */
@@ -8,17 +8,17 @@ export interface WholeCall {
   place: number;
   name: string;
   arguments: Record<string, string>;
-  /** Which of the arguments the person pinned, as the grant stood at the time of the run. */
+  /** Arguments the person pinned, per the grant at the time of the run. */
   pinned: string[];
-  /** The line as it ran, with the values already in it; empty for a call that never started. */
+  /** The line as it ran, values filled in; empty for a call that never started. */
   line: string;
   output: string;
   refusal: string;
   exitCode: number | null;
-  /** The server this call went to, and the name it wore then; a command's call has neither. */
+  /** The server this call went to and its name then; `null` for a command's call. */
   serverId: string | null;
   serverName: string;
-  /** The server answered «ні», read back from the end the record kept. */
+  /** The server answered «ні», read from the end the record kept. */
   isFailed: boolean;
   end: string;
   startedAt: Date;

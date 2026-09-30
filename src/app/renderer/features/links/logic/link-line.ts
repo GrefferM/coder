@@ -2,7 +2,7 @@ import { LINK_ARROW_HALF_WIDTH_PX, LINK_ARROW_LENGTH_PX, LINK_HEAD_GAP_PX, LINK_
 import type { Point } from "../../../utils/math";
 import type { LinkLine } from "../interfaces";
 
-/** The line between two spheres: gapped off both edges, at the arrival angle. */
+/** The line between two spheres, gapped off both edges, at the arrival angle. */
 export function linkLine(from: Point, to: Point, radiusPx: number): LinkLine {
   const dx = to.x - from.x;
   const dy = to.y - from.y;

@@ -4,11 +4,8 @@ import type { CanvasPlace } from "../../../../features/canvas";
 import type { PageParts } from "../use-page-parts/interfaces";
 
 /**
- * This machine's own note about this project: where the canvas stands, which section of the rail is open, whom
- * the chat is aimed at, and how tall the field was pulled. Nothing of it belongs in the project file — another
- * machine opening the same project keeps its own.
- *
- * Hands back the one way the canvas says it has moved; everything else is read off the parts as they stand.
+ * This machine's note about the project: where the canvas stands, which section is open, whom the chat is aimed at, how
+ * tall the field was pulled. Not part of the project file.
  */
 export function useNotedView(directory: string, parts: PageParts): (place: CanvasPlace) => void {
   const [place, setPlace] = useState<CanvasPlace | null>(null);
@@ -17,7 +14,7 @@ export function useNotedView(directory: string, parts: PageParts): (place: Canva
   const { aimedAgentId, fieldHeight } = parts.chat;
 
   useEffect(() => {
-    // Nothing is noted until the canvas has said where it stands: a note without a place would move it home.
+    // Nothing is noted until the canvas reports where it stands.
     if (place === null) {
       return;
     }

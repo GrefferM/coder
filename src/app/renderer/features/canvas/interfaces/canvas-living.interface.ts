@@ -1,15 +1,12 @@
 import type { CallOut, LinkLife, WaitingAgent, WorkingAgent } from "../../../interfaces";
 
-/**
- * What is alive on the canvas this moment, and it is the walk of the conversation on screen —
- * another conversation's work is drawn where that conversation is read, never here.
- */
+/** What is alive on the canvas now: the walk of the conversation on screen only. */
 export interface CanvasLiving {
   workingAgents: WorkingAgent[];
   /** The agents holding work where lines converge. */
   waitingAgents: WaitingAgent[];
-  /** How every line stands right now; one with no life is not in it. */
+  /** How each line stands now; a line with no life is absent. */
   linkLives: Record<string, LinkLife>;
-  /** Which function each turn has out this moment, by turn; a turn calling nothing is not in it. */
+  /** The function each turn has out, by turn; a turn calling nothing is absent. */
   callsOut: Record<string, CallOut>;
 }

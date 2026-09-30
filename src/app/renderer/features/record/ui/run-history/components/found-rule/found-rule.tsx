@@ -12,13 +12,8 @@ import {
 import type { FoundRuleProps } from "./interfaces";
 
 /**
- * The quiet rule of a change. The list is flat and stands by the hour of each message, so a row
- * says nothing about which run it belongs to; this says it, and only where the record jumped — where the row above
- * came from another run.
- *
- * It is not a group and not a heading: it collects nothing, reorders nothing, takes no highlight and cannot be
- * pressed — the row is what a hand presses. A run braided with another is named twice, and that is right: «where am
- * I now» is a question that comes back every time the record jumps.
+ * A quiet rule naming the run, shown where the row above came from another run; not a group or heading, cannot be
+ * pressed. A run that interleaves with another is named again each time.
  */
 export function FoundRule({ run, now }: FoundRuleProps) {
   return (
@@ -39,7 +34,7 @@ export function FoundRule({ run, now }: FoundRuleProps) {
       >
         {`${dayLabel(run.askedAt, now)} ${timeLabel(run.askedAt)}`}
       </span>
-      {/* The start of the question, one line and no more — the whole of it is read inside the run. */}
+      {/* The start of the question, one line. */}
       <span
         className="text-truncate"
         style={{

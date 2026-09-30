@@ -1,9 +1,6 @@
 import type { ProjectModel } from "../../../interfaces";
 
-/**
- * Whether the model the agent names has lost its own file. An agent being written has nothing
- * chosen yet, and nothing chosen is nothing broken.
- */
+/** Whether the agent's model has lost its file; nothing chosen is not lost. */
 export function isModelLost(modelId: string, models: ProjectModel[]): boolean {
   return modelId !== "" && !models.some((model) => model.id === modelId);
 }

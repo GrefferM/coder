@@ -39,10 +39,8 @@ import type { CSSProperties } from "react";
 import type { StepSheetProps } from "./interfaces";
 
 /**
- * One step of the pass read open — the agent as it stood then, what came into the turn and what it
- * answered, and the way to the steps on either side. It is a sheet over the projection: the field under it neither
- * narrows nor lays itself out again, and where the graph has less than a sheet's width left the sheet lies along the
- * bottom instead, its words keeping the same measure.
+ * One step of the open pass: the agent as it stood then, what came in and what it answered, and links to the
+ * neighbouring steps. A sheet over the projection; with less than a sheet's width left it lies along the bottom.
  */
 export function StepSheet({ step, walk, isBelow, onGo, onClose }: StepSheetProps) {
   const place = stepPlace(walk, step.id);
@@ -107,7 +105,7 @@ export function StepSheet({ step, walk, isBelow, onGo, onClose }: StepSheetProps
         >
           {step.agentName}
         </span>
-        {/* In the lower sheet the head has room for the card, so it stands there instead of a row of its own. */}
+        {/* In the lower sheet the head has room for the card, so it sits there. */}
         {isBelow && <StepCard step={step} isBeside />}
         <IconButton label={STEP_SHEET_CLOSE_LABEL} onPress={onClose} tone={STEP_SHEET_CLOSE_TONE}>
           <svg
@@ -131,7 +129,7 @@ export function StepSheet({ step, walk, isBelow, onGo, onClose }: StepSheetProps
           overflowY: "auto",
         }}
       >
-        {/* The words keep the sheet's own measure, whether the sheet stands beside the graph or below it. */}
+        {/* Text keeps the sheet's own measure beside or below the graph. */}
         <div
           className="d-flex flex-column"
           style={{

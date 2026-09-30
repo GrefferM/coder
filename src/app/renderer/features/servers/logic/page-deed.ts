@@ -3,11 +3,8 @@ import type { McpLook } from "../../../interfaces";
 import type { ServerPageDeed } from "../interfaces";
 
 /**
- * The one action about the process on a server's page, and the word it takes from the state.
- *
- * A server missing a token or a value is offered nothing here: no doing with the process mends a hole, and the
- * door that does is «Змінити» in the foot. A server being raised is offered nothing either — it is already
- * happening, and «СКАСУВАТИ» belongs to the row that is waiting.
+ * The one process action on a server's page, taken from the state. A server missing a token or value is offered
+ * nothing, nor is one being raised.
  */
 export function pageDeed(look: McpLook | null, isLocal: boolean, isAsking: boolean): ServerPageDeed {
   if (isAsking) {
@@ -24,6 +21,6 @@ export function pageDeed(look: McpLook | null, isLocal: boolean, isAsking: boole
     return "raise";
   }
 
-  // A local server is our own process — put down and raised; a remote one is a connection, and is only asked again.
+  // A local server is raised afresh; a remote one is only asked again.
   return isLocal ? "raiseAgain" : "askAgain";
 }

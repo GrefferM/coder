@@ -1,27 +1,24 @@
 import type { TurnHandoff } from "./turn-handoff.interface";
 
-/**
- * Everything one agent's turn is, apart from where it stands and when. Written once here: the record takes a step
- * with these facts and hands the same ones back, and both processes read them off the one shape.
- */
+/** Everything one agent's turn is, apart from where it stands and when. */
 export interface StepFacts {
-  /** The question this turn grew from; a flow is asked more than once. */
+  /** The question this turn grew from. */
   questionId: string;
-  /** The walk that wrote this step, so a repeat can tell the last one from the ones before it. */
+  /** The walk that wrote this step. */
   walkId: string;
   agentId: string;
-  /** The agent, the model and the prompt as they stood then, so «then» can be held against «today». */
+  /** The agent, model and prompt as they stood then. */
   agentName: string;
   agentColor: string;
   modelId: string;
   model: string;
   providerId: string;
-  /** What a million tokens cost then; nothing where the model carried no price. */
+  /** Price per million tokens then; `null` if the model had none. */
   inputPrice: number | null;
   outputPrice: number | null;
-  /** The ceiling that model stood at then, which a turn over it was measured against. */
+  /** The model's context ceiling then. */
   contextCeiling: number | null;
-  /** The tokens the model was allowed to say, so a cut answer can name what cut it. */
+  /** The tokens the model was allowed to say. */
   answerCeiling: number | null;
   promptId: string | null;
   prompt: string;
@@ -32,9 +29,9 @@ export interface StepFacts {
   state: string;
   inputTokens: number;
   outputTokens: number;
-  /** What the turn cost at those prices; nothing where they cannot be said. */
+  /** What the turn cost at those prices; `null` where they are unknown. */
   money: number | null;
-  /** The steps whose work came into this one; empty for the step the person started. */
+  /** The steps whose work fed this one; empty for the step the person started. */
   fromStepIds: string[];
   /** The links out of this turn, taken and not taken alike. */
   handoffs: TurnHandoff[];

@@ -36,7 +36,7 @@ describe("ZoomToolbar", () => {
   });
 
   it("goes dead at the surface's own ends, each end on its own side", () => {
-    // At the smallest scale only the minus is dead, and at the largest only the plus.
+    // At the smallest scale only the minus is dead, at the largest only the plus.
     const { rerender } = render(<ZoomToolbar scale={ZOOM_SCALE_STOPS.min} onZoomOut={() => {}} onZoomIn={() => {}} />);
 
     expect(

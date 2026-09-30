@@ -6,7 +6,7 @@ import type { ServerWrites } from "../../../../../features/servers";
 import type { PromptWrites } from "../../../../../features/prompts";
 import type { ProjectWrite } from "../../../../../features/project";
 
-/** The project's writer and every subject's writes over it, as the page hands them down. */
+/** The project's writer plus each subject's writes over it. */
 export type ProjectActions = ProjectWrite &
   AgentWrites &
   LinkWrites &

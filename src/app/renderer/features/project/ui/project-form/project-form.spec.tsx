@@ -19,7 +19,7 @@ function renderForm(overrides: Partial<Parameters<typeof ProjectForm>[0]> = {}) 
 
 describe("ProjectForm", () => {
   it("says what will appear in the folder, and offers to create it", () => {
-    // The form is only ever opened on a folder with no project in it: the other case opens without asking.
+    // The form opens only on a folder with no project; the other case opens without asking.
     renderForm();
 
     expect(screen.getByText(PROJECT_FORM_WILL_APPEAR_LABEL)).toBeInTheDocument();
@@ -27,7 +27,7 @@ describe("ProjectForm", () => {
   });
 
   it("names everything a project is on the disk, not two of them", () => {
-    // The form promising less than the project keeps taught the folder wrong: the rest was found by accident.
+    // The form lists everything the project keeps.
     renderForm();
 
     for (const { name } of PROJECT_FORM_APPEARING) {
@@ -36,7 +36,7 @@ describe("ProjectForm", () => {
   });
 
   it("does not create a project with an empty name", () => {
-    // The dimmed act wears the ring and answers nothing, rather than hiding from the keyboard.
+    // The dimmed act keeps focus and ignores presses instead of hiding from the keyboard.
     renderForm({
       name: "   ",
     });

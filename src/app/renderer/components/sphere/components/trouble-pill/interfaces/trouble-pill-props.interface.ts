@@ -1,5 +1,5 @@
 export interface TroublePillProps {
   label: string;
-  /** A break the walk would meet, against a fact that only wants filling in. */
+  /** A break the walk would meet, versus a fact that only needs filling in. */
   isBreak: boolean;
 }

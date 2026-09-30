@@ -39,7 +39,7 @@ import {
 import type { ConfirmDialogProps } from "./interfaces";
 import { focusRing } from "../../utils/focus";
 
-/** Confirm dialog; a click outside pulses the box — only Escape or the stay line dismisses. */
+/** Confirm dialog; a click outside pulses the box, only Escape or the stay line dismisses. */
 export function ConfirmDialog({
   question,
   children,

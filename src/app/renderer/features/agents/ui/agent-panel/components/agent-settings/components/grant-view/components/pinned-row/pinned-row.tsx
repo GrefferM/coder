@@ -52,7 +52,7 @@ export function PinnedRow({ name, value, onValueChange, onUnpin }: PinnedRowProp
         onChange={(event) => onValueChange(event.target.value)}
         className="font-monospace flex-fill"
         style={{
-          // An empty pin takes the dashed edge; a filled one is the bare accent field.
+          // Empty pin: dashed edge; filled: bare accent field.
           border: `1px ${value === "" ? "dashed" : "solid"} ${value === "" ? PINNED_ROW_EMPTY_BORDER_COLOR : "transparent"}`,
           borderRadius: PINNED_ROW_VALUE_BORDER_RADIUS_PX,
           padding: PINNED_ROW_VALUE_PADDING,

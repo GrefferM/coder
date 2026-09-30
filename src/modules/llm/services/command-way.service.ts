@@ -30,7 +30,7 @@ export class CommandWay implements ToolWay {
       name: this.tool.name,
       arguments: this.given,
       pinned: Object.keys(this.tool.pinned),
-      // A declared command is nobody's server: the line and the exit code are its two fields, a source is not.
+      // A command has no server; it has a line and an exit code, not a source.
       serverId: null,
       serverName: "",
     };
@@ -48,7 +48,7 @@ export class CommandWay implements ToolWay {
       directory,
       arguments: this.given,
       signal,
-      // Braces are read against these names alone; anything else in braces is the line's own text.
+      // Braces are read against these names alone; other braces are the line's own text.
       declared: [...this.tool.parameters.map((parameter) => parameter.name), ...Object.keys(this.tool.pinned)],
     });
 
@@ -56,7 +56,7 @@ export class CommandWay implements ToolWay {
       line: result.line,
       output: result.output,
       exitCode: result.exitCode,
-      // A command says what went wrong with its exit code, which the card reads; «ні» is a server's word.
+      // A command reports failure by exit code, which the card reads; «ні» is a server's word.
       isFailed: false,
     };
   }

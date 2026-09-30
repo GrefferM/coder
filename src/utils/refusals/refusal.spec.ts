@@ -14,7 +14,7 @@ describe("Refusal", () => {
   });
 
   it("is an Error, and names itself apart from every other one", () => {
-    // The name is how the boundary tells a refusal the app meant from a fall it did not.
+    // The name tells an intended refusal from an unexpected failure.
     const refusal = new Refusal("NO_SUCH_PROJECT");
 
     assert.ok(refusal instanceof Error);

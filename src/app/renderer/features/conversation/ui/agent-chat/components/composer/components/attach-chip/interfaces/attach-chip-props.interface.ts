@@ -1,7 +1,7 @@
 import type { PickedAttachment } from "../../../../../../../../../interfaces";
 
 export interface AttachChipProps {
-  /** The one attachment this chip stands for; its own path is how the × takes it off. */
+  /** The attachment this chip stands for; its path identifies it for detaching. */
   attachment: PickedAttachment;
   onDetach: (path: string) => void;
 }

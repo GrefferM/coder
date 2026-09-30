@@ -24,7 +24,7 @@ const QUESTION = "44444444-4444-4444-8444-444444444444";
 const WALK = "77777777-7777-4777-8777-777777777777";
 const ASKED_AT = 1_700_000_000_000;
 
-/** The record's own database for this test; the app's own is never touched. */
+/** The record's own database for this test; never the app's. */
 let record: TestDatabase;
 let dataSource: DataSource;
 let door: RunController;
@@ -92,7 +92,7 @@ describe("the record on a real database of its own", () => {
   });
 
   it("keeps what it wrote after the connection is closed and opened again", async () => {
-    // The whole point of a file: nothing here is remembered by the process that wrote it.
+    // Nothing is remembered by the writing process; data must be in the file.
     const opened = await door.open(opening());
 
     await door.step(step(opened.runId));
@@ -117,7 +117,7 @@ describe("the record on a real database of its own", () => {
   });
 
   it("brings the numbers back as they were written, not as something near them", async () => {
-    // Money and tokens go through SQLite's own types; a run costing $0.0031 must not read back as $0.
+    // Money and tokens survive SQLite types: $0.0031 does not read back as $0.
     const opened = await door.open(opening());
 
     await door.step(step(opened.runId));
@@ -132,13 +132,13 @@ describe("the record on a real database of its own", () => {
     assert.equal(whole?.walk[0].inputTokens, 2_263);
     assert.equal(whole?.walk[0].outputTokens, 1_068);
     assert.equal(whole?.walk[0].said, "ЗНАЙДЕНО\n- report.md");
-    // Frame 23j: the hours come back as hours, not as the numbers they were sent as.
+    // Hours come back as hours, not as the numbers they were sent as.
     assert.ok(whole?.startedAt instanceof Date);
     assert.equal(whole?.startedAt.getTime(), ASKED_AT);
   });
 
   it("keeps each project's runs to that project", async () => {
-    // One machine, one file, many folders: the history of one project must not show another's runs.
+    // One file, many folders: a project's history shows only its own runs.
     const mine = await door.open(opening());
 
     await door.open(
@@ -161,14 +161,14 @@ describe("the record on a real database of its own", () => {
   });
 
   it("takes a run's steps, calls and questions with it when the run goes", async () => {
-    // Frame 26a: the row goes for good, and nothing of it is left lying in another table.
+    // Deleting a run removes it and everything of it in other tables.
     const opened = await door.open(opening());
 
     await door.step(
       step(opened.runId, {
         calls: [
           Object.assign(new AddCallDto(), {
-            // The call comes to the record under the id it already wears; the record hands out no second one.
+            // A call keeps its existing id; the record mints none.
             id: crypto.randomUUID(),
             source: "command",
             name: "find_deep",
@@ -220,7 +220,7 @@ describe("the record on a real database of its own", () => {
   });
 
   it("sweeps only the runs that ended, leaving a walk still going where it is", async () => {
-    // Frame 23h: «× ЗАБРАТИ N» is about what has come back; a run still writing itself is not part of that number.
+    // «× ЗАБРАТИ N» counts only what has come back, not a run still writing.
     const ended = await door.open(opening());
 
     await door.close(

@@ -3,12 +3,12 @@ import type { AttachedFile } from "../../../../../interfaces";
 export interface PersonCardProps {
   text: string;
   at: Date;
-  /** The files and folders attached to this question, for the «ПРИКРІПЛЕНО:» row; none where empty. */
+  /** Files and folders attached to this question, for the «ПРИКРІПЛЕНО:» row; empty for none. */
   attached: AttachedFile[];
-  /** The way into this question's own pass, where it has a walk to show. */
+  /** The way into this question's pass; `null` when it has no walk to show. */
   onDebug: (() => void) | null;
-  /** This card is where the search stopped — it wears the edge that says so. */
+  /** This card is where the search stopped, so it wears the edge. */
   isFound?: boolean;
-  /** The word the stream's own search is looking for, lit inside these words; empty where none is. */
+  /** The word the stream's search looks for, lit inside these words; empty for none. */
   looked?: string;
 }

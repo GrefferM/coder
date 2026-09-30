@@ -28,8 +28,8 @@ import {
 import type { LostTieProps } from "./interfaces";
 
 /**
- * A tie the project has lost — its own group under the field that still holds it, in the broken
- * colour, with the sentence saying what is gone and the one act that takes the tie away. What is gone is not restored.
+ * A lost tie: its own group under the field that holds it, in the broken colour, with a sentence saying what is gone
+ * and one act that removes it.
  */
 export function LostTie({ note, removeLabel, children, onRemove }: LostTieProps) {
   const remove = useInteraction();

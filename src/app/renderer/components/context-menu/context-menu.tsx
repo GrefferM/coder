@@ -14,11 +14,11 @@ import {
 } from "./constants";
 import type { ContextMenuProps } from "./interfaces";
 
-/** The menu right-clicking opens, at the point it was opened on. A click anywhere else, or Escape, dismisses it. */
+/** The right-click menu, at the point it was opened; a click elsewhere or Escape dismisses it. */
 export function ContextMenu({ at, items, onDismiss }: ContextMenuProps) {
-  // On `click`: a right-click fires none, so it moves an open menu without closing it.
+  // Dismisses on `click`; a right-click fires none, so it moves an open menu without closing it.
   useWindowDismiss(true, onDismiss);
-  // The menu is a list too — the arrows walk it and Enter takes the line, a dead one taking nothing.
+  // Arrows walk the lines, Enter takes one; a disabled line takes nothing.
   const walk = useListWalk(items.length, true, (index) => {
     const item = items[index];
 

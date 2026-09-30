@@ -6,11 +6,11 @@ export interface ConfirmDialogProps {
   question: string;
   children?: ReactNode;
   tone?: "danger" | "calm";
-  /** Whether what stands behind the box darkens — it does not when nothing behind it is going. */
+  /** Whether the backdrop darkens. */
   hasScrim?: boolean;
   noLabel?: string;
   yesLabel?: string | null;
-  /** The confirming answer's look, when the calm box's answer is not the app's own act. */
+  /** Look of the confirming button, when it is not the app's own act. */
   yesVariant?: ActionButtonVariant;
   stayLabel?: string;
   onConfirm: () => void;

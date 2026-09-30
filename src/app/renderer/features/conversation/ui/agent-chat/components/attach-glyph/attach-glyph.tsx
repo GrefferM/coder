@@ -1,6 +1,6 @@
 import type { AttachGlyphProps } from "./interfaces";
 
-/** The mark of an attachment — a folder, or a single file — drawn the same wherever an attachment is named. */
+/** The mark of an attachment, a folder or a single file, drawn the same wherever an attachment is named. */
 export function AttachGlyph({ kind, size, color }: AttachGlyphProps) {
   return (
     <svg

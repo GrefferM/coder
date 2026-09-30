@@ -3,31 +3,28 @@ import type { TurnOut } from "./turn-out.interface";
 import type { Walk } from "./walk.interface";
 import type { PickedAttachment } from "../../../interfaces";
 
-/**
- * Everything a stream's walks stand on, in one object. The hook holds it in React state today; the views
- * read it from here, so they never learn which of its parts is a state and which a ref.
- */
+/** Everything a stream's walks stand on, in one object, so views never learn which parts are state and which refs. */
 export interface WalkState {
-  /** The turns out right now, each by its own id; one agent may hold several. */
+  /** Turns out now, by id; one agent may hold several. */
   out: Record<string, TurnOut>;
   /**
-   * Every walk this stream holds, by its own id — its words, its waits, and whether it was stopped or put
-   * away. What a walk said lives in the walk: no other walk and no emptied stream can take it away.
+   * Every walk this stream holds, by id: its words, waits, and whether stopped or put away. What a walk said lives in it,
+   * safe from other walks and from an emptied stream.
    */
   walks: Record<string, Walk>;
   /** What is being written about each run under way. */
   ledgers: Record<string, RunLedger>;
-  /** The turns already asked again; the act stands under a turn until it is used. */
+  /** Turns already asked again; the act stands under a turn until used. */
   saidAgain: string[];
-  /** What stands typed in each stream, the one on screen and every run opened in its place. */
+  /** What is typed in each stream: the one on screen and every run opened in its place. */
   drafts: Record<string, string>;
-  /** The files and folders attached in each stream, waiting under the field for the question to go. */
+  /** Files and folders attached in each stream, waiting under the field for the question to go. */
   attachments: Record<string, PickedAttachment[]>;
   /** Whom the chat is aimed at. */
   aimedAgentId: string | null;
   /**
-   * The row the stream on screen writes into — one conversation is one row. It moves at the person's word
-   * alone; a walk writing its steps never moves it, not even its own.
+   * The row the on-screen stream writes into (one conversation is one row); moves only at the person's word, never when a
+   * walk writes steps.
    */
   flowRunId: string | null;
 }

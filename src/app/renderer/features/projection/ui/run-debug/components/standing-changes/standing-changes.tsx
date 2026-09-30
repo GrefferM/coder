@@ -14,9 +14,7 @@ import type { StandingChangesProps } from "./interfaces";
 import { ChangeCard } from "./components";
 
 /**
- * Under the graph, what has moved since this run walked — one card per agent, «тоді» against «зараз».
- * Nothing stands here where nothing has moved, which is most runs; the card is a comparison, and a
- * comparison of a thing with itself says nothing.
+ * Under the graph, one card per agent that changed since the run, «тоді» against «зараз»; empty when nothing changed.
  */
 export function StandingChanges({ changes }: StandingChangesProps) {
   if (changes.length === 0) {

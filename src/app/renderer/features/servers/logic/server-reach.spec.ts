@@ -27,7 +27,7 @@ describe("serverReach", () => {
   });
 
   it("reads differently for every part of the way to it", () => {
-    // Any one of these is a different server behind the same id, and what the old one answered is about the old one.
+    // Each change is a different server behind the same id.
     const ways = [
       aServer({
         isLocal: false,

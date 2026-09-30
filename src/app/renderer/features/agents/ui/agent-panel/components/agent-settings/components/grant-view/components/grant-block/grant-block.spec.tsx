@@ -15,7 +15,7 @@ describe("GrantBlock", () => {
   });
 
   it("draws the box dashed where nothing holds what is in it", () => {
-    // An open parameter is not held by anything, and the box says so before a word does.
+    // An open parameter's box is dashed.
     const { container, rerender } = render(
       <GrantBlock color="#38a3ff" icon={null} label="Закріплені">
         <span>branch</span>

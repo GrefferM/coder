@@ -1,7 +1,7 @@
 import { AgentPanel } from "../../../../features/agents";
 import type { AgentsSectionProps } from "./interfaces";
 
-/** The agents section — one agent's tab, or the form that makes a new one. */
+/** One agent's tab, or the form that makes a new one. */
 export function AgentsSection({
   project,
   looks,

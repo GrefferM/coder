@@ -44,8 +44,7 @@ describe("levelsOf", () => {
   });
 
   it("walks a ring once and no further, breaking it where the walk went in", () => {
-    // A ring has no first turn, so there is no right answer to pick — only a terminating one. The walk enters
-    // at the first turn it is given, and whoever fed that turn is left standing first.
+    // A ring has no first turn; the walk enters at the first turn given and leaves its feeder first.
     assert.deepEqual(levelsOf([turn("one", ["two"]), turn("two", ["one"])]), {
       one: 2,
       two: 1,

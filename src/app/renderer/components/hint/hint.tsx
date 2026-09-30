@@ -16,12 +16,8 @@ import {
 import type { HintProps } from "./interfaces";
 
 /**
- * The app's one hint window, in two kinds. The recognition kind says what a wordless thing is
- * — one line, cut with «…» — and the reading kind exists so that a line already cut on screen can be read whole,
- * and therefore wraps instead of cutting.
- *
- * It goes to the body rather than standing where it was asked for: the panels scroll and clip, and a hint clipped
- * by the box it belongs to is worse than none. It never takes the mouse — the thing under it stays pressable.
+ * The app's one hint window: recognition names a wordless thing in one line cut with «…»; reading shows a cut line
+ * whole, wrapped. Rendered into the body, never takes the mouse.
  */
 export function Hint({ text, isReading, at }: HintProps) {
   const isAbove = at.top > window.innerHeight - at.bottom;

@@ -1,7 +1,7 @@
 import { SPHERE_GRID_SEGMENTS_PER_LINE } from "./constants";
 import { type Point3 } from "./interfaces";
 
-/** The viewer-facing runs of a closed curve; a fully visible one is one run closed on itself, a hidden one is empty. */
+/** The viewer-facing runs of a closed curve; fully visible is one closed run, hidden is empty. */
 export function visibleRuns(pointAt: (angleRadians: number) => Point3): Point3[][] {
   const points = Array.from(
     {

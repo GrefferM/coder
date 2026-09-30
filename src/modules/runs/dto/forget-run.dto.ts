@@ -1,6 +1,6 @@
 import { IsUUID } from "class-validator";
 
-/** One run the person deletes by hand; it takes its steps and calls with it. */
+/** One run deleted by hand, with its steps and calls. */
 export class ForgetRunDto {
   @IsUUID()
   declare id: string;

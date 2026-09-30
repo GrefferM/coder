@@ -1,7 +1,7 @@
-/** IPC channel a renderer calls when it puts the open project down, so the main process stops watching it. */
+/** The renderer closes the open project so main stops watching it. */
 export const CLOSE_PROJECT_CHANNEL = "projects:close";
 
-/** IPC channel a renderer calls to turn a folder into a project. */
+/** The renderer turns a folder into a project. */
 export const CREATE_PROJECT_CHANNEL = "projects:create";
 
 /** IPC channel a renderer calls to drop a project from this machine's list, leaving its folder alone. */

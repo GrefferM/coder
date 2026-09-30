@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { keepInSight } from "./keep-in-sight";
 
-/** jsdom lays nothing out, so the list and the row are told where they stand and what the list keeps clear. */
+/** jsdom lays nothing out, so the list and row rects and the list's clearance are supplied. */
 function rect(top: number, bottom: number): DOMRect {
   return {
     top,

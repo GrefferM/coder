@@ -20,11 +20,7 @@ export function FieldSlot({ label, children, htmlFor, wasValue = null, action }:
 
   return (
     <div
-      /**
-       * This is what the keyboard calls a field: Tab walks the slots of the open tab, one stop each, and a slot
-       * says so here rather than every field of every panel saying it for itself. One stop however much stands
-       * inside — a row of colours is a field, not five.
-       */
+      /** Marks the slot as a field: Tab walks the slots of the open tab, one stop each, however much stands inside. */
       data-field
       className="d-flex flex-column"
       style={{

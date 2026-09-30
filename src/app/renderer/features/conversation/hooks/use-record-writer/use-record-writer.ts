@@ -7,8 +7,8 @@ import type { AskedQuestion } from "../../../record";
 import type { RunLedger, WrittenTurn } from "../../interfaces";
 
 /**
- * The record of one stream, written by one hand. Each walk keeps its own chain — question, steps in the order
- * they ran, closing — and the stream keeps the tail of them all, so a reader can wait for everything written.
+ * The record of one stream, written by one hand. Each walk has its own chain (question, steps in order, closing) and
+ * the stream keeps the tail of all, so a reader can wait for everything written.
  */
 export function useRecordWriter(
   learnRow: (runKey: string, runId: string) => void,
@@ -17,16 +17,15 @@ export function useRecordWriter(
   onWritten: () => void,
 ): RecordWriter {
   const walks = useRef<Record<string, RunLedger>>({});
-  /** The row this stream opened, awaited by every walk that follows the first. */
+  /** The row this stream opened, awaited by every walk after the first. */
   const opening = useRef<Promise<string | null> | null>(null);
   /**
-   * The last write of each walk, by the walk's own id. It outlives the walk in the book above, because a
-   * repeat asks for what its own walk wrote after that walk is over — and asks for nobody else's.
+   * The last write of each walk, by walk id; kept after the walk is over because a repeat asks for its own walk's writes.
    */
   const chains = useRef<Record<string, Promise<void>>>({});
   const tail = useRef<Promise<void>>(Promise.resolve());
 
-  /** One more write of this walk, chained after everything it wrote before. */
+  /** One more write of this walk, chained after all its earlier writes. */
   const chain = (ledger: RunLedger, runKey: string, written: Promise<void>): Promise<void> => {
     ledger.queue = written;
     chains.current = {
@@ -61,14 +60,13 @@ export function useRecordWriter(
         asked: text,
         askedAt: ledger.askedAt,
       };
-      // Which row this question is written into is settled the moment it is asked, and not when
-      // the queue reaches it: «+ НОВИЙ ЧАТ» in between must not leave the question standing without a row.
+      // The row is settled when the question is asked, not when the queue reaches it, so «+ НОВИЙ ЧАТ» in between
+      // cannot leave it without a row.
       const isOpening = ledger.runId === null && opening.current === null;
 
       if (isOpening) {
         opening.current = openRun(directory, asked).then((opened) => {
-          // The row this stream's own question opened; a stream the person has already left is none
-          // of the screen's business, and says nothing to it.
+          // The row this stream's own question opened; a put-away stream tells the screen nothing.
           if (opened !== null && !isPutAway(runKey)) {
             learnRow(runKey, opened.runId);
           }
@@ -84,7 +82,7 @@ export function useRecordWriter(
 
         ledger.runId = runId;
 
-        // A question that opened the row is written with it; there is nothing to add to a row that never opened.
+        // A question that opened the row is written with it; nothing to add to a row that never opened.
         if (runId === null || isOpening) {
           return;
         }
@@ -93,7 +91,7 @@ export function useRecordWriter(
           return;
         }
 
-        // The row was deleted by hand while the conversation stood: the next question opens one of its own.
+        // The row was deleted by hand; the next question opens a new one.
         ledger.runId = null;
         forgetRow(runId);
         opening.current = null;
@@ -103,7 +101,7 @@ export function useRecordWriter(
         ledger,
         runKey,
         ledger.queue.then(writeQuestion).then(() => {
-          // A question is a word of the record too; whoever reads the record reads it again now.
+          // A question is a record word too; readers read again now.
           onWritten();
         }),
       );
@@ -132,8 +130,8 @@ export function useRecordWriter(
 
   const closeWalk = useCallback(
     (ledger: RunLedger, runKey: string, endedAt: number) => {
-      // The row closes with the walk that was in it. A conversation walks one walk at a time —
-      // while one is out nothing is sent into it — so there is never another one of this row still going.
+      // The row closes with its walk; a conversation walks one walk at a time, so no other walk of this row is still
+      // going.
       tail.current = chain(
         ledger,
         runKey,
@@ -150,8 +148,8 @@ export function useRecordWriter(
   );
 
   /**
-   * Everything one walk wrote, so a repeat reads a record that holds what happened a moment ago. Only its
-   * own: a conversation still writing its steps is another conversation, and this one does not wait for it.
+   * Everything one walk wrote, so a repeat reads a record holding what just happened; only its own walk, not another
+   * conversation's.
    */
   const settled = useCallback(async (runKey?: string) => {
     await (runKey === undefined ? tail.current : chains.current[runKey]);
@@ -180,9 +178,9 @@ async function oneStep(ledger: RunLedger, turn: WrittenTurn): Promise<string | n
 
   const stepId = await writeStep({
     runId: ledger.runId,
-    // Every step of this walk names the question it grew from, whichever of the flow's it is.
+    // The question this step grew from.
     questionId: ledger.questionId,
-    // And the walk it ran in, so a repeat knows which steps are the last walk's.
+    // The walk it ran in, so a repeat knows the last walk's steps.
     walkId: ledger.walkId,
     agentId: turn.agent.id,
     agentName: turn.agent.name,
@@ -194,7 +192,7 @@ async function oneStep(ledger: RunLedger, turn: WrittenTurn): Promise<string | n
     outputPrice: turn.model?.outputPrice ?? null,
     contextCeiling: turn.model?.contextCeiling ?? null,
     answerCeiling: turn.model?.answerCeiling ?? null,
-    // What the turn ran with, kept as it stood then — the prompt and the two numbers.
+    // What the turn ran with, as it stood then: the prompt and the two numbers.
     promptId: turn.agent.promptId,
     prompt: turn.prompt,
     temperature: turn.agent.temperature,
@@ -204,7 +202,7 @@ async function oneStep(ledger: RunLedger, turn: WrittenTurn): Promise<string | n
     state: turn.state,
     inputTokens: turn.cost?.inputTokens ?? 0,
     outputTokens: turn.cost?.outputTokens ?? 0,
-    // A turn that never began spent nothing, which is a bill of zero and not a number nobody knows.
+    // A turn that never began cost zero, not an unknown.
     money: turn.cost?.money ?? (notStartedOf(turn.state) === null ? null : 0),
     fromStepIds: fedStepIds(ledger, turn.incoming),
     handoffs: turn.handoffs,

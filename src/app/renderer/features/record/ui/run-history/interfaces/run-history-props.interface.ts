@@ -3,20 +3,17 @@ import type { RunHit, RunRow } from "../../../interfaces";
 
 export interface RunHistoryProps {
   runs: RunRow[];
-  /** The project's agents as they stand today, so a row's name is fresh and a gone one is known. */
+  /** The project's current agents; row names are looked up by id and a gone agent is known. */
   agents: NamedAgent[];
-  /** The record could not be read; an empty list would say the wrong thing. */
+  /** The record could not be read, so an empty list would mislead. */
   isFailed: boolean;
-  /**
-   * A row is pressed to read the run in the stream where it happened — and a found place is
-   * pressed to land on that very message, so the press carries what was found where there was anything.
-   */
+  /** Opens the run in the stream; for a found place it carries the hit so the stream lands on that message. */
   onOpen: (run: RunRow, found: RunHit | null) => void;
-  /** The run this row stands for is to be taken out of the record for good. */
+  /** Takes the run out of the record for good. */
   onForget: (run: RunRow) => void;
-  /** The word being looked for through the whole record; empty while nobody is looking. */
+  /** The word searched through the whole record; empty when not searching. */
   query: string;
-  /** One hit per run the word stands in — the found words themselves, and where a press should land. */
+  /** One hit per place the word stands in: the found words and where a press lands. */
   hits: RunHit[];
   onQuery: (query: string) => void;
 }

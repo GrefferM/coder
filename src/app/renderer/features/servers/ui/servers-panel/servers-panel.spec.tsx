@@ -59,7 +59,7 @@ function aLook(patch: Partial<McpLook> = {}): McpLook {
   };
 }
 
-/** An agent holding one function of the first server, so the row has an agent to count. */
+/** An agent holding one function of the first server. */
 function holding(): Agent[] {
   return [
     anAgent({
@@ -75,10 +75,7 @@ function holding(): Agent[] {
   ];
 }
 
-/**
- * Everything the catalogue takes, flat, so one case names only what it changes. `panelProps` puts each back
- * into the part that owns it.
- */
+/** Everything the catalogue takes, flat; `panelProps` puts each back into its owning part. */
 interface PanelSays extends ServerCatalogue, ServerDeclaring, ServerActs, DeclaringActs {}
 
 function panelProps(says: Partial<PanelSays> = {}): ServersPanelProps {
@@ -144,8 +141,7 @@ function panel(says: Partial<PanelSays> = {}) {
 
 describe("ServersPanel", () => {
   it("tells a server nobody has a token for from one that fell, in words and in what it offers", async () => {
-    // It never started, so «ПРОЦЕС УПАВ» would be a lie; there is no count to give either, and the
-    // action is the one that would mend it — typing the token in, not starting it again without one.
+    // Never started: no «ПРОЦЕС УПАВ» and no count; the action is typing the token in.
     const onOpenForm = vi.fn();
 
     panel({
@@ -168,7 +164,7 @@ describe("ServersPanel", () => {
   });
 
   it("names the variable that has no value on this machine, and offers to write it in", () => {
-    // «НЕ ЗАПУСТИТЬСЯ · НЕМА ЗНАЧЕННЯ: BRAVE_API_KEY» — the name travelled with the refusal.
+    // «НЕ ЗАПУСТИТЬСЯ · НЕМА ЗНАЧЕННЯ: BRAVE_API_KEY»: the refusal carries the name.
     panel({
       looks: {
         [SERVER_ID]: aLook({
@@ -185,8 +181,7 @@ describe("ServersPanel", () => {
   });
 
   it("opens every row, the fallen one included, because that is where its line is mended", async () => {
-    // A row that does not open is a row whose declared line cannot be mended from inside the app —
-    // and a fallen one is the very one whose line is usually wrong.
+    // A fallen row still opens.
     panel({
       looks: {
         [SERVER_ID]: {
@@ -209,15 +204,14 @@ describe("ServersPanel", () => {
   });
 
   it("opens the form on the server whose row was pressed, so a wrong line can be mended", async () => {
-    // The head holds one action at most, so this one stands in the card — reachable in every state,
-    // because every row opens, the fallen one included.
+    // The edit action stands in the card, reachable in every state.
     const onOpenForm = vi.fn();
 
     panel({
       onOpenForm,
     });
 
-    // «змінити» lives in the foot of the opened card, so the row opens first — and every row opens.
+    // «змінити» is in the foot of the opened card, so the row opens first.
     await userEvent.click(screen.getByText("filesystem-mcp"));
     await userEvent.click(
       screen.getByRole("button", {
@@ -253,13 +247,13 @@ describe("ServersPanel", () => {
       },
     });
 
-    // The one agent holds a function of the first server alone; the second names none of it.
+    // The agent holds a function of the first server only.
     expect(screen.getByText("ЛОКАЛЬНИЙ · 1 ФУНКЦІЯ · 1 АГЕНТ")).toBeInTheDocument();
     expect(screen.getByText("ВІДДАЛЕНИЙ · 1 ФУНКЦІЯ")).toBeInTheDocument();
   });
 
   it("a call that failed stands under the name, while the dot stays as it was", () => {
-    // «червоніє смуга, а не стан сервера» — the connection is whole, and the dot cannot say otherwise.
+    // «червоніє смуга, а не стан сервера»: the connection is whole.
     panel({
       looks: {
         [SERVER_ID]: aLook({
@@ -278,7 +272,7 @@ describe("ServersPanel", () => {
     });
 
     expect(screen.getByText("ОСТАННІЙ ВИКЛИК УПАВ · 14:12")).toBeInTheDocument();
-    // The row shows the beginning of the server's own sentence, and the rest of it lives in the call's card.
+    // The row shows the start of the server's sentence; the rest is in the call's card.
     expect(screen.getByText("browser_navigate · Chromium distribution 'chrome' is not found")).toBeInTheDocument();
     expect(screen.getByText("ЛОКАЛЬНИЙ · 1 ФУНКЦІЯ · 1 АГЕНТ")).toBeInTheDocument();
   });
@@ -311,7 +305,7 @@ describe("ServersPanel", () => {
   });
 
   it("says the record does not lead to the call, in place of offering the way, when the way led nowhere", async () => {
-    // A forgotten run took its calls with it, and a press that does nothing at all is owed a word.
+    // A forgotten run took its calls with it; the press answers with a word.
     const onShowCall = vi.fn().mockResolvedValue(false);
 
     panel({
@@ -335,7 +329,7 @@ describe("ServersPanel", () => {
     await userEvent.click(screen.getByText(SERVER_SHOW_CALL_LABEL));
 
     expect(await screen.findByText(SERVER_CALL_LOST_LABEL)).toBeInTheDocument();
-    // The offer that cannot be kept stops being an offer: a second press would find the same nothing.
+    // The offer that cannot be kept is withdrawn.
     expect(screen.queryByText(SERVER_SHOW_CALL_LABEL)).not.toBeInTheDocument();
   });
 
@@ -395,7 +389,7 @@ describe("ServersPanel", () => {
 
     expect(screen.getByText("ЖИВИЙ · ЖОДНА ФУНКЦІЯ НЕ ВІДПОВІЛА · 1 ФУНКЦІЯ · 1 АГЕНТ")).toBeInTheDocument();
     expect(screen.getByText(/^3 виклики поспіль упали/)).toBeInTheDocument();
-    // The row is troubled, and the way out of it is a new connection — which is a new chance.
+    // A troubled row offers a new connection.
     expect(screen.getByText(SERVER_RESTART_ALIVE_LABEL)).toBeInTheDocument();
     expect(screen.queryByText(SERVER_RESTART_LABEL)).not.toBeInTheDocument();
   });
@@ -420,12 +414,12 @@ describe("ServersPanel", () => {
 
     expect(screen.getByText("ОСТАННІЙ ВИКЛИК · 14:12")).toBeInTheDocument();
     expect(screen.queryByText(/ОСТАННІЙ ВИКЛИК УПАВ/)).not.toBeInTheDocument();
-    // «Тіло стану — той самий рядок сервера, що в смузі»: one fact, one text, two grounds.
+    // «Тіло стану — той самий рядок сервера, що в смузі»: one text in both places.
     expect(screen.getByText("browser_navigate · Chromium distribution 'chrome' is not found")).toBeInTheDocument();
   });
 
   it("opens the card of one server and stands what it hands over, with the agents holding each", async () => {
-    // The catalogue hands nothing out — «2 АГ.» beside a function is a count and never a tick.
+    // The catalogue hands nothing out: «2 АГ.» is a count, never a tick.
     panel({
       looks: {
         [SERVER_ID]: aLook({
@@ -489,8 +483,7 @@ describe("ServersPanel", () => {
   });
 
   it("says nothing of a grant the server no longer names: that trouble is the agent's, and told there", async () => {
-    // Nothing on this page mends a grant, and the same trouble is told among the agent's broken grants,
-    // where it can be.
+    // This page mends no grant; the trouble is told among the agent's broken grants.
     panel({
       looks: {
         [SERVER_ID]: aLook({
@@ -512,7 +505,7 @@ describe("ServersPanel", () => {
   });
 
   it("opens a server that has not answered with no search, since it hands nothing over to search", async () => {
-    // The page opens all the same — that is where the line that would not start is mended.
+    // The page still opens; the line that would not start is mended there.
     panel({
       looks: {
         [SERVER_ID]: aLook({
@@ -536,8 +529,7 @@ describe("ServersPanel", () => {
   });
 
   it("takes a server's page away with the server, and does not bring it back with an undo", async () => {
-    // ⌘Z puts the server back inside the thirty seconds — onto the catalogue it was deleted from, and
-    // never onto its own page, which is where the eye was before the deed and not after it.
+    // ⌘Z restores the server within thirty seconds onto the catalogue, not its own page.
     const { rerender } = panel();
 
     await userEvent.click(screen.getByText("filesystem-mcp"));
@@ -573,7 +565,7 @@ describe("ServersPanel", () => {
   });
 
   it("a server's page says how fresh its answer is, on the app's one scale", async () => {
-    // The closing line of the page, read by the scale and not by the hour.
+    // The closing line, read by the scale, not the hour.
     panel({
       looks: {
         [SERVER_ID]: aLook({
@@ -588,7 +580,7 @@ describe("ServersPanel", () => {
   });
 
   it("says nothing at all where there was no answer, rather than standing with a dash", async () => {
-    // A dash says «уже не дізнатись»; here we have simply not been told yet, and the line goes whole.
+    // No dash for an unanswered server; the line goes whole.
     panel({
       looks: {
         [SERVER_ID]: aLook({
@@ -618,7 +610,7 @@ describe("ServersPanel", () => {
     });
 
     expect(screen.getByText("ПРОЦЕС УПАВ · 1 АГЕНТ")).toBeInTheDocument();
-    // A row that says a server fell and not why is a dead end: the words it failed with stand under it.
+    // The failure words stand under a fallen row.
     expect(screen.getByText("spawn ENOENT · npx: command not found")).toBeInTheDocument();
 
     await userEvent.click(screen.getByText(SERVER_RESTART_LABEL));
@@ -627,7 +619,7 @@ describe("ServersPanel", () => {
   });
 
   it("a server that answered is never offered a start, since it is already up", () => {
-    // The head holds the one thing the state asks for, and a standing server asks to be let go, not raised.
+    // A standing server's head action is to be let go, not raised.
     panel();
 
     expect(screen.queryByText(SERVER_RESTART_LABEL)).not.toBeInTheDocument();
@@ -635,7 +627,7 @@ describe("ServersPanel", () => {
   });
 
   it("a server being asked counts a clock up and names the ceiling, and is not called fallen meanwhile", () => {
-    // A clock and no bar, and the ceiling of the handshake said out loud while the waiting goes on.
+    // A clock and no bar, with the handshake ceiling stated while waiting.
     panel({
       looks: {},
       askingSince: {
@@ -649,7 +641,7 @@ describe("ServersPanel", () => {
   });
 
   it("holds the second line back until the twentieth second, and says it after", () => {
-    // «доти чекання звичайне» — a line about a long first start is noise on a wait of three seconds.
+    // «доти чекання звичайне»: no long-start line on a wait of three seconds.
     const { rerender } = panel({
       looks: {},
       askingSince: {
@@ -674,7 +666,7 @@ describe("ServersPanel", () => {
   });
 
   it("«СКАСУВАТИ» gives the place back, and does not also walk into the server's page", async () => {
-    // The press is the action's own; a wait with no way out of it is why a person opens the file.
+    // The waiting action is the cancel press.
     const onCancel = vi.fn();
     const onShowCall = vi.fn().mockResolvedValue(true);
 
@@ -694,7 +686,7 @@ describe("ServersPanel", () => {
     );
 
     expect(onCancel).toHaveBeenCalledWith(SERVER_ID);
-    // The page is a step of its own, and a press on this button is not a press on the row.
+    // A press on this button is not a press on the row.
     expect(screen.getByText(SERVER_STOP_ASKING_LABEL)).toBeInTheDocument();
   });
 
@@ -719,7 +711,7 @@ describe("ServersPanel", () => {
   });
 
   it("asks a standing remote server for its list again from its page, and kills nothing", async () => {
-    // The kind decides the word — a connection is asked again, a process of ours is raised afresh.
+    // The kind decides the word: a connection is asked again, a local process is raised afresh.
     const onAskAgain = vi.fn();
     const onRestart = vi.fn();
 
@@ -764,8 +756,8 @@ describe("ServersPanel", () => {
   });
 
   it("never offers to stop a server anywhere, in the catalogue or on its page", async () => {
-    // A server stopped by hand is a declaration with nothing behind it. It is stopped
-    // by closing the project and taken away by being deleted; «СКАСУВАТИ» lets go of the waiting, not the server.
+    // No stop action: a server is stopped by closing the project and removed by deleting; «СКАСУВАТИ» lets go of the
+    // waiting, not the server.
     panel();
 
     expect(screen.queryByText("ЗУПИНИТИ")).not.toBeInTheDocument();

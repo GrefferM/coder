@@ -27,7 +27,7 @@ function aCall(patch: Partial<LiveCall> = {}): LiveCall {
 
 describe("useLookAfterCall", () => {
   it("asks the server again once its call has ended", () => {
-    // «рядок сервера бере стан після виклику» — and nothing else would ever make the catalogue ask.
+    // «рядок сервера бере стан після виклику»: otherwise nothing would make the catalogue ask.
     const look = vi.fn();
 
     renderHook(() => useLookAfterCall(look));

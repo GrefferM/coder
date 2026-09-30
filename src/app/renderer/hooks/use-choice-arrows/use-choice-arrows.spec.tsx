@@ -29,7 +29,7 @@ function Page({
         </div>
       </div>
 
-      {/* A list of rows, each leading somewhere: it wears the same marks and is the opposite thing. */}
+      {/* A list of rows that each lead somewhere: looks alike, but is not a choice row. */}
       <div data-field>
         <span>ФУНКЦІЇ</span>
         <button type="button" aria-label="browser_click" aria-pressed={false} />
@@ -41,7 +41,7 @@ function Page({
   );
 }
 
-/** The key itself, not a walk the test library does: where the focus lands afterwards is the hook's own doing. */
+/** The key event itself; where focus lands is the hook's doing. */
 function press(key: string, init: KeyboardEventInit = {}): KeyboardEvent {
   const event = new KeyboardEvent("keydown", {
     key,
@@ -99,7 +99,7 @@ describe("useChoiceArrows", () => {
   });
 
   it("leaves a list of roads alone, however much it looks like a row of choices", () => {
-    // A row that leads somewhere is not a field, and the arrows are not its key.
+    // A row that leads somewhere is not a field; arrows are not its key.
     render(<Page />);
     screen.getByLabelText("browser_click").focus();
 

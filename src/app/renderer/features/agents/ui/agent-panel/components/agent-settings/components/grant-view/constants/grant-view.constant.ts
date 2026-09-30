@@ -35,5 +35,5 @@ export const GRANT_VIEW_SAVE_LABEL = "Зберегти";
 export const GRANT_VIEW_FOOTER_PADDING_PX = 16;
 export const GRANT_VIEW_FOOTER_GAP_PX = 10;
 
-/** Shown in place of the description when the source command is gone. */
+/** Shown instead of the description when the source command is gone. */
 export const GRANT_VIEW_LOST_NOTE = "Команди, з якої зроблено видачу, у проєкті немає";

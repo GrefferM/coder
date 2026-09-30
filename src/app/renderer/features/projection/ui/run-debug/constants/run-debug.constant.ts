@@ -9,11 +9,11 @@ import { RUN_DONE, RUN_FAILED, RUN_NOT_SENT, RUN_RUNNING, RUN_STOPPED } from "..
 import type { IconTone } from "../../../../../components";
 import type { RunStateLook } from "../interfaces";
 
-/** The flat projection of one run — it takes the whole field the canvas stands in. */
+/** The flat projection of one run; takes the whole field the canvas occupies. */
 export const RUN_DEBUG_BACKGROUND_COLOR = "#0d0f16";
 export const RUN_DEBUG_BORDER_RADIUS_PX = 12;
 
-/** The head — the way back, when the pass was asked, what was asked, how it ended and what it cost. */
+/** The head: back button, when the pass was asked, what was asked, how it ended and its cost. */
 export const RUN_DEBUG_HEAD_PADDING = "12px 18px";
 export const RUN_DEBUG_HEAD_BORDER_COLOR = "#1c202c";
 export const RUN_DEBUG_HEAD_GAP_PX = 12;
@@ -47,10 +47,7 @@ export const RUN_DEBUG_FAILED_BACKGROUND_COLOR = "#2a1c20";
 export const RUN_DEBUG_FAILED_BORDER_COLOR = "#4a2530";
 export const RUN_DEBUG_STOPPED_COLOR = "#5c6478";
 
-/**
- * The colours the pill wears for each state, the run's own word standing in it. A state with no colours of
- * its own — nothing was sent — wears the quiet ones, since there is nothing to draw attention to.
- */
+/** Pill colours per run state; a state without its own colours (nothing sent) gets the quiet ones. */
 export const RUN_DEBUG_STATE_LOOKS: Record<string, RunStateLook> = {
   [RUN_RUNNING]: {
     color: RUN_DEBUG_DONE_COLOR,
@@ -79,10 +76,10 @@ export const RUN_DEBUG_STATE_LOOKS: Record<string, RunStateLook> = {
   },
 };
 
-/** «3 хв 06 · 6 КРОКІВ · 18 240 ТКН · $0.21» — what the whole run took. */
+/** «3 хв 06 · 6 КРОКІВ · 18 240 ТКН · $0.21»: the whole run's totals. */
 export const RUN_DEBUG_TOTALS_COLOR = "#5c6478";
 
-/** Until the graph is drawn, the run that could not be read says so where the graph will stand. */
+/** Shown where the graph will stand when the run could not be read. */
 export const RUN_DEBUG_FAILED_NOTE = "Не вдалося прочитати цей запуск.";
 export const RUN_DEBUG_NOTE_PADDING = "22px 18px";
 export const RUN_DEBUG_NOTE_FONT_SIZE_PX = 12.5;

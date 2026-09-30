@@ -1,7 +1,7 @@
 import { REMEMBER_DELETION_CHANNEL } from "../../../../../contracts";
 import type { TakenThings } from "../interfaces";
 
-/** Writes a deletion into the project's history and returns the id of its row. */
+/** Writes a deletion into the project's history and returns its row id. */
 export async function rememberDeletion(
   directory: string,
   kind: string,

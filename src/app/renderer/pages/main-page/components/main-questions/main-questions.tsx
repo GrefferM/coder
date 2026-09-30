@@ -8,7 +8,7 @@ import { FileConflictConfirm, configDifference, DIFFERENCE_MOVED_SIGN } from "..
 import { quietly } from "../../../../utils/writes";
 import type { MainQuestionsProps } from "./interfaces";
 
-/** Every question that stands over the working area, each one shown only while its own is armed. */
+/** Every question standing over the working area, each shown only while its own is armed. */
 export function MainQuestions({
   project,
   file,

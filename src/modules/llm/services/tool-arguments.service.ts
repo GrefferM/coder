@@ -20,10 +20,7 @@ import {
 } from "../constants";
 import type { AgentCommandTool, AgentToolParameter, ToolComplaint } from "../interfaces";
 
-/**
- * The model's arguments against the types a command declared. Only a command is checked: this app wrote those
- * types, while a server's function carries a schema it never wrote and has no standing to judge.
- */
+/** The model's arguments against the types a command declared; only commands are checked, not a server's schema. */
 export class ToolArguments {
   /** What failed, one entry each; empty when every argument holds. */
   complaints(tool: AgentCommandTool, given: Record<string, string>): ToolComplaint[] {
@@ -37,7 +34,7 @@ export class ToolArguments {
     return `${TOOL_NOT_RUN_OPEN}${toolName}${TOOL_NOT_RUN_MIDDLE}${said.join(TOOL_COMPLAINT_SEPARATOR)}${TOOL_NOT_RUN_CLOSE}`;
   }
 
-  /** The same refusal for the person — the names as written, the app's words aloud. */
+  /** The same refusal for the person: names as written, the app's words. */
   refusedLine(toolName: string, complaints: ToolComplaint[]): string {
     const said = complaints.map(
       (complaint) => `${complaint.name}${TOOL_COMPLAINT_NAME_JOIN}${complaint.wrong.toUpperCase()}`,
@@ -83,7 +80,7 @@ export class ToolArguments {
       };
     }
 
-    // An enum with no values behind it has nothing to check against.
+    // An enum with no values has nothing to check against.
     if (parameter.type === "enum" && parameter.values.length > 0 && !parameter.values.includes(value)) {
       const list = parameter.values.join(TOOL_COMPLAINT_VALUES_SEPARATOR);
 

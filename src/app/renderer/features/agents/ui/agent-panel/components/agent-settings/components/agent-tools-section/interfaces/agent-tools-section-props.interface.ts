@@ -1,15 +1,15 @@
 import type { Agent, ToolGrant } from "../../../../../../../../../interfaces";
 
-/** One agent's tab, the agents-as-tools field: every other sphere, and the grants of them this one holds. */
+/** The agents-as-tools field: every other agent, and this one's grants of them. */
 export interface AgentToolsSectionProps {
-  /** Every agent of the project; the one being edited is left out of the choices by its id. */
+  /** Every agent of the project; the edited one is left out by id. */
   agents: Agent[];
-  /** The agent being edited, so it is not offered itself; nothing while a sphere is being made. */
+  /** The edited agent, not offered to itself; null while one is being made. */
   selfId: string | null;
   grants: ToolGrant[];
-  /** The agents-as-tools line as it was saved, or nothing where it stands unchanged. */
+  /** The saved agents-as-tools line; null when unchanged. */
   wasValue: string | null;
-  /** A provider that carries no function calls shuts the picker; the grants already given stay listed. */
+  /** The provider has no function calls: the picker is shut, earlier grants stay listed. */
   isLocked: boolean;
   onGrantsChange: (grants: ToolGrant[]) => void;
 }

@@ -51,7 +51,7 @@ describe("EditorName", () => {
   });
 
   it("wears the draft's dot while the name stands changed", () => {
-    // The name is a field like any other, so a moved one is marked like any other.
+    // A changed name is marked like any other field.
     const { container, rerender } = render(
       <EditorName name="Шукач" wasName={null} isRenaming={false} onRenaming={() => {}} onRename={() => {}} />,
     );

@@ -88,7 +88,7 @@ describe("CanvasOver", () => {
   });
 
   it("says the file's own word along the top, and keeps the offers at the bottom while it stands", () => {
-    // The two no longer share a place, so neither has to wait behind the other.
+    // The two no longer share a place, so neither waits behind the other.
     const note: WriteNote = {
       label: "Не вдалося записати файл проєкту",
       detail: null,

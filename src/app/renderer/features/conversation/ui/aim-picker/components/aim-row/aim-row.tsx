@@ -15,7 +15,7 @@ import {
 import type { AimRowProps } from "./interfaces";
 import { Dot } from "./components";
 
-/** One agent — a dot in its colour, its name as ordinary words, and nothing else. */
+/** One agent: a dot in its colour and its name. */
 export function AimRow({ agent, isAimed, isWalked, walkedRow, onChoose, onWalk }: AimRowProps) {
   const { isFocused, handlers } = useInteraction();
   const ground = isAimed ? AIM_PICKER_ROW_AIMED_BACKGROUND_COLOR : AIM_PICKER_LIST_BACKGROUND_COLOR;

@@ -19,7 +19,7 @@ import type {
 import type { AskProviderDto, SaveProviderAddressDto, SaveProviderKeyDto } from "../dto";
 import { Refusal } from "../../../utils/refusals";
 
-/** The known providers and what this machine holds for each: keys held encrypted, addresses in the clear. */
+/** The known providers and what this machine holds for each: keys encrypted, addresses in the clear. */
 export class ProviderService {
   constructor(
     private readonly keys: ProviderKeyStore,
@@ -39,12 +39,12 @@ export class ProviderService {
     }));
   }
 
-  /** A provider's key in plain text; main-process callers only, never sent to a screen. */
+  /** A provider's plain-text key; main-process callers only, never sent to a screen. */
   async keyOf(providerId: string): Promise<string | null> {
     return this.keys.value(this.secretKey(this.known(providerId).id));
   }
 
-  /** The address of a provider that asks for one — saved, or its customary one; `null` where none is asked for. */
+  /** The saved or customary address of a provider that asks for one; `null` otherwise. */
   async addressOf(providerId: string): Promise<string | null> {
     const provider = this.known(providerId);
 
@@ -57,9 +57,9 @@ export class ProviderService {
     return addresses[provider.id] ?? provider.customaryAddress;
   }
 
-  /** What a local provider has installed; one that is not running reports `isAnswering: false`. */
+  /** What a local provider has installed; one not running reports `isAnswering: false`. */
   async ask(payload: AskProviderDto): Promise<ProviderReply> {
-    // Only a provider running on this machine is asked what it holds: a remote one is nobody's to poll.
+    // Only local providers are asked; a remote one is not polled.
     if (this.known(payload.providerId).kind !== "local") {
       throw new Refusal(UNKNOWN_PROVIDER);
     }
@@ -123,7 +123,7 @@ export class ProviderService {
     });
   }
 
-  /** Writes the address of a provider that asks for one; an empty value falls back to the customary one. */
+  /** Writes the address of a provider that asks for one; empty falls back to the customary one. */
   async saveAddress(payload: SaveProviderAddressDto): Promise<void> {
     const provider = this.known(payload.providerId);
     const value = payload.value.trim();

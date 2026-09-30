@@ -5,7 +5,7 @@ import { FOUND_WORDS_BACKGROUND_COLOR } from "./constants";
 
 describe("FoundWords", () => {
   it("lights exactly what was typed, and inside a word too", () => {
-    // «сесії» is caught on «сесі» — the search is over words, not over whole ones.
+    // «сесії» is caught on «сесі»: the search matches inside words.
     render(<FoundWords words="Перевір сесії користувачів" looked="сесі" />);
 
     expect(screen.getByText("сесі")).toHaveStyle({

@@ -1,9 +1,8 @@
 import type { PackedAttachment } from "../../../interfaces";
 
 /**
- * The words a turn is put with when the person attached files to the question: their own text, and then each
- * attachment's packed block after it. The content goes into the turn's input alone — the stream shows the
- * question as it was typed, and the «ПРИКРІПЛЕНО:» row names the files without opening them.
+ * The turn's words when files are attached: the person's text, then each attachment's packed block. Content goes into
+ * the turn's input only; the stream shows the typed question and the «ПРИКРІПЛЕНО:» row.
  */
 export function askedWithAttached(text: string, attached: PackedAttachment[]): string {
   if (attached.length === 0) {

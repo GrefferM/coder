@@ -34,13 +34,10 @@ import { Step } from "./components";
 import type { StreamSearchProps } from "./interfaces";
 
 /**
- * The stream's own search — the same word over the same things as the history's, inside the conversation. It
- * stands over the stream, under the band, and stands always: one search said twice on screen should not be two
- * different things.
+ * The stream's own search, over the same things as the history's; always shown under the band.
  *
- * The stream rides on every typed letter and not on Enter. Enter is «the next match» and ⇧Enter the one before,
- * which is the whole reason for the number: «3 З 8» says Enter has somewhere to go. Escape closes the field and
- * puts the marks out; the stream stays where it drove to.
+ * The stream follows every typed letter. Enter is the next match, ⇧Enter the previous; Escape closes the field and
+ * clears the marks.
  */
 export function StreamSearch({
   query,
@@ -56,7 +53,7 @@ export function StreamSearch({
   const { isLit, isFocused, handlers } = useInteraction();
   const field = useRef<HTMLInputElement>(null);
 
-  // ⌘F puts the caret in this field and does not touch the field of the question below.
+  // ⌘F focuses this field, not the question field below.
   useEffect(() => {
     const press = (event: KeyboardEvent) => {
       if (event.key.toLowerCase() === STREAM_SEARCH_KEY && (event.metaKey || event.ctrlKey)) {
@@ -152,7 +149,7 @@ export function StreamSearch({
         >
           {foundOfLabel(at, found)}
         </span>
-        {/* The word goes out by a cross of its own, which stands only while there is a word to take. */}
+        {/* A cross of its own clears the word; shown only while there is one. */}
         {query !== "" && (
           <Step
             label={STREAM_SEARCH_CLEAR_LABEL}
@@ -163,7 +160,7 @@ export function StreamSearch({
             onGo={onClose}
           />
         )}
-        {/* The walk Enter takes, said with two arrows for the hand that would rather press. */}
+        {/* Enter's walk as two arrows for pointer use. */}
         <span
           className="d-flex align-items-center flex-shrink-0"
           style={{

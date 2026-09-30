@@ -15,7 +15,7 @@ import {
 import { PROMPT_PICKER_NONE_COLOR, PROMPT_PICKER_NONE_LABEL, PROMPT_PICKER_RULE_MARGIN } from "./constants";
 import type { PromptPickerProps } from "./interfaces";
 
-/** Prompt choice; count = agents on it, this one included. «Без промпта» first, cut by a rule. */
+/** Prompt choice; count is agents on it, this one included. «Без промпта» first, cut by a rule. */
 export function PromptPicker({
   prompts,
   agents,

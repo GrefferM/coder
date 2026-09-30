@@ -1,5 +1,4 @@
-// What one turn is asked with, what it says back and every piece of it on the way are the boundary's: written once
-// in `src/contracts`, taken from there.
+// The turn's ask, answer and pieces belong to the boundary: defined in `src/contracts`, re-exported here.
 export * from "../../../contracts/llm";
 export * from "../../../contracts/project/mcp-server.interface";
 export * from "../../../contracts/runs/turn-call.interface";

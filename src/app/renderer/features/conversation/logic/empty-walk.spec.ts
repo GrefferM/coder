@@ -3,7 +3,7 @@ import { emptyWalk } from "./empty-walk";
 
 describe("emptyWalk", () => {
   it("is empty in every part a stream can hold", () => {
-    // This is what «+ НОВИЙ ЧАТ» comes back to — nothing out, nothing walked, nothing aimed at.
+    // What «+ НОВИЙ ЧАТ» returns to: nothing out, walked or aimed at.
     const state = emptyWalk();
 
     expect(state.out).toEqual({});
@@ -17,7 +17,7 @@ describe("emptyWalk", () => {
   });
 
   it("gives a fresh state each time and never the same one twice", () => {
-    // A stream emptied twice must not find in the second what was written into the first.
+    // Emptying twice shares nothing between the two results.
     const first = emptyWalk();
     const second = emptyWalk();
 

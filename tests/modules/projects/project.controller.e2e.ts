@@ -83,7 +83,7 @@ describe("ProjectController", () => {
   let projectController: ProjectController;
 
   beforeEach(async () => {
-    // A real database of its own, made and thrown away for each test; the app's own is never touched.
+    // A fresh real database per test; the app's own is untouched.
     record = await openTestDatabase();
     projectController = new ProjectController(
       new ProjectService(

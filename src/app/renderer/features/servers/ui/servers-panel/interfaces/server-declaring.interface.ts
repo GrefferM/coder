@@ -1,9 +1,9 @@
 import type { McpSecretsHeld } from "../../../../../interfaces";
 import type { ServerFormValues } from "../../../interfaces";
 
-/** The one form standing over the list while it is open, and what this machine already holds for it. */
+/** The form standing over the list while open, and what this machine already holds for it. */
 export interface ServerDeclaring {
-  /** Which server is being declared, and `new` before one exists; `null` while the list stands alone. */
+  /** The server being declared, `new` before one exists; `null` while only the list stands. */
   openServerId: string | "new" | null;
   form: ServerFormValues | null;
   held: McpSecretsHeld;

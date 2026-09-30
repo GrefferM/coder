@@ -1,4 +1,4 @@
-/** Why a turn never began — the family the card is drawn for, one form on all of them. */
+/** Why a turn never began; the card is drawn by family. */
 export type NotStartedReason =
   | "noKey"
   | "noModel"

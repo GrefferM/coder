@@ -6,7 +6,7 @@ import type { Agent } from "../../../../interfaces";
 import type { SphereDrag, SphereDragState } from "./interfaces";
 import type { Point } from "../../../../utils/math";
 
-/** Sphere drag — no snapping, keeps the grab grip, holds the drop point until the write settles or fails. */
+/** Sphere drag: no snapping, keeps the grab offset, holds the drop point until the write settles or fails. */
 export function useSphereDrag(
   contentPointAt: (clientX: number, clientY: number) => Point,
   onMoveAgent: (agentId: string, at: Point) => Promise<void>,

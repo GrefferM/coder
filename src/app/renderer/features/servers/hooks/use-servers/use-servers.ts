@@ -5,31 +5,25 @@ import type { McpLook, ProjectMcpServer } from "../../../../interfaces";
 import type { ServersState } from "./interfaces";
 
 /**
- * Every server the project declares, asked what it hands over. The answer is nobody's file — it is what
- * the server said this time — so it is held here for as long as the project stands open and never written down.
- *
- * A server is asked once when the project names it, and again only when somebody asks: the ask starts a process,
- * and a beat of its own would start one over and over for a list nobody is looking at.
+ * Every declared server, asked what it hands over. The answer is held only while the project is open, never written
+ * down; a server is asked once when the project names it, and again only on request.
  */
 export function useServers(directory: string, servers: ProjectMcpServer[]): ServersState {
   const [looks, setLooks] = useState<Record<string, McpLook>>({});
-  // **when** each ask began, and not merely that it is going on — the row counts a clock up from it.
+  // When each ask began, from which the row counts a clock up.
   const [askingSince, setAskingSince] = useState<Record<string, number>>({});
-  // The declared list as it stands now: `look` is one callback for as long as the screen holds it, whatever changes.
+  // The declared list as it stands now, so `look` stays one callback.
   const declared = useRef(servers);
 
   declared.current = servers;
   /**
-   * Which servers have been asked, and **how each was reached when it was asked**. The second half is what makes
-   * an answer worth keeping: a server whose address or way in was changed is a different server behind the same
-   * id, and what the old one said — «ПОТРІБЕН ТОКЕН» most of all — would otherwise stand over the new one until
-   * somebody thought to press «ЗАПУСТИТИ».
+   * Which servers have been asked and how each was reached then; a server whose address or sign-in changed is a different
+   * server behind the same id, so its old answer is dropped.
    */
   const asked = useRef(new Map<string, string>());
   /**
-   * Which turn of asking each server is on. An ask cannot be called back once it is out — the main
-   * process is already starting a program — so «СКАСУВАТИ» counts the server one turn on instead, and the answer
-   * to the turn before it is dropped when it comes. Without this, a row let go of would light up by itself.
+   * The turn of asking each server is on. An ask cannot be recalled, so «СКАСУВАТИ» moves to the next turn and the
+   * earlier turn's answer is dropped on arrival.
    */
   const turns = useRef(new Map<string, number>());
 
@@ -75,11 +69,7 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
     [ask],
   );
 
-  /**
-   * «СКАСУВАТИ» gives the place back at once and asks nothing. The process is let go, the row stops
-   * waiting, and what the server said before is dropped with it — a catalogue read from a process that has just
-   * been killed is a list of functions nobody can call.
-   */
+  /** «СКАСУВАТИ»: releases the process, ends the row's waiting and drops what the server said before. */
   const cancel = useCallback((serverId: string) => {
     turns.current.set(serverId, (turns.current.get(serverId) ?? 0) + 1);
     setAskingSince((asking) => without(asking, serverId));
@@ -87,10 +77,7 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
     void closeServer(serverId);
   }, []);
 
-  /**
-   * The page of this server was opened, so «34 → 33» has been read. The arrow goes out **here** as
-   * well as on this machine: the news is read the moment the page opens, not the next time the server is asked.
-   */
+  /** The page was opened, so the «34 → 33» arrow goes out here as well as on this machine. */
   const seen = useCallback((serverId: string) => {
     void seenServer(serverId);
     setLooks((held) => {
@@ -110,11 +97,7 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
     });
   }, []);
 
-  /**
-   * The sweep that finishes a deletion the app was closed in the middle of. The keys of a server
-   * deleted here wait out the undo's thirty seconds; an app that closed inside them left the debt written down,
-   * and this is where it is paid — once, quietly, when the project opens.
-   */
+  /** Finishes a deletion interrupted by an app close: the debt left written is paid once when the project opens. */
   const swept = useRef(false);
 
   useEffect(() => {
@@ -126,10 +109,10 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
     void sweepServerKeys(servers.map((server) => server.id));
   }, [servers]);
 
-  // A server the project no longer names is forgotten with it; what it said is about a server, not about a name.
+  // A server the project no longer names is forgotten with its answer.
   useEffect(() => {
     const ids = new Set(servers.map((server) => server.id));
-    // Declared anew since it last answered: the answer in hand is the old server's, and it is dropped, not shown.
+    // Declared anew since it last answered, so its answer is the old server's and is dropped.
     const redeclared = new Set(
       servers
         .filter((server) => {
@@ -152,8 +135,8 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
       }
     }
 
-    // A server is asked when it is first named, and asking again is somebody's own doing — except that
-    // declaring it afresh **is** somebody's own doing, and the process started from the old declaration is stale.
+    // A server is asked when first named and again only on request, except when redeclared, which leaves the process
+    // stale.
     for (const server of servers) {
       const reach = serverReach(server);
 
@@ -183,7 +166,7 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
   };
 }
 
-/** The clock of a row starts when the ask does, so the moment is written down at the one place the ask begins. */
+/** Records the moment an ask begins, for the row's clock. */
 function started(asking: Record<string, number>, serverId: string): Record<string, number> {
   return {
     ...asking,

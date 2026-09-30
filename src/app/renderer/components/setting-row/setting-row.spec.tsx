@@ -17,7 +17,7 @@ describe("SettingRow", () => {
   });
 
   it("says what the setting was, and steps its edge, while the draft has moved it", () => {
-    // The three marks of a draft — a dot at the name, a stepped edge, and «БУЛО · …» under the row.
+    // The three draft marks: a dot at the name, a stepped edge, «БУЛО · …» under the row.
     render(
       <SettingRow label="ТЕМПЕРАТУРА" wasValue="0.3">
         <button type="button">0.7</button>
@@ -48,7 +48,7 @@ describe("SettingRow", () => {
   });
 
   it("carries a hint under the row where the numbers need saying in words", () => {
-    // A line under the row saying in plain words what its numbers mean.
+    // A hint line under the row.
     render(
       <SettingRow label="ТЕМПЕРАТУРА" hint="0 — та сама відповідь щоразу">
         <button type="button">0.3</button>

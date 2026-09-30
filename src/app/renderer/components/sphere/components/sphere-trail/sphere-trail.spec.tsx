@@ -4,7 +4,7 @@ import { SphereTrail } from "./sphere-trail";
 
 describe("SphereTrail", () => {
   it("says the one number the key carries, and nothing beside it", () => {
-    // One number and not two — read without hovering, at nine pixels, two in a row read as a fraction.
+    // One number, not two: two in a row at nine pixels read as a fraction.
     const { container } = render(<SphereTrail hasPrompt tools={4} />);
 
     expect(screen.getByText("4")).toBeInTheDocument();
@@ -12,7 +12,7 @@ describe("SphereTrail", () => {
   });
 
   it("leaves the key off at nought, and keeps the prompt's page", () => {
-    // «нуль — ключа немає», exactly as nothing granted is no mark at all.
+    // Zero tools draws no key, as no grant draws no mark.
     const { container } = render(<SphereTrail hasPrompt tools={0} />);
 
     expect(container.textContent).toBe("");

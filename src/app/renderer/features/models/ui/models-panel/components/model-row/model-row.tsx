@@ -63,13 +63,13 @@ export function ModelRow({
   onDelete,
 }: ModelRowProps) {
   const { isPointedAt, isFocused, handlers } = usePressable(onOpen);
-  // Both wrongs read the same: unknown provider, or known one no longer holding the model.
+  // Both wrongs read the same: unknown provider, or a known one that does not hold the model.
   const isWrong = !isProviderKnown || isInstalled === false;
   const providerSuffix = isProviderKnown ? (isInstalled === false ? NOT_INSTALLED_SUFFIX : "") : LOST_PROVIDER_SUFFIX;
   const isLit = isPointedAt || isFocused || isOpen;
-  // An unfinished model says so in the place its prices would stand, and names the field that is empty.
+  // An unfinished model says so where its prices would be, naming the empty field.
   const notFilled = notFilledLabel(modelNumbers(model));
-  /** Open, the row has room to name which price is which; closed, it says what every other row says. */
+  /** Open, the row names which price is which; closed, it reads like every other row. */
   const openPrices =
     notFilled !== null
       ? [notFilled]

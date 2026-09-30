@@ -3,9 +3,9 @@ import type { WalkTurn } from "../../../../../../../interfaces";
 
 export interface GraphRulerProps {
   turns: WalkTurn[];
-  /** The moment the question was asked: every mark is counted from it. */
+  /** When the question was asked; marks count from it. */
   askedAt: Date;
-  /** Where the field stands, so the ruler can follow it across without going with it down. */
+  /** The field's position; the ruler follows it horizontally only. */
   pan: Point;
   scale: number;
 }

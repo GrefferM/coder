@@ -27,7 +27,7 @@ const OTHER = agent({
 
 describe("cannotTake", () => {
   it("takes the work where the agent is on, whatever else it is doing", () => {
-    // An agent may hold a turn for every walk asking it, so working is no wall at all.
+    // An agent may hold a turn for every walk asking it, so working is no wall.
     expect(cannotTake(OTHER)).toBeNull();
   });
 
@@ -71,8 +71,7 @@ describe("linkOuts", () => {
   });
 
   it("takes no line that leads back where the work came from, so a ring cannot be walked for ever", () => {
-    // The drawing and the file both refuse a ring; this is the wall behind them, and nothing else stops
-    // the work going round.
+    // The wall behind the drawing and the file, which both refuse a ring.
     const out = linkOuts(
       config(
         [agent(), OTHER],
@@ -108,7 +107,7 @@ describe("linkOuts", () => {
   });
 
   it("keeps a link the work cannot go down, with the word for why", () => {
-    // The walk ends at such a link — it is said, not silently skipped.
+    // The walk ends at such a link, and says so.
     const out = linkOuts(
       config(
         [

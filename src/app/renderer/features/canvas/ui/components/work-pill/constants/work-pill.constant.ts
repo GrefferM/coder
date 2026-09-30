@@ -1,6 +1,6 @@
 import { FIRST_LEVEL_TEXT_COLOR } from "../../../../../../constants";
 
-/** Pill beside a sphere with a turn out — working, and for how long. */
+/** Pill beside a sphere with a turn out: working, and for how long. */
 export const WORK_PILL_LABEL = "Працює";
 export const WORK_PILL_SEPARATOR = " · ";
 export const WORK_PILL_GAP_PX = 6;

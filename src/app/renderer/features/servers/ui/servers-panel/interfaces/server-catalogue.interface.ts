@@ -1,12 +1,12 @@
 import type { Agent, McpLook, ProjectMcpServer } from "../../../../../interfaces";
 
-/** What stands in the catalogue: every declared server, what each said when last asked, and who is being asked. */
+/** Every declared server, what each said when last asked, and who is being asked. */
 export interface ServerCatalogue {
   servers: ProjectMcpServer[];
-  /** What each server said this time, by server id; a server not yet asked has no entry. */
+  /** What each server said, by server id; no entry before it is asked. */
   looks: Record<string, McpLook>;
-  /** When each ask began, by server id; a server not being asked has no entry. */
+  /** When each ask began, by server id; no entry when not being asked. */
   askingSince: Record<string, number>;
-  /** «N АГЕНТІВ» is counted from the grants the agents hold, and from nothing else. */
+  /** «N АГЕНТІВ» is counted from the agents' grants only. */
   agents: Agent[];
 }

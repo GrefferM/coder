@@ -4,13 +4,9 @@ import type { ArmedMarkRow, ArmedOrb } from "../../interfaces";
 import type { CanvasMarkStanding, CanvasMenuStanding, CanvasWindows } from "./interfaces";
 
 /**
- * What stands open **over** the canvas: the right-click menu and the window a mark of the arc raises.
- * They are one thing and not two — at most one of them stands at a time, both are bound to a place on the canvas
- * rather than to the screen, and so any move of the canvas, any drag and the next click put them away together.
- *
- * The one thing they do not share is what opens them: the menu waits for a press, and the mark's window follows
- * the pointer. That is why the waiting lives here — between the pointer leaving a mark and the window going away
- * there is a gap the hand crosses to reach it, and the window says while it holds that hand.
+ * What stands open over the canvas: the right-click menu or the window a mark of the arc raises. At most one at a time,
+ * bound to a canvas place, closed by any canvas move, drag or next click. The menu opens on a press, the mark's window
+ * on the pointer.
  */
 export function useCanvasWindows(
   onOpenAgentTools: (agentId: string, group: string | null, grantId: string | null) => void,
@@ -18,7 +14,7 @@ export function useCanvasWindows(
 ): CanvasWindows {
   const [menu, setMenu] = useState<CanvasMenuStanding | null>(null);
   const [mark, setMark] = useState<CanvasMarkStanding | null>(null);
-  // The wait between the pointer leaving a mark and what it raised going away; cleared the moment it is not owed.
+  // The wait between the pointer leaving a mark and its window closing.
   const going = useRef<number | null>(null);
 
   function stay() {
@@ -34,7 +30,7 @@ export function useCanvasWindows(
     setMark(null);
   }
 
-  /** The window goes, but not this instant: the way into it is across the gap above the mark that raised it. */
+  /** Closes the window after a short delay, so the pointer can cross the gap into it. */
   function goSoon() {
     stay();
     going.current = window.setTimeout(() => setMark(null), CANVAS_WINDOW_AWAY_MS);
@@ -52,9 +48,7 @@ export function useCanvasWindows(
     close,
     pressOrb: (agent, orb, at) => {
       /**
-       * A mark stands for one thing and names it, so the press goes straight to that thing's page.
-       * A «+» names no source — it raises the window of what it hides, here on the canvas, and the
-       * agent's tab is not touched at all.
+       * A single mark goes straight to its page; a «+» raises the window of what it folds, leaving the agent's tab untouched.
        */
       if (orb.folded === null) {
         onOpenAgentTools(agent.id, orb.group, orb.grantId);
@@ -62,15 +56,12 @@ export function useCanvasWindows(
         return;
       }
 
-      // The sphere is chosen by this press as by any other on the arc: two different choices never happen.
+      // Selects the sphere as any other press on the arc does.
       onPickAgent(agent.id);
       setMenu(null);
       setMark(standingOf(agent.id, orb, at));
     },
-    /**
-     * The window opens on the **pointer**, and on every mark: a mini-sphere that says nothing under the cursor is
-     * anonymous, and the arc is then a row of shapes the hand has to press to read. The press stays for choosing.
-     */
+    /** The window opens on the pointer over any mark; a press chooses. */
     pointToOrb: (agent, orb, at) => {
       const standing = standingOf(agent.id, orb, at);
 
@@ -100,7 +91,7 @@ export function useCanvasWindows(
         return;
       }
 
-      // The window was a road and not a place, so it shuts behind the line that was chosen.
+      // Closes the window once a line is chosen.
       setMark(null);
       onOpenAgentTools(mark.agentId, row.group, row.grantId);
     },
@@ -108,10 +99,8 @@ export function useCanvasWindows(
 }
 
 /**
- * What one mark of the arc says under the pointer. A «+» says the порода it folds and a line for each of them
- *; a mark of its own says its kind and its own name, and that one line is the whole of it — «MCP-СЕРВЕР ·
- * playwright-mcp», «КОМАНДА ПРОЄКТУ · run_lint». Nothing at all only where a mark names no source and folds none,
- * which no mark does.
+ * What a mark says under the pointer: a «+» gives a line per folded kind; a mark of its own gives its kind and name on
+ * one line, e.g. «MCP-СЕРВЕР · playwright-mcp», «КОМАНДА ПРОЄКТУ · run_lint».
  */
 function standingOf(agentId: string, orb: ArmedOrb, at: HTMLElement): CanvasMarkStanding | null {
   const rows =

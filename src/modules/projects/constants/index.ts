@@ -1,4 +1,4 @@
-// The file's own name is the boundary's: the panel prints it, so it is written once in `src/contracts`.
+// The file's own name, printed by the panel; written once in `src/contracts`.
 export * from "../../../contracts/project";
 export * from "./broken-place.constant";
 export * from "./command-parameter-types.constant";

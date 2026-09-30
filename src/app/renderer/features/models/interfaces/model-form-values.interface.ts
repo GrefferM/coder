@@ -1,4 +1,4 @@
-/** The model form's six fields as they are typed — numbers are text until the form is written. */
+/** The model form's six fields as typed; numbers are text until written. */
 export interface ModelFormValues {
   title: string;
   provider: string;

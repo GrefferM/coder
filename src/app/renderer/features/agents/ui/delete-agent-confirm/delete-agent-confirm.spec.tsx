@@ -8,7 +8,7 @@ import { CONFIRM_DIALOG_NO_LABEL, CONFIRM_DIALOG_YES_LABEL } from "../../../../c
 
 describe("DeleteAgentConfirm", () => {
   it("asks before deleting, and names the neighbours the deletion leaves alone", () => {
-    // An agent's lines go with it, so the question says whose lines those are.
+    // The question names whose lines go with the agent.
     render(
       <DeleteAgentConfirm
         name="Тезар"

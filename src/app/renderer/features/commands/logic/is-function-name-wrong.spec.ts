@@ -10,7 +10,7 @@ describe("isFunctionNameWrong", () => {
   });
 
   it("refuses what a provider would refuse, and keeps what was typed for the field to show", () => {
-    // The rule is not ours — the providers refuse by the same one, so the field's edge is theirs.
+    // The providers refuse by the same rule.
     expect(isFunctionNameWrong("run_тест")).toBe(true);
     expect(isFunctionNameWrong("run test")).toBe(true);
     expect(isFunctionNameWrong("run-test")).toBe(true);
@@ -23,7 +23,7 @@ describe("isFunctionNameWrong", () => {
   });
 
   it("does not call an empty field wrong, since nothing is typed there yet", () => {
-    // An empty required field is answered at the press, and not while somebody is still thinking.
+    // An empty required field is answered at the press, not while typing.
     expect(isFunctionNameWrong("")).toBe(false);
   });
 });

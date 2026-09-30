@@ -41,7 +41,7 @@ function turn(number: number, patch: Partial<WholeStep> = {}): WalkTurn {
 
 describe("GraphTurn", () => {
   it("names the turn by its agent and by how long that turn took", () => {
-    // A sphere here is a step, not an agent — what it says is about this turn alone.
+    // A sphere is a step, not an agent; it speaks for this turn alone.
     render(<GraphTurn turn={turn(1)} standing={null} isOpen={false} onOpen={() => {}} />);
 
     expect(screen.getByText("Шукач")).toBeInTheDocument();
@@ -73,7 +73,7 @@ describe("GraphTurn", () => {
   });
 
   it("rings the open turn in its own colour, outside its rim", () => {
-    // The number over the rim is round too, so the ring is the round thing that glows.
+    // The number over the rim is round too, so the ring is found by its glow.
     function ring(container: HTMLElement) {
       return (
         Array.from(container.querySelectorAll<HTMLElement>("div.rounded-circle")).find(
@@ -82,7 +82,7 @@ describe("GraphTurn", () => {
       );
     }
 
-    // The sphere opens the step, and the one being read says so without moving.
+    // The sphere opens the step; the open one is marked without moving.
     const { container, rerender } = render(
       <GraphTurn turn={turn(1)} standing={null} isOpen={false} onOpen={() => {}} />,
     );
@@ -121,7 +121,7 @@ describe("GraphTurn", () => {
       />,
     );
 
-    // The sphere wears it, the step's card does not — one thing on one screen is said once.
+    // The sphere shows the pill; the step's card does not.
     expect(screen.getByText(new RegExp(STANDING_RENAMED_LABEL))).toBeInTheDocument();
   });
 });

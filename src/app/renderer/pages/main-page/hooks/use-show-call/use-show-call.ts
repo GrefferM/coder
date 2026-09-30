@@ -5,14 +5,8 @@ import type { RailStanding } from "../use-rail-standing";
 import type { ShownStream } from "../use-shown-stream";
 
 /**
- * «ПОКАЗАТИ ВИКЛИК» — the catalogue hands the chat over to the call its row is talking about. The chat
- * then does what it always does with a place: it turns to that agent, stands the run in the stream and rides to the
- * message the call was made from. Nothing opens over anything — «третя копія — третя правда».
- *
- * The row itself opens without a press, and it is the one place where that happens: the hand was there, just
- * in another room. A call the record can no longer place is answered with `false` and nothing is opened — the run
- * may have been forgotten, and a call written before the record kept the stream's own id has another reason. The
- * press is told so, because a way that leads nowhere has to say it and not stand there silent.
+ * «ПОКАЗАТИ ВИКЛИК»: hands the chat over to the call a catalogue row refers to: turns to that agent, shows the run in
+ * the stream, scrolls to the call's message. A call the record cannot place returns `false` and opens nothing.
  */
 export function useShowCall(
   stream: ShownStream,

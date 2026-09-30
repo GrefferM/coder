@@ -1,5 +1,5 @@
 export * from "./attached-file.interface";
-// What the machine says back is the boundary's: written once in `src/contracts`, taken from there.
+// What the machine says back is the boundary's: written once in `src/contracts`.
 export * from "../../../../../contracts/llm";
 export * from "./agent-ready.interface";
 export * from "./agent-stands.interface";

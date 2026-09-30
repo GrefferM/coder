@@ -39,7 +39,7 @@ describe("draftTarget", () => {
   });
 
   it("never takes the sphere the line comes from", () => {
-    // A line to itself is not a line, so its own sphere is no end for it.
+    // A line to itself is not a line: its own sphere is no target.
     expect(
       draftTarget(AGENTS, "editor", {
         x: 0,

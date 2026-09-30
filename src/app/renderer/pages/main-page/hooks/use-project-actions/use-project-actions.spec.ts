@@ -28,7 +28,7 @@ const PROJECT: OpenProject = {
   view: null,
 };
 
-/** The same project with the model it stands on, and a line out of its one agent. */
+/** The project with a model and a link from its one agent. */
 const WITH_LINK: OpenProject = {
   ...PROJECT,
   config: {
@@ -78,7 +78,7 @@ describe("useProjectActions", () => {
       await result.current.deleteAgent("agent-1");
     });
 
-    // Gone from the screen, from the folder, and written into the history at once.
+    // Deletion is applied to the screen, the folder and the history at once.
     expect(setProject).toHaveBeenCalled();
     expect(invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
       directory: PROJECT.directory,
@@ -141,8 +141,7 @@ describe("useProjectActions", () => {
       await result.current.deleteModel("model-1");
     });
 
-    // The second deletion stands over the first, not in its place — both keep their own thirty seconds.
-    // The fixture's model carries one agent, and that agent one link.
+    // A second deletion stacks on the first; each keeps its own thirty seconds.
     expect(result.current.undoOffers.map((offer) => offer.message)).toEqual([
       DELETED_LINK_LABEL,
       deletedModelLabel(1, 1),
@@ -169,7 +168,7 @@ describe("useProjectActions", () => {
       await vi.advanceTimersByTimeAsync(DELETED_PLACE_MS);
     });
 
-    // «Щойно тут щось було» is the business of a second; the offer is text, and text may wait.
+    // The offer's `place` is `null`: the text may wait.
     expect(result.current.undoOffers.at(-1)?.place).toBeNull();
     expect(result.current.undoOffers).toHaveLength(1);
   });
@@ -200,7 +199,7 @@ describe("useProjectActions", () => {
       await result.current.deleteModel("model-1");
     });
 
-    // The model, the agent standing on it, and its line go in one history row.
+    // Model, agent and link go into one history row.
     expect(invoke).toHaveBeenCalledWith(REMEMBER_DELETION_CHANNEL, {
       directory: WITH_LINK.directory,
       kind: "model",
@@ -228,7 +227,7 @@ describe("useProjectActions", () => {
       await result.current.restoreDeletion("deletion-1", taken);
     });
 
-    // The keyboard has nothing left to undo: the agent already stands.
+    // No undo offer: the agent is already in place.
     expect(result.current.undoOffers).toHaveLength(0);
     expect(invoke).toHaveBeenCalledWith(FORGET_DELETION_CHANNEL, {
       id: "deletion-1",
@@ -249,7 +248,7 @@ describe("useProjectActions", () => {
 
     expect(invoke).not.toHaveBeenCalledWith(REMEMBER_DELETION_CHANNEL, expect.anything());
     expect(result.current.undoOffers).toHaveLength(0);
-    // Twice: gone the moment it was asked for, and back the moment the folder said no.
+    // Removed immediately, restored when the folder refuses.
     expect(setProject).toHaveBeenCalledTimes(2);
   });
 

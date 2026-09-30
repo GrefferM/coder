@@ -15,7 +15,7 @@ import { standInBridge } from "../../../../testing";
 const DIRECTORY = "/code/coder";
 const AT = new Date(2026, 8, 4, 14, 0);
 
-/** The page's own hand on the selection; the stream only asks it to move. */
+/** The page's selection handle; the stream only asks it to move. */
 const select = vi.fn();
 
 function row(id: string, endedAt: Date | null): RunRow {
@@ -75,7 +75,7 @@ function chat(patch: Partial<AgentChatState> = {}): AgentChatState {
   };
 }
 
-/** The machine, answering the record's channels and nothing else. */
+/** The machine, answering only the record's channels. */
 function machine(runs: RunRow[]) {
   const invoke = vi.fn(async (channel: string) => {
     if (channel === LIST_RUNS_CHANNEL) {
@@ -103,12 +103,12 @@ describe("useShownStream", () => {
     const { result } = renderHook(() => useShownStream(DIRECTORY, [], chat(), select));
 
     expect(result.current.tab).toBe("stream");
-    // With nothing opened, the run the stream stands on is the one it writes into.
+    // With nothing opened, the live run is the one written into.
     expect(result.current.shownRunId).toBe("run-live");
   });
 
   it("opens a row in the stream's place, aims at whoever walked it, and goes on in its record", async () => {
-    // A run opened is not a read-only page — the next question continues that record.
+    // An opened run is writable: the next question continues that record.
     machine([]);
 
     const said = chat();
@@ -123,8 +123,7 @@ describe("useShownStream", () => {
   });
 
   it("aims at whom the flow was asked last, and not at whom it was asked first", async () => {
-    // The bug this guards: a flow begun with one agent and handed to another opened aimed at the first, so «спитати
-    // ще раз» went back to an agent the conversation had already left behind.
+    // Regression: a flow handed from one agent to another opened aimed at the first.
     machine([]);
     select.mockClear();
 
@@ -150,13 +149,12 @@ describe("useShownStream", () => {
     );
 
     expect(said.aim).toHaveBeenCalledWith("agent-2");
-    // The mark on the sphere moves with the aim, so it is the same agent that is lit.
+    // The sphere mark follows the aim.
     expect(select).toHaveBeenCalledWith("agent-2");
   });
 
   it("moves the sphere's own mark with the aim, so two spheres are never lit at once", async () => {
-    // Fixing and aiming are two marks of one agent — a ring left where the person came from would say
-    // the chat writes to that sphere, while the halo says it writes to another.
+    // Fixing and aiming are two marks of one agent; the ring and the halo must not disagree.
     machine([]);
     select.mockClear();
 
@@ -181,7 +179,7 @@ describe("useShownStream", () => {
   });
 
   it("lets the selection go when the project no longer holds the agent the run started from", async () => {
-    // The record keeps the name of an agent the project let go, but there is no sphere left to mark.
+    // The record keeps the name of a removed agent, which has no sphere to mark.
     machine([]);
     select.mockClear();
 
@@ -206,7 +204,7 @@ describe("useShownStream", () => {
   });
 
   it("counts only ended runs as deletable, one still going being a half-written record", async () => {
-    // What the forget-all question is about is exactly what is offered.
+    // The forget-all question offers exactly what it is about.
     machine([row("run-1", AT), row("run-2", null)]);
 
     const { result } = renderHook(() => useShownStream(DIRECTORY, [], chat(), select));
@@ -237,7 +235,7 @@ describe("useShownStream", () => {
   });
 
   it("takes the conversation with the record, and opens the stream fresh where that record stood in it", async () => {
-    // Putting the older conversation back would read as if deleting a record brought it out.
+    // Deleting a record does not bring the older conversation back.
     const invoke = machine([]);
     const said = chat();
     const { result } = renderHook(() => useShownStream(DIRECTORY, [], said, select));
@@ -270,7 +268,7 @@ describe("useShownStream", () => {
   });
 
   it("reads the news the moment the history is opened", async () => {
-    // The dot says another conversation has something; opening the list is having seen it.
+    // Opening the list marks another conversation's dot as seen.
     machine([]);
 
     const said = chat({

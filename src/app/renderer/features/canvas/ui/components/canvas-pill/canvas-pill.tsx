@@ -57,7 +57,7 @@ export function CanvasPill({
         overflow: "hidden",
         left: "50%",
         transform: "translateX(-50%)",
-        // The top place is the app's own word, and it stands over the project badge that shares that edge.
+        // The top place is the app's own note, stacked over the project badge on the same edge.
         zIndex: isTop ? NOTE_LAYER : CANVAS_LAYER,
         gap: gapPx,
         padding: CANVAS_PILL_PADDING,

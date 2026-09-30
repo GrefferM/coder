@@ -1,4 +1,4 @@
-/** Where one step stands in its pass, and the steps on either side of it. */
+/** Where one step stands in its pass, and its neighbours. */
 export interface StepPlace {
   /** Counted from one, in the order the pass ran. */
   number: number;
@@ -7,7 +7,7 @@ export interface StepPlace {
   after: StepNeighbour | null;
 }
 
-/** The step the footer of the sheet steps to — its number and whose turn it was. */
+/** A neighbouring step the sheet footer goes to: its number and whose turn it was. */
 export interface StepNeighbour {
   id: string;
   number: number;

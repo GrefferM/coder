@@ -5,11 +5,11 @@ import type { OpenProject } from "../../../../interfaces";
 import type { ProjectWrite } from "../../../project";
 import type { PromptWrites } from "./interfaces";
 
-/** Every write the prompt library makes to the project's file, over the project's one writer. */
+/** Every prompt-library write to the project file, through the project's writer. */
 export function usePromptWrites(project: OpenProject, write: ProjectWrite): PromptWrites {
   const { save, defer } = write;
 
-  /** Writes a prompt — updated in place, or created — and returns its id. */
+  /** Updates or creates a prompt and returns its id. */
   const savePrompt = useCallback(
     async (promptId: string | null, name: string, text: string): Promise<string> => {
       const existing = project.config.prompts.find((prompt) => prompt.id === promptId);

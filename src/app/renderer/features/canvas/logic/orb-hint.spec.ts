@@ -74,7 +74,7 @@ function ofServer(serverId: string, functionName: string): ToolGrant {
 
 describe("orbHint", () => {
   it("names a server and counts what is granted against what it hands over", () => {
-    // «MCP-СЕРВЕР · playwright-mcp · 2 з 24 функцій» — and never the names of the functions themselves.
+    // «MCP-СЕРВЕР · playwright-mcp · 2 з 24 функцій», never the function names.
     const hint = orbHint(
       `server:${SERVER_ID}`,
       [ofServer(SERVER_ID, "browser_navigate"), ofServer(SERVER_ID, "browser_click")],
@@ -96,7 +96,7 @@ describe("orbHint", () => {
   });
 
   it("names a command by its own name and says no number at all", () => {
-    // One command is one mark, so «1 з 3 оголошених» would count the project's file and not this mark.
+    // One command is one mark, so no count.
     const hint = orbHint("commands", [ofCommand("command-1")], said());
 
     expect(hint.kind).toBe("КОМАНДА ПРОЄКТУ");
@@ -114,7 +114,7 @@ describe("orbHint", () => {
 
 describe("foldHint", () => {
   it("counts the commands behind a command's «+» and names each of them", () => {
-    // A «+» folds one порода, so it has a noun of its own — and the lines say which ones are behind it.
+    // A «+» has a noun for its kind, and its lines name the marks behind it.
     const hint = foldHint(
       [
         {

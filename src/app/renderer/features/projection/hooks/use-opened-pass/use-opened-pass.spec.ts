@@ -109,7 +109,7 @@ describe("useOpenedPass", () => {
   });
 
   it("finds the question's steps by the question, whichever walk they ran in", async () => {
-    // A question that never went at first has its steps in the repeat's walk, not the one it began.
+    // A question that never went at first has its steps in the repeat's walk.
     const { result } = renderHook(() => useOpenedPass([], [], 0));
 
     act(() => result.current.open("run-1", "question-2"));
@@ -148,12 +148,11 @@ describe("useOpenedPass", () => {
   });
 
   it("says nothing about an agent that walked another question of the same flow", async () => {
-    // A projection is one pass. The flow's other questions have their own passes and their own spheres,
-    // so a model changed under an agent that never walked here has no business over this graph.
+    // A projection is one pass: a model changed under an agent that never walked here is not reported.
     const { result } = renderHook(() =>
       useOpenedPass(
         [
-          // The agent of this pass stands exactly as the record kept it, so it has nothing to say.
+          // The agent of this pass is unchanged from the record.
           anAgent({
             id: "agent-1",
             name: "EDITOR",
@@ -185,7 +184,7 @@ describe("useOpenedPass", () => {
     await waitFor(() => expect(result.current.run).not.toBeNull());
 
     expect(result.current.standings.map((standing) => standing.id)).toEqual(["agent-1"]);
-    // The other agent's model moved, and this pass says nothing of it: it never walked here.
+    // The other agent's model changed, but it never walked here.
     expect(result.current.changes).toEqual([]);
   });
 

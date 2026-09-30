@@ -6,7 +6,7 @@ import type { ProjectMcpServer } from "../../../contracts/project/mcp-server.int
 
 /** One turn as it runs: the model with its tools bound, the conversation so far, and what its calls reach. */
 export interface RunningTurn {
-  /** The turn id its pieces are said under; null for a sub-agent's turn, which says nothing onward. */
+  /** The turn id its pieces are said under; `null` for a sub-agent's turn, which says nothing onward. */
   voicedAs: string | null;
   answering: Runnable<BaseMessage[], AIMessageChunk> | BaseChatModel;
   conversation: BaseMessage[];
@@ -18,6 +18,6 @@ export interface RunningTurn {
   signal: AbortSignal;
   /** Every agent reachable as a tool, by id. */
   reachable: Map<string, ReachableAgent>;
-  /** The agents already running above this turn; calling one of them again would close a ring. */
+  /** The agents already running above this turn; calling one again would close a ring. */
   stack: ReadonlySet<string>;
 }

@@ -36,8 +36,8 @@ import { attachedName } from "../../../../words";
 import type { PersonCardProps } from "./interfaces";
 
 /**
- * The person's own reply, signed the way an agent's is — the sign over the card and not inside it — and with
- * no step number in it. The way into the projection stands under the text of the question.
+ * The person's own reply, signed like an agent's (sign above the card, no step number); the way into the projection
+ * sits under the text.
  */
 export function PersonCard({ text, at, attached, onDebug, isFound, looked = "" }: PersonCardProps) {
   return (
@@ -79,7 +79,7 @@ export function PersonCard({ text, at, attached, onDebug, isFound, looked = "" }
           padding: AGENT_CHAT_CARD_PADDING,
           borderRadius: AGENT_CHAT_CARD_BORDER_RADIUS_PX,
           border: `1px solid ${AGENT_CHAT_CARD_BORDER_COLOR}`,
-          // The light that says where the search stopped, and lets go a moment later.
+          // Highlights where the search stopped, then fades.
           boxShadow: isFound === true ? AGENT_CHAT_FOUND_EDGE : AGENT_CHAT_FOUND_EDGE_GONE,
           transition: AGENT_CHAT_FOUND_FADE,
           background: AGENT_CHAT_CARD_BACKGROUND_COLOR,
@@ -92,24 +92,21 @@ export function PersonCard({ text, at, attached, onDebug, isFound, looked = "" }
             lineHeight: AGENT_CHAT_TEXT_LINE_HEIGHT,
             whiteSpace: "pre-wrap",
             overflowWrap: "anywhere",
-            // The person's own question is theirs to take away; the marks around it are not.
+            // The question text is selectable; the marks around it are not.
             userSelect: "text",
             cursor: "text",
           }}
         >
           <FoundWords words={text} looked={looked} />
         </span>
-        {/* The projection is opened from under the question, so what it shows is never in doubt. */}
+        {/* The way into the projection, under the question. */}
         {onDebug !== null && (
           <span className="d-flex">
             <DebugBand onOpen={onDebug} />
           </span>
         )}
       </div>
-      {/*
-        After the question has gone, what was attached stays under it as a quiet record — an app row, not a card:
-        the same file and folder marks, and no × to take anything off, because the question has already been asked.
-      */}
+      {/* Attachments stay under the sent question as a quiet record: same file and folder marks, no ×. */}
       {attached.length > 0 && (
         <div
           className="d-flex flex-wrap align-items-center font-monospace"

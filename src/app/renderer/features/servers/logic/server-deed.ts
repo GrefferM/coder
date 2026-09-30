@@ -4,12 +4,8 @@ import type { McpLook } from "../../../interfaces";
 import type { ServerDeed } from "../interfaces";
 
 /**
- * The head of a catalogue row holds **at most one action** — the one the state asks for. This says
- * which, and the row alone knows the words for it: «УВІЙТИ» and «ВПИСАТИ» are the same deed with two different
- * holes to fill.
- *
- * A server that stands answering asks for nothing here. What there is to do with a living process — raise it
- * afresh, or ask it again — belongs to its page, because it is about the process and not about the state.
+ * The at most one action a catalogue row's head offers, chosen by state («УВІЙТИ» and «ВПИСАТИ» are one deed). An
+ * answering server offers none.
  */
 export function serverDeed(look: McpLook | null): ServerDeed {
   const trouble = serverTrouble(look);
@@ -18,11 +14,11 @@ export function serverDeed(look: McpLook | null): ServerDeed {
     return "fill";
   }
 
-  // One that never rose and one that fell both ask for the same thing, and they ask it of a hand.
+  // A server that never rose or one that fell needs the same thing, from a person.
   if (look === null || trouble !== null) {
     return "raise";
   }
 
-  // A server that answers and works for nobody is restarted, not started — it never fell.
+  // A server that answers and works for nobody is restarted, not started.
   return noneAnswered(look) ? "raiseAgain" : null;
 }

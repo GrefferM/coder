@@ -30,14 +30,14 @@ import { LINKS_MAKE_RING, LINKS_REPEAT, PROJECT_FILE_BROKEN, PROJECT_FROM_NEWER_
 import { brokenPlace } from "../logic";
 import { Refusal } from "../../../utils/refusals";
 
-/** Turns the project file's text into a validated config and back, with no file access of its own. */
+/** Turns the project file's text into a validated config and back; no file access. */
 export class ProjectConfigSerializer {
-  /** Parses, raises to this build's version, and validates; a file with a newer version is refused. */
+  /** Parses, raises to this build's version, validates; a newer file version is refused. */
   async parse(text: string): Promise<ProjectConfigDto> {
     return this.toValidConfig(this.toSource(text));
   }
 
-  /** The project file's text as a plain record; a version newer than this build's is refused, nothing is validated. */
+  /** The project file's text as a plain record; a newer version is refused, nothing validated. */
   toSource(text: string): Record<string, unknown> {
     const parsed: unknown = parse(text);
 
@@ -54,7 +54,7 @@ export class ProjectConfigSerializer {
     return source;
   }
 
-  /** One part's file as a plain record (model, command or agent), without its id. */
+  /** One part file (model, command or agent) as a plain record, without its id. */
   partSource(text: string): Record<string, unknown> {
     const parsed: unknown = parse(text);
 
@@ -69,15 +69,15 @@ export class ProjectConfigSerializer {
   async toValidConfig(source: Record<string, unknown>): Promise<ProjectConfigDto> {
     const config = this.toConfig(source);
 
-    // The validator's own words are English and name classes; the screen gets a refusal and the place instead.
+    // Turns the validator's English class-naming errors into a refusal with the place.
     await validateOrReject(config).catch((errors: unknown) => {
       const place = brokenPlace(Array.isArray(errors) ? <ValidationError[]>errors : []);
 
-      // The structured place crosses the bridge as the refusal's say; the screen turns it into a line.
+      // The place crosses the bridge as the refusal's message; the screen words it.
       throw new Refusal(PROJECT_FILE_BROKEN, place === null ? "" : JSON.stringify(place));
     });
 
-    // The link checks run whichever way the config arrived: read from the folder or saved over IPC.
+    // Link checks run for configs read from the folder and saved over IPC alike.
     if (this.makeRing(config.links)) {
       throw new Refusal(LINKS_MAKE_RING);
     }
@@ -142,7 +142,7 @@ export class ProjectConfigSerializer {
     model.id = <string>source.id;
     model.title = <string>source.title;
     model.provider = <string>source.provider;
-    // A number missing or written wrong leaves the field empty and the file whole; the model says so itself.
+    // A missing or wrongly written number leaves the field empty, the file whole.
     model.inputPrice = written(source.inputPrice, 0);
     model.outputPrice = written(source.outputPrice, 0);
     model.contextCeiling = written(source.contextCeiling, MODEL_CONTEXT_CEILING_LEAST);
@@ -157,7 +157,7 @@ export class ProjectConfigSerializer {
     prompt.id = <string>source.id;
     prompt.name = <string>source.name;
     prompt.file = <string>source.file;
-    // Absent when read from the file (the body lives in its own file); present when a save arrives over IPC.
+    // Absent from the file (the body has its own file); present on an IPC save.
     prompt.text = <string>(source.text ?? "");
 
     return prompt;
@@ -183,7 +183,7 @@ export class ProjectConfigSerializer {
     parameter.type = <ProjectCommandParameterDto["type"]>source.type;
     parameter.description = <string>source.description;
     parameter.isRequired = <boolean>source.isRequired;
-    // Only an `enum` parameter lists allowed values; other types carry an empty list.
+    // Only an `enum` parameter lists values; others get an empty list.
     parameter.values = this.toTextList(source.values);
 
     return parameter;
@@ -200,7 +200,7 @@ export class ProjectConfigSerializer {
     agent.tools = this.toList(source.tools, (item) => this.toToolGrant(item));
     agent.color = <string>source.color;
     agent.isActive = <boolean>source.isActive;
-    // An older file that never carried the mode waits for all, as every converging point did before the mode.
+    // An absent mode defaults to waiting for all.
     agent.waitsForAll = typeof source.waitsForAll === "boolean" ? source.waitsForAll : true;
     agent.x = <number>source.x;
     agent.y = <number>source.y;
@@ -210,19 +210,19 @@ export class ProjectConfigSerializer {
     return agent;
   }
 
-  /** One server, as the file names the way to reach it and nothing that moves. */
+  /** One server: how to reach it, nothing that moves. */
   private toMcpServer(source: Record<string, unknown>): ProjectMcpServerDto {
     const server = new ProjectMcpServerDto();
 
     server.id = <string>source.id;
     server.name = <string>source.name;
     server.isLocal = <boolean>source.isLocal;
-    // The other kind's field is empty, not absent: one shape reads either way round.
+    // The other kind's field is empty, not absent.
     server.run = <string>(source.run ?? "");
     server.address = <string>(source.address ?? "");
-    // A local server signs in to nothing, so an unwritten way in is `none` and validation holds it there.
+    // An unwritten sign-in is `none`, which validation holds for a local server.
     server.signIn = <ProjectMcpServerDto["signIn"]>(source.signIn ?? "none");
-    // Names and nothing else; a server declaring none is a server that needs no key to run.
+    // Names only; none declared means no key needed.
     server.env = Array.isArray(source.env) ? source.env.map((name) => String(name)) : [];
 
     return server;
@@ -263,7 +263,7 @@ export class ProjectConfigSerializer {
     grant.id = <string>source.id;
     grant.source = MCP_TOOL_SOURCE;
     grant.serverId = <string>source.serverId;
-    // The name the server gave the function, which is the only handle on it there is.
+    // The server's own name for the function; the only handle on it.
     grant.functionName = <string>source.functionName;
 
     return grant;
@@ -304,7 +304,7 @@ export class ProjectConfigSerializer {
     });
   }
 
-  /** Whether the lines close a ring; twin of `wouldMakeCycle` in `src/app/renderer/features/links/logic`. */
+  /** Whether the links close a ring; twin of `wouldMakeCycle` in `src/app/renderer/features/links/logic`. */
   private makeRing(links: ProjectLinkDto[]): boolean {
     const walked = new Set<string>();
     const standing = new Set<string>();
@@ -343,7 +343,7 @@ export class ProjectConfigSerializer {
   }
 }
 
-/** A number as the file holds it, or nothing at all — anything below the least it may be is nothing. */
+/** A number as the file holds it, or null when below `least`. */
 function written(value: unknown, least: number): number | null {
   return typeof value === "number" && Number.isFinite(value) && value >= least ? value : null;
 }

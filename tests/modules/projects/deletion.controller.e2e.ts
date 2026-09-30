@@ -62,7 +62,7 @@ describe("DeletionController", () => {
   });
 
   it("asks for a project's deletions by the folder alone", async () => {
-    // The dto is the door's shape; what goes further in is the folder itself.
+    // The dto is the door's shape; the folder itself goes further in.
     await controller().list(
       Object.assign(new OpenProjectDto(), {
         directory: DIRECTORY,
@@ -73,7 +73,7 @@ describe("DeletionController", () => {
   });
 
   it("refuses a kind of thing the app does not delete", async () => {
-    // Frame 53c: the ways back are drawn for the five kinds the project holds, and for nothing else.
+    // Ways back exist only for the five kinds the project holds.
     await assert.rejects(() =>
       controller().remember(
         remembering({

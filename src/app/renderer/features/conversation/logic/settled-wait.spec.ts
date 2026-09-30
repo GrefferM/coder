@@ -41,7 +41,7 @@ describe("settledWait", () => {
   });
 
   it("counts a supplier that sent nothing as settled all the same", () => {
-    // A supplier that said nothing has still had its turn; the point must not hold for it.
+    // A supplier that said nothing has still had its turn; the point does not hold for it.
     const stood = settledWait(waiting(), {
       fromId: "agent-1",
       work: null,
@@ -90,7 +90,7 @@ describe("settledWait", () => {
   });
 
   it("stands the point on a broken walk, and never takes that back", () => {
-    // Once the walk under it broke, the point waits for the repeat and for nothing else.
+    // After the walk under it broke, the point waits only for the repeat.
     const broken = settledWait(waiting(), {
       fromId: "agent-1",
       work: null,

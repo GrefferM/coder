@@ -45,7 +45,7 @@ describe("StandingBand", () => {
   });
 
   it("says nothing over a run where the record and the project agree", () => {
-    // The rule matters where it parts two things; said over every run, it would be read over none.
+    // Renders nothing when nothing differs.
     const { container } = render(<StandingBand standings={[standing(), standing()]} />);
 
     expect(container).toBeEmptyDOMElement();

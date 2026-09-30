@@ -3,7 +3,7 @@ import { begunWalk } from "./begun-walk";
 
 describe("begunWalk", () => {
   it("begins with nothing said, nothing waiting, nothing stopped and nothing put away", () => {
-    // The walk is only just out — every mark it can carry is a mark it has not earned yet.
+    // A fresh walk carries none of the marks it can earn.
     const walk = begunWalk("question-1", 1_000);
 
     expect(walk.said).toEqual([]);
@@ -20,13 +20,13 @@ describe("begunWalk", () => {
   });
 
   it("stands on no row until it is given one", () => {
-    // A stream that has no row learns it when the question opens one, and not before.
+    // A stream with no row learns it when the question opens one.
     expect(begunWalk("question-1", 1_000).runId).toBeNull();
     expect(begunWalk("question-1", 1_000, "run-1").runId).toBe("run-1");
   });
 
   it("gives every walk its own said and its own waiting, never one shared between them", () => {
-    // Two walks go on at once in two conversations; one list held in common would put a word into both.
+    // Walks in two conversations share no list.
     const first = begunWalk("question-1", 1_000);
     const second = begunWalk("question-2", 2_000);
 

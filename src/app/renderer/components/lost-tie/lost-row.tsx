@@ -9,7 +9,7 @@ import {
 } from "./constants";
 import type { LostRowProps } from "./interfaces";
 
-/** One tie whose own file is gone — the name it still points at, struck through. */
+/** A tie whose file is gone: the name it points at, struck through. */
 export function LostRow({ name, children }: LostRowProps) {
   return (
     <div

@@ -66,7 +66,7 @@ describe("ProviderController", () => {
   });
 
   it("refuses a provider nobody declared, wherever the name came from", async () => {
-    // The list of providers is the app's own; a name from a file or a hand is not a provider.
+    // Only the app's own providers are valid; a name from a file or hand is not.
     await assert.rejects(() =>
       controller().ask(
         Object.assign(new AskProviderDto(), {

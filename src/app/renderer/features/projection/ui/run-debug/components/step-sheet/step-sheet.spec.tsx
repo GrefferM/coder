@@ -52,7 +52,7 @@ function draw(open: WholeStep, patch: Partial<Parameters<typeof StepSheet>[0]> =
 
 describe("StepSheet", () => {
   it("stands the agent as it was then — its step, its name, and the card of what the turn ran on", () => {
-    // What the card says is its own (StepCard); the sheet's business is that it stands under the head.
+    // Card content is `StepCard`'s; the sheet's business is standing under the head.
     draw(WALK[1]);
 
     expect(screen.getByText("КРОК 2")).toBeInTheDocument();

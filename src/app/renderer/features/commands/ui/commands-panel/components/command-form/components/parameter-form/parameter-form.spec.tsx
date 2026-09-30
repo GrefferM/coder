@@ -46,14 +46,14 @@ describe("ParameterForm", () => {
   });
 
   it("stands the rule under the name from the first moment, and not after it is broken", () => {
-    // «межу видно до того, як у неї впертись» — a rule that arrives with the refusal taught nothing.
+    // The limit is visible before the person reaches it.
     render(<ParameterForm parameter={null} run="" {...acts()} />);
 
     expect(screen.getByText(PARAMETER_FORM_NAME_NOTE)).toBeInTheDocument();
   });
 
   it("answers a name the braces would not take with the refusal, and not with the rule said again", async () => {
-    // The rule is already on the screen; repeating it says nothing new, and naming what failed does.
+    // The refusal names what failed, not the rule, which is already on screen.
     render(<ParameterForm parameter={null} run="" {...acts()} />);
     await userEvent.type(screen.getByLabelText(PARAMETER_FORM_NAME_LABEL), "2fast");
 
@@ -62,7 +62,7 @@ describe("ParameterForm", () => {
   });
 
   it("takes a name in any alphabet, since this one never leaves the project", async () => {
-    // «{шлях}» is a lawful slot — a provider never sees it, unlike a function's own name.
+    // «{шлях}» is a valid slot; a provider never sees it, unlike a function name.
     render(<ParameterForm parameter={null} run="" {...acts()} />);
     await userEvent.type(screen.getByLabelText(PARAMETER_FORM_NAME_LABEL), "шлях");
 

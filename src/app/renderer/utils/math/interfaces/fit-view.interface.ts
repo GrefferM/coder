@@ -1,6 +1,6 @@
 import type { Point } from "./point.interface";
 
-/** The box a graph is fitted into — the canvas's own, in screen pixels. */
+/** The box a graph is fitted into, in screen pixels. */
 export interface FitBox {
   width: number;
   height: number;

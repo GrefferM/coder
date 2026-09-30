@@ -1,8 +1,7 @@
 import { PANEL_GROUND_COLOR } from "../../../../../../constants";
 /**
- * While a call is out, nothing on the arc moves — this pill with the name is the whole of
- * what the canvas says about that call. It stands beside the sphere and level with the top of the arc, so it never
- * covers a mini-sphere and never has to move when the arc grows or shrinks.
+ * The pill stands beside the sphere, level with the top of the arc, so it covers no mini-sphere and does not move as
+ * the arc changes.
  */
 export const CALL_PILL_GAP_PX = 8;
 export const CALL_PILL_PADDING = "4px 9px";

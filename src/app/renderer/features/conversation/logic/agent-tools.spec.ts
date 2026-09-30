@@ -52,7 +52,7 @@ const SERVER_GRANT: ToolGrant = {
   functionName: "read_file",
 };
 
-/** What one server said it hands over this time; nothing of it is in any file. */
+/** What one server says it hands over this time; not stored in any file. */
 const LOOKS: Record<string, McpLook> = {
   [SERVER_ID]: {
     serverId: SERVER_ID,
@@ -156,7 +156,7 @@ describe("agentTools", () => {
   });
 
   it("leaves out a granted function that left the server's list after an update, and keeps the rest", () => {
-    // The grant stands and the catalogue is where it is said to be lost; a turn simply has nothing.
+    // The grant stands but the catalogue lost it; the turn has nothing.
     const tools = agentTools(
       [
         GRANT,

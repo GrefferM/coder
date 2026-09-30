@@ -13,14 +13,14 @@ export interface SphereProps {
   /** State colour for the dot beside the name. */
   stateColor?: string;
   isSelected: boolean;
-  /** The chat writes to this agent; only its halo breathes, not the sphere, grid, neighbours or lines. */
+  /** The chat writes to this agent; only its halo breathes. */
   isAimed?: boolean;
   isDimmed?: boolean;
-  /** What the «?» is multiplied by, so it keeps its own size while the graph shrinks. */
+  /** Multiplier that keeps the «?» at its size while the graph shrinks. */
   markScale?: number;
-  /** Table 11: the canvas is small enough that the model line takes its full tone. */
+  /** The canvas is small enough that the model line takes its full tone. */
   isDrawnSmall?: boolean;
-  /** The dim third line under the model — the prompt's page and the key with its number. */
+  /** The dim third line under the model: the prompt's page and the key with its number. */
   trail?: SphereTrailProps | null;
   /** What stands under the labels — the working pill. */
   underLabel?: ReactNode;

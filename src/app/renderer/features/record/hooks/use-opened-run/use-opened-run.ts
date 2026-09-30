@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { readRun } from "../../api";
 import type { OpenedRunState, WholeRun } from "../../interfaces";
 
-/** The pressed row's run, read whole and again on every write; one that cannot be read says so. */
+/** The pressed row's run, read whole and re-read on every write; unreadable is reported. */
 export function useOpenedRun(runId: string | null, written: number): OpenedRunState {
   const [run, setRun] = useState<WholeRun | null>(null);
   const [isFailed, setIsFailed] = useState(false);

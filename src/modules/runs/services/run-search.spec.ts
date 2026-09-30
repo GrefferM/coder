@@ -15,7 +15,7 @@ const ASKED_AT = 1_700_000_000_000;
 const SEEKER = "22222222-2222-4222-8222-222222222222";
 const WALK = "77777777-7777-4777-8777-777777777777";
 
-/** The question each run stands on now, so a step is written against one the record actually holds. */
+/** The question each run stands on. */
 const questionOf = new Map<string, string>();
 let minted = 0;
 
@@ -77,7 +77,7 @@ describe("the search over the record", () => {
   let writer: RunWriter;
   let search: RunSearch;
 
-  /** Opens a run and keeps the question it stands on, so a step of it can be written against one. */
+  /** Opens a run and keeps its question so steps can be written against it. */
   async function openRun(patch: Partial<OpenRunDto> = {}): Promise<string> {
     const payload = opening(patch);
     const opened = await writer.open(payload);
@@ -111,7 +111,7 @@ describe("the search over the record", () => {
 
     assert.equal(hit.runId, id);
     assert.equal(hit.questionId, questionOf.get(id));
-    // It stands in the question itself, so there is no step for a press to land on.
+    // A hit in the question has no step.
     assert.equal(hit.stepId, null);
     assert.equal(hit.isCall, false);
   });
@@ -175,8 +175,7 @@ describe("the search over the record", () => {
 
     const [hit] = await search.find(DIRECTORY, "ялина");
 
-    // The card shows the found thing, so it begins where the sentence holding it begins — and runs on
-    // from there, because the right edge is the card's two lines and «…», not the record's business.
+    // The found thing starts at its sentence's start and runs on; the right edge is the card's.
     assert.equal(hit.found, "Друге речення зі словом ялина. Третє речення.");
   });
 
@@ -243,8 +242,7 @@ describe("the search over the record", () => {
 
     const found = await search.find(DIRECTORY, "тези");
 
-    // The record reads forward, so the question stands before every step that names it — and every step that says
-    // the word stands too: the owner looks for a word to reach the place it was said, and here there are three.
+    // Question first, then every step that says the word: three hits.
     assert.equal(found.length, 3);
     assert.equal(found[0].stepId, null);
     assert.notEqual(found[1].stepId, null);
@@ -311,11 +309,11 @@ describe("the search over the record", () => {
 
     const [hit] = await search.find(DIRECTORY, "ялин");
 
-    // The row is the address of one message — whose, which step, at what hour.
+    // A hit is the address of one message: whose, which step, what hour.
     assert.equal(hit.agentId, "33333333-3333-4333-8333-333333333333");
     assert.equal(hit.agentName, "Тестер");
     assert.equal(hit.step, 1);
-    // The hour is read where the card reads it — from when the turn began, not when it ended.
+    // The hour is the turn's start, not its end.
     assert.equal(hit.at?.getTime(), 1_500);
   });
 
@@ -341,7 +339,7 @@ describe("the search over the record", () => {
 
     const steps = (await search.find(DIRECTORY, "ялина")).map((hit) => hit.step);
 
-    // Two turns nobody fed stand on the first step; the one they both fed stands one above the deepest.
+    // Two unfed turns are level 1; the turn fed by both is level 2.
     assert.deepEqual(steps, [1, 1, 2]);
   });
 
@@ -354,7 +352,7 @@ describe("the search over the record", () => {
 
     const [hit] = await search.find(DIRECTORY, "тези");
 
-    // A match in the question gets no row of its own, so it wears no address either.
+    // A hit in the question has no address.
     assert.equal(hit.stepId, null);
     assert.equal(hit.agentId, null);
     assert.equal(hit.agentName, null);
@@ -371,7 +369,7 @@ describe("the search over the record", () => {
       startedAt: ASKED_AT,
     });
 
-    // The older run answered after the newer one was asked: by the flow it would stand second, by its own hour first.
+    // The older run answered after the newer was asked: by its own hour it comes first.
     await writer.step(
       step(older, {
         said: "Пізня ялина того самого запуску.",
@@ -386,7 +384,7 @@ describe("the search over the record", () => {
       found.map((hit) => hit.runId),
       [older, newer, older],
     );
-    // Ordered by the hour of the message alone, newest first — the flow does not group them.
+    // Ordered by message hour alone, newest first, not grouped by flow.
     assert.deepEqual(
       found.map((hit) => hit.at.getTime()),
       [ASKED_AT + 50_000, ASKED_AT, ASKED_AT - 100_000],
@@ -424,7 +422,7 @@ describe("the search over the record", () => {
       }),
     );
 
-    // The step's own words, then its call's command, then its output: one hour, and the record's own order kept.
+    // The step's words, then its call's command, then its output: one hour, record order kept.
     assert.deepEqual(
       (await search.find(DIRECTORY, "ялина")).map((hit) => hit.isCall),
       [false, true, true],

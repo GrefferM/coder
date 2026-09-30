@@ -36,14 +36,13 @@ import { quietly } from "../../../../../../../../utils/writes";
 import type { ServerViewProps } from "./interfaces";
 
 /**
- * One server's functions as a step of its own inside the tab — the same shape an opened grant takes: its own
- * head with the way back, its own body, and the tab's «Зберегти» under it. Connecting a server is the coarse act
- * and stays in the section; this is the fine one, where single functions are let in or out.
+ * One server's functions as a step of the tab, like an opened grant: own head with the way back, own body, the tab's
+ * «Зберегти» under it; single functions are let in or out here.
  */
 export function ServerView({ agentName, server, functions, grants, onToggle, onBack, onSave }: ServerViewProps) {
   const [typed, setTyped] = useState("");
 
-  // Escape leaves this step the way it leaves an opened grant; draft changes stay.
+  // Escape leaves this step as it leaves an opened grant; draft changes stay.
   useStandingStep(true);
   useWindowKeydown(true, (event) => {
     if (event.key === "Escape") {

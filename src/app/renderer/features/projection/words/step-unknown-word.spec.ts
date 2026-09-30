@@ -10,7 +10,7 @@ describe("stepUnknownWord", () => {
   });
 
   it("names the empty prices once, whichever of the two is missing", () => {
-    // One line per head, speaking for every dash in it — so one word covers either price.
+    // One line per head speaks for every dash, so one word covers either price.
     expect(
       stepUnknownWord(
         aStep({
@@ -42,7 +42,7 @@ describe("stepUnknownWord", () => {
   });
 
   it("says the turn never began, and says that instead of the prices", () => {
-    // The refusal explains the whole head; naming the empty prices over it would blame a cause that never mattered.
+    // The refusal explains the whole head; the empty-prices cause is not named over it.
     expect(
       stepUnknownWord(
         aStep({

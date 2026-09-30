@@ -1,20 +1,17 @@
 import type { AttachmentKind } from "./attachment-kind.type";
 
-/**
- * A file or folder the person picked, named and weighed but not read: this is what the chip stands for until the
- * question goes. Reading waits for the send, so a folder of any size is picked in the time it takes to count it.
- */
+/** A picked file or folder, named and weighed but not read until the question goes. */
 export interface PickedAttachment {
-  /** The path the person picked — the chip's own id, and what the × takes off. */
+  /** The picked path: the chip's id, and what the × removes. */
   path: string;
   /** The leaf name shown on the chip. */
   name: string;
   kind: AttachmentKind;
-  /** The size of every file in it, in bytes — the weight the chip says. */
+  /** Total size in bytes of every file in it. */
   bytes: number;
   /**
-   * The fewest characters its pack can come to — the paths exactly, and every file at a quarter of its bytes,
-   * since no character is longer than four. A pick whose least is over the room under the ceiling is refused.
+   * The fewest characters its pack can come to: paths exactly, each file at a quarter of its bytes. A pick whose least
+   * exceeds the room under the ceiling is refused.
    */
   least: number;
 }

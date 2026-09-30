@@ -3,7 +3,7 @@ import { INTERACTION_TRANSITION, MARK_FONT_SIZE_PX, MARK_LETTER_SPACING_PX } fro
 import { focusRing } from "../../utils/focus";
 import type { TextButtonProps } from "./interfaces";
 
-/** A bare mark that is a button — no box, lit under the pointer, a ring under the keyboard. */
+/** A bare text button: no box, lit under the pointer, ringed under the keyboard. */
 export function TextButton({ children, onPress, tone, gap, className }: TextButtonProps) {
   const press = useInteraction();
 

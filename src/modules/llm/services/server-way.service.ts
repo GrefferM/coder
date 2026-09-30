@@ -3,8 +3,8 @@ import type { CallResult, CallStanding, ToolWay } from "../interfaces";
 import type { ProjectMcpServer } from "../../../contracts";
 
 /**
- * One call of a server's function. Nothing is checked and nothing pinned — the server owns the schema — so the
- * model's arguments go over as they came, and the record keeps what was asked and what was said.
+ * One call of a server's function. Nothing is checked or pinned (the server owns the schema); the model's arguments go
+ * over as they came.
  */
 export class ServerWay implements ToolWay {
   constructor(
@@ -26,14 +26,14 @@ export class ServerWay implements ToolWay {
       name: this.tool.name,
       arguments: given,
       pinned: [],
-      // The record keeps the name the server wore at the call, because the project may rename it or let it go,
-      // and a call read back months later still has to say where it went.
+      // The name the server wore at the call, kept in the record so a later rename or removal cannot lose where it
+      // went.
       serverId: this.server.id,
       serverName: this.server.name,
     };
   }
 
-  /** A server's function is checked by nobody here: the server wrote that schema and this app has no standing to judge it. */
+  /** Unchecked here; the server owns its schema. */
   refusal(): string | null {
     return null;
   }
@@ -43,9 +43,9 @@ export class ServerWay implements ToolWay {
       server: this.server,
       directory,
       functionName: this.tool.name,
-      // The model's own arguments go over as they came, not the strings the row keeps.
+      // The model's own arguments, not the strings the row keeps.
       arguments: this.said,
-      // What a server's calls came to has to lead back to the very call it is counting.
+      // Leads back to the call being counted.
       callId,
       signal,
     });
@@ -54,7 +54,7 @@ export class ServerWay implements ToolWay {
       line: "",
       output: result.output,
       exitCode: null,
-      // «функція є, але сервер сказав "ні"» — his words go to the model whole, and the call says so.
+      // «функція є, але сервер сказав "ні"»: its words go to the model whole, and the call says so.
       isFailed: result.isFailed,
     };
   }

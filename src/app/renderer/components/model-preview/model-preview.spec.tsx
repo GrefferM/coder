@@ -55,7 +55,7 @@ describe("ModelPreview", () => {
   });
 
   it("says its own word under the box, since the same preview stands in two places", () => {
-    // As declared in the catalogue, and per agent with the fixed parameters taken out.
+    // As declared in the catalogue, and per agent with fixed parameters removed.
     render(<ModelPreview name="open_pr" description="" parameters={[]} note="Закріплені параметри тут не стоять" />);
 
     expect(screen.getByText("Закріплені параметри тут не стоять")).toBeInTheDocument();

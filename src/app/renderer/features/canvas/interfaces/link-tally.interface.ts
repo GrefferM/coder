@@ -1,4 +1,4 @@
-/** How many lines the selected agent has each way, and the colour they are counted in — its own. */
+/** How many lines the selected agent has each way, in its own colour. */
 export interface LinkTally {
   outgoing: number;
   incoming: number;

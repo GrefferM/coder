@@ -1,8 +1,5 @@
 /**
- * Several bills added into one. A bill nobody knows is left out rather than counted as nought, and where not
- * one of them is known the whole is unknown too — «—» on the screen, and never a zero somebody might believe.
- *
- * Both sides add up the same way: the window over the cards of a walk, the record over the steps it read back.
+ * Several bills added into one. An unknown bill is left out, not counted as nought; if none is known the sum is `null`.
  */
 export function addedMoney(sums: (number | null)[]): number | null {
   const known = sums.filter((sum): sum is number => sum !== null);

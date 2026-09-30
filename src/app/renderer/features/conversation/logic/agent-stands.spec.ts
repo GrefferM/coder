@@ -71,7 +71,7 @@ describe("agentStands", () => {
   });
 
   it("keeps the model when the machine holds no such provider", () => {
-    // The two are different troubles: a model that went and a provider that is not set up.
+    // A model that is gone and a provider that is not set up are different troubles.
     const stands = agentStands(AGENT, CONFIG, []);
 
     expect(stands.model?.id).toBe("model-1");
@@ -85,7 +85,7 @@ describe("agentStands", () => {
         promptId: "prompt-1",
       }),
       aConfig({
-        // The words match what the agent asks for; the ids do not, and only the ids count.
+        // Words match what the agent asks for but the ids do not; only ids count.
         models: [
           aModel({
             id: "model-9",

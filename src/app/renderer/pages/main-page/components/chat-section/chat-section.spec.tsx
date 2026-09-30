@@ -108,7 +108,7 @@ function props(patch: Partial<ChatSectionProps> = {}): ChatSectionProps {
 
 describe("ChatSection", () => {
   it("stands both faces of the chat over one of them", () => {
-    // What is going on, and what has been — the tabs are always there, the face below changes.
+    // The tabs are always there; the face below changes.
     render(<ChatSection {...props()} />);
 
     expect(screen.getByText(CHAT_TABS_STREAM_LABEL)).toBeInTheDocument();
@@ -151,7 +151,7 @@ describe("ChatSection", () => {
   });
 
   it("names the aimed agent in the field, and stands the field open where nobody is aimed at", () => {
-    // The section is one; who it is aimed at is what the field says.
+    // One section; the field says who it is aimed at.
     render(
       <ChatSection
         {...props({
@@ -167,7 +167,7 @@ describe("ChatSection", () => {
   });
 
   it("counts the ended runs on the tab, since only those can be deleted", () => {
-    // The number the tab wears is the number the forget-all question is about.
+    // The tab's number is the number the forget-all question is about.
     render(<ChatSection {...props()} />);
 
     expect(screen.getByText(CHAT_TABS_HISTORY_LABEL)).toBeInTheDocument();

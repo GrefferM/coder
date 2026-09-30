@@ -3,7 +3,7 @@ import { SPHERE_TROUBLE_MARK_SIZE_PX } from "../../../components/sphere/constant
 import { CANVAS_MARK_FLOOR_PX } from "../constants";
 import { troubleMarkScale } from "./trouble-mark-scale";
 
-/** What the mark actually measures on the screen at a given canvas scale. */
+/** The mark's size on screen at a canvas scale. */
 function screenPx(canvasScale: number): number {
   return SPHERE_TROUBLE_MARK_SIZE_PX * canvasScale * troubleMarkScale(canvasScale);
 }

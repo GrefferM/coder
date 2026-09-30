@@ -19,42 +19,38 @@ import {
 import { ATTACHMENT_DENIED_CODES } from "../../../contracts";
 import type { PackedAttachment, PickedAttachment } from "../interfaces";
 
-/** One file's content: its text, and whether that text is base64 because the bytes were not text. */
+/** One file's content: its text, and whether it is base64 because the bytes were not text. */
 interface FileContent {
   text: string;
   isBinary: boolean;
 }
 
-/** One path under a folder: a file, or a folder the system would not let us open. */
+/** One path under a folder: a file, or a folder the system would not open. */
 interface WalkedEntry {
   rel: string;
   isDenied: boolean;
 }
 
-/** What is left of the ceiling while one question's attachments are packed; every attachment of it draws on it. */
+/** What is left of the ceiling while one question's attachments are packed, shared by all of them. */
 interface PackBudget {
   left: number;
 }
 
-/** A pack being written: its pieces, and the budget each piece is counted off. */
+/** A pack being written: its pieces and the budget they are counted off. */
 interface PackWriting {
   parts: string[];
   budget: PackBudget;
 }
 
 /**
- * Picks and packs files and folders for a question. A pick only names and weighs — nothing is read — so a folder
- * of any size is counted in the time it takes to walk it. The pack is written when the question goes: a folder
- * becomes a tree of its paths and then each file under its own path, a file whose bytes are not text goes in as
- * base64, and nothing is left out but what the system will not let us read, which is marked where it stands. The
- * one bound is the model's ceiling: the pack reads no further than it takes to cross it, and a pack that crossed it
- * is answered by the ceiling's own wall, not by this one.
+ * Picks and packs files and folders for a question. A pick only names and weighs; the pack is written when the question
+ * goes: a folder becomes a tree of paths then each file under its path, non-text files as base64, unreadable paths
+ * marked in place. It reads no further than the model's ceiling needs.
  */
 export class AttachmentPacker {
   /**
-   * A picked file or folder, named and weighed, with the fewest characters its pack can come to. Given the room
-   * under the ceiling, the count stops the moment that least is over it, and there is nothing to attach: a folder
-   * of a hundred thousand files is refused on its first few thousand paths, not after the last of them.
+   * A picked file or folder, named and weighed, with the fewest characters its pack can come to. Given a room under the
+   * ceiling, counting stops as soon as that least exceeds it.
    */
   async measure(target: string, room: number | null = null): Promise<PickedAttachment | null> {
     const bound = room ?? Number.POSITIVE_INFINITY;
@@ -79,7 +75,7 @@ export class AttachmentPacker {
           };
     }
 
-    // The whole tree as it will stand, then every file under its rule; the tail «\n\n» and «\n» are counted now.
+    // The whole tree, then every file under its rule; the tail «\n\n» and «\n» are counted.
     let least = characters(`${this.header(name)}\n\n${ATTACHMENT_TREE_LABEL}\n`) + 2 + 1;
     let lines = 0;
     const files: string[] = [];
@@ -125,7 +121,7 @@ export class AttachmentPacker {
     };
   }
 
-  /** Every picked one of a question, packed in order; together they read no further than the ceiling allows. */
+  /** Every picked one of a question, packed in order, reading no further than the ceiling allows. */
   async packAll(targets: string[], ceiling: number): Promise<PackedAttachment[]> {
     const budget: PackBudget = {
       left: ceiling,
@@ -139,7 +135,7 @@ export class AttachmentPacker {
     return packed;
   }
 
-  /** One file or folder packed into text; with no budget given, it is packed whole. */
+  /** One file or folder packed into text; with no budget, packed whole. */
   async pack(
     target: string,
     budget: PackBudget = {
@@ -173,7 +169,7 @@ export class AttachmentPacker {
     };
   }
 
-  /** The tree of every path under the folder, then each file's block — until the ceiling is crossed. */
+  /** The tree of every path under the folder, then each file's block, until the ceiling is crossed. */
   private async folder(target: string, writing: PackWriting, binaries: string[]): Promise<void> {
     const files: string[] = [];
     let lines = 0;
@@ -215,8 +211,8 @@ export class AttachmentPacker {
   }
 
   /**
-   * One file under its own path, read no further than what is left of the ceiling can take. A file the system
-   * will not let us read keeps its rule, marked, and nothing under it.
+   * One file under its own path, read no further than the remaining ceiling can take; an unreadable file keeps its rule,
+   * marked, with no content.
    */
   private async block(writing: PackWriting, file: string, rel: string, binaries: string[]): Promise<void> {
     let content: FileContent;
@@ -242,10 +238,8 @@ export class AttachmentPacker {
   }
 
   /**
-   * Every file under the folder, in name order, handed one by one to `visit`, which says whether to go on; a
-   * symlink is not followed, and a folder the system will not let us open is handed over as such instead of
-   * failing the whole walk. False when `visit` stopped it. Nothing is gathered here: a hundred thousand files
-   * spread into one push would be a hundred thousand arguments, and the stack does not hold that many.
+   * Hands every file under the folder, in name order, to `visit`, which says whether to go on; symlinks are not followed
+   * and an unopenable folder is handed over as such. Returns false when `visit` stopped it.
    */
   private async walk(root: string, rel: string, visit: (entry: WalkedEntry) => boolean): Promise<boolean> {
     let listed;
@@ -255,7 +249,7 @@ export class AttachmentPacker {
         withFileTypes: true,
       });
     } catch (error) {
-      // The picked folder itself is the person's to be told about; one inside it is marked and passed.
+      // The picked folder itself is reported; one inside it is marked and passed.
       if (rel === "" || !isDenied(error)) {
         throw error;
       }
@@ -291,7 +285,7 @@ export class AttachmentPacker {
     return true;
   }
 
-  /** A file's size where it can be read; one the system keeps closed weighs nothing, since nothing of it goes. */
+  /** A file's size where readable; an unreadable one weighs nothing. */
   private async readableSize(file: string): Promise<number> {
     try {
       await access(file, constants.R_OK);
@@ -307,9 +301,8 @@ export class AttachmentPacker {
   }
 
   /**
-   * The file as text, or its bytes in base64 where a zero among the first of them says they are not text. It is
-   * read only as far as can still fit: four bytes for every character left. A file cut there still crosses the
-   * ceiling — no character takes more than four bytes, and base64 is longer than the bytes it carries.
+   * The file as text, or as base64 when a zero among its first bytes marks it non-text. Read only four bytes per
+   * character left, which still crosses the ceiling if the file is longer.
    */
   private async contentOf(file: string, budget: PackBudget): Promise<FileContent> {
     const most = Number.isFinite(budget.left)
@@ -324,7 +317,7 @@ export class AttachmentPacker {
     };
   }
 
-  /** The file's bytes from its start, and no more of them than asked for. */
+  /** The file's first bytes, at most `most`. */
   private async bytesOf(file: string, most: number): Promise<Buffer> {
     const handle = await open(file, "r");
 
@@ -339,19 +332,19 @@ export class AttachmentPacker {
     }
   }
 
-  /** One line of the tree: a file's path, or a folder that stayed shut, marked. */
+  /** One line of the tree: a file's path, or a shut folder, marked. */
   private treeLine(entry: WalkedEntry, at: number): string {
     const said = entry.isDenied ? `${entry.rel}/${ATTACHMENT_DENIED_TAG}` : entry.rel;
 
     return `${at === 0 ? "" : "\n"}${ATTACHMENT_TREE_INDENT}${said}`;
   }
 
-  /** The rule a file's content stands under, with what is to be known about how it went in. */
+  /** The rule a file's content stands under, with a note on how it went in. */
   private ruleLine(rel: string, tag: string): string {
     return `${ATTACHMENT_FILE_RULE} ${rel}${tag} ${ATTACHMENT_FILE_RULE}\n`;
   }
 
-  /** A piece of the pack, counted off the ceiling the way the ceiling counts it. */
+  /** A piece of the pack, counted off the ceiling the way the ceiling counts. */
   private write(writing: PackWriting, piece: string): void {
     writing.parts.push(piece);
     writing.budget.left -= characters(piece);
@@ -378,7 +371,7 @@ function isDenied(error: unknown): boolean {
   return typeof code === "string" && ATTACHMENT_DENIED_CODES.includes(code);
 }
 
-/** Characters as the person sees them — a surrogate pair is one — which is how the turn's ceiling counts too. */
+/** Characters as the person sees them (a surrogate pair is one), as the turn's ceiling counts. */
 function characters(text: string): number {
   let count = 0;
 

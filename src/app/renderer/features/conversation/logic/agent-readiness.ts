@@ -6,14 +6,13 @@ import type { AgentReady, AgentStands, AgentWall } from "../interfaces";
 import type { Agent, GrantTargets } from "../../../interfaces";
 
 /**
- * The first wall an agent meets before its turn is asked, or the agent and its model with every number filled in.
- * A person's turn and a sub-agent asked as a tool are both read by this one rule. The question over the model's
- * ceiling is not here: only a packed turn can measure it.
+ * The first wall an agent meets before its turn is asked, or the agent with its model fully filled in; a person's turn
+ * and a sub-agent asked as a tool follow the same rule. The model's ceiling is not checked here.
  */
 export function agentReadiness(agent: Agent, stands: AgentStands, targets: GrantTargets): AgentWall | AgentReady {
   const { model, provider, prompt } = stands;
 
-  // A grant that points at nothing would hand the model a tool that is not there.
+  // A grant pointing at nothing would hand the model a missing tool.
   if (hasBrokenGrant(agent.tools, targets)) {
     return {
       note: lostFunctionNote(agent.name),
@@ -21,7 +20,7 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
     };
   }
 
-  // A provider whose protocol carries no function calls cannot be asked with an agent that holds grants.
+  // A provider without function calls cannot serve an agent that holds grants.
   if (agent.tools.length > 0 && provider !== null && !provider.takesTools) {
     return {
       note: noToolsNote(provider.name, agent.name),
@@ -29,7 +28,7 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
     };
   }
 
-  // A prompt the agent names and the project has lost is a broken tie.
+  // The agent names a prompt the project no longer has.
   if (agent.promptId !== null && prompt === null) {
     return {
       note: lostPromptNote(agent.name),
@@ -51,7 +50,7 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
     };
   }
 
-  // The prices are among a model's numbers, so a turn whose bill nobody could count is not sent.
+  // Without the prices the turn's bill cannot be counted.
   if (!isModelFilled(model)) {
     return {
       note: notStartedNote("notFilled", model, provider),

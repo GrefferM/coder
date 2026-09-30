@@ -18,7 +18,7 @@ const teller: Agent = {
   name: "Перелікар",
 };
 
-/** What one case changes, part by part; everything it leaves out stands as this fixture sets it. */
+/** What one case changes; everything else stands as the fixture sets it. */
 interface SphereOverrides {
   agent?: Agent;
   place?: Partial<SpherePlace>;
@@ -55,7 +55,7 @@ function props(patch: SphereOverrides = {}): AgentSphereProps {
         hasPrompt: false,
         tools: 0,
       },
-      // What the sources say of themselves; the arc is built from the grants, and this only names them.
+      // Names the sources; the arc is built from the grants.
       sources: {
         commands: [],
         servers: [],
@@ -116,7 +116,7 @@ describe("AgentSphere", () => {
   });
 
   it("follows the pointer while it is dragged, and does not catch it", () => {
-    // A dragged sphere must not take the pointer it is following, or the drag would end on itself.
+    // A dragged sphere must not take the pointer it follows, or the drag ends on itself.
     const { container } = render(
       <AgentSphere
         {...props({
@@ -139,7 +139,7 @@ describe("AgentSphere", () => {
   });
 
   it("wears what it is doing: the working pill, or the waiting one, or neither", () => {
-    // One sphere, one thing under its name — it is either out or holding.
+    // Under its name a sphere shows either out or holding, never both.
     const { rerender } = render(<AgentSphere {...props()} />);
 
     expect(
@@ -187,7 +187,7 @@ describe("AgentSphere", () => {
   });
 
   it("says what it is calling beside itself, and only while the call is out", () => {
-    // The arc does not move for a call — this pill is the whole of what the canvas says.
+    // The arc does not move for a call; the pill is all the canvas says.
     const { rerender } = render(
       <AgentSphere
         {...props({

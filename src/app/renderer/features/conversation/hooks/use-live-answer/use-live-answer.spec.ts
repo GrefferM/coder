@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { forgetLive, sayPiece, useLiveAnswer } from "./use-live-answer";
 import type { LiveCall } from "../../../../interfaces";
 
-/** One call as the machine says it, in whatever state it has reached. */
+/** One call as the machine says it, in any state. */
 function call(id: string, state: LiveCall["state"]): LiveCall {
   return {
     id,

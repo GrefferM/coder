@@ -2,7 +2,7 @@ import { McpServerLookEntity } from "../entities";
 import type { Repository } from "typeorm";
 import type { McpLookMemory, McpLookStore } from "../interfaces";
 
-/** The memory of the last look, in this machine's own database; the names ride as JSON and come back as a list. */
+/** The memory of the last look, in this machine's database; names are stored as JSON and read back as a list. */
 export class TypeormMcpLookStore implements McpLookStore {
   constructor(private readonly looks: Repository<McpServerLookEntity>) {}
 

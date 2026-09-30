@@ -9,7 +9,7 @@ describe("SaidRow", () => {
 
     const words = screen.getByText("Відповідь не прийшла");
 
-    // No agent's colour, so nobody can mistake it for somebody speaking.
+    // No agent colour.
     expect(words).toHaveStyle({
       color: SAID_ROW_COLOR,
     });
@@ -27,7 +27,7 @@ describe("SaidRow", () => {
 
     render(<SaidRow words="Модель не сказала нічого" onAskAgain={onAskAgain} />);
 
-    // The act belongs to the sentence over it — the turn happened, and nothing was said.
+    // The act belongs to the sentence above: the turn happened and nothing was said.
     screen.getByText(SAID_ROW_AGAIN_LABEL).click();
     expect(onAskAgain).toHaveBeenCalledTimes(1);
   });

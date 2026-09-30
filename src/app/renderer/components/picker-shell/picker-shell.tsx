@@ -51,7 +51,7 @@ export function PickerShell<Item>({
     setQuery("");
   }, []);
 
-  // A press elsewhere opens the list from the top, with nothing typed — the search is the person's own.
+  // A press elsewhere opens the list from the top with an empty search.
   useEffect(() => {
     if (openedBy !== null) {
       setIsOpen(true);
@@ -60,7 +60,7 @@ export function PickerShell<Item>({
   }, [openedBy]);
 
   useWindowDismiss(isOpen, close);
-  // An open list answers Escape itself; the panel underneath must not react.
+  // An open list answers Escape itself; the panel underneath does not react.
   useWindowKeydown(isOpen, (event) => {
     if (event.key === "Escape") {
       event.preventDefault();
@@ -69,9 +69,9 @@ export function PickerShell<Item>({
   });
 
   const matched = items.filter((item) => matches(item, query.trim().toLowerCase()));
-  // The lead is a row like any other to the walk, and it stands before them all.
+  // The lead counts as the first row of the walk.
   const leadRows = lead === undefined ? 0 : 1;
-  // The arrows walk the rows while the typing stays in the search, and Enter takes the row they stand on.
+  // Arrows walk the rows while typing stays in the search; Enter takes the current row.
   const walk = useListWalk(leadRows + matched.length, isOpen, (index) => {
     if (lead !== undefined && index === 0) {
       lead.choose(close);

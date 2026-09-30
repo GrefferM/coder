@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { forgetRun, forgetRuns, listRuns } from "../../api";
 import type { RunHistoryState, RunRow } from "../../interfaces";
 
-/** The project's runs from this machine's record, read when the tab is opened and again on every write to it. */
+/** The project's runs from this machine's record, read when the tab opens and on every write. */
 export function useRunHistory(directory: string, isOpen: boolean, written: number): RunHistoryState {
   const [runs, setRuns] = useState<RunRow[]>([]);
   const [isFailed, setIsFailed] = useState(false);
@@ -31,13 +31,13 @@ export function useRunHistory(directory: string, isOpen: boolean, written: numbe
   return {
     runs,
     isFailed,
-    /** Gone from the record, and gone from the list without reading it again. */
+    /** Removed from the record and from the list without re-reading. */
     forget: async (runId: string) => {
       if (await forgetRun(runId)) {
         setRuns((standing) => standing.filter((run) => run.id !== runId));
       }
     },
-    /** Gone for good, and the list is emptied without reading the record again. */
+    /** All removed; the list is emptied without re-reading. */
     forgetAll: async () => {
       if ((await forgetRuns(directory)) !== null) {
         setRuns([]);

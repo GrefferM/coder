@@ -2,7 +2,7 @@ import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { useNewsSeen } from "./use-news-seen";
 
-/** The hook as the chat holds it: what waits elsewhere, and what waits in the stream on screen. */
+/** The hook as the chat holds it: what waits elsewhere and what waits in the on-screen stream. */
 function seen(elsewhere: string[] = [], onScreen: string[] = []) {
   return renderHook(({ away, here }: { away: string[]; here: string[] }) => useNewsSeen(away, here), {
     initialProps: {

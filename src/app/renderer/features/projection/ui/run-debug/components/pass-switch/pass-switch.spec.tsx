@@ -6,7 +6,7 @@ import { PASS_SWITCH_BACK_LABEL, PASS_SWITCH_OF, PASS_SWITCH_ON_LABEL, PASS_SWIT
 
 describe("PassSwitch", () => {
   it("says which pass of the flow stands open, and how many there are", () => {
-    // It walks the passes of this flow and no further — another flow is another row of the history.
+    // Walks this flow's passes and no further.
     render(<PassSwitch place={2} count={3} onGo={() => {}} />);
 
     expect(screen.getByText(`${PASS_SWITCH_WORD} 2${PASS_SWITCH_OF}3`)).toBeInTheDocument();

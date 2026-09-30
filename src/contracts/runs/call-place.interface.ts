@@ -1,4 +1,4 @@
-/** Where one call stands in the record — enough to open its run and ride to the message it was made from. */
+/** Where one call stands in the record: enough to open its run and reach its message. */
 export interface CallPlace {
   runId: string;
   questionId: string;

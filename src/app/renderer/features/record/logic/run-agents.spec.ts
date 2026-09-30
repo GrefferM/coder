@@ -41,7 +41,7 @@ describe("runAgents", () => {
   });
 
   it("keeps today's name and colour over the ones the record wrote down", () => {
-    // The agent was renamed and recoloured after the run; the conversation reads as it is now.
+    // An agent renamed and recoloured after the run reads as it is now.
     const walked = aStep({
       agentName: "Розвідник",
       agentColor: "#b18aff",
@@ -108,7 +108,7 @@ describe("runAgents", () => {
   });
 
   it("hands the chat a name and a colour and nothing else", () => {
-    // The standing knows more — the record's name, whether the agent is gone — and that stays with the projection.
+    // The standing also knows the record's name and whether the agent is gone; that stays with the projection.
     const walked = aStep({
       agentId: "agent-gone",
       agentName: "ТЕЗАР",

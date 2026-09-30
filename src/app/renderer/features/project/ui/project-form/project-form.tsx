@@ -29,11 +29,8 @@ import {
 import type { ProjectFormProps } from "./interfaces";
 
 /**
- * Naming a folder that has no project in it yet, and saying what will appear there.
- *
- * One form, one case. A folder that already holds a project never reaches here — nothing is created over a
- * project that exists, so a form whose only answer is «Відкрити» is a question that
- * was not worth asking, and the folder opens straight away instead.
+ * Names a folder with no project yet and lists what will appear in it. A folder already holding a project never reaches
+ * here; it opens directly.
  */
 export function ProjectForm({
   directory,

@@ -1,4 +1,4 @@
 import type { IpcChannelHandler } from "./ipc-channel-handler.interface";
 
-/** Every channel a domain exposes, keyed by channel name, each handler bound to that domain's controller. */
+/** A domain's channels keyed by name, each handler bound to its controller. */
 export type IpcChannelMap<TController> = Record<string, IpcChannelHandler<TController>>;

@@ -4,7 +4,7 @@ import { LostRow } from "./lost-row";
 
 describe("LostRow", () => {
   it("names what the tie still points at, and strikes it through", () => {
-    // The tie is not cleared for the person — it stands, crossed out, until they deal with it.
+    // The tie stays, crossed out, until dealt with.
     render(<LostRow name="моделі немає" />);
 
     expect(screen.getByText("моделі немає")).toHaveStyle({

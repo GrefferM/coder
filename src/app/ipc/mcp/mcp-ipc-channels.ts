@@ -23,14 +23,14 @@ import {
 import type { IpcChannelMap } from "../register-ipc-channels";
 
 /**
- * The doors to a server — look at it, and let it go so the next look starts it afresh. Three more are about this
- * machine alone: what opens a server never goes near the project file.
+ * Look at a server, and release it so the next look starts it afresh. Three more concern this machine only: what opens
+ * a server stays out of the project file.
  */
 export const MCP_IPC_CHANNELS: IpcChannelMap<McpController> = {
   [LOOK_MCP_SERVER_CHANNEL]: (controller, payload) => {
     const look = Object.assign(new LookMcpServerDto(), payload);
 
-    // The server inside is a plain object too, and a nested check reads an instance or nothing at all.
+    // The nested server is rebuilt as a DTO instance too.
     look.server = Object.assign(new ProjectMcpServerDto(), look.server);
 
     return controller.look(look);

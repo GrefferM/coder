@@ -37,16 +37,16 @@ import { IconButton, Mark } from "../../../../components";
 import type { WholeRun } from "../../../record";
 import type { RunDebugProps, RunStateLook } from "./interfaces";
 
-/** The run's own word about how it stands, in the colours this pill wears for it. */
+/** The run's state word, in the colours the pill wears for it. */
 function stateOf(run: WholeRun): RunStateLook & { label: string } {
   return {
     ...RUN_DEBUG_STATE_LOOKS[run.state],
-    // Only the projection holds the whole walk, so only here can the fallen step be named.
+    // Only the projection holds the whole walk, so only here is the fallen step named.
     label: runStateLabel(run.state, brokeAt(run)),
   };
 }
 
-/** Which step of the walk fell, counted in levels — nothing where the run did not fall on a step. */
+/** The level of the step that fell; null if the run did not fall on a step. */
 function brokeAt(run: WholeRun): number | null {
   if (run.state !== RUN_FAILED) {
     return null;
@@ -58,27 +58,22 @@ function brokeAt(run: WholeRun): number | null {
 }
 
 /**
- * The debug projection of one run — its head, and the walk drawn flat under it. The head names
- * the pass by its hour and its question, and names no agent. A turn pressed opens beside the projection, and
- * which turn that is is held here.
+ * The debug projection of one run: its head (pass named by hour and question, no agent) and the flat walk under it;
+ * holds which turn is open.
  */
 export function RunDebug({ run, isFailed, standings, changes, place, passes, onGo, onClose }: RunDebugProps) {
   const field = useRef<HTMLDivElement>(null);
   const width = useBoxWidth(field);
   const [openStepId, setOpenStepId] = useState<string | null>(null);
-  /**
-   * The sheet stands beside the graph while a sheet's width is left for the graph itself; with less than
-   * that it lies along the bottom of the field.
-   */
+  /** The sheet sits beside the graph while the graph keeps its least width, otherwise along the bottom of the field. */
   const isSheetBelow = width > 0 && width - STEP_SHEET_INSET_PX - STEP_SHEET_WIDTH_PX < STEP_SHEET_GRAPH_LEAST_PX;
   const state = run === null ? null : stateOf(run);
-  // The open step is looked up in the pass on screen: a step that is not in it is not open at all.
+  // The open step is looked up in the pass on screen; absent from it means none open.
   const openStep = run === null ? null : (run.walk.find((step) => step.id === openStepId) ?? null);
 
-  // What stands over the canvas answers Escape itself, and this stands over the panel too.
-  // ⌥← and ⌥→ step between the passes of this flow, and stop at its ends.
+  // Escape is answered here too, over the panel. ⌥← and ⌥→ step between the flow's passes and stop at its ends.
   useWindowKeydown(true, (event) => {
-    // Escape closes what stands innermost — the open step first, the projection after it.
+    // Escape closes the innermost: the open step, then the projection.
     if (event.key === "Escape") {
       event.preventDefault();
 
@@ -138,7 +133,7 @@ export function RunDebug({ run, isFailed, standings, changes, place, passes, onG
         </IconButton>
         {run !== null && state !== null && (
           <>
-            {/* The passes of this flow are stepped through from inside, without going out to it. */}
+            {/* Steps between the flow's passes from inside. */}
             {passes > 1 && <PassSwitch place={place} count={passes} onGo={onGo} />}
             <Mark color={RUN_DEBUG_WHEN_COLOR} size={RUN_DEBUG_WHEN_FONT_SIZE_PX} className="flex-shrink-0">
               {`${RUN_DEBUG_WHEN_PREFIX}${RUN_DEBUG_SEPARATOR}${timeLabel(run.askedAt)}`}
@@ -152,7 +147,7 @@ export function RunDebug({ run, isFailed, standings, changes, place, passes, onG
             >
               {run.asked}
             </span>
-            {/* Which half of this screen is «then» and which is «now» — only where the two have parted. */}
+            {/* Marks which half is «then» and which «now», only where the two differ. */}
             <StandingBand standings={standings} />
             <span className="flex-fill" />
             <span
@@ -213,7 +208,7 @@ export function RunDebug({ run, isFailed, standings, changes, place, passes, onG
           )}
         </div>
       )}
-      {/* What has moved since the run walked, under the graph it is about. */}
+      {/* What changed since the run, under the graph. */}
       <StandingChanges changes={changes} />
     </div>
   );

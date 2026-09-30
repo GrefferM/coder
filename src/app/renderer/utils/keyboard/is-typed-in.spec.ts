@@ -12,7 +12,7 @@ describe("isTypedIn", () => {
   it("claims an editable block the way it claims a field", () => {
     const block = document.createElement("div");
 
-    // jsdom leaves the property undefined unless told; the browser derives it from the attribute.
+    // jsdom leaves `isContentEditable` undefined; set it as the browser would.
     Object.defineProperty(block, "isContentEditable", {
       value: true,
     });

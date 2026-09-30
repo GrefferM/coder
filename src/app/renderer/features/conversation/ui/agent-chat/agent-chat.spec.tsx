@@ -45,7 +45,7 @@ import type { WorkingAgent } from "../../../../interfaces";
 import type { AgentChatProps, ChatActs, ChatAimed, ChatBand, ChatField, ChatSaid } from "./interfaces";
 import { anAgent } from "../../../../testing";
 
-/** What one case changes, part by part; everything it leaves out stands as the fixture above sets it. */
+/** What one case changes; everything left out stands as the fixture sets it. */
 interface ChatOverrides {
   aimed?: Partial<ChatAimed>;
   said?: Partial<ChatSaid>;
@@ -55,8 +55,7 @@ interface ChatOverrides {
 }
 
 /**
- * The memory of open calls belongs to the chat's own state, and the catalogue reaches the same one
- * — so a screen drawn here holds a real memory, or a press on a row would answer nothing at all.
+ * The chat's own state holds the open-calls memory and the catalogue reaches the same one, so presses on a row work.
  */
 function Chat(props: AgentChatProps) {
   const openCalls = useOpenCalls();
@@ -87,7 +86,7 @@ function renderChat(overrides: ChatOverrides = {}) {
         messages: [],
         agents: [],
         working: [],
-        // The wrapper hands the real memory over this one; it stands here only because the part asks for it.
+        // The wrapper hands over the real memory; this one exists only because the part requires it.
         openCalls: {
           isOpen: () => false,
           toggle: () => {},
@@ -140,7 +139,7 @@ function renderChat(overrides: ChatOverrides = {}) {
   );
 }
 
-/** One turn still out, standing in the block of the question given here. */
+/** One turn still out, in the block of the given question. */
 function working(turnId: string, questionId = "question-0", askedAt = 0): WorkingAgent {
   return {
     turnId,
@@ -151,7 +150,7 @@ function working(turnId: string, questionId = "question-0", askedAt = 0): Workin
   };
 }
 
-/** The person's question one live turn stands under — a card without its block has nowhere to stand. */
+/** The person's question one live turn stands under; a card needs its block. */
 function asked(questionId: string) {
   return {
     id: `asked-${questionId}`,
@@ -236,7 +235,7 @@ describe("AgentChat", () => {
     });
     await userEvent.click(screen.getByLabelText(AGENT_CHAT_SEND_LABEL));
 
-    // One hand stands under the field, and while something is out it is «ЗУПИНИТИ». What is typed waits.
+    // One button under the field, «ЗУПИНИТИ» while something is out; typed text waits.
     expect(onSend).not.toHaveBeenCalled();
     expect(screen.getByText(AGENT_CHAT_STOP_LABEL)).toBeInTheDocument();
     expect(screen.getByLabelText(`${AGENT_CHAT_FIELD_PLACEHOLDER_PREFIX}EDITOR`)).toHaveValue("Прогони тести");
@@ -342,7 +341,7 @@ describe("AgentChat", () => {
   });
 
   it("stands a refused call and a running one as rows of the running card, newest last", async () => {
-    // The calls arrive at the turn itself, piece by piece, and the card of that turn reads them.
+    // Calls arrive at the turn piece by piece and its card reads them.
     sayPiece("turn-calls", "", {
       id: "call-1",
       source: "command",
@@ -389,7 +388,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // Both stand as lines, the one still out among them — a turn of a dozen calls is a dozen lines.
+    // Both stand as lines, the one still out included; a dozen calls make a dozen lines.
     expect(screen.getByText(CALL_ROW_REFUSED_LABEL)).toBeInTheDocument();
     expect(
       screen.getByText(CALL_ROW_RUNNING_LABEL, {
@@ -404,7 +403,7 @@ describe("AgentChat", () => {
       }),
     );
 
-    // Opened by hand, the call that is out says what it was called with, and whose each argument is.
+    // Opened by hand, the call still out shows what it was called with and whose each argument is.
     expect(screen.getByText(CALL_ROW_NO_OUTPUT_YET_LABEL)).toBeInTheDocument();
     expect(screen.getByText(CALL_ROW_PINNED_LABEL)).toBeInTheDocument();
     expect(screen.getAllByText(CALL_ROW_FROM_MODEL_LABEL)).toHaveLength(1);
@@ -495,7 +494,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // The card has burned down, and the call is still there — folded, and opening to what it ran.
+    // The card has burned down; the call remains, folded, and opens to what it ran.
     expect(screen.getByText(`${CALL_ROW_CODE_LABEL}0`)).toBeInTheDocument();
     expect(screen.queryByText(/maxdepth/)).not.toBeInTheDocument();
 
@@ -529,8 +528,8 @@ describe("AgentChat", () => {
       },
     });
 
-    // A run opened out of the history is not a page to read; the way out is the tabs' own. The stream
-    // holds a second field of its own now, so this one is named: it is the composer that must still be there.
+    // A run opened from the history is not a page to read; the way out is the tabs'. The stream has a second field, so
+    // this one is named: the composer must still be there.
     expect(screen.getByLabelText(`${AGENT_CHAT_FIELD_PLACEHOLDER_PREFIX}EDITOR`)).toBeInTheDocument();
     expect(screen.getByText(RUN_STATE_LABELS.done)).toBeInTheDocument();
   });
@@ -582,7 +581,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // What the model said keeps its card; what we said stands outside every card.
+    // What the model said keeps its card; what the app said stands outside every card.
     expect(screen.getByText("Половина відповіді")).toBeInTheDocument();
     expect(screen.getByText("Зупинено")).toHaveClass("font-monospace", "text-uppercase");
   });
@@ -626,7 +625,7 @@ describe("AgentChat", () => {
         },
       });
 
-      // The repeat stands under one sentence; the answer to all of them is the same act.
+      // The repeat stands under one sentence; the act is the same for all of them.
       screen.getByText(SAID_ROW_AGAIN_LABEL).click();
 
       expect(onAskAgain).toHaveBeenCalledWith(
@@ -638,7 +637,7 @@ describe("AgentChat", () => {
   );
 
   it("says one word about a step that broke, however many agents were working on it", () => {
-    // They broke together, and together means one walk — that is what the shared walk says here.
+    // They broke together, so they share one walk.
     const cut = (id: string, agentId: string) => ({
       id,
       agentId,
@@ -670,8 +669,8 @@ describe("AgentChat", () => {
       },
     });
 
-    // A step of the walk is what breaks, not one turn of it — the word and the act are one,
-    // and the word is the end itself, since every turn of the step came to it.
+    // A step of the walk breaks, not one turn of it: the word and the act are one, and the word is the end every turn
+    // came to.
     expect(screen.getAllByText(CHAT_STOPPED_NOTE)).toHaveLength(1);
     expect(screen.getAllByText(SAID_ROW_AGAIN_LABEL)).toHaveLength(1);
   });
@@ -712,8 +711,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // No end is true of all three, so the rule says the general word and the ends stay in
-    // the record of the step, where they are looked for.
+    // No end is true of all three, so the general word is said and the ends stay in the step's record.
     expect(screen.getByText(CHAT_STEP_BROKEN_NOTE)).toBeInTheDocument();
     expect(screen.queryByText(CHAT_FAILED_NOTE)).not.toBeInTheDocument();
     expect(screen.queryByText(answerCeilingNote(4096))).not.toBeInTheDocument();
@@ -756,8 +754,8 @@ describe("AgentChat", () => {
       },
     });
 
-    // The walk reached an agent it cannot ask — that is a break like any other, and the act
-    // is the same one. The card's own act is about the cause; this one is about the turn.
+    // The walk reached an agent it cannot ask: a break like any other with the same act; the card's own act is about
+    // the cause, this one about the turn.
     screen.getByText(SAID_ROW_AGAIN_LABEL).click();
     expect(onAskAgain).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -775,7 +773,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // No exception is left — the card's own act raises the ceiling, and the same words then go through.
+    // No exception remains: the card's own act raises the ceiling and the same words go through.
     screen.getByText(SAID_ROW_AGAIN_LABEL).click();
     expect(onAskAgain).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -822,9 +820,9 @@ describe("AgentChat", () => {
       },
     });
 
-    // The card keeps its own words — what happened is history and reads as it was written.
+    // The card keeps its own words as written.
     expect(screen.getByText(unbegun.text)).toBeInTheDocument();
-    // The step went on, so neither act stands — there is nothing left to act on.
+    // The step went on, so neither act stands.
     expect(screen.queryByText(SAID_ROW_AGAIN_LABEL)).not.toBeInTheDocument();
     expect(screen.queryByText(NOT_STARTED_ENDS.noKey.actLabel)).not.toBeInTheDocument();
   });
@@ -864,7 +862,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // Nothing went, so the words stayed where they were typed — and the card says so.
+    // Nothing went, so the words stay in the field and the card says so.
     expect(screen.getByText(NOT_STARTED_DRAFT_NOTE)).toBeInTheDocument();
 
     cleanup();
@@ -877,7 +875,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // The same card read back out of the record put nothing in the field, so it promises nothing.
+    // The same card read back from the record put nothing in the field, so it promises nothing.
     expect(screen.queryByText(NOT_STARTED_DRAFT_NOTE)).not.toBeInTheDocument();
   });
 
@@ -917,12 +915,12 @@ describe("AgentChat", () => {
       },
     });
 
-    // The turn was answered by the asking, so the repeat, the card's own act and
-    // the line about the field all go together — the new turn is already out.
+    // The asking answered the turn, so the repeat, the card's act and the field line all go; the new turn is already
+    // out.
     expect(screen.queryByText(SAID_ROW_AGAIN_LABEL)).not.toBeInTheDocument();
     expect(screen.queryByText(NOT_STARTED_ENDS.noKey.actLabel)).not.toBeInTheDocument();
     expect(screen.queryByText(NOT_STARTED_DRAFT_NOTE)).not.toBeInTheDocument();
-    // The card keeps its words: what happened is history and reads as it was written.
+    // The card keeps its words as written.
     expect(screen.getByText(unbegun.text)).toBeInTheDocument();
   });
 
@@ -977,7 +975,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // The turn belongs to the first question, and the second question stands below it.
+    // The turn belongs to the first question; the second stands below it.
     const out = screen.getByText(WORK_CARD_LABEL, {
       exact: false,
     });
@@ -987,7 +985,7 @@ describe("AgentChat", () => {
   });
 
   it("stands a turn in each question's block when two walks run at once", () => {
-    // One agent works in both walks, and neither block may be the only one saying so.
+    // One agent works in both walks; neither block is the only one saying so.
     const card = (id: string, text: string, askedAt: number) => ({
       id,
       agentId: "agent-1",
@@ -1032,8 +1030,8 @@ describe("AgentChat", () => {
   });
 
   it("draws no card for a turn whose question is no word of this stream", () => {
-    // A run opened out of the history shows its own walks; what works in another run works on
-    // the canvas, and never at the end of this stream.
+    // A run opened from the history shows its own walks; work of another run shows on the canvas, not at the end of
+    // this stream.
     sayPiece("turn-elsewhere", "Робота іншої розмови", null);
     renderChat({
       said: {
@@ -1051,7 +1049,7 @@ describe("AgentChat", () => {
   });
 
   it("heads a live turn with its step and hour, the same as one read out of a run", () => {
-    // The two streams are one stream; a card cannot say less because it is live.
+    // Live and read streams are one stream; a live card says no less.
     const began = new Date("2026-08-22T19:27:00");
     const card = (id: string, from: "person" | "agent", text: string, fedBy: string[] = []) => ({
       id,
@@ -1077,7 +1075,7 @@ describe("AgentChat", () => {
       notStarted: null,
       wouldGo: null,
       calls: [],
-      // A live turn has not been written yet, so it carries no step id — only when it began.
+      // A live turn is not written yet, so it has no step id, only when it began.
       began: from === "agent" ? began.toISOString() : null,
       stepId: null,
       walkId: null,
@@ -1143,7 +1141,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // One way in, on the question that walked, and it names the question itself — by its own id.
+    // One way in, on the question that walked, naming the question by its own id.
     const ways = screen.getAllByText(DEBUG_BAND_LABEL);
 
     expect(ways).toHaveLength(1);
@@ -1191,8 +1189,8 @@ describe("AgentChat", () => {
       },
     });
 
-    // The person asked the second question before they saw the break, so the act
-    // stands where the break is — under the last thing said in its own question.
+    // The person asked the second question before seeing the break, so the act stands under the last thing said in its
+    // own question.
     screen.getByText(SAID_ROW_AGAIN_LABEL).click();
     expect(onAskAgain).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1238,7 +1236,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // The row has already said what happened, so the act needs no sentence of its own.
+    // The row already says what happened, so the act needs no sentence.
     screen.getByText(SAID_ROW_AGAIN_LABEL).click();
     expect(onAskAgain).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1280,7 +1278,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // The act is spent — the answer to it stands lower in the stream.
+    // The act is spent; its answer stands lower in the stream.
     expect(screen.queryByText(SAID_ROW_AGAIN_LABEL)).not.toBeInTheDocument();
   });
 
@@ -1340,15 +1338,15 @@ describe("AgentChat", () => {
       },
     });
 
-    // The person has gone on — the sentence is left as the plain fact of what happened.
+    // The person has gone on, so the sentence stays as the plain fact.
     expect(screen.queryByText(SAID_ROW_AGAIN_LABEL)).not.toBeInTheDocument();
   });
 
   it("offers the repeat under a turn cut mid-answer, though the card kept no question of its own", () => {
     const onAskAgain = vi.fn();
 
-    // The act takes its words from the record, by the question's own id — the card carries
-    // them only for convenience, and a card without them is asked again exactly like any other.
+    // The act takes its words from the record by question id; the card's copy is a convenience, and a card without it
+    // is asked again like any other.
     renderChat({
       said: {
         messages: [
@@ -1424,7 +1422,7 @@ describe("AgentChat", () => {
     });
 
     expect(screen.getByText("Відповідь не прийшла")).toBeInTheDocument();
-    // An empty card under our own sentence would be a card about nobody's words.
+    // An empty card under the app's own sentence would be a card about nobody's words.
     expect(container.querySelectorAll('[style*="white-space: pre-wrap"]')).toHaveLength(0);
   });
 
@@ -1468,15 +1466,14 @@ describe("AgentChat", () => {
       },
     });
 
-    // Both are conversations, so the band does not know two ways of saying so.
+    // Both are conversations, so the band has one way of saying so.
     expect(screen.getByText(RUN_STATE_LABELS.done)).toBeInTheDocument();
   });
 
   it("offers the stop while the walk is out, even with no card of it in this stream", () => {
     const onStop = vi.fn();
 
-    // Over an opened run the stream shows a record and holds no live card, and the walk
-    // is out all the same — the person can see it on the canvas, so the stop has to be here.
+    // Over an opened run the stream shows a record with no live card, yet the walk is out, so the stop is here.
     renderChat({
       said: {
         working: [],
@@ -1502,19 +1499,19 @@ describe("AgentChat", () => {
 
     const field = screen.getByPlaceholderText(AGENT_CHAT_WALKING_PLACEHOLDER);
 
-    // The longhands, not the shorthands: jsdom serializes «background» and «border» back out with more than was set.
+    // Longhands, not shorthands: jsdom serializes «background» and «border» with more than was set.
     expect(field).toHaveStyle({
       backgroundColor: AGENT_CHAT_FIELD_GROUNDS.walking.background,
       borderColor: AGENT_CHAT_FIELD_GROUNDS.walking.border,
     });
-    // The word keeps the app's own placeholder colour: the states differ by ground and edge alone.
+    // The word keeps the app's placeholder colour; states differ by ground and edge alone.
     expect(field).not.toHaveClass(String(AGENT_CHAT_FIELD_GROUNDS.stitched.wordClass));
   });
 
   it("leaves the marked field writable: it is quieted, not stitched", () => {
     const onDraftChange = vi.fn();
 
-    // A stitched field is only where there is nothing to write; here there is, and it waits.
+    // A stitched field is only where nothing can be written; here something can, so it waits.
     renderChat({
       field: {
         draft: "",
@@ -1531,7 +1528,7 @@ describe("AgentChat", () => {
   });
 
   it("takes the field's own ground back the moment the walk is over", () => {
-    // The mark is a state and lives exactly as long as the walk does.
+    // The mark is a state and lasts exactly as long as the walk.
     renderChat({
       field: {
         draft: "",
@@ -1548,7 +1545,7 @@ describe("AgentChat", () => {
   });
 
   it("says the agent is off ahead of the walk: with nothing to write, there is nothing to wait for", () => {
-    // A switched-off agent stitches the field shut, and that word wins over the walking one.
+    // A switched-off agent stitches the field shut, and that wins over walking.
     renderChat({
       aimed: {
         isActive: false,
@@ -1563,7 +1560,7 @@ describe("AgentChat", () => {
 
     expect(field).toBeDisabled();
     expect(screen.queryByPlaceholderText(AGENT_CHAT_WALKING_PLACEHOLDER)).not.toBeInTheDocument();
-    // A stitched field takes the deafer ground and says its word in the quiet mark.
+    // A stitched field takes the deafer ground and its word in the quiet mark.
     expect(field).toHaveStyle({
       backgroundColor: AGENT_CHAT_FIELD_GROUNDS.stitched.background,
       borderColor: AGENT_CHAT_FIELD_GROUNDS.stitched.border,
@@ -1572,7 +1569,7 @@ describe("AgentChat", () => {
   });
 
   it("stitches the field where nobody is aimed at: there is no one for a question to go to", () => {
-    // The stream stands and a question has nowhere to go — the same ground as an agent switched off.
+    // The stream stands and a question has nowhere to go: the same ground as an agent switched off.
     renderChat({
       aimed: {
         id: null,
@@ -1593,7 +1590,7 @@ describe("AgentChat", () => {
   it("answers a press that could not go through with the stop itself, once", async () => {
     const onSend = vi.fn();
 
-    // The answer stands where the hand already is and leads the eye to the one way out.
+    // The answer stands where the button already is and leads to the one way out.
     renderChat({
       field: {
         draft: "А тести на цю гілку ти вже гнав?",
@@ -1616,7 +1613,7 @@ describe("AgentChat", () => {
   });
 
   it("answers nothing where nothing was asked: an empty field under a walk", async () => {
-    // The answer is owed to a question that could not go, and an empty field asked for none.
+    // The answer is owed to a question that could not go; an empty field asked for none.
     renderChat({
       field: {
         draft: "",
@@ -1633,7 +1630,7 @@ describe("AgentChat", () => {
   });
 
   it("offers no stop where nothing of this conversation is out", () => {
-    // Another conversation may be walking, and its work is neither drawn here nor stopped from here.
+    // Another conversation may be walking; its work is neither drawn nor stopped from here.
     renderChat({
       said: {
         working: [],

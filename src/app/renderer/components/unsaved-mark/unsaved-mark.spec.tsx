@@ -5,7 +5,7 @@ import { UNSAVED_MARK_COLOR, UNSAVED_MARK_LABEL } from "./constants";
 
 describe("UnsavedMark", () => {
   it("says there is unsaved work, in the colour a draft is marked with", () => {
-    // «● НЕ ЗБЕРЕЖЕНО» beside the name of a thing whose draft is not written yet.
+    // «● НЕ ЗБЕРЕЖЕНО» beside the name of a thing with an unwritten draft.
     render(<UnsavedMark />);
 
     expect(screen.getByText(UNSAVED_MARK_LABEL)).toHaveStyle({

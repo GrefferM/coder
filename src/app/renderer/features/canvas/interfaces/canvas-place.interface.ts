@@ -1,6 +1,6 @@
 import type { Point } from "../../../utils/math";
 
-/** Where the canvas stands: what it is moved by and how close it is. */
+/** Where the canvas stands: its offset and zoom. */
 export interface CanvasPlace {
   pan: Point;
   scale: number;

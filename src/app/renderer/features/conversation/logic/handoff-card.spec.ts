@@ -38,7 +38,7 @@ describe("handoffCard", () => {
   });
 
   it("stands in the addressee's own name where nobody sent it: the question is the person's", () => {
-    // «ПИТАННЯ НЕ ПІШЛО ⇢ EDITOR · ВИМКНЕНИЙ» — the person's question has no sender.
+    // «ПИТАННЯ НЕ ПІШЛО ⇢ EDITOR · ВИМКНЕНИЙ»: the person's question has no sender.
     const row = handoffCard(
       said({
         fromAgentId: null,

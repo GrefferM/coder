@@ -1,20 +1,19 @@
 import type { McpSignIn } from "../../../interfaces";
 
 /**
- * What the one form holds, both kinds of server together. The switch in its head decides which
- * half is meant; the other half's fields keep whatever was typed in them, because switching back must not have
- * cost anything, and only the file is made to hold one kind's fields empty.
+ * What the one form holds for both kinds of server. The head switch picks the half in use; the other half keeps what
+ * was typed, and only the file holds the other kind's fields empty.
  */
 export interface ServerFormValues {
   name: string;
-  /** The switch in the head of the form, and the first slot of the keyboard's road. */
+  /** The switch in the form's head, and the first slot of the keyboard order. */
   isLocal: boolean;
-  /** The line that starts a local server, run in the project's folder — there is no sandbox. */
+  /** The line that starts a local server, run in the project's folder with no sandbox. */
   run: string;
   /** The address a remote server answers at. */
   address: string;
-  /** Whether the server takes a token, or is open to anyone who reaches it. */
+  /** Whether the server takes a token or is open to anyone. */
   signIn: McpSignIn;
-  /** The names of the environment variables; every value of them stays in this machine's keychain. */
+  /** The environment variable names; their values stay in this machine's keychain. */
   env: string[];
 }

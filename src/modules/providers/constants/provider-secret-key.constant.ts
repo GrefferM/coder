@@ -1,2 +1,2 @@
-/** The head of the key a provider's own secret is held under — `provider-key:anthropic`. */
+/** Prefix of the key a provider's secret is held under, e.g. `provider-key:anthropic`. */
 export const PROVIDER_SECRET_PREFIX = "provider-key:";

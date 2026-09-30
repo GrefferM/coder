@@ -12,7 +12,7 @@ import {
   SAVE_PROVIDER_KEY_CHANNEL,
 } from "../../../contracts";
 
-/** Provider channels; a key is written through its provider and no channel reads one back. */
+/** Provider channels; a key is written through its provider and never read back. */
 export const PROVIDERS_IPC_CHANNELS: IpcChannelMap<ProviderController> = {
   [LIST_PROVIDERS_CHANNEL]: (controller) => controller.list(),
   [ASK_PROVIDER_CHANNEL]: (controller, payload) => controller.ask(Object.assign(new AskProviderDto(), payload)),

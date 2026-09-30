@@ -114,7 +114,7 @@ describe("brokenCause", () => {
   });
 
   it("breaks nothing while the server has not answered", () => {
-    // A process still starting knows no functions this moment; «unknown» is not «gone», and a turn must not stop.
+    // A process still starting knows no functions yet; «unknown» is not «gone», and a turn must not stop.
     const asked = look({
       isUp: false,
       functions: [],

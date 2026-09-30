@@ -1,4 +1,4 @@
-/** How a declared parameter's type reads in the schema the model is handed. */
+/** How a declared parameter's type reads in the schema handed to the model. */
 export const TOOL_SCHEMA_TYPES: Record<string, string> = {
   text: "string",
   number: "number",

@@ -22,7 +22,7 @@ export class CommandRunner {
       const { stdout, stderr } = await run(line, {
         cwd: payload.directory,
         maxBuffer: undefined,
-        // A stop kills the process here; the abort surfaces as a failure the turn already treats as stopped.
+        // A stop kills the process; the abort surfaces as a failure the turn treats as stopped.
         signal: payload.signal,
       });
 
@@ -42,7 +42,7 @@ export class CommandRunner {
     }
   }
 
-  /** The declared line with its slots filled: a value goes in verbatim, unquoted, and is never read again. */
+  /** The declared line with its slots filled; values go in verbatim, unquoted. */
   private line(payload: CommandCall): string {
     const declared = new Set(payload.declared);
 
@@ -57,7 +57,7 @@ export class CommandRunner {
     });
   }
 
-  /** Output for a failed run: what it printed, or a note naming the exit code, or the failure itself. */
+  /** Output for a failed run: what it printed, else a note with the exit code, else the failure itself. */
   private wentWrong(failure: unknown): string {
     const said = this.printed(failure);
 

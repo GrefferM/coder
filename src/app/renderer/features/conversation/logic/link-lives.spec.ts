@@ -52,7 +52,7 @@ function wait(patch: Partial<WaitedWork> = {}): WaitedWork {
   };
 }
 
-/** One stream's walks, with only the parts this reader looks at written — the waits all of one walk. */
+/** One stream's walks with only the parts this reader looks at; the waits all belong to one walk. */
 function walk(waiting: Record<string, WaitedWork> = {}, out: Record<string, TurnOut> = {}) {
   return {
     ...emptyWalk(),
@@ -79,7 +79,7 @@ function turn(viaLinkIds: string[]): TurnOut {
 
 describe("linkLives · the lines of another conversation", () => {
   it("leaves a line of another row at rest, however its work is flowing", () => {
-    // The canvas is one conversation's — a line another one's work goes down drifts here.
+    // The canvas shows one conversation; a line another conversation's work goes down is not shown.
     const lives = linkLives(links, {
       ...emptyWalk(),
       walks: {
@@ -135,7 +135,7 @@ describe("linkLives", () => {
       }),
     );
 
-    // The one that answered, the one that had its turn and said nothing, and the one still out.
+    // One that answered, one that had its turn and said nothing, one still out.
     expect(lives).toEqual({
       "link-1": "answered",
       "link-2": "silent",

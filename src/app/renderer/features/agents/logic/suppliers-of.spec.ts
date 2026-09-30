@@ -38,12 +38,12 @@ const CONFIG = aConfig({
 
 describe("suppliersOf", () => {
   it("gives the agents whose lines come into this one, in the order the file holds them", () => {
-    // The order is the project file's, so the same picture is read the same way twice.
+    // Order follows the project file.
     expect(suppliersOf(CONFIG, "agent-1").map((agent) => agent.id)).toEqual(["agent-2", "agent-3"]);
   });
 
   it("does not count a line going the other way", () => {
-    // «agent-1 → agent-2» feeds agent-2; from agent-1's side it is not a supplier but a receiver.
+    // «agent-1 → agent-2» makes agent-1 a supplier of agent-2 only, not the reverse.
     expect(suppliersOf(CONFIG, "agent-2").map((agent) => agent.id)).toEqual(["agent-1"]);
   });
 
@@ -56,7 +56,7 @@ describe("suppliersOf", () => {
   });
 
   it("drops a line that comes from an agent the project no longer has", () => {
-    // A line left behind must not put a hole into the list — the answer is agents, and every one of them stands.
+    // A dangling line leaves no hole in the list.
     const config = aConfig({
       agents: [SEEKER, TELLER],
       links: [

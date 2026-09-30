@@ -10,7 +10,7 @@ import {
 } from "../constants";
 import type { RefusedPick } from "../../../interfaces";
 
-/** Why one pick is not attached, in a few words: «big-repo/» — завелика, не прикріплено. */
+/** Why one pick is not attached: «big-repo/» — завелика, не прикріплено. */
 export function refusedPickNote({ name, kind, reason, code, message }: RefusedPick): string {
   const said = `${ATTACH_REFUSAL_QUOTE_OPEN}${attachedName(name, kind)}${ATTACH_REFUSAL_QUOTE_CLOSE}`;
 

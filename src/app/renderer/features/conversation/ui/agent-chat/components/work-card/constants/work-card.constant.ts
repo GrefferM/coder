@@ -1,6 +1,6 @@
 import { BORDER_AT_REST_COLOR, FIRST_LEVEL_TEXT_COLOR } from "../../../../../../../constants";
 
-/** Card under a streaming answer — dots in the agent's colour and a bar; removed when complete. */
+/** Card under a streaming answer: dots in the agent's colour and a bar; removed when complete. */
 export const WORK_CARD_BACKGROUND_COLOR = "#171b26";
 export const WORK_CARD_BORDER_COLOR = BORDER_AT_REST_COLOR;
 export const WORK_CARD_BORDER_RADIUS_PX = 10;

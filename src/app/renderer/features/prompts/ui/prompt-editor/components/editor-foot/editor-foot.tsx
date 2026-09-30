@@ -14,7 +14,7 @@ import {
 } from "../../constants";
 import type { EditorFootProps } from "./interfaces";
 
-/** The editor's foot — whom this prompt is on, and the two acts that end the editing. */
+/** The editor's foot: the agents on this prompt, and the two acts that end editing. */
 export function EditorFoot({ agentNames, onCancel, onSave }: EditorFootProps) {
   const [agentOne, agentFew, agentMany] = PROMPT_EDITOR_AGENT_FORMS;
 

@@ -6,7 +6,7 @@ import {
   SECOND_LEVEL_TEXT_COLOR,
 } from "../../../constants";
 
-/** Search placeholder and the matched/total separator, written "4/7". */
+/** Search placeholder and the matched/total separator, as "4/7". */
 export const PICKER_SEARCH_PLACEHOLDER = "Пошук";
 export const PICKER_MATCH_SEPARATOR = "/";
 
@@ -24,7 +24,7 @@ export const PICKER_VALUE_COLOR = FIRST_LEVEL_TEXT_COLOR;
 /** Open list max height before it scrolls: eight rows. */
 export const PICKER_LIST_MAX_HEIGHT_PX = 300;
 
-/** List inset so a chosen row's backdrop doesn't touch the edges. */
+/** List inset, so a chosen row's backdrop does not touch the edges. */
 export const PICKER_LIST_PADDING_PX = 6;
 
 /** The search row of the open list. */

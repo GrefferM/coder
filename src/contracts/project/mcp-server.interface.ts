@@ -1,10 +1,8 @@
 import type { McpSignIn } from "./mcp-sign-in.type";
 
 /**
- * One MCP server the project declares. The file holds only how to reach it: everything that moves — the state of
- * the connection, the hour of the last answer, the list of functions — is live and belongs to nobody's file.
- *
- * A token is never here either: it goes to this machine's keychain, and the file names only the way in.
+ * One MCP server the project declares. The file holds only how to reach it; connection state, last answer and function
+ * list are live. A token is never here: it goes to the machine's keychain.
  */
 export interface ProjectMcpServer {
   id: string;
@@ -18,8 +16,7 @@ export interface ProjectMcpServer {
   /** How a remote server is signed in to. */
   signIn: McpSignIn;
   /**
-   * The environment variables a local server is started with, **by name only** — the file goes into a repository,
-   * and a key in it would be a key in a pull request. Each value stays in this machine's keychain, and the process
+   * Environment variable names a local server starts with, names only; values stay in the machine's keychain. The process
    * runs with a filtered environment plus these.
    */
   env: string[];

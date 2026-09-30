@@ -2,8 +2,8 @@ import { levelsOf } from "../../../../../contracts";
 import type { ChatMessage } from "../interfaces";
 
 /**
- * Which step of the walk each turn of the stream stands on. The rule is `levelsOf`'s; what belongs here is which
- * cards are turns at all — the app's own sentences are not — and that a turn is fed by the steps it names.
+ * The step of the walk each stream turn stands on; the rule is `levelsOf`'s, this only picks which cards are turns and
+ * which steps feed them.
  */
 export function chatLevels(messages: ChatMessage[]): Record<string, number> {
   const said = messages.filter((message) => message.from === "agent");

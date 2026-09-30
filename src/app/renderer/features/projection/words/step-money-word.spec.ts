@@ -17,7 +17,7 @@ describe("stepMoneyWord", () => {
   });
 
   it("says «локально» for a price somebody wrote as nothing, since that is a cost and not a silence", () => {
-    // «ЛОКАЛЬНО» is a known price of nothing; the dash is a price nobody wrote, and they are not one word.
+    // «ЛОКАЛЬНО» is a known zero price; the dash is an unwritten price.
     expect(
       stepMoneyWord(
         aStep({
@@ -53,7 +53,7 @@ describe("stepMoneyWord", () => {
   });
 
   it("writes a true nought for a turn that never went out, whatever its prices were", () => {
-    // Nothing was spent because there was nothing to spend it on — the dash would call that unknown.
+    // A turn that never went out spent a known nothing, not an unknown.
     expect(
       stepMoneyWord(
         aStep({

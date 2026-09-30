@@ -9,7 +9,7 @@ export interface PromptSection {
   editedPromptAgentNames: string[];
   form: PromptFormValues | null;
   wasName: string | null;
-  /** The name rule, over prompts: the library already has one by this name, so the write is refused. */
+  /** The library already has a prompt by this name, so the write is refused. */
   isNameTaken: boolean;
   isDirty: boolean;
   unsaved: UnsavedWork | null;

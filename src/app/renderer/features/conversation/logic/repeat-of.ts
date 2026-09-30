@@ -3,8 +3,8 @@ import type { WholeRun } from "../../record";
 import type { WalkEvent } from "../interfaces";
 
 /**
- * The walk a repeat picks up, read out of the record by the question's id: every turn that did not answer, and
- * work that arrived at a point and was never taken up. A question the record does not hold picks up nothing.
+ * The walk a repeat picks up from the record by question id: every turn that did not answer, and work that reached a
+ * point and was never taken up; nothing for an unknown question.
  */
 export function repeatOf(
   run: WholeRun,
@@ -12,7 +12,7 @@ export function repeatOf(
   notSentTo: string | null,
   runKey: string,
 ): Extract<WalkEvent, { kind: "repeated" }> | null {
-  // The question the row stood under, by the id the card carries.
+  // The question the row stood under, by the card's id.
   const stood = run.questions.find((question) => question.id === questionId) ?? null;
 
   if (stood === null) {
@@ -23,8 +23,7 @@ export function repeatOf(
     kind: "repeated",
     left: runUnfinished(run, questionId),
     walk: [...run.walk].sort((one, other) => one.place - other.place),
-    // A repeat asks the same agent the question stood before, and the record knows which — the
-    // flow's first agent is a different fact, and a question handed on later never belonged to them.
+    // A repeat asks the agent the question originally stood before, not the flow's first agent.
     startAgentId: stood.askedAgentId,
     runKey,
     runId: run.id,

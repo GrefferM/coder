@@ -1,6 +1,6 @@
 import type { LiveCall } from "../../../interfaces";
 
-/** A turn's calls in the order they went out; a call is said twice, the second word replacing the first. */
+/** A turn's calls in the order they went out; a call reported twice is replaced by its second report. */
 export function standingCalls(standing: LiveCall[], said: LiveCall): LiveCall[] {
   const at = standing.findIndex((one) => one.id === said.id);
 

@@ -56,7 +56,7 @@ describe("askedCards", () => {
   });
 
   it("gives one card to every line the work came by, each with its own id", () => {
-    // A converging point is given what every supplier said, and the cards keep the order of the lines.
+    // A converging point gets what every supplier said, cards in line order.
     const cards = askedCards(
       said({
         incoming: [work("editor", "Готово"), work("linter", "Чисто")],
@@ -68,7 +68,7 @@ describe("askedCards", () => {
   });
 
   it("says nothing again for a repeat: those words already stand in the stream", () => {
-    // The repeat picks the walk up where it stopped, right under the words it was given.
+    // A repeat resumes right under the words it was given.
     expect(
       askedCards(
         said({

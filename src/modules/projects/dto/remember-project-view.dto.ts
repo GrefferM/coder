@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-/** Where this machine is looking in one project; `view` is the renderer's own note and is kept unopened. */
+/** Where this machine is looking in a project; `view` is the renderer's own note, kept opaque. */
 export class RememberProjectViewDto {
   @IsString()
   @IsNotEmpty()

@@ -26,7 +26,7 @@ describe("foundFunctions", () => {
   });
 
   it("finds by the server's own words too, because a person searches the sentence they know", () => {
-    // The search is over one server's functions, and the name is what a person does not know yet.
+    // Searches one server's functions by name and by description.
     expect(foundFunctions(ROWS, "гілку").map((row) => row.name)).toEqual(["pulls.create"]);
   });
 

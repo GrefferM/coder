@@ -93,7 +93,7 @@ describe("toolChoices", () => {
   });
 
   it("gives a server's function a handle of the server and the name together", () => {
-    // The handle is the grant's own, so a row and a grant the agent holds are compared by one word.
+    // A choice's key equals the grant's own handle.
     const [choice] = toolChoices([], [aServer()], {
       [SERVER_ID]: aLook(["pulls.create"]),
     });
@@ -134,7 +134,7 @@ describe("toolChoices", () => {
   });
 
   it("offers nothing from a server that did not answer, rather than what it handed over last time", () => {
-    // A tick on a function nobody can call would be a promise the turn cannot keep.
+    // Nothing is offered from a server that gave no functions.
     expect(toolChoices([], [aServer()], {})).toEqual([]);
   });
 

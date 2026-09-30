@@ -1,7 +1,7 @@
 import { BORDER_AT_REST_COLOR, FIRST_LEVEL_TEXT_COLOR, SECOND_LEVEL_TEXT_COLOR } from "../../../../../constants";
 import { MODEL_ANSWER_CEILING_LEAST, MODEL_CONTEXT_CEILING_LEAST } from "../../../../../../../contracts";
 
-/** Catalogue layout — full-height list, one action in the footer. */
+/** Catalogue layout: full-height list, one action in the footer. */
 export const MODELS_PANEL_PADDING_PX = 14;
 export const MODELS_PANEL_GAP_PX = 10;
 export const MODELS_PANEL_FOOTER_BORDER_COLOR = "#1c202c";
@@ -43,12 +43,12 @@ export const MODELS_PANEL_CEILING_NOTE =
   "Довжина тексту, що йде в модель за раз, у символах. Рахуємо ми й до ходу: що не влазить, те не починається.";
 export const MODELS_PANEL_CEILING_NOTE_NEW = MODELS_PANEL_CEILING_NOTE;
 
-/** The other end of the same model, in the unit the provider itself counts. */
+/** The other end of the same model, in the unit the provider counts. */
 export const MODELS_PANEL_ANSWER_CEILING_NOTE =
   "Максимум токенів, які модель згенерує за один хід. Це число йде провайдерові як є — рахує й обриває він.";
 /**
- * What the field says instead of its own note while the number under it cannot stand. The floor is read off the
- * contract rather than written here, so the sentence cannot promise one number while the file refuses by another.
+ * Replaces the field's note while the number cannot stand; the floor is read from the contract so the sentence matches
+ * what the file refuses.
  */
 export const MODELS_PANEL_CEILING_WRONG_NOTE = `Найменше ${MODEL_CONTEXT_CEILING_LEAST}: стеля в нуль — це модель, якій нічого не надіслати.`;
 export const MODELS_PANEL_ANSWER_CEILING_WRONG_NOTE = `Найменше ${MODEL_ANSWER_CEILING_LEAST}: стеля в нуль — це модель, якій нічого не сказати.`;
@@ -64,7 +64,7 @@ export const MODELS_PANEL_CANCEL_LABEL = "Скасувати";
 /** The provider is known but no longer holds the model. */
 export const NOT_INSTALLED_SUFFIX = " · немає на машині";
 
-/** The name is sent verbatim, and each provider spells it differently. */
+/** The name is sent verbatim; each provider spells it differently. */
 export const MODEL_NAME_EXAMPLES: Record<string, string> = {
   anthropic: "claude-sonnet-4-5",
   openai: "gpt-5.1-codex",
@@ -73,8 +73,8 @@ export const MODEL_NAME_EXAMPLES: Record<string, string> = {
 };
 
 /**
- * Where the name is not what the provider is asked by, the note says what it is instead. A RunPod endpoint
- * serves one model and the request never names it: the title is the person's own word, for the eye alone.
+ * Notes for providers where the name is not what the request is keyed by: a RunPod endpoint serves one model and never
+ * names it, so the title is for the eye alone.
  */
 export const MODEL_NAME_NOTES: Record<string, string> = {
   runpod: "Ім'я для ока: точка обслуговує одну модель, і запит її не називає",

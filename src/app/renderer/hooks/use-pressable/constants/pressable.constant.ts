@@ -1,2 +1,2 @@
-/** The two keys a button answers, and so does anything drawn as one. */
+/** The keys a button answers. */
 export const PRESSABLE_KEYS = ["Enter", " "];

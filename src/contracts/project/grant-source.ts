@@ -6,18 +6,15 @@ import type { ToolGrant } from "./tool-grant.type";
 /** What a grant points at: the project's own command, or one function of a server. */
 export interface GrantSource {
   kind: ToolGrant["source"];
-  /** The command's own id, or the server's — never the function's, which the server names and no id of ours holds. */
+  /** The command's id, or the server's; never the function's, which the server names. */
   id: string;
-  /** The name the server gave the function; nothing for a command, which is one whole thing. */
+  /** The name the server gave the function; null for a command. */
   functionName: string | null;
 }
 
 /**
- * The source a grant points at, in one shape whichever kind it is.
- *
- * A grant is a union told apart by `source` — a command names a `commandId`, a server's function a `serverId`
- * and a `functionName`. Every caller asks that question here rather than reading the fields itself, so a third
- * kind of grant is answered for in one place and not in every place that ever asked.
+ * The source a grant points at, in one shape for either kind. Callers use this rather than reading `commandId`,
+ * `serverId` and `functionName` themselves.
  */
 export function sourceOf(grant: ToolGrant): GrantSource {
   if (isCommandGrant(grant)) {
@@ -44,12 +41,12 @@ export function sourceOf(grant: ToolGrant): GrantSource {
   };
 }
 
-/** Whether this grant points at that command or that server, by the source's own id. */
+/** Whether the grant points at that command or server, by source id. */
 export function pointsAt(grant: ToolGrant, sourceId: string): boolean {
   return sourceOf(grant).id === sourceId;
 }
 
-/** Whether this grant is that server's function: the server and the name together, since two servers may share one name. */
+/** Whether the grant is that server's function: server and name together, since two servers may share a name. */
 export function namesFunction(grant: ToolGrant, serverId: string, functionName: string): boolean {
   const source = sourceOf(grant);
 
@@ -57,11 +54,8 @@ export function namesFunction(grant: ToolGrant, serverId: string, functionName: 
 }
 
 /**
- * What makes a grant the same grant: a command by its id, a server's function by the server and the name
- * together. The same function name on two servers is two different things, and an agent may hold both.
- *
- * It is the **source's** handle and not the grant's, because that is what it answers about — so a row of a
- * picker, which is a source and no grant at all, is compared against a held grant by the one same word.
+ * Identity of a grant's source: a command by id, a server function by server and name together. A picker row (a source,
+ * not a grant) is compared to a held grant by this handle.
  */
 export function handleOf(source: GrantSource): string {
   return [source.kind, source.id, source.functionName].filter((part) => part !== null).join(GRANT_HANDLE_SEPARATOR);

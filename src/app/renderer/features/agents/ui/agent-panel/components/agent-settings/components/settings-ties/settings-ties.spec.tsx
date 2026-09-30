@@ -61,7 +61,7 @@ describe("SettingsTies", () => {
   });
 
   it("shows a broken tie under the field it belongs to, and only where it is broken", () => {
-    // The tie stands where the person would go to mend it, not in a note somewhere else.
+    // The tie shows on the field where it is mended, not in a separate note.
     const { rerender } = render(<SettingsTies {...props()} />);
 
     expect(screen.queryByText(LOST_MODEL_NOTE)).not.toBeInTheDocument();
@@ -91,7 +91,7 @@ describe("SettingsTies", () => {
   });
 
   it("says under each field what it was, where the draft has moved it", () => {
-    // Each of the three carries its own «було», and an untouched one says nothing.
+    // Each of the three shows its own «було»; an untouched one shows none.
     render(
       <SettingsTies
         {...props({

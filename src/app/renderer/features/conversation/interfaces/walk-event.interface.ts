@@ -8,24 +8,21 @@ import type { TurnAnswer } from "./turn-answer.interface";
 import type { RunUnfinished, WholeStep } from "../../record";
 
 /**
- * Everything that pushes a walk. Each is a fact that has already happened — a question put, an answer back,
- * a wait let go — and the machine says what the walk becomes because of it.
+ * Everything that pushes a walk: a fact that has already happened (a question put, an answer back, a wait let go), from
+ * which the machine works out what the walk becomes.
  */
 export type WalkEvent =
-  /**
-   * The person put a question to an agent. One walk begins on it, and the question is written
-   * down the moment it is asked.
-   */
+  /** The person put a question to an agent; one walk begins and the question is written when asked. */
   | {
       kind: "put";
       agent: Agent;
       text: string;
-      /** The files and folders attached to the question; their packed text goes into the turn's input. */
+      /** Files and folders attached to the question; their packed text goes into the turn's input. */
       attached: PackedAttachment[];
-      /** The steps a question picked up out of the record grew from; the person's own names none. */
+      /** The steps a question resumed from the record grew from; the person's own names none. */
       fedFrom: string[];
       isAgain: boolean;
-      /** The question's, the walk's and the turn's own names and the hour, minted by the adapter: the machine invents none. */
+      /** The question's, walk's and turn's ids and the hour, minted by the adapter, not the machine. */
       questionId: string;
       runKey: string;
       askedAt: number;
@@ -40,7 +37,7 @@ export type WalkEvent =
       viaLinkIds: string[];
       runKey: string;
       isAgain: boolean;
-      /** The turn's own name and hour, minted by the adapter: the machine invents neither. */
+      /** The turn's id and hour, minted by the adapter. */
       turnId: string;
       startedAt: number;
     }
@@ -50,18 +47,18 @@ export type WalkEvent =
       agent: Agent;
       turnId: string;
       runKey: string;
-      /** What this turn was given, so the card names the steps that fed it and the record writes them down. */
+      /** What this turn was given, so the card names the steps that fed it and the record writes them. */
       incoming: IncomingWork[];
       startAgentId: string;
-      /** The words the turn was put with, as the card and the record take them. */
+      /** The words the turn was put with, as the card and record take them. */
       asked: string;
       answer: TurnAnswer;
-      /** The card's own name, minted by the adapter: the machine invents none. */
+      /** The card's id, minted by the adapter. */
       saidId: string;
       startedAt: number;
       endedAt: number;
     }
-  /** The answer took its lines out; a link not taken is here too, with its word for why. */
+  /** The answer took its lines out; a link not taken is included with its reason. */
   | {
       kind: "handedOn";
       from: Agent;
@@ -72,7 +69,7 @@ export type WalkEvent =
       runKey: string;
       out: LinkOut[];
     }
-  /** One supplier of a converging point settled — with work, or with nothing to give. */
+  /** One supplier of a converging point settled, with work or with nothing. */
   | {
       kind: "settled";
       to: Agent;
@@ -83,22 +80,22 @@ export type WalkEvent =
       via: string | null;
       runKey: string;
     }
-  /** A point stopped waiting, so the waits standing behind it are let go too. */
+  /** A point stopped waiting, so the waits behind it are let go too. */
   | { kind: "released"; fromId: string; startAgentId: string; runKey: string }
   /**
-   * A walk broke or was stopped by hand; no turn of it begins after this. Nothing at all for the runKey is
-   * the person's own «ЗУПИНИТИ»: every walk of this stream, except one already put away — it was let go, not stopped.
+   * A walk broke or was stopped by hand; no turn of it begins after. A null `runKey` is the person's «ЗУПИНИТИ»: every
+   * walk of this stream except one already put away.
    */
   | { kind: "stopped"; runKey: string | null }
-  /** The row this walk's question opened; every word of the walk is written into it. */
+  /** The row this walk's question opened; all the walk's words are written into it. */
   | { kind: "rowOpened"; runKey: string; runId: string }
-  /** The stream was emptied — its walks run on into the record and draw nothing. */
+  /** The stream was emptied; its walks run on into the record and draw nothing. */
   | { kind: "putAway"; stream: string }
-  /** «СПИТАТИ ЩЕ РАЗ» was pressed under one turn — the record is read to find what to pick up. */
+  /** «СПИТАТИ ЩЕ РАЗ» was pressed under one turn; the record is read to find what to resume. */
   | { kind: "sayAgain"; said: ChatMessage }
   /**
-   * One question's walk is picked up where it broke, as the record read it back: the turns to run again
-   * word for word, and the work that arrived and was never taken up.
+   * One question's walk resumed where it broke, as read back from the record: turns to rerun verbatim, and arrived work
+   * never taken up.
    */
   | {
       kind: "repeated";
@@ -106,13 +103,13 @@ export type WalkEvent =
       walk: WholeStep[];
       startAgentId: string;
       runKey: string;
-      /** The row and the question this repeat writes on into; the repeat opens neither. */
+      /** The row and question this repeat writes on into; it opens neither. */
       runId: string;
       questionId: string;
-      /** The repeat is no question of the person's, so it stands in the block of the one it picks up. */
+      /** The repeat is not a question of the person's, so it stands in the block of the one it resumes. */
       askedAt: number;
-      /** The agent a question that never went was aimed at, since the record holds no step for it. */
+      /** The agent a never-sent question was aimed at; the record holds no step for it. */
       notSentTo: string | null;
-      /** That question's own words, for the one case the record has no step to run again. */
+      /** That question's words, for the one case where the record has no step to rerun. */
       asked: string;
     };

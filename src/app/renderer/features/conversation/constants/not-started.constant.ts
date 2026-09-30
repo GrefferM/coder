@@ -16,8 +16,8 @@ import type { MachineWall } from "../interfaces";
 import type { NotStartedReason } from "../../../interfaces";
 
 /**
- * The refusal code the machine sends, and the wall of the family it is. One row per code: the codes are the
- * boundary's and the walls are ours, and this is the one place the two are tied together.
+ * A machine refusal code and the wall of the family it belongs to; the one place codes (the boundary's) and walls
+ * (ours) are tied.
  */
 export const MACHINE_WALLS: Record<string, MachineWall> = {
   [LLM_NO_KEY]: "noKey",
@@ -26,10 +26,10 @@ export const MACHINE_WALLS: Record<string, MachineWall> = {
   [LLM_PROVIDER_NOT_BUILT]: "noProvider",
 };
 
-/** An address belongs to the provider, so this word is a card of its own and never a mark on a sphere. */
+/** The address belongs to the provider, so this is a card of its own, never a mark on a sphere. */
 export const NO_ADDRESS_CARD_LABEL = "НЕМА АДРЕСИ";
 
-/** The sentence under it — which model it is and which of its fields is empty. */
+/** Names the model and which of its fields is empty. */
 export const NOT_FILLED_NOTE_PREFIX = "У моделі ";
 export const NOT_FILLED_AGENT_NOTE_PREFIX = "В агента ";
 
@@ -38,10 +38,10 @@ export const LOST_FUNCTION_NOTE_PREFIX = "В агента ";
 export const LOST_FUNCTION_NOTE_SUFFIX =
   " лишилась видача на функцію, якої в проєкті немає. Приберіть видачу або оголосіть команду наново, і агент піде.";
 
-/** The sentence for a prompt the agent names and the project has lost. */
+/** For a prompt the agent names and the project has lost. */
 export const LOST_PROMPT_NOTE_PREFIX = "В агента ";
 
-/** The sentence where the provider's protocol carries no functions and the agent holds grants all the same. */
+/** For a provider protocol without functions while the agent holds grants. */
 export const NO_TOOLS_NOTE_PREFIX = "Провайдер ";
 export const NO_TOOLS_NOTE_MIDDLE = " не вміє викликати функції, а в агента ";
 export const NO_TOOLS_NOTE_SUFFIX = " є видачі. Зніміть їх або оберіть модель іншого провайдера, і агент піде.";
@@ -50,14 +50,11 @@ export const LOST_PROMPT_NOTE_SUFFIX =
 export const NOT_FILLED_NOTE_MIDDLE = " не заповнено поле «";
 export const NOT_FILLED_NOTE_SUFFIX = "». Заповніть його, і агент піде.";
 
-/** One heading for all of them — the turn did not begin, so there is nothing to look at. */
+/** One heading for every card. */
 export const NOT_STARTED_TITLE = "Хід не почався";
 export const NOT_STARTED_FREE_LABEL = "Нічого не надіслано";
 
-/**
- * The family, one row per reason — the word the sphere gives it, the one act it offers, and the word the
- * record keeps for a step that ended there. The union counts the rows; nothing counts them in prose.
- */
+/** Per reason: the sphere's word, the one act offered, and the word the record keeps for a step that ended there. */
 export const NOT_STARTED_ENDS: Record<NotStartedReason, NotStartedEnd> = {
   noKey: {
     label: TROUBLE_NO_KEY_LABEL,
@@ -71,13 +68,12 @@ export const NOT_STARTED_ENDS: Record<NotStartedReason, NotStartedEnd> = {
     act: "settings",
     state: "noModel",
   },
-  // The address and the hour it was checked stand in the card and say where to look, so the act goes
-  // there rather than pressing the turn again — the one reason that passes by itself is not one to press through.
+  // The act goes to the address and check hour shown in the card, not to pressing the turn again.
   silent: {
     label: STATE_PROVIDER_SILENT_LABEL,
     actLabel: "ВІДКРИТИ ПРОВАЙДЕРА",
     act: "providers",
-    // A provider that never answered is not a model that answered with nothing, and the record parts them by word.
+    // A provider that never answered differs from a model that answered with nothing; the record parts them by word.
     state: "unreachable",
   },
   noProvider: {
@@ -92,43 +88,43 @@ export const NOT_STARTED_ENDS: Record<NotStartedReason, NotStartedEnd> = {
     act: "providers",
     state: "noAddress",
   },
-  // A field nobody wrote is mended in the form, not in the connection.
+  // A field nobody wrote is fixed in the form, not in the connection.
   notFilled: {
     label: NOT_FILLED_LABEL,
     actLabel: OVER_CEILING_ACT_LABEL,
     act: "model",
     state: "notFilled",
   },
-  // The same word for the agent's own two numbers, mended one tab away rather than in the catalogue.
+  // The same word for the agent's own two numbers, fixed in another tab.
   notFilledAgent: {
     label: NOT_FILLED_LABEL,
     actLabel: "ВІДКРИТИ НАЛАШТУВАННЯ",
     act: "settings",
     state: "notFilledAgent",
   },
-  // A grant on a command the project has lost — the act leads to the grants, where the tie hangs.
+  // A grant on a command the project has lost; the act leads to the grants.
   lostFunction: {
     label: TROUBLE_LOST_FUNCTION_LABEL,
     actLabel: "ВІДКРИТИ ВИДАЧУ",
     act: "grants",
     state: "lostFunction",
   },
-  // The provider cannot carry a function at all, and the agent holds grants: the act leads to the grants, which
-  // are the person's to take off — the model is theirs to change instead, and both live a tab away.
+  // The provider cannot carry functions and the agent holds grants; the act leads to the grants, which the person can
+  // remove.
   noTools: {
     label: TROUBLE_NO_TOOLS_LABEL,
     actLabel: "ВІДКРИТИ ВИДАЧУ",
     act: "grants",
     state: "noTools",
   },
-  // The agent names a prompt the project has lost — the act leads to the field that still names it.
+  // The agent names a prompt the project has lost; the act leads to the field that names it.
   lostPrompt: {
     label: TROUBLE_LOST_PROMPT_LABEL,
     actLabel: "ВІДКРИТИ ПРОМПТ",
     act: "prompt",
     state: "lostPrompt",
   },
-  // The one reason where there is something to say to — and too much of it said.
+  // The one reason with something to say to, and too much of it said.
   tooLong: {
     label: OVER_CEILING_LABEL,
     actLabel: OVER_CEILING_ACT_LABEL,

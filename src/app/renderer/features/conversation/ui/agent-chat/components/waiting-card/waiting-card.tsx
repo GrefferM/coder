@@ -45,7 +45,7 @@ import {
 import { Dot, Mark } from "../../../../../../components";
 import type { WaitingCardProps } from "./interfaces";
 
-/** Over the chat of an agent holding work — «Відповіли 1 / 2», a row per supplier, what ends the wait. */
+/** Over the chat of an agent holding work: «Відповіли 1 / 2», a row per supplier, what ends the wait. */
 export function WaitingCard({ waiting, color, agents }: WaitingCardProps) {
   const nameOf = (agentId: string) => agents.find((agent) => agent.id === agentId)?.name ?? "";
   const answered = waiting.suppliers.filter((supplier) => supplier.state === "answered").length;
@@ -115,7 +115,7 @@ export function WaitingCard({ waiting, color, agents }: WaitingCardProps) {
                 <path d={WAITING_CARD_TICK_PATH} />
               </svg>
             ) : supplier.state === "working" ? (
-              // What has not arrived is drawn dashed, as everything absent is.
+              // What has not arrived is dashed.
               <span
                 style={{
                   width: WAITING_CARD_MARK_SIZE_PX,

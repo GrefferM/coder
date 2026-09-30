@@ -1,6 +1,6 @@
 import { MONTHS_SPOKEN, TODAY_SPOKEN } from "./constants";
 
-/** A day inside a sentence — «від сьогоднішнього до 24 липня»; the mono captions use `dayLabel`. */
+/** A day inside a sentence, «від сьогоднішнього до 24 липня»; the mono captions use `dayLabel`. */
 export function daySpoken(day: Date, today: Date): string {
   const isToday =
     day.getFullYear() === today.getFullYear() &&

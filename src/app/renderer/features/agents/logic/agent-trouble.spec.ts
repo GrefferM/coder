@@ -86,7 +86,7 @@ describe("agentTrouble", () => {
   });
 
   it("marks an agent whose provider asks for an address of its own and has none", () => {
-    // RunPod's endpoint carries its id in the address: the key alone leaves the turn nowhere to knock.
+    // RunPod's endpoint carries its id in the address: the key alone leaves no address.
     expect(
       agentTrouble(AGENT, CONFIG, [
         {
@@ -156,7 +156,7 @@ describe("agentTrouble", () => {
   });
 
   it("marks an agent holding a grant on a server the project no longer names", () => {
-    // The sphere says it in the one word every broken grant takes, whichever way it broke.
+    // Every broken grant gets the same word.
     expect(
       agentTrouble(
         <Agent>{
@@ -180,7 +180,7 @@ describe("agentTrouble", () => {
   });
 
   it("marks nothing while the server has not answered, and marks it once it has", () => {
-    // A server still starting knows no functions this moment: «unknown» is not «gone», and the sphere stays whole.
+    // A server still starting has unknown functions, not gone ones: no trouble.
     const server = {
       id: "server-1",
       name: "playwright-mcp",
@@ -233,7 +233,7 @@ describe("agentTrouble", () => {
   });
 
   it("marks an agent whose model lacks a number, and names the field that is empty", () => {
-    // The mark points at the row the person has to fill, not just at the model.
+    // The mark points at the row to fill, not just at the model.
     expect(
       agentTrouble(
         AGENT,

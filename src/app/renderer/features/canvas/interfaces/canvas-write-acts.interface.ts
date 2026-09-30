@@ -1,4 +1,4 @@
-/** What the notes along the bottom offer: taking a write back, and the two ways out of one that failed. */
+/** The bottom notes' offers: take a write back, and the two ways out of a failed one. */
 export interface CanvasWriteActs {
   onUndo: (offerId: string) => void;
   onRetry: () => Promise<void>;

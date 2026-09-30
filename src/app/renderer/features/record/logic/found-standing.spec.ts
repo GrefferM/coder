@@ -29,7 +29,7 @@ function hit(patch: Partial<RunHit> = {}): RunHit {
 
 describe("foundStanding", () => {
   it("names the agent whose message this is, as they are called today", () => {
-    // The record's own name is «Тезар», and the list must not wear it after a rename.
+    // The record's name is «Тезар»; the list does not show it after a rename.
     expect(foundStanding(hit(), TODAY)).toEqual({
       name: "Тестер",
       color: "#6fd3d8",
@@ -53,7 +53,7 @@ describe("foundStanding", () => {
   });
 
   it("signs a place standing in the question as the person's own, the way the stream signs it", () => {
-    // The question is the person speaking, and they are signed by no id at all.
+    // The question is the person speaking, signed by no id.
     expect(
       foundStanding(
         hit({

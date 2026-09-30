@@ -3,14 +3,12 @@ import type { Agent, McpLook } from "../../../interfaces";
 import type { FunctionRow } from "../interfaces";
 
 /**
- * The lines of a server's page: what it hands over **now**, by name, and nothing else.
+ * The lines of a server's page: what it hands over now, by name.
  *
- * A function an agent was granted and the server no longer names is not among them: the catalogue says what a
- * server gives, nothing on this page mends a grant, and the same trouble is told among the agent's broken
- * grants. Standing here too, it would make the head's count and the list's disagree.
+ * A granted function the server no longer names is left out; that trouble shows among the agent's broken grants.
  */
 export function functionRows(serverId: string, look: McpLook | null, agents: Agent[]): FunctionRow[] {
-  // A server that has not answered hands nothing over, and nothing of its is lost: the card does not open at all.
+  // A server that has not answered hands nothing over, and its card does not open.
   if (look === null || !look.isUp) {
     return [];
   }
@@ -26,7 +24,7 @@ export function functionRows(serverId: string, look: McpLook | null, agents: Age
     }));
 }
 
-/** «2 АГ.» counts **agents**, so an agent granted one function twice is still one agent. */
+/** Counts agents, so an agent granted one function twice is one. */
 function heldNames(serverId: string, agents: Agent[]): Map<string, Set<string>> {
   const held = new Map<string, Set<string>>();
 

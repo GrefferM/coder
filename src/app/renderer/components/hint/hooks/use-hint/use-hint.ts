@@ -4,20 +4,12 @@ import { HINT_DELAY_MS, HINT_NEIGHBOUR_MS } from "../../constants";
 import type { HintStanding } from "./interfaces";
 import { createElement } from "react";
 
-/**
- * When the last hint went. Moving from one mark to its neighbour inside 0,3 s shows the next at once: the
- * hand is reading a row, not arriving at it. It is one number for the whole app because that is what it is about
- * — the hand, which is only ever in one place.
- */
+/** When the last hint went; app-wide, since the hand is in one place. */
 let wentAt = 0;
 
 /**
- * The app's one hint. It is built on the interaction the control already has, so a control
- * gets a hint by saying what it says, not by taking another set of handlers that would collide with its own.
- *
- * The waiting: 0,4 s under the cursor, none at all from the keyboard — a hand that came by the
- * keyboard has already asked. The first movement of the canvas puts it away, and it does not come back until the
- * cursor leaves and returns: while dragging, what is under the cursor is the canvas and not the mark.
+ * The app's one hint, built on the control's interaction. Waits 0,4 s under the cursor, not at all from the keyboard;
+ * the canvas's first movement puts it away until the cursor leaves and returns.
  */
 export function useHint<Held extends HTMLElement>(
   text: string,
@@ -36,7 +28,7 @@ export function useHint<Held extends HTMLElement>(
       return;
     }
 
-    // The keyboard asks outright; the cursor is given its 0,4 s, unless it came from a neighbour.
+    // Keyboard focus, or arrival from a neighbour, shows it at once; otherwise the cursor waits its delay.
     if (isFocused || Date.now() - wentAt < HINT_NEIGHBOUR_MS) {
       setIsShown(true);
 
@@ -61,7 +53,7 @@ export function useHint<Held extends HTMLElement>(
 
     wentAt = Date.now();
 
-    // The first movement of the canvas puts it away — a drag, a zoom, a scroll are all that movement.
+    // Any canvas movement (drag, zoom, scroll) puts it away.
     const putAway = () => setWasPutAway(true);
 
     window.addEventListener("pointerdown", putAway);
@@ -76,10 +68,7 @@ export function useHint<Held extends HTMLElement>(
     };
   }, [isShown]);
 
-  /**
-   * The reading kind stands only where the line really is cut — «влізло цілим, підказки немає, бо
-   * дочитувати нічого». What is cut is a fact about the element and nobody else can tell it.
-   */
+  /** The reading kind shows only where the line is actually cut. */
   const isWorthIt = !isReading || (ref.current !== null && ref.current.scrollWidth > ref.current.clientWidth);
   const box = isShown && isWorthIt ? (ref.current?.getBoundingClientRect() ?? null) : null;
 

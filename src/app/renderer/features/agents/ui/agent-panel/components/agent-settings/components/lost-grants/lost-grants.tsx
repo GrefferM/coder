@@ -21,9 +21,8 @@ import {
 import type { LostGrantsProps } from "./interfaces";
 
 /**
- * Grants the project can no longer honour — one group after the working ones, struck
- * through and counted nowhere. Several reasons stand in that one group, each with its own sentence under its own
- * rows, and one act at the end takes the whole group away: two functions of one server are one act, not two.
+ * Grants the project can no longer honour: one struck-through group after the working ones, counted nowhere. Each
+ * reason has its own sentence under its rows; one act removes the whole group.
  */
 export function LostGrants({ groups, onRemove }: LostGrantsProps) {
   const count = groups.reduce((all, group) => all + group.rows.length, 0);
@@ -61,7 +60,7 @@ export function LostGrants({ groups, onRemove }: LostGrantsProps) {
                   {row.pinnedCount}
                 </Chip>
               )}
-              {/* Where the server still stands, the row says which one gave this function. */}
+              {/* Names the server that gave the function, where it still exists. */}
               {group.serverName !== null && (
                 <span
                   className="font-monospace flex-shrink-0"

@@ -33,9 +33,8 @@ import {
 import type { ServerFunctionsProps } from "./interfaces";
 
 /**
- * The opened card of a server — the search over what it hands over, and the list itself. The catalogue
- * **hands nothing out**: «2 АГ.» beside a function counts the agents holding it and is not a tick, because the
- * tick has one home and it is the agent's own tab.
+ * The opened card of a server: search over what it hands over, and the list. «2 АГ.» beside a function counts the
+ * agents holding it; the tick lives in the agent's own tab.
  */
 export function ServerFunctions({ rows }: ServerFunctionsProps) {
   const [typed, setTyped] = useState("");

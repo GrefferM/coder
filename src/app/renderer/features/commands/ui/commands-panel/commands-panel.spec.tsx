@@ -55,7 +55,7 @@ describe("CommandsPanel", () => {
   });
 
   it("lifts the one act into the middle where there is nothing to list", () => {
-    // An empty section is not a list with a footer — it is one thing to do.
+    // An empty section is one action, not a list with a footer.
     render(
       <CommandsPanel
         {...props({
@@ -70,8 +70,7 @@ describe("CommandsPanel", () => {
   });
 
   it("keeps every character a provider would refuse, rather than eating it behind the person", async () => {
-    // «набране лишається набраним» — a field that eats the character somebody typed loses what they
-    // meant and teaches them nothing; one that keeps it and says what is wrong teaches the rule once.
+    // A typed character is kept, and the field says what is wrong.
     const onFormChange = vi.fn();
 
     render(
@@ -101,7 +100,7 @@ describe("CommandsPanel", () => {
 
     const { rerender } = render(<CommandsPanel {...opened} />);
 
-    // The form opened on a name that fits; this is the person typing a name that does not.
+    // The form opened on a valid name; the person then types an invalid one.
     rerender(
       <CommandsPanel
         {...opened}
@@ -115,12 +114,12 @@ describe("CommandsPanel", () => {
     await userEvent.click(screen.getByText(COMMANDS_PANEL_DECLARE_LABEL));
 
     expect(onSaveForm).not.toHaveBeenCalled();
-    // The line that taught the rule is the line that says it was broken: the same words, and no second sentence.
+    // The line that states the rule is the same line that says it was broken.
     expect(screen.getByText(COMMANDS_PANEL_NAME_FIELD_NOTE)).toBeInTheDocument();
   });
 
   it("is the form and nothing else while one stands open", () => {
-    // The form takes the list's own place, so a person is never editing beside a list.
+    // The form takes the list's place; never edited beside a list.
     render(
       <CommandsPanel
         {...props({

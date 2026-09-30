@@ -8,5 +8,5 @@ export const PROJECT_PART_DIRECTORIES = {
 
 export const PART_FILE_EXTENSION = ".yaml";
 
-/** Matches only files the app wrote (a bare UUID name); anything else in these folders is never deleted. */
+/** Matches only files the app wrote (bare UUID name); anything else is never deleted. */
 export const PART_FILE_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.yaml$/i;

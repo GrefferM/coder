@@ -156,7 +156,7 @@ export function ParameterForm({ parameter, run, onSubmit, onDraft, onCancel }: P
           }
         />
       </SettingRow>
-      {/* Named only where the trap is really set — an optional slot in quotes of its own. */}
+      {/* Named only for an optional slot in quotes of its own. */}
       {!held.isRequired && slotInQuotes(run, held.name) && (
         <span
           className="d-flex font-monospace text-uppercase"

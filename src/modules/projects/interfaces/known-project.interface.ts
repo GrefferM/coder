@@ -1,4 +1,4 @@
-/** One project in the machine's recent list; `exists` says whether the folder still holds a project. */
+/** A project in the recent list; `exists` tells whether the folder still holds a project. */
 export interface KnownProject {
   id: string;
   name: string;

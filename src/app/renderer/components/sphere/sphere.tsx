@@ -19,15 +19,10 @@ import { SphereLabel, SphereTrail, SphereWire, TroubleMark, TroublePill } from "
 import type { SphereProps } from "./interfaces";
 
 /**
- * One agent as a wireframe sphere; Hover rings it and brightens the model line, but not the glow.
+ * One agent as a wireframe sphere; hover rings it and brightens the model line, not the glow.
  *
- * Three levels of loudness hang under it — the name with its state dot at full brightness, the model
- * dimmer, and the trail dimmer still. A pill is kept for trouble, because trouble changes what the agent does,
- * while a prompt and a key only say what it is.
- *
- * The arc of mini-spheres is **not** here, though it stands over this drawing: it is its own targets,
- * and a button inside a button is not HTML at all. The canvas puts the two side by side — `AgentSphere` — and both
- * count their places from the same box.
+ * Three loudness levels: name with state dot, model, trail. A pill is kept for trouble. The arc of mini-spheres is
+ * `AgentSphere`'s, placed by the canvas from the same box.
  */
 export function Sphere({
   name,
@@ -118,7 +113,7 @@ export function Sphere({
           isDrawnSmall={isDrawnSmall}
           stateColor={stateColor}
         />
-        {/* The third line stands under the model and over everything a pill has to say. */}
+        {/* The third line, under the model and above any pill. */}
         {trail !== null && <SphereTrail hasPrompt={trail.hasPrompt} tools={trail.tools} />}
         {trouble !== null && <TroublePill label={trouble.label} isBreak={trouble.isBreak} />}
         {underLabel !== null && (

@@ -28,7 +28,7 @@ function aCall(functionName: string, callId = "call-1") {
 
 describe("McpCalls", () => {
   it("has nothing to say about a server nobody has called", () => {
-    // This is not «жодна функція не відповіла» — nothing was asked of it yet.
+    // Not «жодна функція не відповіла»: nothing was asked yet.
     const calls = new McpCalls();
 
     assert.deepEqual(calls.of(SERVER_ID), {
@@ -64,12 +64,12 @@ describe("McpCalls", () => {
     assert.equal(standing.failedInARow, 2);
     assert.equal(standing.hasWorked, false);
     assert.equal(standing.lastFailure?.functionName, "list_roots");
-    // The row shows the first line of the server's own words, so they are kept as the server said them.
+    // The server's own words are kept as said; the row shows their first line.
     assert.equal(standing.lastFailure?.said, "сторінки немає");
   });
 
   it("puts the count back to none as soon as one call works", () => {
-    // «будь-який вдалий скидає лічбу й смугу» — what failed before was about a page, not the server.
+    // «будь-який вдалий скидає лічбу й смугу»: earlier failures were about a page, not the server.
     const calls = new McpCalls();
 
     calls.noted(SERVER_ID, aCall("read_file"), wentWrong());
@@ -84,7 +84,7 @@ describe("McpCalls", () => {
   });
 
   it("remembers that a call has worked, even after the ones since it failed", () => {
-    // The two facts are not the same: «живий, але жодна функція не відповіла» is only ever said of the first.
+    // «живий, але жодна функція не відповіла» is said only of the first fact.
     const calls = new McpCalls();
 
     calls.noted(SERVER_ID, aCall("read_file"), worked());
@@ -106,7 +106,7 @@ describe("McpCalls", () => {
   });
 
   it("forgets everything about a server that was let go", () => {
-    // A new connection is a new chance, and «перезапуск сервера теж скидає».
+    // A new connection is a new chance: «перезапуск сервера теж скидає».
     const calls = new McpCalls();
 
     calls.noted(SERVER_ID, aCall("read_file"), wentWrong());

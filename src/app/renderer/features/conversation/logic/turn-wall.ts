@@ -6,9 +6,8 @@ import { overCeilingNote } from "../words";
 import type { TurnAnswer, TurnAsked, TurnToAsk } from "../interfaces";
 
 /**
- * Every wall a turn can meet before it is asked: the agent's own, read by `agentReadiness`, and then words over
- * the model's ceiling. The first wall met is the answer; where there is none, what the turn carries to the model
- * comes back instead.
+ * Every wall a turn can meet before it is asked: the agent's own (`agentReadiness`), then words over the model's
+ * ceiling. The first wall met is the answer; with none, what the turn carries to the model.
  */
 export function turnWall(turn: TurnToAsk): TurnAnswer | TurnAsked {
   const { catalogue, asked, stands } = turn;

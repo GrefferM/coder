@@ -7,7 +7,7 @@ describe("failureLine", () => {
   });
 
   it("stops where the server stops talking and starts sending a web page", () => {
-    // An address that is not a server answers with html, and the transport hands the whole page over word for word.
+    // An address that is not a server answers with html, which the transport hands over whole.
     expect(
       failureLine('Error: Streamable HTTP error: Error POSTing to endpoint: <html lang="uk-UA"><head><title>Oops'),
     ).toBe("Error: Streamable HTTP error: Error POSTing to endpoint:");

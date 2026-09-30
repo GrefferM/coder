@@ -10,7 +10,7 @@ import type { ProjectWrite } from "../../../project";
 import type { AgentWrites } from "./interfaces";
 import type { Point } from "../../../../utils/math";
 
-/** Every write the agents make to the project's file, over the project's one writer. */
+/** Every write agents make to the project file, through the one project writer. */
 export function useAgentWrites(project: OpenProject, write: ProjectWrite): AgentWrites {
   const { save, defer } = write;
 
@@ -46,7 +46,7 @@ export function useAgentWrites(project: OpenProject, write: ProjectWrite): Agent
     [project.config, save],
   );
 
-  /** Writes what the settings tab changed over the agent as it stands. */
+  /** Writes the settings tab's changes over the agent as stored. */
   const saveAgent = useCallback(
     async (agentId: string, patch: Partial<AgentDraft>) => {
       await save(
@@ -128,7 +128,7 @@ export function useAgentWrites(project: OpenProject, write: ProjectWrite): Agent
     [project.config, save],
   );
 
-  /** Where the sphere was released is where it stands, and that is data. */
+  /** The release point is saved as the sphere's position. */
   const moveAgent = useCallback(
     async (agentId: string, at: Point) =>
       save(
@@ -145,7 +145,7 @@ export function useAgentWrites(project: OpenProject, write: ProjectWrite): Agent
           ),
         },
         WRITE_AGENT_LABEL,
-        // A drop is not a save the person made: only its failure has anything to say.
+        // A drop is not an explicit save: only its failure is reported.
         true,
       ),
     [project.config, save],

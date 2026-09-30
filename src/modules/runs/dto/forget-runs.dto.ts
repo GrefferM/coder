@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-/** Every run of one project, taken by hand; the folder bounds it, the record holding other projects too. */
+/** Every run of one project, deleted by hand; bounded by the folder. */
 export class ForgetRunsDto {
   @IsString()
   @IsNotEmpty()

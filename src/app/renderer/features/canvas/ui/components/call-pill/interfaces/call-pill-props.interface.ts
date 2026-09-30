@@ -1,8 +1,8 @@
 import type { ToolSource } from "../../../../../../interfaces";
 
 export interface CallPillProps {
-  /** A command's own name, or a server's — never a server's function. */
+  /** A command's own name, or a server's; never a server's function. */
   name: string;
-  /** The pill wears its source's colour, the same one that source's mark wears on the arc. */
+  /** Sets the pill colour, the same as the source's mark on the arc. */
   source: ToolSource;
 }

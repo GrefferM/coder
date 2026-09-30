@@ -22,7 +22,7 @@ import {
 } from "../../../../../../constants";
 import type { ChangeCardProps } from "./interfaces";
 
-/** «claude-sonnet-4.5 · темп. 0.2» — what a turn ran on, in the one line both halves of the card use. */
+/** «claude-sonnet-4.5 · темп. 0.2»: what a turn ran on, used by both halves of the card. */
 function circumstances(model: string | null, temperature: number | null): string {
   return [
     model,
@@ -34,7 +34,7 @@ function circumstances(model: string | null, temperature: number | null): string
     .join(STANDING_CHANGES_SEPARATOR);
 }
 
-/** One agent's two lines: what the record kept, and what the project holds now. */
+/** One agent's two lines: the record's and the project's current. */
 export function ChangeCard({ change }: ChangeCardProps) {
   return (
     <div
@@ -44,7 +44,7 @@ export function ChangeCard({ change }: ChangeCardProps) {
         padding: STANDING_CHANGES_CARD_PADDING,
         borderRadius: STANDING_CHANGES_CARD_BORDER_RADIUS_PX,
         background: STANDING_CHANGES_CARD_BACKGROUND_COLOR,
-        // The language again: the pink edge is for what the project does not have.
+        // Pink edge marks what the project does not have.
         border: `1px solid ${change.isGone ? STANDING_GONE_BORDER_COLOR : STANDING_CHANGES_BORDER_COLOR}`,
         minWidth: 0,
       }}

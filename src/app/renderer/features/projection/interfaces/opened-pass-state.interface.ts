@@ -4,19 +4,19 @@ import type { AgentChange } from "./agent-change.interface";
 /** The pass whose projection stands over the canvas, and the ways about it. */
 export interface OpenedPassState {
   isOpen: boolean;
-  /** The pass itself — one question's walk; `null` while it is being read or could not be. */
+  /** One question's walk; `null` while being read or unreadable. */
   run: WholeRun | null;
   isFailed: boolean;
-  /** Every agent of this run held against the project as it stands now. */
+  /** Every agent of this run compared with the project as it stands. */
   standings: AgentStanding[];
-  /** Every agent whose name or circumstances have moved since the run walked. */
+  /** Agents whose name or circumstances changed since the run. */
   changes: AgentChange[];
-  /** Where in the flow this pass stands, counted from one, and how many passes the flow has. */
+  /** This pass's position in the flow, from one, and the number of passes. */
   place: number;
   passes: number;
-  /** The projection is opened on one question of a run — the pass is the question, by its own id. */
+  /** Opens the projection on one question of a run, by its id. */
   open: (runId: string, questionId: string) => void;
-  /** Steps to another pass of the same flow; a place outside it changes nothing. */
+  /** Goes to another pass of the same flow; a place outside it does nothing. */
   go: (place: number) => void;
   close: () => void;
 }

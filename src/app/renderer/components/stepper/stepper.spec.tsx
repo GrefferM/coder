@@ -5,7 +5,7 @@ import { Stepper } from "./stepper";
 import { STEPPER_LESS_LABEL, STEPPER_MORE_LABEL } from "./constants";
 
 const LABEL = "Максимум викликів";
-// The floor is the caller's, so a case that is about the floor says which one it is standing on.
+// The floor is the caller's.
 const LEAST = 1;
 
 describe("Stepper", () => {
@@ -59,7 +59,7 @@ describe("Stepper", () => {
       }),
     );
 
-    // A run of tenths is not exact: without rounding this is 0.4 written as 0.30000000000000004.
+    // Rounded: without it 0.4 would be written as 0.30000000000000004.
     expect(onChange).toHaveBeenCalledWith(0.4);
   });
 

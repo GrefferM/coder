@@ -2,7 +2,7 @@ import { ArrayUnique, IsArray, IsBoolean, IsIn, IsNotEmpty, IsString, IsUUID } f
 import { COMMAND_PARAMETER_TYPES } from "../constants";
 import { CommandParameterType } from "../interfaces";
 
-/** One parameter a declared command takes; `values` holds an `enum`'s options and is empty otherwise. */
+/** A parameter of a declared command; `values` holds an `enum`'s options, else empty. */
 export class ProjectCommandParameterDto {
   @IsUUID()
   declare id: string;

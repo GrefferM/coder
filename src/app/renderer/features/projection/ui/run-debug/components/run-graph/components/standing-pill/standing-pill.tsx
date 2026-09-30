@@ -19,12 +19,8 @@ import {
 import type { StandingPillProps } from "./interfaces";
 
 /**
- * Under the sphere of a run, the one line that parts today from the record — the agent is called something
- * else now, or the project no longer has it. Nothing stands here where the record and the project agree, which is
- * most runs: a rule said on every screen stops being read.
- *
- * The recorded name is written in capitals like every other name on a canvas: a name has no case of its own (that is
- * why two agents cannot differ by it), and the label above wears the same capitals — the two must read as one name.
+ * Under a run's sphere, the one line where today differs from the record: the agent is named differently now, or the
+ * project no longer has it. Empty when they agree. The recorded name is upper-cased like every name on a canvas.
  */
 export function StandingPill({ standing }: StandingPillProps) {
   const isGone = standing.isGone;

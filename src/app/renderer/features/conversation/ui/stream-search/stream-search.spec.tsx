@@ -124,7 +124,7 @@ describe("StreamSearch", () => {
       />,
     );
 
-    // Arriving from a pressed row leaves the field filled and the caret out of it.
+    // Arriving from a pressed row leaves the field filled and unfocused.
     expect(screen.getByRole("textbox")).not.toHaveFocus();
     unmount();
 
@@ -159,7 +159,7 @@ describe("StreamSearch", () => {
 
     window.dispatchEvent(press);
 
-    // ⌘F belongs to this field and does not reach the field of the question below.
+    // ⌘F belongs to this field and does not reach the question field below.
     expect(onOpen).toHaveBeenCalledTimes(1);
     expect(press.defaultPrevented).toBe(true);
   });
@@ -178,7 +178,7 @@ describe("StreamSearch", () => {
       />,
     );
 
-    // «1» is the newest thing said and stands lowest, so the next match — 2, 3, 4 — is up the screen.
+    // «1» is the newest and lowest, so later matches go up the screen.
     await user.click(screen.getByLabelText(STREAM_SEARCH_STEP_NEXT_LABEL));
 
     expect(onNext).toHaveBeenCalledTimes(1);

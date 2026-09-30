@@ -120,7 +120,7 @@ describe("ProviderService", () => {
   });
 
   it("holds both a key and an address for a provider that asks for both, each in its own store", async () => {
-    // RunPod is somebody else's machine, but the endpoint in the address is the person's own.
+    // RunPod is remote, but its endpoint address is the person's own.
     await providerService.saveKey({
       providerId: "runpod",
       value: "rpa_longvalue4Kd",
@@ -236,7 +236,7 @@ describe("ProviderService", () => {
   });
 
   it("refuses to ask any provider that does not run on this machine, address or no address", async () => {
-    // Asking is «what have you installed», and that is a question only a local process answers.
+    // Asking for installed models is answered only by a local process.
     await assert.rejects(
       providerService.ask({
         providerId: "anthropic",

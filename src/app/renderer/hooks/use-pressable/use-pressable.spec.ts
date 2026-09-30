@@ -2,7 +2,7 @@ import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { usePressable } from "./use-pressable";
 
-/** A keyboard event as the row would see it: fired on the row itself unless a target is given. */
+/** A keyboard event as the row sees it; fired on the row unless a target is given. */
 function keyEvent(key: string, target?: unknown) {
   const row = {};
 

@@ -18,7 +18,7 @@ describe("AnswerCard", () => {
       />,
     );
 
-    // The head says the counts in thousands; the whole of them, and the money unrounded, stand on the pointer.
+    // The head shows counts in thousands; the exact counts and unrounded money are on the pointer.
     expect(screen.getByText(/0\.3К\/2\.5К/)).toBeInTheDocument();
     expect(screen.getByText(/\$0\.02/)).toBeInTheDocument();
     expect(screen.getByTitle("250/2 500 ТКН · $0.0200")).toBeInTheDocument();
@@ -78,7 +78,7 @@ describe("AnswerCard", () => {
       />,
     );
 
-    // One card for both streams — the two say the same facts or they say different runs.
+    // One card serves both streams.
     expect(screen.getByText("КРОК 2 · 19:29")).toBeInTheDocument();
     expect(screen.getByText(/0\.3К\/2\.5К/)).toBeInTheDocument();
     expect(screen.getByText(/\$0\.02/)).toBeInTheDocument();

@@ -30,7 +30,7 @@ describe("UnsavedAgentConfirm", () => {
   it("cuts a value too long for the box, and keeps the whole of it on the pointer", () => {
     ask();
 
-    // The box has one width, and what a person typed gives way inside it.
+    // The box has one width; typed values shrink inside it.
     const written = screen.getByTitle(LONG);
 
     expect(written.textContent).toMatch(/^Е+…$/);
@@ -40,7 +40,7 @@ describe("UnsavedAgentConfirm", () => {
   it("leaves the short value beside it whole", () => {
     ask();
 
-    // A value that needs little takes little: the room it leaves goes to the one that needs it.
+    // A short value leaves its room to the longer one.
     expect(screen.getByTitle("ТЕЗАР")).toHaveTextContent("ТЕЗАР");
   });
 });

@@ -37,7 +37,7 @@ function run(walk: WholeStep[]): WholeRun {
     startedAt: new Date("2026-08-22T19:26:56"),
     askedAt: new Date("2026-08-22T19:26:56"),
     endedAt: new Date("2026-08-22T19:27:12"),
-    // One question, the one the walk grew from; every step of it names this row.
+    // One question, the one the walk grew from; every step names this row.
     questions: [
       {
         id: "question-1",
@@ -106,7 +106,7 @@ describe("runUnfinished", () => {
       "question-1",
     );
 
-    // The turn is run again where it stood — the same agent, the same words, the same feeders.
+    // The turn is run again as it stood: same agent, words and feeders.
     expect(said.again).toEqual([
       {
         agentId: "agent-2",
@@ -114,7 +114,7 @@ describe("runUnfinished", () => {
         fromStepIds: ["step-1"],
       },
     ]);
-    // The link to agent-2 did become a turn, stopped as it was, so nothing of it is standing unclaimed.
+    // The link to agent-2 became a turn that stopped, so no arrival is left.
     expect(said.arrivals).toEqual([]);
   });
 
@@ -145,8 +145,8 @@ describe("runUnfinished", () => {
       "question-1",
     );
 
-    // A row laid down when «зайнятий» was a word — the work never reached agent-3, and ТЕЗАР's words are
-    // all that stands of that link.
+    // A row from when «зайнятий» was a word: the work never reached agent-3, and ТЕЗАР's words are all that remains of
+    // the link.
     expect(said.arrivals).toEqual([
       {
         toAgentId: "agent-3",
@@ -177,7 +177,7 @@ describe("runUnfinished", () => {
           state: RUN_STEP_STOPPED,
           fromStepIds: ["step-1"],
         }),
-        // The walk of the second: the same agent was picked up, answered, and handed its work on.
+        // The second walk: the same agent was picked up, answered and handed on.
         step({
           id: "step-3",
           walkId: "walk-2",
@@ -205,7 +205,7 @@ describe("runUnfinished", () => {
       "question-1",
     );
 
-    // Only agent-3 is left; agent-2's older break is done business and is not run a second time.
+    // Only agent-3 is left; agent-2's older break is not run again.
     expect(said.again).toEqual([
       {
         agentId: "agent-3",
@@ -231,7 +231,7 @@ describe("runUnfinished", () => {
       "question-1",
     );
 
-    // The work went out and nothing came back: a turn that never began leaves no step of its own.
+    // The work went out and nothing came back: a turn that never began leaves no step.
     expect(said.arrivals).toEqual([
       {
         toAgentId: "agent-2",

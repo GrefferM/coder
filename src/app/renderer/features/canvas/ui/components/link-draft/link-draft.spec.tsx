@@ -22,11 +22,11 @@ const at = {
 
 describe("LinkDraft", () => {
   it("over empty canvas says what to do with the line, and draws it dashed", () => {
-    // Nothing has been aimed at yet, so the line is a question and not a statement.
+    // With no target yet, the line is a question, not a statement.
     const { container } = render(<LinkDraft from={from} at={at} />);
 
     expect(screen.getByText(LINK_DRAFT_HINT)).toBeInTheDocument();
-    // The first line is the glow under it; the line itself is the second.
+    // The first line is the glow; the line itself is the second.
     expect(container.querySelectorAll("line")[1]).toHaveAttribute("stroke-dasharray", LINK_DRAFT_DASH);
   });
 
@@ -46,7 +46,7 @@ describe("LinkDraft", () => {
   });
 
   it("let go over nothing, it is crossed out and says so while it fades", () => {
-    // The line does not simply vanish — a person must see that nothing was made.
+    // A cancelled line does not just vanish.
     const { container } = render(<LinkDraft from={from} at={at} isCancelled />);
 
     expect(screen.getByText(LINK_DRAFT_CANCELLED_LABEL)).toBeInTheDocument();

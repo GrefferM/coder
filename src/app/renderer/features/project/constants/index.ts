@@ -1,7 +1,7 @@
-// The refusal codes are the boundary's: written once in `src/contracts`, matched here.
+// Refusal codes are the boundary's: defined in `src/contracts`, matched here.
 export * from "../../../../../contracts/project";
 export * from "../../../../../contracts/refusals";
-// The undo's own seconds are the boundary's too: the keys of a deleted server wait out the same ones.
+// The undo seconds are the boundary's too; a deleted server's keys wait the same.
 export * from "../../../../../contracts/undo-stands.constant";
 export * from "./agent-return.constant";
 export * from "./config-difference.constant";

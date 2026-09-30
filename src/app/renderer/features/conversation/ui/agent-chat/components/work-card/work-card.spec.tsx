@@ -26,7 +26,7 @@ function call(id: string): LiveCall {
   };
 }
 
-/** The chat's own memory of open calls, standing in — here nothing is open, since nobody pressed. */
+/** Stand-in for the chat's open-calls memory: nothing is open. */
 function standInOpenCalls(): OpenCalls {
   return {
     isOpen: () => false,
@@ -47,7 +47,7 @@ describe("WorkCard", () => {
   });
 
   it("stands every call the turn has made under it", () => {
-    // The calls are what the waiting is made of, so they are shown while it lasts.
+    // The calls are shown while the wait lasts.
     render(
       <WorkCard
         openCalls={standInOpenCalls()}

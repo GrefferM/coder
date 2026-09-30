@@ -101,7 +101,7 @@ function renderCard(
   return render(
     <ProviderCard
       provider={provider}
-      // Nothing typed: the field stands behind the hint of the key already here.
+      // Nothing typed: the field shows the hint of the existing key.
       value={NOTHING_TYPED}
       models={models}
       answer={answer}
@@ -176,7 +176,7 @@ describe("ProviderCard", () => {
   });
 
   it("names the field nobody has written in the price's place, in the words every other row uses", () => {
-    // An unfinished model reads the same everywhere it stands, and «БЕЗ ЦІНИ» is gone.
+    // An unfinished model reads the same everywhere, without «БЕЗ ЦІНИ».
     renderCard(OLLAMA, ANSWERED, [
       {
         ...DECLARED[0],
@@ -222,7 +222,7 @@ describe("ProviderCard", () => {
 
 describe("ProviderCard's key", () => {
   it("takes the key off only when the cross is pressed, and offers none where there is no key", async () => {
-    // The key is not in the field — its hint is — so leaving the field alone must not cost the key.
+    // The field shows the key's hint, so leaving it alone must not lose the key.
     const onChange = vi.fn();
 
     renderCard(ANTHROPIC, null, [], {
@@ -242,7 +242,7 @@ describe("ProviderCard's key", () => {
       keyHint: null,
     });
 
-    // The second card has no key, so no cross; the first one's is still the only one on the screen.
+    // The second card has no key, so no cross; the first's is the only one.
     expect(
       screen.getAllByRole("button", {
         name: "Очистити",
@@ -251,7 +251,7 @@ describe("ProviderCard's key", () => {
   });
 
   it("draws a field for each thing the provider asks for, and names which one was typed into", async () => {
-    // RunPod asks for both: the key is the person's, and the address carries their endpoint's id.
+    // RunPod asks for both: the person's key, and an address carrying their endpoint id.
     const onChange = vi.fn();
 
     renderCard(RUNPOD, null, [], {
@@ -261,7 +261,7 @@ describe("ProviderCard's key", () => {
     const address = screen.getByLabelText("АДРЕСА");
 
     expect(screen.getByLabelText("КЛЮЧ")).toBeInTheDocument();
-    // Nothing customary stands behind it, so the placeholder shows the shape of an address and not one to keep.
+    // No customary address, so the placeholder shows an address shape, not a value to keep.
     expect(address).toHaveAttribute("placeholder", PROVIDER_CARD_ADDRESS_PLACEHOLDER);
 
     await userEvent.type(address, "h");

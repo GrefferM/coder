@@ -27,7 +27,7 @@ describe("agentDraft", () => {
     });
 
     expect(draft.name).toBe("СТИСЛЯР");
-    // Everything the person has not touched still says what the record says.
+    // Untouched fields keep the record's values.
     expect(draft.color).toBe("#b18aff");
     expect(draft.promptId).toBe("prompt-1");
   });

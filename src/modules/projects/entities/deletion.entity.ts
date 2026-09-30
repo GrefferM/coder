@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateCol
 import { DELETION_TABLE_NAME } from "../constants";
 import { DeletionRecord } from "../interfaces";
 
-/** The `deletions` table row — one deletion made in one project, with everything it took. */
+/** A row of `deletions`: one deletion in one project, with everything it took. */
 @Entity(DELETION_TABLE_NAME)
 export class DeletionEntity implements DeletionRecord {
   @PrimaryGeneratedColumn("uuid")
@@ -24,7 +24,7 @@ export class DeletionEntity implements DeletionRecord {
   })
   declare name: string;
 
-  // Everything the deletion took, as JSON; the module never opens it.
+  // Everything the deletion took, as JSON; never opened here.
   @Column({
     type: "text",
   })

@@ -11,14 +11,13 @@ describe("notStartedReason", () => {
   });
 
   it("says nothing for a turn that was tried and fell, which is not a wall at all", () => {
-    // These are turns that never began; a provider's own fault is an answer, not a refusal.
+    // A provider's own fault is an answer, not a refusal.
     expect(notStartedReason("LLM_ASK_FAILED")).toBeNull();
     expect(notStartedReason("")).toBeNull();
   });
 
   it("finds every code the table names, and gives each its own wall", () => {
-    // The table is the one place a refusal code and a wall are tied together, so nothing may share a row's
-    // wall with another or sit in it unreachable.
+    // The table ties each refusal code to exactly one wall; none shares a wall or is unreachable.
     const walls = Object.entries(MACHINE_WALLS).map(([code, wall]) => {
       expect(notStartedReason(`Error invoking remote method: ${code}`)).toBe(wall);
 

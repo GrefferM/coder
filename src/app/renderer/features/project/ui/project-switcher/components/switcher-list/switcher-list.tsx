@@ -24,7 +24,7 @@ import {
 } from "../../constants";
 import type { SwitcherListProps } from "./interfaces";
 
-/** The list the switcher opens — this project, the others, and what can be done besides. */
+/** The switcher's list: this project, the others, and the other actions. */
 export function SwitcherList({
   project,
   others,

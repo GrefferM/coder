@@ -1,9 +1,6 @@
 import { BACK_CHEVRON_SIZE_PX } from "./constants";
 
-/**
- * The way back. The same chevron wherever a step is walked into, and it is what says «you entered here» — where
- * nothing is entered it is not drawn at all, or the screen promises a door that is not there.
- */
+/** The way back, drawn only where a step was entered. */
 export function BackChevron() {
   return (
     <svg

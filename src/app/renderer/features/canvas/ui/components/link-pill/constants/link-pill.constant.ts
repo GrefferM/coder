@@ -5,7 +5,7 @@ import {
   PANEL_GROUND_COLOR,
 } from "../../../../../../constants";
 
-/** Chosen link's pill above the middle handle, in canvas coordinates. */
+/** Offset of the chosen link's pill above the middle handle, in canvas coordinates. */
 export const LINK_PILL_OFFSET_Y_PX = 34;
 export const LINK_PILL_BACKGROUND_COLOR = PANEL_GROUND_COLOR;
 export const LINK_PILL_BORDER_COLOR = "#2c3550";

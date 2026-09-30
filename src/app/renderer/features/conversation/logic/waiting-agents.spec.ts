@@ -28,7 +28,7 @@ function wait(patch: Partial<WaitedWork> = {}): WaitedWork {
   };
 }
 
-/** One stream's walks, with only the parts this reader looks at written — the waits all of one walk. */
+/** One stream's walks with only the parts this reader looks at; the waits all belong to one walk. */
 function walk(waiting: Record<string, WaitedWork>, isPutAway = false) {
   return {
     ...emptyWalk(),
@@ -104,7 +104,7 @@ describe("waitingAgents", () => {
   });
 
   it("shows the later of two walks waiting at one point: a sphere is no list of works", () => {
-    // Two walks converge on the reviewer; the pill says the one the person asked last.
+    // Two walks converge on the reviewer; the pill shows the one asked last.
     const [point] = waitingAgents({
       ...emptyWalk(),
       walks: {
@@ -130,7 +130,7 @@ describe("waitingAgents", () => {
     expect(point.suppliers.map((one) => one.state)).toEqual(["silent", "silent", "working"]);
   });
   it("shows no wait for a point that does not wait — a silent tally is no pill", () => {
-    // The reviewer runs on each input on its own; the tally it keeps to spot an all-silent run shows nothing.
+    // The reviewer runs on each input on its own; its all-silent tally shows nothing.
     const shown = waitingAgents(
       walk({
         reviewer: wait({

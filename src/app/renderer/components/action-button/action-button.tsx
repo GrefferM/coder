@@ -13,10 +13,7 @@ import type { ActionButtonProps } from "./interfaces";
 /**
  * The app's action button, per variant, with lit, pressed, focused and disabled states.
  *
- * A dimmed button **wears the ring** and does nothing when pressed — like a dead row in a list, it is
- * seen and walked to, so the keyboard can find where the way out is and read why it is shut. A button the
- * browser calls `disabled` takes no focus at all, which hides the closed door instead of showing it; so the
- * dimming is said to the reader (`aria-disabled`) and the press is stopped here.
+ * A dimmed button keeps focus and ignores presses (`aria-disabled`, not `disabled`).
  */
 export function ActionButton({ variant, label, type = "button", ref, onClick, isDisabled = false }: ActionButtonProps) {
   const { isPressed, isFocused, isLit, handlers } = useInteraction();
@@ -28,11 +25,11 @@ export function ActionButton({ variant, label, type = "button", ref, onClick, is
     <button
       ref={ref}
       type={type}
-      /** Which act this is, so the walk into the tab's foot can put the writing one first. */
+      /** Lets the tab's footer walk put the writing action first. */
       data-action={variant}
       aria-disabled={isDisabled || undefined}
       onClick={(event) => {
-        // A dimmed act answers nothing — not the pointer, not Enter, and not the form it might have submitted.
+        // A dimmed button ignores pointer, Enter and form submission.
         if (isDisabled) {
           event.preventDefault();
 

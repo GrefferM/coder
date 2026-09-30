@@ -5,21 +5,17 @@ import { AGENTS_GROUP_KEY, COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX } from "../..
 import type { GrantTargets, McpToolGrant, ToolGrant } from "../../../../../../../interfaces";
 import type { BrokenGrantGroup } from "../components/tools-section/interfaces";
 
-/** A group whose server is gone has no name left to stand under — the project holds only its id. */
+/** A gone server has no name; the project holds only its id. */
 const GONE_SERVER_PREFIX = "gone:";
 
-/**
- * Every grant the project can no longer honour, gathered by **reason** — the rows look the same
- * and the sentence under them does not. Why a grant is broken is `brokenCause`'s to say, and it says it for the
- * sphere's mark and for the turn's wall too; this is only the grouping the panel needs.
- */
+/** Every unhonourable grant, grouped by reason; `brokenCause` decides why a grant is broken, this only groups. */
 export function brokenGrants(grants: ToolGrant[], targets: GrantTargets): BrokenGrantGroup[] {
   const { servers } = targets;
   const cause = (grant: ToolGrant) => brokenCause(grant, targets);
   const held = grants.filter(isServerGrant);
   const groups: BrokenGrantGroup[] = [];
 
-  // The server stands, it answered, and this name is not in what it answered with.
+  // The server answered and this name is not among its functions.
   for (const server of servers) {
     const gone = held.filter((grant) => pointsAt(grant, server.id) && cause(grant) === "goneFunction");
 
@@ -33,7 +29,7 @@ export function brokenGrants(grants: ToolGrant[], targets: GrantTargets): Broken
     }
   }
 
-  // The server itself is gone from the project, and the grant points at nothing at all.
+  // The server is gone from the project.
   for (const serverId of [...new Set(held.map((grant) => grant.serverId))]) {
     const gone = held.filter((grant) => pointsAt(grant, serverId) && cause(grant) === "goneServer");
 
@@ -47,7 +43,7 @@ export function brokenGrants(grants: ToolGrant[], targets: GrantTargets): Broken
     }
   }
 
-  // The command is gone, and the grant carries its id and no name — there is nothing to strike through.
+  // The command is gone; the grant carries its id and no name.
   const lost = grants.filter(isCommandGrant).filter((grant) => cause(grant) === "command");
 
   if (lost.length > 0) {
@@ -63,7 +59,7 @@ export function brokenGrants(grants: ToolGrant[], targets: GrantTargets): Broken
     });
   }
 
-  // The agent is gone from the project, and the grant carries its id and no name.
+  // The agent is gone; the grant carries its id and no name.
   const lostAgents = grants.filter(isAgentGrant).filter((grant) => cause(grant) === "goneAgent");
 
   if (lostAgents.length > 0) {
@@ -82,7 +78,7 @@ export function brokenGrants(grants: ToolGrant[], targets: GrantTargets): Broken
   return groups;
 }
 
-/** A server's function is named by the server, so the row says the name the grant still points at. */
+/** A server's function is named by the server; the row shows the name the grant points at. */
 function functionRow(grant: McpToolGrant) {
   return {
     id: grant.id,

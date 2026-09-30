@@ -10,7 +10,7 @@ function Probe({ isOpen, onDismiss }: { isOpen: boolean; onDismiss: () => void }
   return <button type="button">probe</button>;
 }
 
-/** A caller that goes on the press, behind something that keeps its own press and click to itself. */
+/** A caller that dismisses on press, behind something that keeps its own press and click. */
 function PressProbe({ onDismiss }: { onDismiss: () => void }) {
   useWindowDismiss(true, onDismiss, "press");
 
@@ -21,7 +21,7 @@ function PressProbe({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-/** A note: it ends on the next click, and takes nothing of that click for itself. */
+/** A note: ends on the next click and takes nothing of it. */
 function NoteProbe({ onDismiss }: { onDismiss: () => void }) {
   useWindowDismiss(true, onDismiss, "click", false);
 
@@ -64,7 +64,7 @@ describe("useWindowDismiss", () => {
     const onDismiss = vi.fn();
 
     render(<Probe isOpen onDismiss={onDismiss} />);
-    // Exactly what the opening click does once the effect has flushed: reach `window` synchronously.
+    // What the opening click does after the effect flushes: reaches `window` synchronously.
     window.dispatchEvent(new MouseEvent("click"));
 
     expect(onDismiss).not.toHaveBeenCalled();
@@ -91,7 +91,7 @@ describe("useWindowDismiss", () => {
   it("dismisses on the first click even when the caller passes a new function each render", async () => {
     const onDismiss = vi.fn();
 
-    // An inline arrow plus state the click changes: React flushes both before the click reaches `window`.
+    // An inline arrow plus state the click changes; React flushes both before the click reaches `window`.
     function Caller() {
       const [clicks, setClicks] = useState(0);
 

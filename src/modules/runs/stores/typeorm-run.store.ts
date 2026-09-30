@@ -24,7 +24,7 @@ import type {
   RunTables,
 } from "../interfaces";
 
-/** The record's questions answered over TypeORM: the only file in the module that knows there is an ORM at all. */
+/** The record's questions answered over TypeORM; the only file in the module that knows of the ORM. */
 export class TypeormRunStore implements RunStore {
   constructor(private readonly tables: RunTables) {}
 
@@ -110,7 +110,7 @@ export class TypeormRunStore implements RunStore {
           id: In(runIds),
         },
       },
-      // The run is read off each question, and a relation the query does not name comes back empty.
+      // The run is read off each question; relations the query does not name come back empty.
       relations: {
         run: true,
       },
@@ -142,7 +142,7 @@ export class TypeormRunStore implements RunStore {
           id: runId,
         },
       },
-      // The question is read off each step, and a relation the query does not name comes back empty.
+      // The question is read off each step; relations the query does not name come back empty.
       relations: {
         question: true,
       },
@@ -283,7 +283,7 @@ export class TypeormRunStore implements RunStore {
 
   async addCall(call: NewCall): Promise<void> {
     await this.tables.calls.save({
-      // The call comes with its own id and keeps it: two ids for one thing is two things nobody can join.
+      // The call keeps its existing id.
       id: call.id,
       source: call.source,
       place: call.place,
@@ -310,7 +310,7 @@ export class TypeormRunStore implements RunStore {
       where: {
         id,
       },
-      // The place of a call is its step's place: the run it stands in and the question it grew from.
+      // A call's place is its step's: the run and the question it grew from.
       relations: {
         step: {
           run: true,
@@ -420,7 +420,7 @@ export class TypeormRunStore implements RunStore {
 
     await this.tables.calls.delete(beside);
     await this.tables.feeds.delete(beside);
-    // A step is also somebody's supplier, and that row hangs off the step it fed.
+    // A step may also be a supplier; that row hangs off the step it fed.
     await this.tables.feeds.delete({
       from: {
         id: stepId,

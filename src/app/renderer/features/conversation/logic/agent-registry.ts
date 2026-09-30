@@ -5,9 +5,8 @@ import { isAgentGrant } from "../../../interfaces";
 import type { Agent, GrantTargets, ProjectConfig, ProviderState, ReachableAgent } from "../../../interfaces";
 
 /**
- * Every agent reachable as a tool from the one being asked, walked over agent grants alone and never the lines
- * of the canvas. The root is in the list too, so a sub-agent that names it back is answered with the ring it would
- * close. Each is read by the rule a person's turn is, so one that cannot run says why the moment it is called.
+ * Every agent reachable as a tool from the one asked, walked over agent grants only, never canvas lines. The root is
+ * included so a sub-agent naming it back gets the ring it would close; each is checked by the same readiness rule.
  */
 export function agentRegistry(
   root: Agent,

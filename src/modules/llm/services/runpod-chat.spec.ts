@@ -5,7 +5,7 @@ import { RunPodChat } from "./runpod-chat.service";
 
 const ADDRESS = "https://api.runpod.ai/v2/z5x8c1v4b7n2m6";
 
-/** One asked turn, as the endpoint's own answer comes back: a list with the answer first. */
+/** One asked turn as the endpoint answers: a list with the answer first. */
 function answered(content: string) {
   return {
     status: "COMPLETED",
@@ -30,7 +30,7 @@ function answered(content: string) {
   };
 }
 
-/** The queue, standing in for the real one: every ask is written down, and the answers are handed out in turn. */
+/** A stand-in queue: every ask is recorded and answers are handed out in turn. */
 function queue(answers: unknown[]) {
   const asked: { url: string; method: string; body: unknown }[] = [];
   let stood = 0;
@@ -174,7 +174,7 @@ describe("RunPodChat", () => {
   });
 
   it("falls with what the worker wrote where the job finished carrying no answer at all", async () => {
-    // The endpoint's own insides can refuse the ask — the job is over and done, and holds their words instead.
+    // The endpoint can refuse the ask: the job is done and holds its words instead of an answer.
     queue([
       {
         id: "job-1",

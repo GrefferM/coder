@@ -34,7 +34,7 @@ function said(patch: Partial<ChatMessage> = {}): ChatMessage {
 
 describe("standsWithRepeat", () => {
   it("stands under a turn the app had to say a word about", () => {
-    // «ВІДПОВІДЬ НЕ ПРИЙШЛА», «ЗУПИНЕНО», «ВИЧЕРПАНО МАКСИМУМ ВИКЛИКІВ» — one recipe for all of them.
+    // «ВІДПОВІДЬ НЕ ПРИЙШЛА», «ЗУПИНЕНО», «ВИЧЕРПАНО МАКСИМУМ ВИКЛИКІВ» share one recipe.
     expect(
       standsWithRepeat(
         said({
@@ -46,7 +46,7 @@ describe("standsWithRepeat", () => {
   });
 
   it("stands under a turn that never began, the ceiling's own among them", () => {
-    // No exception is left — the ceiling is raised by the card's own act and the same words go through.
+    // No exception remains: the card's own act raises the ceiling and the same words go through.
     expect(
       standsWithRepeat(
         said({
@@ -64,7 +64,7 @@ describe("standsWithRepeat", () => {
   });
 
   it("stands under a link the work could not go down", () => {
-    // The walk ended at that link, and it is picked up by the same repeat.
+    // The walk ended at that link and the same repeat picks it up.
     expect(
       standsWithRepeat(
         said({
@@ -75,7 +75,7 @@ describe("standsWithRepeat", () => {
   });
 
   it("stands under nothing where the turn answered", () => {
-    // The words it was asked are kept for a repeat further down the walk, not for one here.
+    // The asked words are kept for a repeat further down the walk, not here.
     expect(standsWithRepeat(said())).toBe(false);
   });
 });

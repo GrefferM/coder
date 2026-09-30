@@ -25,7 +25,7 @@ const PROJECT: OpenProject = {
   view: null,
 };
 
-/** The machine as the writes meet it: every channel answers, and a spec can make one of them refuse. */
+/** The machine as the writes meet it: every channel answers, and a spec can make one refuse. */
 function machine(failing: string[] = []) {
   const sent: { channel: string; payload: unknown }[] = [];
   const invoke = vi.fn(async (channel: string, payload?: unknown) => {
@@ -52,7 +52,7 @@ function machine(failing: string[] = []) {
   };
 }
 
-/** The page holding the open project, so a spec can see what the hook put into it. */
+/** The page holding the open project, so a spec can see what the hook put in it. */
 function writing(config: ProjectConfig = CONFIG) {
   let standing: OpenProject | null = {
     ...PROJECT,
@@ -70,7 +70,7 @@ function writing(config: ProjectConfig = CONFIG) {
   };
 }
 
-/** The same project without its second agent — what a deletion leaves behind. */
+/** The project without its second agent: what a deletion leaves. */
 const WITHOUT_TELLER = aConfig({
   agents: [SEEKER],
 });
@@ -106,7 +106,7 @@ describe("useProjectWrite · one write", () => {
   });
 
   it("keeps the project as it was when the write did not go through, and says why", async () => {
-    // The file refused, so the screen must not show what the file does not hold.
+    // The file refused, so the screen must not show what the file lacks.
     machine([SAVE_PROJECT_CHANNEL]);
 
     const { result, page } = writing();
@@ -120,7 +120,7 @@ describe("useProjectWrite · one write", () => {
   });
 
   it("runs the very write that failed when «ще раз» is pressed", async () => {
-    // The same config and the same word, not whatever the screen holds by then.
+    // The same config and word, not whatever the screen holds by then.
     const held = machine([SAVE_PROJECT_CHANNEL]);
     const { result } = writing();
 
@@ -160,7 +160,7 @@ describe("useProjectWrite · one write", () => {
 
 describe("useProjectWrite · a deletion and its way back", () => {
   it("takes the thing out at once, writes it down, and stands a way back", async () => {
-    // The sphere goes the moment the hand says so; the offer is what makes that safe.
+    // The sphere goes at once; the undo offer makes that safe.
     const held = machine();
     const { result, page } = writing();
 
@@ -179,7 +179,7 @@ describe("useProjectWrite · a deletion and its way back", () => {
     });
     expect(result.current.undoOffers).toHaveLength(1);
     expect(result.current.undoOffers[0].message).toBe("Агента забрано");
-    // The write is quiet: the way back is the word about this deletion, and two words would say it twice.
+    // The write is quiet: the deletion's own word is the way back, so no second word.
     expect(result.current.writeNote).toBeNull();
   });
 
@@ -195,7 +195,7 @@ describe("useProjectWrite · a deletion and its way back", () => {
   });
 
   it("stands the way back even when the history could not remember the deletion", async () => {
-    // The thing is gone from the file either way; without an offer the person would have no way back at all.
+    // The thing is gone from the file either way; without an offer there would be no way back.
     machine([REMEMBER_DELETION_CHANNEL]);
 
     const { result } = writing();
@@ -221,7 +221,7 @@ describe("useProjectWrite · a deletion and its way back", () => {
   });
 
   it("answers ⌘Z with the newest way back and leaves the older ones standing", async () => {
-    // ⌘Z is the bottom row's; the rows above it keep their own buttons.
+    // ⌘Z belongs to the bottom row; upper rows keep their own buttons.
     machine();
 
     const { result } = writing();
@@ -243,7 +243,7 @@ describe("useProjectWrite · a deletion and its way back", () => {
   });
 
   it("takes the offer down when the same deletion is put back from the history instead", async () => {
-    // Two doors to one deletion: the history's row and the offer over the canvas, and it goes back once.
+    // Two doors to one deletion, the history row and the canvas offer; it is undone once.
     const held = machine();
     const { result } = writing();
 

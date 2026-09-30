@@ -1,21 +1,18 @@
-/**
- * What a model's own fields are called. The model form writes them over its rows, and the word that
- * says a field is unwritten names it with the same words, so the person looks for what they were told to look for.
- */
+/** Names of a model's fields, shared by the model form and the «not filled» word. */
 export const MODEL_FIELD_CONTEXT_CEILING = "СТЕЛЯ КОНТЕКСТУ";
 export const MODEL_FIELD_ANSWER_CEILING = "СТЕЛЯ ВІДПОВІДІ";
 export const MODEL_FIELD_INPUT_PRICE = "ВХІДНА ЦІНА";
 export const MODEL_FIELD_OUTPUT_PRICE = "ВИХІДНА ЦІНА";
 
-/** What an agent's own two numbers are called, in the words its settings tab writes over their rows. */
+/** Names of an agent's two numbers, as on its settings tab. */
 export const AGENT_FIELD_MAX_CALLS = "МАКСИМУМ ВИКЛИКІВ";
 export const AGENT_FIELD_TEMPERATURE = "ТЕМПЕРАТУРА";
 
-/** What a thing lacking one of them says, and the dot that carries the field's name after it. */
+/** What a thing lacking a field says, and the dot carrying the field's name. */
 export const NOT_FILLED_LABEL = "НЕ ЗАПОВНЕНО";
 export const NOT_FILLED_SEPARATOR = " · ";
 
-/** How a model's price is said wherever it is said: two numbers, a dot between them, and what they buy. */
+/** How a model's price is written: two numbers, a dot, what they buy. */
 export const MODEL_PRICE_SEPARATOR = " · ";
 export const MODEL_PRICE_UNIT = " / 1M";
 export const MODEL_PRICE_PLACES = 2;

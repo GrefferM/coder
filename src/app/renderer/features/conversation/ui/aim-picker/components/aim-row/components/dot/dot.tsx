@@ -8,7 +8,7 @@ import {
 } from "../../../../constants";
 import type { DotProps } from "./interfaces";
 
-/** The colour belongs to the dot; a ring around it is «this is the one», and there is no tick. */
+/** The dot carries the colour; a ring marks the aimed one, no tick. */
 export function Dot({ color, isActive, isAimed, ground }: DotProps) {
   return (
     <span

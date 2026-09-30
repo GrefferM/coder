@@ -89,7 +89,7 @@ describe("AgentsSection", () => {
   });
 
   it("is the create form while a place on the canvas stands claimed", () => {
-    // A claim is the beginning of an agent, so the section becomes where one is made.
+    // A claim begins an agent, so the section becomes the form that makes one.
     render(
       <AgentsSection
         {...props({
@@ -118,7 +118,7 @@ describe("AgentsSection", () => {
     render(<AgentsSection {...said} />);
 
     expect(said.onDeleteAgent).not.toHaveBeenCalled();
-    // With nobody selected the section is the form, and the form has nothing to delete.
+    // With nobody selected the section is the form, which has nothing to delete.
     expect(screen.getByText(AGENT_FORM_TITLE)).toBeInTheDocument();
   });
 

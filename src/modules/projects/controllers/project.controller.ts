@@ -34,7 +34,7 @@ export class ProjectController {
     return this.projectService.openOrCreate(payload);
   }
 
-  /** Nothing is handed over: the one open project is what is put down. */
+  /** Closes the one open project; takes no argument. */
   async close(): Promise<void> {
     this.projectService.close();
   }

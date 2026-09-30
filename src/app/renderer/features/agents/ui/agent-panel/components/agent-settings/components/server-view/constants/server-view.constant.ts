@@ -1,5 +1,5 @@
 import { PANEL_GROUND_COLOR } from "../../../../../../../../../constants";
-/** One server's functions as a step of its own inside the tab — the same shape the opened grant takes. */
+/** One server's functions as a step of the tab. */
 export const SERVER_VIEW_BODY_PADDING_PX = 16;
 export const SERVER_VIEW_BODY_GAP_PX = 10;
 export const SERVER_VIEW_SEARCH_GAP_PX = 8;
@@ -21,7 +21,7 @@ export const SERVER_VIEW_COUNT_COLOR = "#4a5164";
 export const SERVER_VIEW_SAID_FONT_SIZE_PX = 11.5;
 export const SERVER_VIEW_SAID_LINE_HEIGHT = 1.5;
 export const SERVER_VIEW_SAID_COLOR = "#6b7490";
-/** Nothing matched what was typed; an empty list under a search would say nothing at all. */
+/** Shown when nothing matches the search. */
 export const SERVER_VIEW_NONE_FOUND = "Нічого не знайшлось";
 export const SERVER_VIEW_SAVE_LABEL = "Зберегти";
 export const SERVER_VIEW_FOOTER_PADDING_PX = 16;

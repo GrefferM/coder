@@ -48,7 +48,7 @@ describe("ModelRow", () => {
   });
 
   it("says in the prices' own place which field an unfinished model is missing", () => {
-    // A model with a number unwritten is not priced at nought — it says what is not written.
+    // A model with an unwritten number is not priced at 0; it says what is missing.
     const unfinished = model({
       inputPrice: null,
     });
@@ -63,7 +63,7 @@ describe("ModelRow", () => {
   });
 
   it("says a provider this build does not know, and one that no longer holds the model", () => {
-    // Both wrongs read the same to a person: what they named is not there to be asked.
+    // Both wrongs read the same: what was named is not there to ask.
     const { rerender } = render(
       <ModelRow model={model()} agents={[]} isProviderKnown={false} isInstalled={null} isOpen {...acts()} />,
     );

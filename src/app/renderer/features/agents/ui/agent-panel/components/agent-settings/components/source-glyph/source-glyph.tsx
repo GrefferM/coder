@@ -1,11 +1,7 @@
 import { TOOLS_GROUP_ICON_SIZE_PX, TOOLS_GROUP_LABEL_COLOR } from "../tools-section/constants";
 import type { SourceGlyphProps } from "./interfaces";
 
-/**
- * The glyph that says where a function came from — the terminal prompt for the project's own commands,
- * the plug for a server, two linked nodes for an agent. It stands in two places now, over the section and over a group inside its list, and it is
- * one drawing so that the two cannot drift apart.
- */
+/** Where a function came from: terminal prompt for commands, plug for a server, two linked nodes for an agent. */
 export function SourceGlyph({ source }: SourceGlyphProps) {
   return (
     <svg

@@ -24,7 +24,7 @@ export const UNDO_LINE_MESSAGE_COLOR = CONTROL_AT_REST_COLOR;
 export const UNDO_LINE_ACTION_COLOR = "#38a3ff";
 export const UNDO_LINE_SECONDS_COLOR = QUIET_MARK_COLOR;
 
-/** An offer that a newer one has pushed up dims, but keeps its own countdown and its own way back. */
+/** An offer pushed up by a newer one dims but keeps its own countdown and undo. */
 export const UNDO_LINE_OLDER_OPACITY = 0.72;
 export const UNDO_LINE_OLDER_BORDER_COLOR = "#1c202c";
 export const UNDO_LINE_OLDER_MESSAGE_COLOR = "#5c6478";

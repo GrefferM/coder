@@ -63,7 +63,7 @@ function turn(turnId: string, agentId: string, runKey: string): TurnOut {
   };
 }
 
-/** The turns out, each under its own id — the shape the walk holds them in. */
+/** The turns out, each under its own id, as the walk holds them. */
 function working(...turns: TurnOut[]): Record<string, TurnOut> {
   return Object.fromEntries(turns.map((standing) => [standing.turnId, standing]));
 }
@@ -80,7 +80,7 @@ function ledger(): RunLedger {
   };
 }
 
-/** One turn come back; what it says is set by the patch, and everything else is a plain good answer. */
+/** One turn come back; the patch sets what it says, the rest is a plain good answer. */
 function answer(patch: Partial<TurnAnswer> = {}): TurnAnswer {
   return {
     text: "Тести пройшли",
@@ -98,7 +98,7 @@ function answer(patch: Partial<TurnAnswer> = {}): TurnAnswer {
   };
 }
 
-/** The turn of one agent that came back, as the machine is told of it. */
+/** One agent's turn that came back, as the machine is told of it. */
 function back(agentId: string, patch: Partial<TurnAnswer> = {}): Extract<WalkEvent, { kind: "answered" }> {
   return {
     kind: "answered",
@@ -115,7 +115,7 @@ function back(agentId: string, patch: Partial<TurnAnswer> = {}): Extract<WalkEve
   };
 }
 
-/** The row «СПИТАТИ ЩЕ РАЗ» stands under — a turn of one walk that ended in anything but an answer. */
+/** The row «СПИТАТИ ЩЕ РАЗ» stands under: a turn of one walk that ended in anything but an answer. */
 function broken(id: string, walkId: string): ChatMessage {
   return {
     id,
@@ -168,7 +168,7 @@ function config(agents: Agent[] = [], links: [string, string][] = []): ProjectCo
 
 const NO_LINES = config();
 
-/** One walk as the machine holds it, with what a spec puts into it. */
+/** One walk as the machine holds it, with the spec's patch. */
 function held(patch: Partial<Walk> = {}): Walk {
   return {
     ...begunWalk("question-1", 100),
@@ -188,7 +188,7 @@ function putAwayWalks(state: WalkState): string[] {
     .sort();
 }
 
-/** A stream holding one walk, «walk-1», unless the spec says otherwise — a rule is told of walks it holds. */
+/** A stream holding one walk, «walk-1», unless the spec says otherwise. */
 function walk(patch: Partial<WalkState> = {}): WalkState {
   return {
     ...emptyWalk(),
@@ -372,7 +372,7 @@ describe("walkMachine · a stream emptied", () => {
       NO_LINES,
     );
 
-    // A walk still out keeps every word it said — its run holds them when it is opened again.
+    // A walk still out keeps every word it said; its run holds them when reopened.
     expect(state.walks["walk-1"]?.said).toEqual([]);
     // Every other stream keeps what stands typed in it.
     expect(state.drafts).toEqual({
@@ -578,7 +578,7 @@ describe("walkMachine · a converging point that does not wait", () => {
       NO_LINES,
     );
 
-    // The work went at once, as its own turn — not gathered, not held for the other supplier.
+    // The work went at once as its own turn, not gathered or held for the other supplier.
     expect(effects).toEqual([
       {
         kind: "askAgent",
@@ -590,7 +590,7 @@ describe("walkMachine · a converging point that does not wait", () => {
         isAgain: false,
       },
     ]);
-    // The tally is kept only to spot an all-silent run; the other supplier is still awaited.
+    // The tally only spots an all-silent run; the other supplier is still awaited.
     expect(state.walks["walk-1"]?.waiting.titler?.settledIds).toEqual(["thesaurus"]);
   });
 
@@ -627,7 +627,7 @@ describe("walkMachine · a converging point that does not wait", () => {
       NO_LINES,
     );
 
-    // Only this arrival goes — the earlier one already went on its own; nothing is combined.
+    // Only this arrival goes; the earlier one already went on its own, nothing is combined.
     expect(effects).toEqual([
       {
         kind: "askAgent",
@@ -693,13 +693,14 @@ describe("walkMachine · a point that will not answer", () => {
       lines,
     );
 
-    // Nobody was waiting on a single line, so the walk simply runs to its end and nothing is asked.
+    // Nobody waited on a single line, so the walk runs to its end and nothing is asked.
     expect(state.walks["walk-1"]?.waiting ?? {}).toEqual({});
     expect(effects).toEqual([]);
   });
 
   it("settles a converging point with nothing, and the point lets down whoever stands behind it", () => {
-    // The point waits for both only where the run reaches both: the walk out of the thesaurus goes to the shortener too.
+    // The point waits for both only where the run reaches both: the walk out of the thesaurus goes to the shortener
+    // too.
     const lines = config(
       [thesaurus, shortener, titler],
       [
@@ -887,7 +888,7 @@ describe("walkMachine · the answer takes its lines out", () => {
   });
 
   it("lets down whoever waited behind a line that could not be taken", () => {
-    // The work never goes there, so the point below settles that supplier with nothing in hand.
+    // The work never goes there, so the point below settles that supplier with nothing.
     const { state, effects } = handedOn([
       {
         linkId: "link-0",
@@ -898,13 +899,13 @@ describe("walkMachine · the answer takes its lines out", () => {
 
     expect(state.walks["walk-1"]?.waiting.titler?.settledIds).toEqual(["shortener"]);
     expect(state.walks["walk-1"]?.waiting.titler?.arrived).toEqual([]);
-    // Nothing is put anywhere: the row about the line is all this hand-off does.
+    // The hand-off only writes the row about the line.
     expect(effects.map((effect) => effect.kind)).toEqual(["sayHandoff"]);
   });
 
   it("settles a converging point with nothing from a line it could not take, so it goes on without that supplier", () => {
-    // A supplier whose line the walk could not take never answers, so a point that waited on it would wait
-    // for ever; it is settled with nothing from that line and works on what did arrive.
+    // A supplier whose line the walk could not take never answers; the point settles it with nothing and works on what
+    // arrived.
     const standing = walk({
       out: working(turn("turn-4", "titler", "walk-1")),
       walks: {
@@ -938,7 +939,7 @@ describe("walkMachine · the answer takes its lines out", () => {
       lines,
     );
 
-    // Nothing goes down that line ever — the point counts this supplier as settled with empty hands.
+    // Nothing ever goes down that line, so the point counts the supplier as settled with nothing.
     expect(first.state.walks["walk-2"].waiting.titler?.settledIds).toEqual(["thesaurus"]);
     expect(first.state.walks["walk-2"].waiting.titler?.arrived).toEqual([]);
 
@@ -982,8 +983,7 @@ describe("walkMachine · the answer takes its lines out", () => {
   });
 
   it("never closes another walk's wait: two walks converging on one point hold two waits", () => {
-    // One agent may be a point in two walks at once, and each wait is that walk's own — a supplier
-    // settling in one of them says nothing about the other.
+    // One agent may be a point in two walks at once; each wait is that walk's own.
     const standing = walk({
       out: working(turn("turn-5", "shortener", "walk-1")),
       walks: {
@@ -1029,9 +1029,9 @@ describe("walkMachine · the answer takes its lines out", () => {
       lines,
     );
 
-    // Walk-1's point stands exactly as it stood: its shortener is still to come.
+    // Walk-1's point is unchanged: its shortener is still to come.
     expect(state.walks["walk-1"].waiting.titler).toEqual(standing.walks["walk-1"].waiting.titler);
-    // Walk-2's point settled both — the shortener with nothing, the thesaurus with words — and went, in walk-2.
+    // Walk-2's point settled both (shortener with nothing, thesaurus with words) and went.
     expect(state.walks["walk-2"].waiting.titler).toBeUndefined();
     expect(effects.filter((effect) => effect.kind === "askAgent")).toEqual([
       {
@@ -1117,7 +1117,7 @@ describe("walkMachine · work put to an agent", () => {
       },
     });
 
-    // The question is the person's, so it is said; nothing of it goes out, and the walk is over at once.
+    // The question is the person's, so it is said; nothing goes out and the walk is over at once.
     expect(state.out).toEqual({});
     expect(effects).toEqual([
       {
@@ -1146,7 +1146,7 @@ describe("walkMachine · work put to an agent", () => {
   });
 
   it("puts the turn out where the agent already holds one of another walk: walks run side by side", () => {
-    // Working is no wall — the agent takes a turn for every walk asking it.
+    // Working is no wall: the agent takes a turn for every walk asking it.
     const { state, effects } = asked(
       {},
       walk({
@@ -1204,8 +1204,8 @@ describe("walkMachine · the person stops the stream", () => {
   });
 
   it("cuts the walks of the row on screen and leaves another conversation running", () => {
-    // Two conversations at once. The button under the field speaks for the stream it stands in, and the
-    // work of the other row is neither cut nor asked to stop — it was paid for and nobody pressed anything on it.
+    // Two conversations at once: the button speaks for its own stream, and the other row's work is neither cut nor
+    // asked to stop.
     const { state, effects } = walkMachine(
       walk({
         out: working(turn("turn-1", "editor", "walk-1"), turn("turn-2", "editor", "walk-2")),
@@ -1297,7 +1297,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
     );
   }
 
-  /** A repeat run against other lines than the whole ones — an agent switched off among them. */
+  /** A repeat run against fewer lines than the whole set, an agent being off among them. */
   function repeatedIn(left: RunUnfinished, drawn: ProjectConfig) {
     const next = whole(left, walk(), null, drawn);
 
@@ -1307,7 +1307,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
     };
   }
 
-  /** Every repeat takes its walk first; that one effect has its own spec, and the rest read without it. */
+  /** Every repeat takes its walk first; that effect has its own spec and the rest read without it. */
   function repeated(left: RunUnfinished, state = walk(), notSentTo: string | null = null) {
     const next = whole(left, state, notSentTo);
 
@@ -1326,7 +1326,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
     expect(effects[0]).toEqual({
       kind: "takeWalk",
       runKey: "walk-2",
-      // The repeat is no question of the person's, so it stands in the block of the one it picks up.
+      // The repeat is not the person's question, so it stands in the block of the one it picks up.
       askedAt: 100,
       runId: "run-1",
       questionId: "question-1",
@@ -1480,7 +1480,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
 
 describe("walkMachine · the words of a walk picked up", () => {
   it("names a repeat as a repeat, so the words already standing in the stream are not said twice", () => {
-    // The repeat picks the walk up; its question stands right above it and is not asked again.
+    // The repeat picks the walk up; its question stands right above and is not asked again.
     const { effects } = walkMachine(
       walk(),
       {
@@ -1537,8 +1537,7 @@ describe("walkMachine · the turn that came back", () => {
   });
 
   it("hands the words down no line that leads back into the walk's own path", () => {
-    // A ring got past the drawing and past the file — the machine is the last wall between the work and a
-    // walk without end.
+    // A ring that got past the drawing and the file; the machine is the last wall.
     const { effects } = walkMachine(
       walk({
         out: working(turn("turn-1", "editor", "walk-1")),
@@ -1607,8 +1606,8 @@ describe("walkMachine · the turn that came back", () => {
   });
 
   it("writes the provider's sentence down for a turn that fell, and makes no card of it", () => {
-    // The record keeps what came back, so the run opened tomorrow says why it fell; the card holds the model's
-    // own words alone, and a refusal is not the model speaking.
+    // The record keeps what came back so a later-opened run says why it fell; the card holds only the model's own
+    // words.
     const { effects } = walkMachine(
       walk({
         out: working(turn("turn-1", "editor", "walk-1")),
@@ -1659,9 +1658,9 @@ describe("walkMachine · the person put a question", () => {
       runKey: "walk-1",
       questionId: "question-1",
       askedAt: 100,
-      // The row this walk writes into is the conversation's, and it is older than the walk.
+      // The row this walk writes into is the conversation's and predates the walk.
       runId: "run-1",
-      // The row is named by the agent it began with, so the agent goes whole, not its id alone.
+      // The row is named by the agent it began with, so the whole agent goes, not its id.
       agent: agent("editor"),
       asked: "Прогони тести",
     });
@@ -1690,8 +1689,8 @@ describe("walkMachine · the person put a question", () => {
   });
 
   it("puts nothing while a turn of this stream is out: a conversation walks one walk at a time", () => {
-    // The hand under the field is «ЗУПИНИТИ» while something is out, so no second question is sent into
-    // the same conversation. Another conversation is «+ НОВИЙ ЧАТ», and it walks beside this one.
+    // The button is «ЗУПИНИТИ» while something is out, so no second question enters the same conversation; another
+    // conversation is «+ НОВИЙ ЧАТ» and walks beside it.
     const { state, effects } = walkMachine(
       walk({
         out: working(turn("turn-1", "editor", "walk-1")),
@@ -1719,7 +1718,7 @@ describe("walkMachine · the person put a question", () => {
   });
 
   it("puts the question where the turn out belongs to another conversation, standing on another row", () => {
-    // That walk is not of this screen, so it is no wall here — this row has nothing out of its own.
+    // That walk is not of this screen, so it is no wall here.
     const { effects } = walkMachine(
       walk({
         out: working(turn("turn-1", "editor", "walk-1")),
@@ -1775,7 +1774,7 @@ describe("walkMachine · the person put a question", () => {
       config([agent("editor")]),
     );
 
-    // The pill goes; the walk itself stays, because its words are the stream on screen.
+    // The pill goes; the walk stays, its words being the stream on screen.
     expect(state.walks["walk-gone"]?.waiting).toEqual({});
   });
 

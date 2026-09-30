@@ -21,17 +21,14 @@ import type { GrantTargets } from "../../../interfaces";
 import type { ToolGrant } from "../../../interfaces";
 
 /**
- * What one mini-sphere says under the cursor. A server names itself and counts what is granted
- * against what it hands over; a command says its own name and **no number** — one command is one mark, and a
- * «1 з 7» on it would be counting the project's declarations rather than saying what this mark is.
- *
- * What a server does not do is name its functions — «24 імені в підказку не влазять і не для того вона».
+ * What one mini-sphere says under the cursor. A server gives its name and granted-against-offered count; a command
+ * gives its name and no number. Function names are never listed.
  */
 export function orbHint(group: string, granted: ToolGrant[], said: GrantTargets): OrbHint {
   if (group === COMMANDS_GROUP_KEY) {
     return {
       kind: ORB_HINT_COMMAND_KIND,
-      // The name is the whole of what a command is here: it is one line in the project's own file.
+      // A command is just its name, one line in the project file.
       name: nameOfCommand(granted[0] ?? null, said) ?? ORB_HINT_GONE_COMMAND,
       count: "",
       lines: [],
@@ -54,7 +51,7 @@ export function orbHint(group: string, granted: ToolGrant[], said: GrantTargets)
 
   return {
     kind: ORB_HINT_SERVER_KIND,
-    // A server the project let go still stands on the arc until the grant is taken back, and says so.
+    // A server the project dropped still stands on the arc until the grant is taken back.
     name: server?.name ?? ORB_HINT_GONE_NAME,
     count: countOfFunctions(granted.length, handsOver),
     lines: [],
@@ -62,13 +59,8 @@ export function orbHint(group: string, granted: ToolGrant[], said: GrantTargets)
 }
 
 /**
- * What a порода's «+» says — «ЩЕ 3 СЕРВЕРИ», and a line for each mark behind it. It counts one порода
- * and never the rest of the sources together, because it wears that порода's own shape: a command folded is named
- * by its name, a server by its name and its count.
- *
- * Where something behind it is broken the head says so too — «ЩЕ 3 СЕРВЕРИ · 1 ЗЛАМАНИЙ». The heap
- * carries two things now, its number and its state, and the number alone would have hidden the state that the
- * hard two places pushed under it.
+ * What a kind's «+» says: «ЩЕ 3 СЕРВЕРИ», plus a line per mark behind it; a broken count is appended: «ЩЕ 3 СЕРВЕРИ · 1
+ * ЗЛАМАНИЙ».
  */
 export function foldHint(folded: ArmedFold[], broken: number, said: GrantTargets): OrbHint {
   const source = sourceOfGroup(folded[0].group);
@@ -93,7 +85,7 @@ export function foldHint(folded: ArmedFold[], broken: number, said: GrantTargets
   };
 }
 
-/** «run_test» — a granted command is named by the name the project gave it, and by nothing else. */
+/** A granted command is named by the name the project gave it. */
 function nameOfCommand(grant: ToolGrant | null, said: GrantTargets): string | null {
   if (grant === null) {
     return null;
@@ -111,7 +103,7 @@ function nameOfAgent(grant: ToolGrant | null, said: GrantTargets): string | null
   return said.agents.find((one) => one.id === grant.agentId)?.name ?? null;
 }
 
-/** «2 з 33 функцій» — what is granted against what the server said it hands over, in the forms a number takes. */
+/** «2 з 33 функцій»: granted against what the server offers. */
 function countOfFunctions(granted: number, handsOver: number): string {
   const [one, few, many] = ORB_HINT_FUNCTION_FORMS;
 

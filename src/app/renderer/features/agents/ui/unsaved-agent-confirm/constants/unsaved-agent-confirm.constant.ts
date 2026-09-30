@@ -20,8 +20,7 @@ export const UNSAVED_AGENT_DIFF_SEPARATOR = " ·";
 export const UNSAVED_AGENT_DIFF_ARROW = "→";
 
 /**
- * How many letters one line of the box holds: 400px wide less the dialog's 16 and the block's 11 on both sides,
- * at 10.5px mono and three 5px gaps.
+ * Letters per box line: 400px less the dialog's 16 and the block's 11 on both sides, at 10.5px mono and three 5px gaps.
  */
 export const UNSAVED_AGENT_DIFF_LETTERS_MOST = 51;
 

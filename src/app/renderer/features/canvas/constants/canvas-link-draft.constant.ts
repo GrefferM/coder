@@ -33,7 +33,7 @@ export const LINK_DIRECTION_BORDER_RADIUS_PX = 7;
 export const LINK_DIRECTION_PADDING = "3px 8px";
 export const LINK_DIRECTION_FONT_SIZE_PX = 9;
 export const LINK_DIRECTION_LETTER_SPACING_PX = 1.5;
-/** Height of the direction above the line's middle — same place as the chosen link's pill. */
+/** Height of the direction above the line's middle, where the chosen link's pill stands. */
 export const LINK_DIRECTION_OFFSET_Y_PX = 34;
 
 /** Hint beside the pointer while the line has no target. */
@@ -45,7 +45,7 @@ export const LINK_DRAFT_HINT_PADDING = "7px 10px";
 export const LINK_DRAFT_HINT_COLOR = CONTROL_AT_REST_COLOR;
 export const LINK_DRAFT_HINT_OFFSET_PX = 22;
 
-/** Cancelled line — neutral, dashed, crossed; fades over this long. */
+/** Cancelled line: neutral, dashed, crossed; fades over this long. */
 export const LINK_DRAFT_CANCELLED_MS = 400;
 export const LINK_DRAFT_CANCELLED_COLOR = "#39405a";
 export const LINK_DRAFT_CANCELLED_WIDTH = 1.4;

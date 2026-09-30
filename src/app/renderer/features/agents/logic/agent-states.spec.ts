@@ -110,7 +110,7 @@ describe("agentStates", () => {
   });
 
   it("takes work, waiting and a fall to the agent each one names, and not to its neighbour", () => {
-    // The canvas and the panel read this one answer, so a state landing on the wrong agent lands twice.
+    // Canvas and panel share this answer.
     const states = agentStates(
       facts({
         working: [working("agent-2")],
@@ -124,7 +124,7 @@ describe("agentStates", () => {
     expect(states["agent-1"].label).toBe(STATE_FELL_LABEL);
     expect(states["agent-2"].label).toBe(STATE_WORKING_LABEL);
     expect(states["agent-3"].label).toBe(STATE_WAITING_LABEL);
-    // The fourth is switched off, and nothing above was said about it.
+    // The fourth is switched off.
     expect(states["agent-4"].label).toBe(STATE_OFF_LABEL);
   });
 

@@ -12,7 +12,7 @@ import {
 } from "../constants";
 import type { Agent, Link, ProjectConfig } from "../../../interfaces";
 
-/** The diff, line by line — «+ агент FIXER», «− зв'язок PLANNER → TESTER», «~ модель GPT-4». */
+/** The diff line by line: «+ агент FIXER», «− зв'язок PLANNER → TESTER», «~ модель GPT-4». */
 export function configDifference(before: ProjectConfig, after: ProjectConfig): string[] {
   return [
     ...partDifference(before.agents, after.agents, DIFFERENCE_AGENT_WORD, (agent) => agent.name),
@@ -25,7 +25,7 @@ export function configDifference(before: ProjectConfig, after: ProjectConfig): s
   ];
 }
 
-/** Diffs one list against its former self; `nameOf` is told the item's side, which names a link's ends. */
+/** Diffs one list against its earlier state; `nameOf` gets the item's side, which names a link's ends. */
 function partDifference<TItem extends { id: string }>(
   was: TItem[],
   now: TItem[],

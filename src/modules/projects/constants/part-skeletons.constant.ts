@@ -1,13 +1,7 @@
-/**
- * A skeleton stands in for a lost part file only where the thing is a node of the graph — an agent whose sphere
- * the links are drawn to. What a catalogue holds is left out instead, and whatever pointed at it says so.
- */
+/** A skeleton stands in for a lost part file only for graph nodes (agents); catalogue items are left out. */
 export const UNKNOWN_VALUE = "unknown";
 
-/**
- * How far apart restored agents stand. Where an agent's own file is gone its place is gone with it, so the canvas is
- * given a row instead of one point: a step wider than a sphere, and two of them never sit on one another.
- */
+/** Spacing between restored agents: a step wider than a sphere, so none overlap. */
 export const AGENT_SKELETON_STEP_PX = 240;
 
 export const AGENT_SKELETON = {
@@ -16,11 +10,11 @@ export const AGENT_SKELETON = {
   // A colour cannot say «unknown»; a lost one becomes this grey.
   color: "#6b7490",
   isActive: true,
-  // A restored agent waits for all, the safe default a lost file no longer says otherwise.
+  // Safe default when the lost file says nothing.
   waitsForAll: true,
   x: 0,
   y: 0,
-  // A number nobody wrote is not a number; the agent says «НЕ ЗАПОВНЕНО» instead of standing on a fill-in.
+  // Unset; the agent shows «НЕ ЗАПОВНЕНО».
   maxCalls: null,
   temperature: null,
 };

@@ -54,36 +54,33 @@ export function useAgentChat(
   selectedAgentId: string | null,
   providers: ProviderState[],
   heard: (providerId: string, isAnswering: boolean) => void,
-  /** What every declared server said it hands over, by server id; a turn reads it at the moment it asks. */
+  /** What each declared server hands over, by server id; read when a turn asks. */
   looks: Record<string, McpLook>,
-  /** Says a pick that was not attached, and why, on the line over the canvas. */
+  /** Reports a pick that was not attached, and why, on the line over the canvas. */
   onRefused: (words: string) => void,
 ): AgentChatState {
-  /** The stream that has no record of its own yet — «+ НОВИЙ ЧАТ» starts another, with an empty field. */
+  /** The stream with no record yet; «+ НОВИЙ ЧАТ» starts another with an empty field. */
   const [freshStream, setFreshStream] = useState(() => crypto.randomUUID());
   /** Everything this stream's walks stand on, in one thing. */
   const [walked, setWalked] = useState<WalkState>(emptyWalk);
-  // Ref mirrors state: a turn starting inside another turn's answer must read the current walk, not the drawn one.
+  // Mirrors state: a turn starting inside another turn's answer must read the current walk.
   const stands = useRef(walked);
   const held = useRef(project);
   const machine = useRef(providers);
   const said = useRef(looks);
   const refused = useRef(onRefused);
-  /**
-   * How tall the field under the stream stands. It is the person's own setting, kept where the canvas keeps its
-   * scale — this machine's note about this project — so it outlives the window like everything else there.
-   */
+  /** Height of the field under the stream; a per-machine, per-project setting kept beside the canvas scale. */
   const [fieldHeight, setFieldHeight] = useState<number | null>(project.view?.fieldHeight ?? null);
-  /** Nothing opens itself, and what a hand opened stays open — the whole of that is remembered here. */
+  /** Remembers which calls a hand opened; nothing opens itself. */
   const openCalls = useOpenCalls();
-  /** Whom the chat is aimed at. Picking a sphere aims it; letting the sphere go leaves the aim standing. */
+  /** Whom the chat is aimed at; picking a sphere aims it, releasing the sphere keeps the aim. */
   const [aimedAgentId, setAimedAgentId] = useState<string | null>(project.view?.aimedAgentId ?? null);
   const aimed = useRef(aimedAgentId);
-  /** The machine's own hand, held apart — the record is built before it and tells it of a row through this. */
+  /** The machine's own handler, held apart; the record is built before it and tells it of a row through this. */
   const told = useRef<(event: WalkEvent) => void>(() => undefined);
   /**
-   * The record this conversation writes into, and the hand that writes there. The row moves at the person's
-   * word only — a run opened, «+ НОВИЙ ЧАТ» — and never because a walk wrote a step.
+   * The record this conversation writes into, and its writer; the row changes only at the person's word (a run opened, «+
+   * НОВИЙ ЧАТ»), never when a walk writes a step.
    */
   const record = useFlowRecord(
     useCallback((runKey: string, runId: string) => {
@@ -96,7 +93,7 @@ export function useAgentChat(
     useCallback((runKey: string) => stands.current.walks[runKey]?.isPutAway === true, []),
   );
   const { writer } = record;
-  /** Which stream is on screen — the run opened in its place, or the fresh one that has no record yet. */
+  /** The stream on screen: the opened run, or the fresh one with no record yet. */
   const stream = useRef(record.runId ?? freshStream);
 
   aimed.current = aimedAgentId;
@@ -112,15 +109,12 @@ export function useAgentChat(
     }
   }, [selectedAgentId]);
 
-  /** The walk moves as a whole, and the ref moves with it — the next callback must not see the old one. */
+  /** Updates the walk as a whole and the ref with it, so the next callback sees the new one. */
   const change = useCallback((moved: (standing: WalkState) => WalkState) => {
     stands.current = moved(stands.current);
     setWalked(stands.current);
   }, []);
-  /**
-   * A word is written into the walk that said it, by the walk's own id. Every walk keeps saying,
-   * put away or not — the screen decides what to draw, and a stream emptied takes nothing from another one.
-   */
+  /** Writes a word into the walk that said it, by walk id; every walk keeps saying, put away or not. */
   const sayIn = useCallback(
     (runKey: string, moved: (was: ChatMessage[]) => ChatMessage[]) => {
       change((standing) => {
@@ -144,10 +138,7 @@ export function useAgentChat(
     },
     [change],
   );
-  /**
-   * The walk as a callback sees it. The ledgers are the writer's own book, so they are asked of the writer
-   * and never kept twice; the aim and the row belong to the screen and are read where the screen holds them.
-   */
+  /** The walk as a callback sees it; ledgers are asked of the writer, the aim and the row are read from the screen. */
   const walkNow = useCallback(
     (): WalkState => ({
       ...stands.current,
@@ -157,11 +148,11 @@ export function useAgentChat(
     }),
     [],
   );
-  /** The stream on screen, read at the moment a pack comes back — the question goes there or waits there. */
+  /** The stream on screen when a pack comes back; the question goes or waits there. */
   const streamNow = useCallback(() => stream.current, []);
-  /** A question with files goes through here: packed first, then sent — or given back. */
+  /** A question with files: packed first, then sent or given back. */
   const packed = usePackedSend(streamNow);
-  /** The hands the runner reaches for, held apart so the one runner below never takes an old one. */
+  /** The hands the runner reaches for, held in a ref so the one runner never takes stale ones. */
   const hands = useRef<WalkHands>({
     askAgent: () => undefined,
     askMachine: () => undefined,
@@ -176,20 +167,14 @@ export function useAgentChat(
     takeWalk: () => undefined,
     askAgain: () => undefined,
   });
-  /**
-   * What the machine asked the world to do, done. An effect's own kind is the name of the hand that
-   * answers it, so there is one line here and no list to keep level with the effects.
-   */
+  /** Carries out the effects the machine asked for; an effect's kind names the hand that answers it. */
   const carryOut = useCallback((effects: WalkEffect[]) => {
     for (const effect of effects) {
       (<(act: WalkEffect) => void>hands.current[effect.kind])(effect);
     }
   }, []);
 
-  /**
-   * One fact told to the walk. Everything the walk became goes back where React holds it, and then what it
-   * asked of the world is done — so no rule has to remember which of the pieces its own answer touched.
-   */
+  /** Tells one fact to the walk, stores what it became where React holds it, then carries out its effects. */
   const dispatch = useCallback(
     (event: WalkEvent) => {
       const { state, effects } = walkMachine(walkNow(), event, held.current.config);
@@ -202,8 +187,7 @@ export function useAgentChat(
 
   told.current = dispatch;
 
-  // The one reverse channel, subscribed once for the section; each piece names its turn, and only that turn's card
-  // hears it — a token is no news to the spheres, the lines or the history.
+  // The one reverse channel, subscribed once per section; each piece names its turn and only that turn's card hears it.
   useEffect(
     () => window.electronApi.subscribe(AGENT_CHUNK_CHANNEL, (piece) => sayPiece(piece.turnId, piece.text, piece.call)),
     [],
@@ -223,8 +207,8 @@ export function useAgentChat(
   );
 
   /**
-   * One row about one link — «ПЕРЕДАЄ» where the work went, «НЕ ПЕРЕДАЄ · ВИМКНЕНИЙ» where it
-   * did not. With no sender it is the person's own question, and the row says so instead.
+   * One row about one link: «ПЕРЕДАЄ» where the work went, «НЕ ПЕРЕДАЄ · ВИМКНЕНИЙ» where it did not; with no sender, the
+   * person's own question.
    */
   const sayHandoff = useCallback(
     ({ runKey, fromAgentId, toAgentId, stopReason, questionId, askedAt }: WalkAct<"sayHandoff">) => {
@@ -245,7 +229,7 @@ export function useAgentChat(
     [sayIn],
   );
 
-  /** The words a turn was given — the person's own, or what arrived down each line. */
+  /** The words a turn was given: the person's own, or what arrived down each line. */
   const sayAsked = useCallback(
     ({ runKey, agentId, incoming, questionId, askedAt, isAgain }: WalkAct<"sayAsked">) => {
       sayIn(runKey, (standing) => [
@@ -265,7 +249,7 @@ export function useAgentChat(
     [sayIn],
   );
 
-  /** A walk begins — the writer takes it, and its question is written the moment it is asked. */
+  /** Begins a walk: the writer takes it and its question is written when asked. */
   const openWalk = useCallback(
     ({ runKey, questionId, askedAt, runId, agent, asked }: WalkAct<"openWalk">) => {
       const ledger: RunLedger = {
@@ -279,14 +263,14 @@ export function useAgentChat(
       };
 
       writer.hold(runKey, ledger);
-      // The question is written the moment it is asked, so a flow that reaches nobody still stands in the
-      // record; two questions asked in one breath share one row.
+      // Written when asked, so a flow reaching nobody still stands in the record; two questions in one breath share a
+      // row.
       writer.askQuestion(ledger, held.current.directory, agent, asked, runKey);
     },
     [writer],
   );
 
-  /** A walk picked up out of the record — the writer takes it, and no question is written: it has one. */
+  /** A walk picked up from the record: the writer takes it, no question is written. */
   const takeWalk = useCallback(
     ({ runKey, askedAt, runId, questionId }: WalkAct<"takeWalk">) => {
       writer.hold(runKey, {
@@ -298,8 +282,8 @@ export function useAgentChat(
         stepIdOf: {},
         queue: Promise.resolve(),
       });
-      // The row this repeat writes into is the one the person pressed it on, and the screen is already
-      // standing there. Should they have left for another row while the record was read, they stay where they went.
+      // The repeat writes into the row the person pressed it on; if they moved to another row meanwhile, they stay
+      // there.
       record.learnRow(runKey, runId);
     },
     [record, writer],
@@ -313,7 +297,7 @@ export function useAgentChat(
     [sayIn],
   );
 
-  /** One finished turn written down as a step; the card then takes the id of the step it became. */
+  /** Writes one finished turn as a step; the card takes the step's id. */
   const writeTurn = useCallback(
     ({ runKey, saidId, turn }: WalkAct<"writeTurn">) => {
       const ledger = writer.walks()[runKey] ?? null;
@@ -339,8 +323,8 @@ export function useAgentChat(
   );
 
   /**
-   * One turn of a walk is back. The run ends when the last of them does, at the moment the walk ended — the
-   * writes may still be going, and they go on into the row it opened.
+   * One turn of a walk is back; the run ends when the last one is, at the moment the walk ended, and the writes go on
+   * into its row.
    */
   const turnBack = useCallback(
     ({ runKey }: WalkAct<"turnBack">) => {
@@ -350,7 +334,7 @@ export function useAgentChat(
         return;
       }
 
-      // A walk whose question never went put no turn out at all, and is over the moment it is said.
+      // A walk whose question never went has no turn out and is over as soon as it is said.
       ledger.out = Math.max(0, ledger.out - 1);
 
       if (ledger.out > 0) {
@@ -359,8 +343,7 @@ export function useAgentChat(
 
       const endedAt = Date.now();
 
-      // The writer holds this walk no longer, and the walk itself stays where it is — its words
-      // are the stream on screen until «+ НОВИЙ ЧАТ» empties it.
+      // The writer drops this walk; the walk stays as the on-screen stream until «+ НОВИЙ ЧАТ» empties it.
       writer.drop(runKey);
       writer.closeWalk(ledger, runKey, endedAt);
     },
@@ -368,10 +351,8 @@ export function useAgentChat(
   );
 
   /**
-   * What this agent has answered in this conversation, read out of the row the conversation writes into.
-   * The record is the one place it lives, so the writes of every walk are let settle first — a pair written a
-   * moment ago must be in it. A conversation with no row yet has nothing behind it, and neither has an agent
-   * asked here for the first time.
+   * What this agent has answered in this conversation, read from the record after every walk's writes settle; empty
+   * without a row or on a first ask.
    */
   const threadOf = useCallback(
     async (runId: string | null, agentId: string) => {
@@ -388,12 +369,12 @@ export function useAgentChat(
     [writer],
   );
 
-  /** The turn the machine named goes out — the run counts it, and the provider is asked. */
+  /** Sends the turn the machine named: the run counts it and the provider is asked. */
   const askMachine = useCallback(
     ({ agent, turnId, incoming, startAgentId, runKey, startedAt, asked }: PutTurn) => {
       const ledger = writer.walks()[runKey] ?? null;
 
-      // One more turn of this run is out; the run ends when the last of them comes back.
+      // One more turn of this run is out; the run ends when the last comes back.
       if (ledger !== null) {
         ledger.out += 1;
       }
@@ -401,7 +382,7 @@ export function useAgentChat(
       const config = held.current.config;
       const stands = agentStands(agent, config, machine.current);
       const { model } = stands;
-      // A walk put away goes on writing into the row it began in; the stream's own row is every other walk's.
+      // A put-away walk keeps writing into the row it began in; every other walk uses the stream's row.
       const row = ledger?.runId ?? record.standing();
 
       void threadOf(row, agent.id)
@@ -409,7 +390,7 @@ export function useAgentChat(
           const catalogue = {
             commands: config.commands,
             servers: config.servers,
-            // What a server hands over is live: it is read now, and never from what the turn was set up with.
+            // Read live, never from what the turn was set up with.
             looks: said.current,
             agents: config.agents,
           };
@@ -426,11 +407,11 @@ export function useAgentChat(
           });
         })
         .then((answered) => {
-          // The turn came back, so nothing arrives for it any more — its words are a card of their own now.
+          // The turn is back, so nothing arrives for it; its words are a card of their own.
           forgetLive(turnId);
 
-          // A turn that reached the address, or was refused by the silence there, says so — the dot follows
-          // the turn instead of waiting for the provider card's own asking. Every other refusal never got that far.
+          // A turn that reached the address, or was refused by silence there, updates the dot at once; other refusals
+          // never got that far.
           if (model !== null && (answered.notStarted === null || answered.notStarted === "silent")) {
             heard(model.provider, answered.notStarted === null);
           }
@@ -453,7 +434,7 @@ export function useAgentChat(
     [dispatch, record, threadOf, writer],
   );
 
-  /** Work put to an agent — the machine says whether the turn goes out or the row says why not. */
+  /** Work put to an agent: the machine decides whether the turn goes out or the row says why not. */
   const askAgent = useCallback(
     ({ agent, incoming, startAgentId, viaLinkIds, runKey, isAgain }: WalkAct<"askAgent">) => {
       dispatch({
@@ -485,12 +466,12 @@ export function useAgentChat(
   );
 
   /**
-   * Reads the run back and picks the broken walk up where it stopped: every turn of the broken step runs again
-   * word for word, and work that arrived and was never taken up is handed back to the point waiting for it.
+   * Reads the run back and resumes the broken walk: every turn of the broken step reruns verbatim, and arrived but
+   * untaken work goes to the waiting point.
    */
   const askAgain = useCallback(
     async ({ runId, questionId, walkId, notSentTo }: WalkAct<"askAgain">) => {
-      // The walk is read out of the record, so the record has to hold what broke a moment ago.
+      // The record must hold what broke a moment ago.
       await writer.settled(walkId ?? "");
 
       const run = await readRun(runId);
@@ -523,8 +504,8 @@ export function useAgentChat(
   };
 
   /**
-   * One walk of the line, from this question to the last step it reaches. The
-   * record it writes into is the conversation's, which is older than this walk whenever one was asked.
+   * One walk from this question to the last step it reaches, written into the conversation's record (older than the
+   * walk).
    */
   const put = useCallback(
     (agent: Agent, text: string, attached: PackedAttachment[]) => {
@@ -535,7 +516,7 @@ export function useAgentChat(
         attached,
         fedFrom: [],
         isAgain: false,
-        // The question's own id, minted here and kept by the record — one id from the first moment.
+        // The question's id, minted here and kept by the record.
         questionId: crypto.randomUUID(),
         runKey: crypto.randomUUID(),
         askedAt: Date.now(),
@@ -545,7 +526,7 @@ export function useAgentChat(
     [dispatch],
   );
 
-  /** A question that did not go comes back to its field with what was attached to it; newer words typed there stay. */
+  /** A question that did not go returns to its field with its attachments; newer typed words stay. */
   const giveBack = useCallback(
     (at: string, text: string, picked: PickedAttachment[]) => {
       change((standing) => ({
@@ -574,21 +555,20 @@ export function useAgentChat(
     const text = (stands.current.drafts[at] ?? "").trim();
     const agent = held.current.config.agents.find((standing) => standing.id === agentId) ?? null;
 
-    // An agent switched off is asked all the same — the walk says why the question stayed, and never
-    // drops it in silence.
+    // An agent switched off is still asked: the walk says why the question stayed.
     if (text === "" || agent === null) {
       return;
     }
 
-    // This conversation is walking, or its last question is still being packed, so there is nothing to send with —
-    // and what is typed stays where it was typed, waiting for the walk to end or for «ЗУПИНИТИ».
+    // The conversation is walking or still packing, so nothing is sent; typed text stays until the walk ends or
+    // «ЗУПИНИТИ».
     if (isWalking(walkNow()) || packed.isPacking(at)) {
       return;
     }
 
     const picked = stands.current.attachments[at] ?? [];
 
-    // The question and its files leave the field together; it is left clear for the next one.
+    // The question and its files leave the field together, which is left clear.
     change((standing) => ({
       ...standing,
       drafts: {
@@ -617,7 +597,7 @@ export function useAgentChat(
     });
   }, [aimedAgentId, change, giveBack, packed, put, walkNow]);
 
-  /** «+ ПРИКРІПИТИ» — the native pick opens, and what is chosen waits under the field of this stream. */
+  /** «+ ПРИКРІПИТИ»: opens the native pick; the choice waits under this stream's field. */
   const attach = useCallback(() => {
     const at = stream.current;
 
@@ -626,8 +606,8 @@ export function useAgentChat(
     const ceiling = agent === null ? 0 : packCeiling(agentStands(agent, config, machine.current));
     const used = (stands.current.attachments[at] ?? []).reduce((sum, one) => sum + one.least, 0);
 
-    // The room left under the ceiling of the agent aimed at: what could never fit in it is refused as soon as the
-    // count shows it, and never becomes a chip. Where no model can be asked yet, there is nothing to count against.
+    // Room left under the aimed agent's ceiling; what could never fit is refused at once and never becomes a chip. With
+    // no model to ask, nothing to count against.
     void pickAttachment(ceiling > 0 ? Math.max(0, ceiling - used) : null).then(
       (pick) => {
         if (pick.picked.length > 0) {
@@ -644,12 +624,12 @@ export function useAgentChat(
           refused.current(pick.refused.map(refusedPickNote).join("; "));
         }
       },
-      // The chooser itself did not open: there is nothing picked to speak of.
+      // The chooser did not open: nothing picked.
       () => undefined,
     );
   }, [change]);
 
-  /** The × on a chip — the one attachment named by its own path is taken off before the question goes. */
+  /** The × on a chip: removes the attachment with that path before the question goes. */
   const detach = useCallback(
     (path: string) => {
       const at = stream.current;
@@ -665,7 +645,7 @@ export function useAgentChat(
     [change],
   );
 
-  /** «СПИТАТИ ЩЕ РАЗ» — the same agent, the same question, inside the record it already has. */
+  /** «СПИТАТИ ЩЕ РАЗ»: the same agent and question, in the existing record. */
   const sayAgain = useCallback(
     (said: ChatMessage) => {
       dispatch({
@@ -676,20 +656,20 @@ export function useAgentChat(
     [dispatch],
   );
 
-  /** A fresh stream; a walk still out runs on into its record and keeps its live row. */
+  /** A fresh stream; a walk still out keeps writing into its record and its live row. */
   const fresh = useCallback(() => {
     dispatch({
       kind: "putAway",
       stream: freshStream,
     });
-    // The record goes on for as long as the conversation does, and this is where it ends.
+    // Ends the record, which otherwise goes on as long as the conversation.
     record.turnTo(null);
     setFreshStream(crypto.randomUUID());
   }, [dispatch, freshStream, record]);
 
   /**
-   * Every turn of the walk on screen is ended in the main process, and a stopped turn hands nothing on. A
-   * walk put away carries on: it was let go, not stopped.
+   * Ends every turn of the on-screen walk in the main process; a stopped turn hands nothing on. A put-away walk carries
+   * on.
    */
   const stop = useCallback(() => {
     dispatch({
@@ -697,59 +677,53 @@ export function useAgentChat(
       runKey: null,
     });
   }, [dispatch]);
-  /** What this stream's walks stand on, as the drawn render sees them. */
+  /** What this stream's walks stand on, as this render sees them. */
   const walk: WalkState = {
     ...walked,
     ledgers: writer.walks(),
     aimedAgentId,
     flowRunId: record.runId,
   };
-  /**
-   * The turn of the aimed agent the chat stands on. Only this conversation's — another one walks
-   * beside it and says nothing here — and there is at most one of it, since a conversation walks one walk at a time.
-   */
+  /** The aimed agent's turn the chat stands on; only this conversation's, at most one (one walk at a time). */
   const turn = Object.values(walk.out)
     .filter((standing) => standing.agentId === aimedAgentId && isOnScreen(walk, standing.runKey))
     .sort((one, other) => one.startedAt - other.startedAt)
     .at(0);
 
   const waiting = wordsAwaitingHand(walk);
-  /** What of this has been shown already — the dot over «ІСТОРІЯ» asks this and nothing else does. */
+  /** What has been shown already; only the dot over «ІСТОРІЯ» asks this. */
   const news = useNewsSeen(waiting.elsewhere, waiting.onScreen);
 
   return {
     /** An agent whose last turn fell and has said nothing since; one good turn clears it. */
     fellAt: fellAgents(walk),
     /**
-     * Whether a conversation not on screen holds a turn that waits for the hand. News of this session
-     * alone: what stands in the record from before is the history's own row to carry, not a sign over it.
+     * A conversation not on screen holds a turn that waits for the hand; this session's news only, not what the record held
+     * before.
      */
     isNewsElsewhere: news.isNewsElsewhere,
-    /** The history was opened — from here on this is no news, whether or not the cause was mended. */
+    /** The history was opened: no longer news. */
     readNews: news.readNews,
-    /** The aim, and never a sphere gone from the project — a deleted agent leaves it aimed at nobody. */
+    /** The aim, or null when its agent was deleted from the project. */
     aimedAgentId: project.config.agents.some((agent) => agent.id === aimedAgentId) ? aimedAgentId : null,
-    /** Aiming without touching the canvas — opening a run points the chat at whoever walked it. */
+    /** Aims without touching the canvas; opening a run points the chat at whoever walked it. */
     aim: setAimedAgentId,
     openCalls,
     fieldHeight,
     setFieldHeight,
-    /** A fresh stream; a walk still out runs on into its record and keeps its live row. */
+    /** A fresh stream; a walk still out keeps writing into its record and its live row. */
     fresh,
     sayAgain,
     saidAgain: walked.saidAgain,
-    /** The run this stream writes into, so the projection can be opened on it. */
+    /** The run this stream writes into, so the projection can open on it. */
     runId: record.runId,
-    /**
-     * A run opened from the history stands in the stream's place, and a question asked there goes on in that
-     * run — «і йде далі цією ж розмовою».
-     */
+    /** A run opened from history replaces the stream, and questions asked there continue that run. */
     goOnIn: (runId: string) => {
       record.turnTo(runId);
     },
     /**
-     * A record deleted by hand takes its conversation with it — the stream on screen
-     * is emptied when it was writing into that record, and left alone when it was not.
+     * A record deleted by hand takes its conversation with it: the stream is emptied if it wrote into that record, else
+     * left alone.
      */
     letGo: (runId: string) => {
       if (record.standing() === runId) {
@@ -758,16 +732,16 @@ export function useAgentChat(
     },
     messages: chatStream(walk),
     draft: walked.drafts[stream.current] ?? "",
-    /** What is attached in the stream on screen, waiting under the field for the question to go. */
+    /** Attachments of the on-screen stream, waiting under the field. */
     attachments: walked.attachments[stream.current] ?? [],
     isWorking: turn !== undefined,
-    /** Bumped by every step written and by every run closed, so the history can follow. */
+    /** Bumped by every step written and every run closed, so the history can follow. */
     written: record.written,
     startedAt: turn === undefined ? null : turn.startedAt,
-    // Every turn out, not just the aimed agent's — the canvas draws them all, and the chat each in its own block.
+    // Every turn out, not just the aimed agent's; the canvas draws them all, the chat each in its own block.
     working: workingTurns(walk),
     waiting: waitingAgents(walk),
-    /** How every line of the canvas stands right now — flowing, awaited, answered or silent. */
+    /** How each canvas line stands now: flowing, awaited, answered or silent. */
     linkLives: linkLives(project.config.links, walk),
     changeDraft,
     attach,

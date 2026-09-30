@@ -20,12 +20,12 @@ describe("notStartedTurn", () => {
   it("gives every wall its own end, so the record says afterwards which one the turn met", () => {
     expect(notStartedTurn("", "noKey").state).toBe(NOT_STARTED_ENDS.noKey.state);
     expect(notStartedTurn("", "silent").state).toBe(NOT_STARTED_ENDS.silent.state);
-    // «unreachable» and «noProvider» are two walls, and the record must not read them as one.
+    // «unreachable» and «noProvider» are distinct walls and the record keeps them apart.
     expect(notStartedTurn("", "silent").state).not.toBe(notStartedTurn("", "noProvider").state);
   });
 
   it("carries what the turn would have taken where that is known, and nothing where it is not", () => {
-    // A turn refused over the ceiling knows its own length; the other walls do not.
+    // A turn refused over the ceiling knows its own length; other walls do not.
     const wouldGo: TurnLength = {
       prompt: 400,
       asked: 720_000,

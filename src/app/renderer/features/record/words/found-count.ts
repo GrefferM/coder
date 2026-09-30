@@ -3,13 +3,8 @@ import { FOUND_CEILING_WORD, FOUND_COUNT_SEPARATOR, FOUND_PLACE_FORMS, FOUND_RUN
 import { RUN_HITS_LIMIT } from "../../../../../contracts";
 
 /**
- * The number inside the search field. With nothing typed it is the record itself — «142», one number and
- * no words. With a word typed it says what was found: «40 МІСЦЬ · 3 ЗАПУСКИ», the places first because places are
- * what the list now holds, the runs second because they say how far apart those places lie.
- *
- * At the ceiling the second half is not a count: counting stopped, so the field says so with a word rather than a
- * number that would be a lie. Where nothing was found the second half is the record instead of a nought — «0 МІСЦЬ ·
- * 142 ЗАПУСКИ» — because the reader needs to know the record is there and the word is not in it.
+ * The count inside the search field: «142» at rest, «40 МІСЦЬ · 3 ЗАПУСКИ» with a word. At the limit the second half is
+ * a word, as counting stopped; where nothing is found it is the record: «0 МІСЦЬ · 142 ЗАПУСКИ».
  */
 export function foundCount(query: string, places: number, runs: number, record: number): string {
   if (query.trim() === "") {

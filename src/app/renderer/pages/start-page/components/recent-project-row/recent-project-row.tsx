@@ -33,9 +33,9 @@ import type { RecentProjectRowProps } from "./interfaces";
 export function RecentProjectRow({ entry, onOpen, onForget }: RecentProjectRowProps) {
   const row = useInteraction();
   const forget = useInteraction();
-  // A wordless control says what it is in the app's own window, and never in the browser's `title`.
+  // A wordless control is labelled by the app's own hint, not the browser's `title`.
   const said = useHint<HTMLButtonElement>(ROW_FORGET_LABEL, forget.isLit, forget.isFocused);
-  // When this folder was last open, on the app's one scale of freshness — «щойно», «вчора», «12 бер.»
+  // When the folder was last opened, on the app's freshness scale: «щойно», «вчора», «12 бер.»
   const opened = freshLabel(new Date(entry.openedAt).getTime(), Date.now());
   const isRowLit = row.isLit && entry.exists;
   const isRowHeld = row.isPressed && entry.exists;
@@ -94,11 +94,7 @@ export function RecentProjectRow({ entry, onOpen, onForget }: RecentProjectRowPr
             {entry.exists ? entry.directory : ROW_MISSING_LABEL}
           </span>
         </span>
-        {/*
-          A recent folder is asked «how fresh is this», so it answers on the scale and not by a date. The scale's
-          own words are written small — «щойно», «12 бер.» — because the scale is one and its callers are not, and
-          a mono caption line uppercases what it is given.
-        */}
+        {/* The freshness scale's words are lowercase; the mono caption line uppercases them. */}
         <Mark color={RECENT_LABEL_COLOR} spacing={ROW_NOTE_LETTER_SPACING_PX}>
           {entry.exists ? `${agentsCountLabel(entry.agentCount)}${ROW_NOTE_SEPARATOR}${opened}` : opened}
         </Mark>

@@ -20,7 +20,7 @@ describe("PinnedRow", () => {
   });
 
   it("takes the dashed edge while the pin stands empty", () => {
-    // A pin with no value is not yet a value the model is spared deciding.
+    // A pin with no value is not yet a value.
     const { rerender } = render(<PinnedRow name="branch" value="" onValueChange={() => {}} onUnpin={() => {}} />);
 
     expect(screen.getByLabelText("branch").style.border).toContain("dashed");

@@ -1,14 +1,13 @@
 import type { WalkPlace } from "../interfaces";
 import type { WholeStep } from "../../record";
 
-/** A turn that is bypassable, before it is given a lane of its own under the top row. */
+/** A turn not yet given a lane. */
 const LANE_UNSET = -1;
 const LANE_TOP = 0;
 
 /**
- * One pass laid flat, a turn to a column. The top row holds the turns no line of the walk flies over; what
- * can be gone round hangs below in its own lane and comes back up where the roads meet again. Lanes are reused as a
- * graph of commits reuses them, so the height follows the branches running at once.
+ * One pass laid flat, a turn to a column. The top row holds turns no line flies over; bypassable turns hang below in
+ * their own lane and return up where the paths meet. Lanes are reused.
  */
 export function walkPlaces(walk: WholeStep[]): WalkPlace[] {
   const held = [...walk].sort((one, other) => one.place - other.place);
@@ -34,8 +33,8 @@ export function walkPlaces(walk: WholeStep[]): WalkPlace[] {
 }
 
 /**
- * What can be gone round hangs below: a lane is taken from where the branch leaves the row to where it comes back and
- * is free after that, so two branches that never overlap share one lane.
+ * Hangs bypassable turns below: a lane is held from where the branch leaves the row to where it returns, so
+ * non-overlapping branches share one.
  */
 function hangDown(lanes: number[], lines: number[][]) {
   const ends: number[] = [];
@@ -59,8 +58,8 @@ function hangDown(lanes: number[], lines: number[][]) {
 }
 
 /**
- * A turn where the roads have already met belongs back in the top row, unless something would then have to fly over it.
- * Two equal branches both stay below.
+ * Lifts a turn where paths have met back to the top row unless a line would fly over it; two equal branches both stay
+ * below.
  */
 function liftJoins(lanes: number[], lines: number[][]) {
   const fed = lanes.map((lane, turn) => lines.filter(([, to]) => to === turn).length);

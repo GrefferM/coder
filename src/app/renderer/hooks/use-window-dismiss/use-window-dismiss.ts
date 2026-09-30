@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import type { WindowDismissTrigger } from "./interfaces";
 
-/** Count of things open over the app (list, menu, switcher) that take the next click for themselves; not a note. */
+/** Count of things open over the app (list, menu, switcher) that take the next click; not a note. */
 let standing = 0;
 
-/** Whether anything is open at this instant; read inside an event, not rendered. */
+/** Whether anything is open now; read in events, not rendered. */
 export function isSomethingOpen(): boolean {
   return standing > 0;
 }

@@ -24,7 +24,7 @@ function call(patch: Partial<TurnCall>): TurnCall {
 
 describe("callEnd · a call asked of a server", () => {
   it("calls a server's «ні» its own end, since it neither ran nor was refused by us", () => {
-    // The function is there and the server answered — «refused» is our check's word, and «ran» has a code.
+    // The function exists and the server answered: «refused» is our check's word, «ran» has a code.
     expect(
       callEnd(
         call({

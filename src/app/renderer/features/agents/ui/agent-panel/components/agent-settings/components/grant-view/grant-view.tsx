@@ -23,7 +23,7 @@ import { withPinned, withPinnedValue, withoutPinned } from "../../../../../../lo
 import type { GrantViewProps } from "./interfaces";
 import { quietly } from "../../../../../../../../utils/writes";
 
-/** One opened grant. Edits go to the tab's draft; only «Зберегти» writes. */
+/** One opened grant; edits go to the tab's draft, only «Зберегти» writes. */
 export function GrantView({ agentName, grant, command, onGrantChange, onBack, onSave }: GrantViewProps) {
   // Escape leaves the grant step; draft changes stay.
   useStandingStep(true);
@@ -92,7 +92,7 @@ export function GrantView({ agentName, grant, command, onGrantChange, onBack, on
             ))}
           </GrantBlock>
         )}
-        {/* What the model still fills in itself — the same rows, in a box nothing holds. */}
+        {/* What the model still fills in itself. */}
         {openParameters.length > 0 && (
           <GrantBlock
             color={GRANT_VIEW_OPEN_LABEL_COLOR}

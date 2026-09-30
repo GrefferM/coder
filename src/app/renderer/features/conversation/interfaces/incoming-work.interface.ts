@@ -6,7 +6,7 @@ export interface IncomingWork {
   text: string;
   cost: ChatCost | null;
   fromAgentId: string | null;
-  /** The recorded steps this work came from, where a walk is being picked up out of the record. */
+  /** The recorded steps this work came from, when a walk is resumed from the record. */
   fromStepIds: string[];
   /** The sender's turn in seconds; `null` when a person asked. */
   seconds: number | null;

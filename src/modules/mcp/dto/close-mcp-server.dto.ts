@@ -1,6 +1,6 @@
 import { IsUUID } from "class-validator";
 
-/** «ЗАПУСТИТИ»: a server is let go by its id, and starts afresh the next time it is looked at. */
+/** «ЗАПУСТИТИ»: a server is let go by id and starts afresh at the next look. */
 export class CloseMcpServerDto {
   @IsUUID()
   declare id: string;

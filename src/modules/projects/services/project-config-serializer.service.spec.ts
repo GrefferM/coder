@@ -8,7 +8,7 @@ import type { CommandToolGrantDto, McpToolGrantDto } from "../dto";
 const MODEL_ID = "11111111-1111-4111-8111-111111111111";
 const AGENT_ID = "22222222-2222-4222-8222-222222222222";
 const OTHER_AGENT_ID = "33333333-3333-4333-8333-333333333333";
-// The far end of a line is not checked against the agents the file declares.
+// A link's far end is not checked against the declared agents.
 const THIRD_AGENT_ID = "77777777-7777-4777-8777-777777777777";
 const LINK_ID = "44444444-4444-4444-8444-444444444444";
 const PROMPT_ID = "55555555-5555-4555-8555-555555555555";
@@ -18,7 +18,7 @@ const GRANT_ID = "88888888-8888-4888-8888-888888888888";
 const SERVER_ID = "99999999-9999-4999-8999-999999999999";
 const OTHER_SERVER_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 
-/** A local server is a line to run; a remote one is an address and a way in. */
+/** A local server is a run line; a remote one an address and a sign-in. */
 function serversYaml(...servers: string[]): string {
   return `servers:\n${servers.join("\n")}\n`;
 }
@@ -202,7 +202,7 @@ describe("ProjectConfigSerializer", () => {
   it("reads an agent without the temperature key as unwritten, rather than standing it on a number", async () => {
     const config = await serializer.parse(VALID_YAML);
 
-    // The file says nothing, so the agent says «НЕ ЗАПОВНЕНО» and the person writes the number.
+    // Missing number stays `null` («НЕ ЗАПОВНЕНО»).
     assert.equal(config.agents[0].temperature, null);
   });
 
@@ -233,7 +233,7 @@ describe("ProjectConfigSerializer", () => {
   it("reads a model without the ceiling key as a field nobody has written", async () => {
     const config = await serializer.parse(VALID_YAML);
 
-    // Nothing is filled in behind the person's back; the model says «НЕ ЗАПОВНЕНО» and the file still opens.
+    // Nothing is filled in; the file still opens.
     assert.equal(config.models[0].contextCeiling, null);
   });
 
@@ -250,7 +250,7 @@ describe("ProjectConfigSerializer", () => {
       VALID_YAML.replace("outputPrice: 15", "outputPrice: 15\n    contextCeiling: 0"),
     );
 
-    // A field written wrong never refuses the file either — the project opens and the model says so.
+    // A wrongly written field does not refuse the file either.
     assert.equal(config.models[0].contextCeiling, null);
   });
 
@@ -449,13 +449,13 @@ describe("ProjectConfigSerializer", () => {
     assert.equal(config.servers[0].name, "filesystem");
     assert.equal(config.servers[0].isLocal, true);
     assert.equal(config.servers[0].run, "npx @modelcontextprotocol/server-filesystem .");
-    // The other kind's fields are empty, not absent: one shape reads either way round.
+    // The other kind's fields are empty, not absent.
     assert.equal(config.servers[0].address, "");
     assert.equal(config.servers[0].signIn, "none");
   });
 
   it("reads a server's environment variables as names, and a server declaring none as an empty list", async () => {
-    // The name rides in the file, the value stays in this machine's keychain.
+    // The name is in the file; the value stays in the keychain.
     const config = await serializer.parse(VALID_YAML + serversYaml(SERVER_WITH_ENV_YAML));
     const bare = await serializer.parse(VALID_YAML + serversYaml(LOCAL_SERVER_YAML));
 

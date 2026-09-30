@@ -6,7 +6,7 @@ import { STAY_AT_BOTTOM_REACH_PX } from "./constants";
 const HEIGHT = 200;
 let full = 1_000;
 
-/** A box tall enough to scroll: the page cannot lay out in jsdom, so its measurements are given. */
+/** A box tall enough to scroll; jsdom has no layout, so measurements are given. */
 function box(): HTMLDivElement {
   const node = document.createElement("div");
 
@@ -21,10 +21,7 @@ function box(): HTMLDivElement {
   return node;
 }
 
-/**
- * jsdom lays nothing out, so nothing in it ever resizes on its own. This stands in for the watcher and hands the
- * test the say — the box shrinking is what happens when the field under the stream is pulled taller.
- */
+/** Stands in for the resize watcher, which jsdom never fires. */
 function whenResized(): () => void {
   const told: (() => void)[] = [];
 
@@ -96,7 +93,7 @@ describe("useStayAtBottom", () => {
   });
 
   it("keeps whoever stood at the end there when the box itself shrinks under them", () => {
-    // The field under the stream is pulled taller and nothing in the stream changes — so nothing else would notice.
+    // The box shrinks while nothing in the stream changes.
     const resize = whenResized();
     const node = box();
 
@@ -215,7 +212,7 @@ describe("useStayAtBottom", () => {
     node.append(document.createElement("span"));
     await settled();
 
-    // The search rode here, and what grows at the end must not drag the reader back to it.
+    // Growth at the end must not drag the reader back from a search ride.
     expect(node.scrollTop).toBe(400);
   });
 
@@ -234,8 +231,7 @@ describe("useStayAtBottom", () => {
 
     rerender();
 
-    // A fresh function each render pinned the stream to the match — the person could not scroll
-    // away from it at all until the word was taken out.
+    // `stopFollowing` keeps its identity across renders.
     expect(result.current.stopFollowing).toBe(first.stopFollowing);
     expect(result.current.goToEnd).toBe(first.goToEnd);
   });

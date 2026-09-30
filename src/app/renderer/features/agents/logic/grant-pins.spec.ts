@@ -30,7 +30,7 @@ describe("grant pins", () => {
   });
 
   it("unpins by the pin's own id and takes its value with it", () => {
-    // The model fills that parameter in itself again, so what a hand wrote there is no longer anything.
+    // An unpinned parameter's value is dropped.
     expect(withoutPinned(grant(), "pinned-1").pinned).toEqual([]);
   });
 

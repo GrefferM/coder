@@ -3,9 +3,8 @@ import { STEP_MONEY_NO_PRICES_LABEL, STEP_NOT_STARTED_LABEL } from "../constants
 import type { WholeStep } from "../../record";
 
 /**
- * One line under the head, standing once per step and speaking for it — nothing where every number of that
- * step is a number it really carried. A turn that never went out says so first: it explains the whole head, prices
- * included, and «ЦІНИ НЕ ВПИСАНО» over it would name a cause that never got to matter.
+ * One line per step explaining its dashes; null where every number is real. A turn that never went out says so first,
+ * since that explains the whole head, prices included.
  */
 export function stepUnknownWord(step: WholeStep): string | null {
   if (!stepBegan(step.state)) {

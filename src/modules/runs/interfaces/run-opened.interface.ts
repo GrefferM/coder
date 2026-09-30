@@ -1,4 +1,4 @@
-/** What opening a run hands back: the row, and the first question the walk is written against. */
+/** What opening a run returns: the row and the first question. */
 export interface RunOpened {
   runId: string;
   questionId: string;

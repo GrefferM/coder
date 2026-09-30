@@ -47,8 +47,7 @@ describe("chatStanding", () => {
   });
 
   it("says nothing was sent where the last turn never began, since nothing fell either", () => {
-    // The bug this guards: the band over the live stream read only `isFailure`, so a provider that never answered
-    // left a green dot on screen while the same flow stood otherwise in the history.
+    // Guards the live-stream band reading only `isFailure`, which left a green dot for a provider that never answered.
     expect(
       chatStanding([
         said({
@@ -69,7 +68,7 @@ describe("chatStanding", () => {
   });
 
   it("takes the worse word where the turns ended differently, a fall being worse than nothing sent", () => {
-    // «УПАВ» stands before «НЕ ПІШОВ», and the row says the worse of the two.
+    // «УПАВ» outranks «НЕ ПІШОВ»; the row shows the worse.
     expect(
       chatStanding([
         said({
@@ -107,7 +106,7 @@ describe("chatStanding", () => {
   });
 
   it("reads the whole walk, so a turn that fell does not hide behind one that answered after it", () => {
-    // The bug this guards: one agent hands to two, and the branch that answered later stood for the whole walk.
+    // Guards one agent handing to two, where the later-answering branch stood for the whole walk.
     expect(
       chatStanding([
         said({
@@ -124,7 +123,7 @@ describe("chatStanding", () => {
   });
 
   it("reads only the last walk, so a fall a repeat has mended is not read again", () => {
-    // A repeat is a walk of its own, and it is the walk the stream stands on now.
+    // A repeat is a walk of its own, and the stream stands on it.
     expect(
       chatStanding([
         said({
@@ -141,7 +140,7 @@ describe("chatStanding", () => {
   });
 
   it("says nothing was sent where a hand stopped one branch and another never left", () => {
-    // A hand explains only what it stopped; the branch that never began is still the news of the row.
+    // A stop explains only what it stopped; a branch that never began still counts.
     expect(
       chatStanding([
         said({

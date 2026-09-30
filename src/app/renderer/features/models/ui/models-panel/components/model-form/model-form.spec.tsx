@@ -58,7 +58,7 @@ function acts() {
 
 describe("ModelForm", () => {
   it("says how to write the name, and says it differently for each kind of provider", () => {
-    // A name is the provider's own word for the model, so the note follows the provider.
+    // A name is the provider's word for the model, so the note follows the provider.
     const { rerender } = render(
       <ModelForm
         providers={[remote, local]}
@@ -130,7 +130,7 @@ describe("ModelForm", () => {
   });
 
   it("says under a field what it was, and only where the draft has moved it", () => {
-    // The form holds a draft, and every moved field says what a save would replace.
+    // The form holds a draft; each moved field says what a save would replace.
     render(
       <ModelForm
         providers={[remote]}

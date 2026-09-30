@@ -91,13 +91,13 @@ describe("useProviders", () => {
   });
 
   it("asks every local provider again on its own beat, without saying it is asking", async () => {
-    // The clock is held before the hook mounts, since the beat is set going by the mount's own effect.
+    // The clock is held before mount, since the mount's effect starts the beat.
     vi.useFakeTimers();
 
     const invoke = held();
     const { result } = renderHook(() => useProviders());
 
-    // The list arrives over the bridge, and the ask that comes with it goes first.
+    // The list arrives over the bridge, and its ask goes first.
     await act(async () => {
       await vi.advanceTimersByTimeAsync(0);
     });
@@ -156,7 +156,7 @@ describe("useProviders", () => {
   it("stays the one callback, so a turn asked before the list arrived still says what it heard", async () => {
     const invoke = held();
     const { result } = renderHook(() => useProviders());
-    // The providers are read over the bridge, so the first render of a chat has none — and it holds `heard` from it.
+    // The first render has no providers, and holds `heard` from then on.
     const first = result.current.heard;
 
     await waitFor(() => expect(result.current.answers[OLLAMA.id]?.isAnswering).toBe(true));
@@ -177,7 +177,7 @@ describe("useProviders", () => {
   });
 
   it("writes both of the things a provider asked for, each into its own store", async () => {
-    // The key is a secret and the address is not, so one press fills two stores and neither is guessed at.
+    // One press fills two stores (key secret, address not) and neither is guessed.
     const invoke = held();
     const { result } = renderHook(() => useProviders());
 

@@ -3,11 +3,11 @@ import type { NamedAgent, WorkingAgent } from "../../../../../../../interfaces";
 
 export interface WorkingTurnProps {
   turn: WorkingAgent;
-  /** Every agent of the project — one stream holds the turns of all of them. */
+  /** Every agent of the project; one stream holds all their turns. */
   agents: NamedAgent[];
-  /** The stream's own agent, whose name and colour stand where the turn's own are not known. */
+  /** The stream's agent, whose name and colour apply where the turn's own are unknown. */
   agentName: string;
   agentColor: string;
-  /** Which calls stand open — kept by the chat, so a call keeps its place when the turn is over. */
+  /** Which calls are open; kept by the chat so a call keeps its place after the turn ends. */
   openCalls: OpenCalls;
 }

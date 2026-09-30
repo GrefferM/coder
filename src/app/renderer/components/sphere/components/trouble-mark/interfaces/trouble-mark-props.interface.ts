@@ -1,6 +1,6 @@
 export interface TroubleMarkProps {
-  /** A break the walk would meet, against a fact that only wants filling in. */
+  /** A break the walk would meet, versus a fact that only needs filling in. */
   isBreak: boolean;
-  /** The mark grows around its own middle as the canvas zooms out, so it stays readable. */
+  /** Grows around its middle as the canvas zooms out, to stay readable. */
   markScale: number;
 }

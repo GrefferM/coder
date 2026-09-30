@@ -97,7 +97,7 @@ const DRAFT: AgentDraft = aDraft({
   temperature: 0.3,
 });
 
-/** The same draft holding one grant, for what only happens once a grant can be opened. */
+/** The draft holding one grant. */
 const GRANTED: AgentDraft = {
   ...DRAFT,
   tools: [
@@ -110,14 +110,14 @@ const GRANTED: AgentDraft = {
   ],
 };
 
-/** The spec stands in for the panel, which owns which grant is open. */
+/** Stands in for the panel, which owns which grant is open. */
 function Standing(props: Omit<AgentSettingsProps, "openGrantId" | "onOpenGrantChange">) {
   const [openGrantId, setOpenGrantId] = useState<string | null>(null);
 
   return <AgentSettings {...props} openGrantId={openGrantId} onOpenGrantChange={setOpenGrantId} />;
 }
 
-/** What one case changes, part by part; everything it leaves out stands as this fixture sets it. */
+/** Per-case overrides; everything left out stands as the fixture sets it. */
 interface SettingsOverrides {
   draft?: AgentDraft;
   catalogue?: Partial<AgentCatalogue>;
@@ -193,7 +193,7 @@ describe("AgentSettings", () => {
       },
     });
 
-    // The card named the temperature, and «+» — the way out of an empty row — already holds focus.
+    // A card names the temperature; «+» already holds focus.
     expect(
       screen.getByRole("button", {
         name: "Температура: +",
@@ -208,7 +208,7 @@ describe("AgentSettings", () => {
       },
     });
 
-    // The file is gone and is not restored; the cursor stands on the field that still names it.
+    // A lost file is not restored; the cursor stays on the field still naming it.
     expect(
       screen.getByRole("button", {
         name: new RegExp(PROMPT_PICKER_NONE_LABEL),
@@ -267,7 +267,7 @@ describe("AgentSettings", () => {
       },
     });
 
-    // «без промпта» is a person's choice, and a tie left without its file is not that.
+    // «без промпта» is a choice; a tie whose file is lost is not.
     expect(screen.queryByText(PROMPT_PICKER_NONE_LABEL)).not.toBeInTheDocument();
     expect(screen.getAllByText(AGENT_LOST_PROMPT_NAME).length).toBeGreaterThan(0);
     expect(
@@ -322,7 +322,7 @@ describe("AgentSettings", () => {
       },
     });
 
-    // The way out is choosing another model, so the group offers no act of its own.
+    // The way out is choosing another model, so the group offers no act.
     expect(screen.getAllByText(AGENT_LOST_MODEL_NAME)).toHaveLength(1);
     expect(screen.queryByText(MODEL_PICKER_PLACEHOLDER)).not.toBeInTheDocument();
   });
@@ -334,7 +334,7 @@ describe("AgentSettings", () => {
       },
     });
 
-    // The model itself is whole, so its name stands; the trouble is the provider under it.
+    // The model is whole, so its name stands; the trouble is its provider.
     expect(screen.getByText(`anthropic${LOST_PROVIDER_SUFFIX}`)).toBeInTheDocument();
     expect(screen.getByText(MODELS[0].title)).toBeInTheDocument();
   });
@@ -511,7 +511,7 @@ describe("AgentSettings", () => {
     });
 
     expect(screen.getByText(`${FIELD_SLOT_WAS_PREFIX}EDITOR`)).toBeInTheDocument();
-    // Only the name moved, so it is the only field carrying the line.
+    // Only the changed name carries the «was» line.
     expect(screen.getAllByText(new RegExp(FIELD_SLOT_WAS_PREFIX))).toHaveLength(1);
   });
 
@@ -565,7 +565,7 @@ describe("AgentSettings", () => {
 
     const name = screen.getByLabelText(AGENT_SETTINGS_NAME_LABEL) as HTMLInputElement;
 
-    // A copy arrives named «EDITOR 2», so the text is chosen and typing replaces it.
+    // A copy named «EDITOR 2» has its text selected, so typing replaces it.
     expect(name).toHaveFocus();
     expect(name.selectionStart).toBe(0);
     expect(name.selectionEnd).toBe(name.value.length);
@@ -588,12 +588,12 @@ describe("AgentSettings", () => {
     });
     await user.click(screen.getByLabelText(/Відкрити видачу run_tests/));
 
-    // The step takes the whole panel: the fields below are not there while it stands.
+    // An open step takes the whole panel; the fields below are absent.
     expect(screen.queryByLabelText(AGENT_SETTINGS_NAME_LABEL)).not.toBeInTheDocument();
 
     await user.keyboard("{Escape}");
 
-    // The step is a floor above the panel, so the key belongs to it.
+    // The step sits above the panel, so the key belongs to it.
     expect(await screen.findByLabelText(AGENT_SETTINGS_NAME_LABEL)).toBeInTheDocument();
     expect(screen.getByLabelText(/Відкрити видачу run_tests/)).toBeInTheDocument();
   });
@@ -616,7 +616,7 @@ describe("AgentSettings", () => {
       }),
     );
 
-    // A run of tenths is not exact: the stepper rounds, so the draft is given 0.4 and not 0.30000000000000004.
+    // The stepper rounds: the draft gets 0.4, not 0.30000000000000004.
     expect(onDraftChange).toHaveBeenCalledWith({
       temperature: 0.4,
     });
@@ -630,7 +630,7 @@ describe("AgentSettings", () => {
       },
     });
 
-    // A moved field says what stood in it, written to the same one place.
+    // A changed field shows its previous value.
     expect(screen.getByText(`${FIELD_SLOT_WAS_PREFIX}0.3`)).toBeInTheDocument();
   });
 });

@@ -9,7 +9,7 @@ export function useModelSection(project: OpenProject, writes: ModelWrites): Mode
   // The opened model; `new` before it exists.
   const [openModelId, setOpenModelId] = useState<string | "new" | null>(null);
   const [armedModelId, setArmedModelId] = useState<string | null>(null);
-  // The form was opened by a card's own act, so it opens on the field that card named.
+  // The form was opened by a card's act, so it opens on the field that card named.
   const [isMending, setIsMending] = useState(false);
   const [edits, setEdits] = useState<Partial<ModelFormValues> | null>(null);
 
@@ -51,7 +51,7 @@ export function useModelSection(project: OpenProject, writes: ModelWrites): Mode
     }));
   }
 
-  /** Puts every field back to what is written, without closing the form. */
+  /** Puts every field back to its saved value without closing the form. */
   function revertForm() {
     setEdits(null);
   }

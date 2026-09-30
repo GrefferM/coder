@@ -16,7 +16,7 @@ export async function listProviders(): Promise<ProviderState[]> {
   }
 }
 
-/** Asks one local provider whether it is running; a machine that did not answer is a silence, not a failure. */
+/** Asks one local provider whether it is running; no answer is a silence, not a failure. */
 export async function askProvider(providerId: string): Promise<ProviderReply> {
   try {
     return await window.electronApi.invoke(ASK_PROVIDER_CHANNEL, {
@@ -30,7 +30,7 @@ export async function askProvider(providerId: string): Promise<ProviderReply> {
   }
 }
 
-/** Writes one of the things a provider asked for; which one it is decides the channel, not the provider's kind. */
+/** Writes one requested value; the channel follows which value it is, not the provider's kind. */
 export async function saveProviderValue(write: ProviderWrite): Promise<void> {
   const channel = write.need === "address" ? SAVE_PROVIDER_ADDRESS_CHANNEL : SAVE_PROVIDER_KEY_CHANNEL;
 

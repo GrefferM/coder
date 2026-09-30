@@ -75,7 +75,7 @@ function machineHolds(names: string[], isAnswering = true): Record<string, Provi
   };
 }
 
-/** What a state is read against, with the case's own facts patched in. */
+/** State facts with the case's own facts patched in. */
 function facts(patch: Partial<StateFacts> = {}): StateFacts {
   return {
     config: CONFIG,
@@ -89,7 +89,7 @@ function facts(patch: Partial<StateFacts> = {}): StateFacts {
   };
 }
 
-/** A turn out, as the conversation lists it — the state is read off the list by the agent's own id. */
+/** A working turn, as the conversation lists it, matched by agent id. */
 function working(agentId: string): WorkingAgent {
   return {
     turnId: "turn-1",
@@ -100,7 +100,7 @@ function working(agentId: string): WorkingAgent {
   };
 }
 
-/** An agent holding work where lines converge, as the conversation lists it. */
+/** An agent holding work where lines converge. */
 function waiting(agentId: string): WaitingAgent {
   return {
     agentId,
@@ -135,14 +135,14 @@ describe("agentState", () => {
       }),
     );
 
-    // Alive, but it is not the one working, so the dot does not read as live work.
+    // Waiting, not working: the dot is not live.
     expect(state.label).toBe(STATE_WAITING_LABEL);
     expect(state.color).toBe(STATE_WAITING_COLOR);
     expect(state.mark).toBe("dot");
   });
 
   it("takes work and a fall by the agent's own id, and not by its neighbour's", () => {
-    // The canvas and the panel read this one answer, so a state landing on the wrong agent lands twice.
+    // Canvas and panel share this answer.
     const state = agentState(
       AGENT,
       facts({

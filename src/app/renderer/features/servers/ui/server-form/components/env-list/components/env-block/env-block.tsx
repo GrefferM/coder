@@ -19,16 +19,11 @@ import {
 import type { EnvBlockProps } from "./interfaces";
 
 /**
- * One variable, as its own box. The two halves stand one under the other and each says where it goes —
- * «У ФАЙЛ ПРОЄКТУ» over the name, «ЛИШАЄТЬСЯ ТУТ» over the value — because that is the whole of what a variable
- * is: a pair that travels to two different places. «ПРИБРАТИ» stands in the block's head and belongs to this
- * block, not to the list, so an eye looking at a variable can see how to take it back without any gesture.
- *
- * A variable named with nothing behind it anywhere marks itself: the server will not start at all, and that is a
- * promise of what the launch will do rather than a refusal by the form — «Підключити» is still given.
+ * One variable as its own box. «У ФАЙЛ ПРОЄКТУ» labels the name and «ЛИШАЄТЬСЯ ТУТ» the value; «ПРИБРАТИ» in the head
+ * removes it. A variable with no value anywhere marks itself; the form still allows «Підключити».
  */
 export function EnvBlock({ name, draft, heldHint, onNameChange, onValueChange, onRemove }: EnvBlockProps) {
-  // A value this machine holds stands behind its hint, and the cross is how it is taken off.
+  // A held value shows behind its hint, and the cross removes it.
   const isHeld = draft === undefined && heldHint !== undefined;
   const hasNothing = name.trim() !== "" && !isHeld && (draft ?? "") === "";
 
@@ -61,7 +56,7 @@ export function EnvBlock({ name, draft, heldHint, onNameChange, onValueChange, o
       <Field
         label={SERVER_FORM_ENV_VALUE_LABEL}
         value={draft ?? ""}
-        // The hint stands until somebody types or presses the cross; a variable with nothing says so in its place.
+        // The hint stays until something is typed or the cross is pressed; a variable with no value says so instead.
         placeholder={isHeld ? (heldHint ?? "") : SERVER_FORM_MISSING_NOTE}
         note={isHeld ? SERVER_FORM_ENV_VALUE_NOTE : undefined}
         action={<Mark color={QUIET_MARK_COLOR}>{SERVER_FORM_ENV_VALUE_GOES}</Mark>}

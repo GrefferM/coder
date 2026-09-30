@@ -27,7 +27,7 @@ describe("noneAnswered", () => {
   });
 
   it("waits for three, and does not say it at two", () => {
-    // «межа названа числом: три невдалі поспіль» — two is a bad afternoon, not a broken server.
+    // The limit is three failures in a row; two are not a broken server.
     expect(
       noneAnswered(
         look({
@@ -45,7 +45,7 @@ describe("noneAnswered", () => {
   });
 
   it("says nothing where a call has worked, however many failed after it", () => {
-    // The failures then say something about a page or an argument, and not about the server.
+    // The failures then concern a page or an argument, not the server.
     expect(
       noneAnswered(
         look({

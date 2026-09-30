@@ -5,7 +5,7 @@ import type { McpFunction, McpLookMemory, McpLookStore } from "../interfaces";
 
 const SERVER_ID = "99999999-9999-4999-8999-999999999999";
 
-/** The memory as a machine would keep it, without a machine: one row, and everything the service asks of it. */
+/** An in-memory stand-in for the store: one row and whatever the service asks of it. */
 function store(): McpLookStore & { held: () => McpLookMemory | null } {
   let row: McpLookMemory | null = null;
 
@@ -29,7 +29,7 @@ const given = (...names: string[]): McpFunction[] =>
 
 describe("McpMemory", () => {
   it("says nothing about a server this machine is meeting for the first time", async () => {
-    // A change needs two looks to be one: «оновлено щойно» on a first meeting would be a lie about an update.
+    // A change needs two looks: «оновлено щойно» on a first meeting would be false.
     const held = store();
     const memory = new McpMemory(held);
 
@@ -41,7 +41,7 @@ describe("McpMemory", () => {
   });
 
   it("says nothing while the list is the same one, whatever order it comes in", async () => {
-    // The order is the server's own and means nothing here: the same names are the same list.
+    // The server's order means nothing: the same names are the same list.
     const memory = new McpMemory(store());
 
     await memory.after(SERVER_ID, given("read", "write"));
@@ -64,7 +64,7 @@ describe("McpMemory", () => {
   });
 
   it("keeps the first count through a second change nobody has looked at yet", async () => {
-    // The arrow answers «what did it use to be», not «what was it an hour ago»: 34 → 33 → 32 is still 34 → 32.
+    // The arrow shows what it used to be: 34 → 33 → 32 is still 34 → 32.
     const memory = new McpMemory(store());
 
     await memory.after(SERVER_ID, given("a", "b", "c"));
@@ -83,7 +83,7 @@ describe("McpMemory", () => {
     const said = await memory.after(SERVER_ID, given("a"));
 
     assert.equal(said.wasCount, null);
-    // What changed and when is not news and does not go with it: «оновлено» stays until it changes again.
+    // What changed and when stays: «оновлено» holds until it changes again.
     assert.ok(said.changedAt !== null);
   });
 });

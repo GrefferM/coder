@@ -53,7 +53,7 @@ describe("useAgentClipboard", () => {
   });
 
   it("offers no copy of an agent the project has let go since", () => {
-    // The agent is held by its own id, so a copy of one deleted since is offered no more.
+    // A copy of an agent deleted since is not offered.
     const { result } = clipboard();
 
     act(() => result.current.copy("agent-gone"));
@@ -62,7 +62,7 @@ describe("useAgentClipboard", () => {
   });
 
   it("puts the copy on the first free place beside the original, never over it", () => {
-    // Two spheres in one place would read as one, so the copy steps down and to the right.
+    // The copy steps down and to the right of its original.
     const { result, pasteAgent } = clipboard();
 
     act(() => result.current.copy("agent-1"));
@@ -106,7 +106,7 @@ describe("useAgentClipboard", () => {
   });
 
   it("marks nothing when the write refused the copy", async () => {
-    // The file said no, so there is no new sphere to mark — and the hand still holds the original.
+    // A refused write leaves no pasted mark and keeps the original held.
     const { result } = clipboard(PROJECT, null);
 
     act(() => result.current.copy("agent-1"));

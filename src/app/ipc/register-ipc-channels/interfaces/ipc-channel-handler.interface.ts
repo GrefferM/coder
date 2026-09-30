@@ -1,2 +1,2 @@
-/** One channel's handler: the domain's controller and the renderer's payload in, the renderer's answer out. */
+/** One channel's handler: controller and payload in, answer out. */
 export type IpcChannelHandler<TController> = (controller: TController, payload: unknown) => Promise<unknown>;

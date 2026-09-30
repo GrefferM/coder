@@ -53,9 +53,8 @@ export function AgentSphere({ agent, place, wearing, doing, acts }: AgentSphereP
         onSelect={acts.onSelect}
       />
       {/*
-       * What this agent is armed with. The arc stands beside the sphere's button and not
-       * inside it — its targets are buttons of their own — and it counts its places from this same box, so the
-       * drawing is where it always was.
+       * What the agent is armed with. The arc stands beside the sphere's button, not inside it (its targets are buttons), and
+       * counts places from the same box.
        */}
       <SphereOrbs
         orbs={armedWith(agent.tools, wearing.sources)}
@@ -66,7 +65,7 @@ export function AgentSphere({ agent, place, wearing, doing, acts }: AgentSphereP
         onPointTo={acts.onPointToOrb}
         onPointAway={acts.onPointAwayFromOrb}
       />
-      {/* The call is said by this one pill, and the arc under it does not move at all. */}
+      {/* The call is said by this pill alone; the arc does not move. */}
       {doing.calling !== null && <CallPill name={doing.calling.name} source={doing.calling.source} />}
     </div>
   );

@@ -61,7 +61,7 @@ describe("WriteNote", () => {
       vi.advanceTimersByTime(WRITE_NOTE_MS * 4);
     });
 
-    // Nothing takes a failure away by itself: «ще раз» is the only way out of it.
+    // A failure never leaves by itself; «ще раз» is the only way out.
     expect(onDismiss).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByText(WRITE_NOTE_RETRY_LABEL));
@@ -105,14 +105,14 @@ describe("WriteNote", () => {
     );
 
     expect(screen.getByText("«big-repo/» не влізе")).toBeInTheDocument();
-    // The same pick would be refused the same way, so there is no «ще раз» to offer.
+    // A refused pick would be refused again, so no «ще раз» is offered.
     expect(screen.queryByText(WRITE_NOTE_RETRY_LABEL)).not.toBeInTheDocument();
 
     act(() => {
       vi.advanceTimersByTime(WRITE_NOTE_MS + WRITE_NOTE_OUT_MS);
     });
 
-    // A sentence is longer than «збережено»: it is not taken away as fast as a done note.
+    // A refusal sentence stays longer than a done note.
     expect(onDismiss).not.toHaveBeenCalled();
 
     act(() => {

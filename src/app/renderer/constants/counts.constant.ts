@@ -1,4 +1,4 @@
-/** Ukrainian plural forms of the project's own nouns, as a count says them; none is said in words. */
+/** Ukrainian plural forms of the project's nouns, for counts; never spelled in words. */
 export const AGENT_FORMS = ["АГЕНТ", "АГЕНТИ", "АГЕНТІВ"];
 export const NO_AGENTS_LABEL = "БЕЗ АГЕНТІВ";
 export const MODEL_FORMS = ["МОДЕЛЬ", "МОДЕЛІ", "МОДЕЛЕЙ"];

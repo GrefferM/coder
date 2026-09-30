@@ -6,7 +6,7 @@ import { AGENT_LOST_MODEL_NAME } from "../../../../../../constants";
 
 describe("LostModel", () => {
   it("says the agent stands on a model the project no longer has", () => {
-    // The tie is not cleared for the person — it stands until another model is chosen.
+    // The tie is not cleared; it stands until another model is chosen.
     render(<LostModel />);
 
     expect(screen.getByText(LOST_MODEL_NOTE)).toBeInTheDocument();

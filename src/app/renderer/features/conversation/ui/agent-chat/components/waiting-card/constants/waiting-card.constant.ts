@@ -6,14 +6,14 @@ import {
 } from "../../../../../../../constants";
 import type { WaitingSupplierState } from "../../../../../../../interfaces";
 
-/** The block over a waiting agent's chat — who its suppliers are and where each stands. */
+/** The block over a waiting agent's chat: its suppliers and where each stands. */
 export const WAITING_CARD_HEAD_PREFIX = "Відповіли";
 export const WAITING_CARD_HEAD_SEPARATOR = " / ";
 export const WAITING_CARD_WORKING_WORD = "ще працює";
 export const WAITING_CARD_SILENT_WORD = "не відповів";
 export const WAITING_CARD_SECONDS_SUFFIX = " c";
 
-/** One supplier left to answer, and more than one — the verb changes with the number. */
+/** One supplier left to answer, or several; the verb differs. */
 export const WAITING_CARD_STARTS_PREFIX = "Візьметься до роботи, щойно ";
 export const WAITING_CARD_STARTS_END_ONE = " або відповість, або перестане відповідати зовсім.";
 export const WAITING_CARD_STARTS_END_MANY = " або відповідять, або перестануть відповідати зовсім.";
@@ -51,7 +51,7 @@ export const WAITING_CARD_TICK_PATH = "m5 13 4 4L19 7";
 export const WAITING_CARD_RING_COLOR = "#5c6478";
 export const WAITING_CARD_RING_WIDTH_PX = 1.4;
 
-/** A supplier that said nothing: a whole ring with a bar across it; the dashed one means «still working». */
+/** A silent supplier: a whole ring with a bar across it; dashed means still working. */
 export const WAITING_CARD_SILENT_RING_COLOR = "#3a4154";
 export const WAITING_CARD_SILENT_BAR_WIDTH_PX = 5;
 export const WAITING_CARD_SILENT_BAR_HEIGHT_PX = 1.4;
@@ -61,7 +61,7 @@ export const WAITING_CARD_NOTE_FONT_SIZE_PX = 12.5;
 export const WAITING_CARD_NOTE_LINE_HEIGHT = 1.55;
 export const WAITING_CARD_NOTE_COLOR = "#aab3cc";
 
-/** The answer read in full, the one still coming a step quieter, the one that never came quieter again. */
+/** Answered reads full, still coming quieter, never came quietest. */
 export const WAITING_CARD_NAME_COLORS: Record<WaitingSupplierState, string> = {
   answered: WAITING_CARD_ROW_NAME_COLOR,
   working: WAITING_CARD_ROW_QUIET_COLOR,

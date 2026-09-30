@@ -12,14 +12,14 @@ import {
 } from "../../../../../contracts";
 import type { AskedQuestion, CallPlace, OpenedRecord, RunHit, RunRow, WholeRun, WrittenStep } from "../interfaces";
 
-/** Opens the record of a run; every write here swallows its failure and the run goes unremembered. */
+/** Opens a run's record; every write swallows its failure, leaving the run unremembered. */
 export async function openRun(directory: string, question: AskedQuestion): Promise<OpenedRecord | null> {
   const opened = await window.electronApi
     .invoke(OPEN_RUN_CHANNEL, {
       directory,
       questionId: question.questionId,
       startedByAgentId: question.agent.id,
-      // What the agent was called and coloured then, so the row is named before its first step lands.
+      // The agent's name and colour at the time, so the row is named before its first step.
       startedByAgentName: question.agent.name,
       startedByAgentColor: question.agent.color,
       asked: question.asked,
@@ -30,17 +30,14 @@ export async function openRun(directory: string, question: AskedQuestion): Promi
   return opened ?? null;
 }
 
-/**
- * Asks again into a record that already stands, under the question's own id; says whether the row was
- * still there to take it.
- */
+/** Asks again into an existing record under the question's id; says whether the row was still there. */
 export async function askAgain(runId: string, question: AskedQuestion): Promise<boolean> {
   const id = await window.electronApi
     .invoke(ASK_AGAIN_CHANNEL, {
       runId,
       questionId: question.questionId,
       asked: question.asked,
-      // Whom this question goes to, said with it — the head of the row is named before the first step.
+      // Whom the question goes to, so the row's head is named before the first step.
       askedAgentId: question.agent.id,
       askedAgentName: question.agent.name,
       askedAt: question.askedAt,
@@ -50,14 +47,14 @@ export async function askAgain(runId: string, question: AskedQuestion): Promise<
   return id !== null && id !== undefined;
 }
 
-/** Appends one finished step with everything it did; hands back the id the next step points at. */
+/** Appends one finished step; returns the id the next step points at. */
 export async function writeStep(step: WrittenStep): Promise<string | null> {
   const id = await window.electronApi.invoke(ADD_RUN_STEP_CHANNEL, step).catch(() => null);
 
   return id ?? null;
 }
 
-/** Ends a run by stamping the hour its walk came back; how it ended is counted from the steps. */
+/** Ends a run by stamping when its walk returned; the outcome is counted from the steps. */
 export async function closeRun(runId: string, endedAt: number): Promise<void> {
   await window.electronApi
     .invoke(CLOSE_RUN_CHANNEL, {
@@ -67,7 +64,7 @@ export async function closeRun(runId: string, endedAt: number): Promise<void> {
     .catch(() => undefined);
 }
 
-/** The project's runs on this machine, newest first; null when the record could not be read, not empty. */
+/** The project's runs on this machine, newest first; null when the record is unreadable. */
 export async function listRuns(directory: string): Promise<RunRow[] | null> {
   return window.electronApi
     .invoke(LIST_RUNS_CHANNEL, {
@@ -76,7 +73,7 @@ export async function listRuns(directory: string): Promise<RunRow[] | null> {
     .catch(() => null);
 }
 
-/** One run opened whole — every step in the order it ran; null when the record cannot be read. */
+/** One run whole, steps in run order; null when unreadable. */
 export async function readRun(id: string): Promise<WholeRun | null> {
   const run = await window.electronApi
     .invoke(READ_RUN_CHANNEL, {
@@ -87,10 +84,7 @@ export async function readRun(id: string): Promise<WholeRun | null> {
   return run ?? null;
 }
 
-/**
- * The runs this word stands in, each with the found words themselves; an empty list where nothing was
- * found, and an empty list too where the record could not be read — a search that failed shows the same nothing.
- */
+/** Runs containing this word, each with the found words; empty when nothing is found or the record is unreadable. */
 export async function searchRuns(directory: string, query: string): Promise<RunHit[]> {
   return window.electronApi
     .invoke(SEARCH_RUNS_CHANNEL, {
@@ -100,10 +94,7 @@ export async function searchRuns(directory: string, query: string): Promise<RunH
     .catch(() => []);
 }
 
-/**
- * Where one call stands in the record, by its own id — nothing where the record does not hold it, and
- * nothing where it cannot be asked at all, because a place nobody found leads nowhere either way.
- */
+/** Where a call stands in the record, by id; null when the record lacks it or cannot be asked. */
 export async function callPlace(callId: string): Promise<CallPlace | null> {
   return window.electronApi
     .invoke(CALL_PLACE_CHANNEL, {
@@ -112,7 +103,7 @@ export async function callPlace(callId: string): Promise<CallPlace | null> {
     .catch(() => null);
 }
 
-/** Takes one run out of the record with its steps and calls, and says whether it went. */
+/** Removes one run with its steps and calls; says whether it went. */
 export async function forgetRun(id: string): Promise<boolean> {
   return window.electronApi
     .invoke(FORGET_RUN_CHANNEL, {
@@ -121,7 +112,7 @@ export async function forgetRun(id: string): Promise<boolean> {
     .catch(() => false);
 }
 
-/** Takes every ended run of this project, answering with how many went; null when the record refused. */
+/** Removes every ended run of this project; returns how many went, null when the record refused. */
 export async function forgetRuns(directory: string): Promise<number | null> {
   return window.electronApi
     .invoke(FORGET_RUNS_CHANNEL, {

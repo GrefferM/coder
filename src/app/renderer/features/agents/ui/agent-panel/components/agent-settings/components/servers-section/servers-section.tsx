@@ -21,12 +21,7 @@ import {
 } from "./constants";
 import type { ServersSectionProps } from "./interfaces";
 
-/**
- * The tools of an agent, lower half: **whole servers**, connected or not. What the hand asks here is «чи працює
- * цей агент із цим сервером» — a server arrives as one thing, twenty-four functions at once, and none of them was
- * chosen by hand, so there is nothing to choose between. Picking functions one by one is the catalogue's business
- *, and the commands, which are written one at a time, keep their own field above.
- */
+/** The tools' lower half: whole servers, connected or not; commands keep their own field above. */
 export function ServersSection({
   servers,
   looks,
@@ -40,9 +35,9 @@ export function ServersSection({
   const heldIn = (serverId: string) =>
     (looks[serverId]?.functions ?? []).filter((one) => grants.some((grant) => namesFunction(grant, serverId, one.name)))
       .length;
-  // The grants of the servers alone: what the commands' field holds is neither counted here nor mended here.
+  // Only server grants; the commands' field is neither counted nor mended here.
   const mine = grants.filter(isServerGrant);
-  // A grant can outlive its function or its whole server; a broken one is counted nowhere.
+  // A grant can outlive its function or server; a broken one is counted nowhere.
   const broken = brokenGrants(mine, {
     commands: [],
     servers,

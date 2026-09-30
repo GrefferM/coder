@@ -33,7 +33,7 @@ import type { AgentSettingsProps } from "./interfaces";
 import { quietly } from "../../../../../../utils/writes";
 import { isCommandGrant } from "../../../../../../interfaces";
 
-/** Selected agent's settings — changes show on the canvas at once, only «Зберегти» writes. */
+/** Selected agent's settings: changes show on the canvas at once, only «Зберегти» writes. */
 export function AgentSettings({
   agentId,
   draft,
@@ -63,17 +63,17 @@ export function AgentSettings({
     return () => window.clearTimeout(fading);
   }, [wasTried]);
 
-  // Sent here by a card, the cursor lands on «+» of the row it named — the way out of an empty one.
+  // A card's arrival puts the cursor on «+» of the row it named.
   useEffect(() => {
     mendedStepper.current?.focus();
   }, [mendedRow]);
 
-  // A card about a tie left without its file lands the cursor on the field that still holds that tie.
+  // A card about a tie without its file puts the cursor on the field still holding it.
   useEffect(() => {
     mendedField.current?.focus();
   }, [presses.mending]);
 
-  /** A pasted copy arrives as «EDITOR 2» — focus the name field and select its text. */
+  /** A pasted copy arrives as «EDITOR 2»: focuses the name field and selects its text. */
   useEffect(() => {
     if (!writing.isNaming) {
       return;
@@ -83,17 +83,17 @@ export function AgentSettings({
     nameField.current?.select();
   }, [writing.isNaming]);
   const isNameMissing = wasTried && !draft.name.trim();
-  // Which step of the tools the tab stands on, and where a press on the agent's arc sends it.
+  // The open tools step, and where a press on the agent's arc sends it.
   const { openServerId, openServer } = useToolsStep(presses.tools, presses.agent, onOpenGrantChange);
-  // The grant view is about a command's fixed arguments, so only a command grant opens in it.
+  // Only a command grant opens in the grant view (its fixed arguments).
   const openGrant = draft.tools.filter(isCommandGrant).find((grant) => grant.id === openGrantId) ?? null;
-  // The agent points at a prompt whose file is gone — the field says so instead of reading as «без промпта».
+  // The prompt's file is gone: the field says so rather than «без промпта».
   const isPromptGone = isPromptLost(draft.promptId, prompts);
-  // The same for the model — an empty red field, not the placeholder of a choice never made.
+  // Likewise the model: an empty red field, not the choice placeholder.
   const isModelGone = isModelLost(draft.modelId, models);
-  // The model is whole, but nobody declared the provider under it — the field names it in the same words.
+  // The model is whole but its provider is undeclared; the field names it.
   const goneProviderId = lostProvider(draft.modelId, models, providers);
-  // A provider whose protocol carries no functions: the fields are shut, and what was granted before stays listed.
+  // The provider has no function calls: fields are shut, earlier grants stay listed.
   const isToolless = takesNoTools(draft.modelId, models, providers);
   const was = wasAgent(draft, writing.saved, catalogue);
 
@@ -115,10 +115,8 @@ export function AgentSettings({
   }
 
   /**
-   * A connected server opens as a step of its own, the way an opened grant does: the whole tab becomes that
-   * server's functions, with the way back in its head. Which server that is stays in this tab and is not lifted to
-   * the panel — a card can send somebody to a grant, and nothing sends anybody to a server but the arc, which the
-   * tab hears here for itself.
+   * A connected server opens as a step of its own, showing its functions; which server is kept in this tab, as only the
+   * arc sends here.
    */
   const serverStep = servers.find((server) => server.id === openServerId) ?? null;
 
@@ -222,11 +220,7 @@ export function AgentSettings({
           }
           onOpenGrant={onOpenGrantChange}
         />
-        {/*
-         * Two sections, and they are not two halves of one thing: a command is written by hand one at a time and
-         * is chosen the same way, while a server arrives whole and is connected whole. Both write into the same
-         * draft, so a tick in one never drops what the other holds.
-         */}
+        {/* Commands are chosen one at a time, a server is connected whole; both write into the same draft. */}
         <ServersSection
           isLocked={isToolless}
           servers={servers}

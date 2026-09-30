@@ -5,7 +5,7 @@ import { CANVAS_PASTED_PREFIX, CANVAS_PASTED_SEPARATOR, CANVAS_PASTED_SUFFIX } f
 
 describe("PastedMarker", () => {
   it("names the sphere the copy was taken from", () => {
-    // The mark says whose copy this is, until the next act on the canvas takes it away.
+    // Says whose copy this is until the next canvas act.
     render(
       <PastedMarker
         sourceName="Шукач"

@@ -1,9 +1,8 @@
 import { SLOT_QUOTE_MARKS } from "../constants";
 
 /**
- * Whether this slot stands in quotes of its own in the run line — `'{mask}'` and nothing else inside them.
- * That is the one shape where an optional slot left empty does not disappear but leaves the quotes behind as `''`,
- * and the card says so only there. A slot inside a longer quoted string is not this: dropping it leaves the rest.
+ * Whether the slot stands in quotes of its own in the run line, `'{mask}'` and nothing else inside. Only there does an
+ * empty optional slot leave `''` behind.
  */
 export function slotInQuotes(run: string, name: string): boolean {
   const wanted = name.trim();

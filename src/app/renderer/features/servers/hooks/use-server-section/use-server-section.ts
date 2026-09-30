@@ -10,20 +10,19 @@ import type { ServerSection } from "./interfaces";
 import type { ServerWrites } from "../use-server-writes";
 
 import { pointsAt } from "../../../../interfaces";
-/** The one form of the MCP section — opened on a server, or on nothing for a new one. */
+/** The one form of the MCP section, opened on a server or on nothing for a new one. */
 export function useServerSection(project: OpenProject, writes: ServerWrites): ServerSection {
   const [openServerId, setOpenServerId] = useState<string | "new" | null>(null);
   const [edits, setEdits] = useState<Partial<ServerFormValues> | null>(null);
-  // What was typed into the secret fields this time; the token lives under the empty key.
+  // What was typed into the secret fields this time; the token is under the empty key.
   const [secrets, setSecrets] = useState<Record<string, string>>({});
   const [held, setHeld] = useState<McpSecretsHeld>(NOTHING_HELD);
-  // The server a question stands over, and what this machine holds for it while the question stands.
+  // The server a question stands over, and what this machine holds for it.
   const [armedServerId, setArmedServerId] = useState<string | null>(null);
   const [armedHeld, setArmedHeld] = useState<McpSecretsHeld>(NOTHING_HELD);
 
   /**
-   * What this machine already holds for the open server. Asked when the form opens and never again: the answer
-   * says whether, not what, so nothing here can go stale in a way anybody would see.
+   * What this machine holds for the open server; asked once when the form opens, as it answers whether and not what.
    */
   useEffect(() => {
     if (openServerId === null || openServerId === "new") {
@@ -61,7 +60,7 @@ export function useServerSection(project: OpenProject, writes: ServerWrites): Se
       form.name,
       project.config.servers.filter((server) => server.id !== openServerId).map((server) => server.name),
     );
-  // A new declaration becomes unsaved work at the first keystroke, exactly as a command's does.
+  // A new declaration becomes unsaved work at the first keystroke.
   const unsaved: UnsavedWork | null =
     changes.length === 0 || form === null
       ? null
@@ -84,11 +83,11 @@ export function useServerSection(project: OpenProject, writes: ServerWrites): Se
       agent.tools.some((grant) => armedServerId !== null && pointsAt(grant, armedServerId)),
     ).length,
     hasToken: armedHeld.token !== null,
-    // Only the names the file still declares are counted: a value under a name nobody names is not this server's.
+    // Counts only the names the file still declares.
     values: (armedServer?.env ?? []).filter((name) => armedHeld.env[name] !== undefined).length,
   };
 
-  /** The question says what leaves this machine, so what is held is asked for as the server is armed. */
+  /** Asks what is held as the server is armed, since the question says what leaves this machine. */
   useEffect(() => {
     if (armedServerId === null) {
       setArmedHeld(NOTHING_HELD);
@@ -109,7 +108,7 @@ export function useServerSection(project: OpenProject, writes: ServerWrites): Se
     };
   }, [armedServerId]);
 
-  /** The question's yes: the server goes, and with it the grants and — thirty seconds later — its keys. */
+  /** Yes: the server goes with its grants and, thirty seconds later, its keys. */
   function confirmDelete() {
     const leaving = armedServerId;
 
@@ -124,11 +123,11 @@ export function useServerSection(project: OpenProject, writes: ServerWrites): Se
   function openForm(serverId: string | "new" | null) {
     setOpenServerId(serverId);
     setEdits(null);
-    // What was typed into a secret field belongs to the form it was typed in, and goes with it.
+    // Typed secrets belong to their form and go with it.
     setSecrets({});
   }
 
-  /** One name for one variable, or the empty string for the token; an emptied field takes the value off. */
+  /** One name per variable, or the empty string for the token; an emptied field removes the value. */
   function editSecret(name: string, value: string) {
     setSecrets((previous) => ({
       ...previous,
@@ -153,13 +152,8 @@ export function useServerSection(project: OpenProject, writes: ServerWrites): Se
     const serverId = await writes.saveServer(openServer?.id ?? null, form);
 
     /**
-     * The file first, then this machine. A new server is named by the write above, and its secrets are held under
-     * that name alone — so there is nothing to write them under until it exists.
-     *
-     * Only the fields somebody **touched** are written, an emptied one included: emptying is how a value is taken
-     * off this machine. A field nobody touched is not in here at all, so what was typed in long ago lives
-     * through a save that was about the name or the line. And emptying is a thing done on purpose — the cross in
-     * the field — rather than the accident of leaving a field alone, which is what nobody could guess.
+     * The file first, then this machine. Only touched fields are written, an emptied one included (it removes the value
+     * from this machine); untouched fields survive a save.
      */
     await Promise.all(
       Object.entries(secrets).map(([name, value]) =>

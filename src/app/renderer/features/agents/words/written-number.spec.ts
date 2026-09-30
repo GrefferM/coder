@@ -7,7 +7,7 @@ describe("writtenNumber", () => {
   });
 
   it("writes as many places as the field keeps, even when they are noughts", () => {
-    // Temperature is kept to two places, so 0 is «0.00» and not «0» — the field's own writing.
+    // Temperature keeps two places: 0 is «0.00».
     expect(writtenNumber(0, 2)).toBe("0.00");
     expect(writtenNumber(0.3, 2)).toBe("0.30");
   });
@@ -17,7 +17,7 @@ describe("writtenNumber", () => {
   });
 
   it("says a dash where nobody wrote a number, and never a nought", () => {
-    // An empty field and a field holding nought are two different things on screen.
+    // An empty field and a zero field differ on screen.
     expect(writtenNumber(null)).toBe("—");
     expect(writtenNumber(null, 2)).toBe("—");
     expect(writtenNumber(0)).toBe("0");

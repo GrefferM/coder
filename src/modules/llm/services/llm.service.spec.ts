@@ -72,7 +72,7 @@ function voice(heard: AgentChunk[]): AgentVoice {
   };
 }
 
-/** A stand-in for whoever reaches servers; the tests that need one give their own. */
+/** A stand-in for whoever reaches servers; tests that need one give their own. */
 function noServers(): ServerRunner {
   return {
     call: async () => ({
@@ -203,7 +203,7 @@ describe("LlmService", () => {
   });
 });
 
-/** The RunPod queue, standing in for the real one: every address asked is written down, and a job comes back done. */
+/** A stand-in RunPod queue: every address asked is recorded, and a job comes back done. */
 function runpodQueue(): string[] {
   const asked: string[] = [];
   const answers = [
@@ -257,7 +257,7 @@ describe("AGENT_CLIENTS", () => {
       [OPENAI_PROVIDER_ID]: ["key"],
       [OPENROUTER_PROVIDER_ID]: ["key"],
       [GOOGLE_PROVIDER_ID]: ["key"],
-      // A serverless endpoint carries its id in the address, so the key alone says nothing about where to knock.
+      // A serverless endpoint carries its id in the address, so the key alone is not enough.
       [RUNPOD_PROVIDER_ID]: ["key", "address"],
       [OLLAMA_PROVIDER_ID]: ["address"],
       [LMSTUDIO_PROVIDER_ID]: ["address"],
@@ -314,7 +314,7 @@ describe("AGENT_CLIENTS", () => {
   });
 
   it("keeps the endpoint's address as the person wrote it, adding no path of OpenAI's to the end", async () => {
-    // The endpoint's id lives in the address, and the model is the name that endpoint serves: it is never sent.
+    // The endpoint id lives in the address; the model name is never sent.
     const asked = runpodQueue();
     const model = AGENT_CLIENTS[RUNPOD_PROVIDER_ID].open({
       model: "dphn/dolphin-2.9.3-mistral-nemo-12b",
@@ -330,10 +330,10 @@ describe("AGENT_CLIENTS", () => {
   });
 });
 
-/** The provider id the fake client below answers to; no real provider is opened in these tests. */
+/** Provider id the fake client answers to; no real provider is opened. */
 const TEST_PROVIDER_ID = "a provider that exists only here";
 
-/** One local server, as the project file holds it — the reach travels beside the tools that name it. */
+/** One local server as the project file holds it. */
 const SERVER: ProjectMcpServer = {
   id: "99999999-9999-4999-8999-999999999999",
   name: "filesystem",
@@ -344,7 +344,7 @@ const SERVER: ProjectMcpServer = {
   env: [],
 };
 
-/** One command with one number parameter — enough for the check to have something to hold to. */
+/** One command with one number parameter. */
 const FIND_DEEP: AgentCommandTool = {
   source: "command",
   name: "find_deep",
@@ -362,7 +362,7 @@ const FIND_DEEP: AgentCommandTool = {
   pinned: {},
 };
 
-/** A provider that says the given rounds in order and remembers the conversation it was handed each time. */
+/** A provider that says the given rounds in order and records the conversation it got each time. */
 function speaking(rounds: AIMessageChunk[]) {
   const heard: BaseMessage[][] = [];
   const bound: unknown[] = [];
@@ -393,7 +393,7 @@ function speaking(rounds: AIMessageChunk[]) {
   return {
     /** What the model was handed on each round, in order. */
     conversations: heard,
-    /** The schemas the tools were bound with, exactly as the model was given them. */
+    /** The schemas the tools were bound with, as given to the model. */
     boundTools: bound,
     clients: <Record<string, AgentClient>>{
       [TEST_PROVIDER_ID]: {
@@ -404,7 +404,7 @@ function speaking(rounds: AIMessageChunk[]) {
   };
 }
 
-/** A provider that answers the call with a fault of its own, the way a wrong key answers. */
+/** A provider that answers with a fault of its own, like a wrong key. */
 function faulting(failure: unknown) {
   const model = {
     bindTools: () => model,
@@ -421,7 +421,7 @@ function faulting(failure: unknown) {
   };
 }
 
-/** A stand-in for the servers, remembering what it was asked and answering as told. */
+/** A stand-in for the servers that records what it was asked and answers as told. */
 function watchfulServers(asked: unknown[], answer = "два корені", isFailed = false): ServerRunner {
   return {
     call: async (payload) => {
@@ -435,7 +435,7 @@ function watchfulServers(asked: unknown[], answer = "два корені", isFai
   };
 }
 
-/** One function of one server, with the schema the server itself published. */
+/** One function of one server, with the schema the server published. */
 const LIST_ROOTS: AgentServerTool = {
   source: "mcp",
   name: "list_roots",
@@ -497,7 +497,7 @@ describe("LlmService and the answer's ceiling", () => {
   });
 
   it("reads the provider's own count against the ceiling where its word never came", async () => {
-    // Some clients drop the chunk that carries the end word; the count the provider sent says the same thing.
+    // Some clients drop the chunk with the end word; the provider's token count says the same.
     const provider = speaking([
       new AIMessageChunk({
         content: "Успішне",
@@ -527,7 +527,7 @@ describe("LlmService and the answer's ceiling", () => {
   });
 
   it("says nothing where the count ran past the ceiling, since that provider never held to it", async () => {
-    // A provider that answers 1000 tokens under a ceiling of 8 ignored the ceiling; nothing of that answer was cut.
+    // 1000 tokens under a ceiling of 8: the provider ignored the ceiling, so nothing was cut.
     const provider = speaking([
       new AIMessageChunk({
         content: "Успішне досягнення цілей вимагає чіткого планування дій.",
@@ -625,7 +625,7 @@ describe("LlmService when the check refuses a call", () => {
 
     // Nothing ran: the line the person wrote was never reached.
     assert.deepEqual(ran, []);
-    // One row, said once — a refused call never went out, so it never comes back either.
+    // One row, said once: a refused call never went out, so it never comes back.
     const said = heard.map((chunk) => chunk.call).filter((one) => one !== null);
 
     assert.deepEqual(
@@ -634,14 +634,14 @@ describe("LlmService when the check refuses a call", () => {
     );
     assert.equal(said[0].refusal, "[find_deep не запустилась: depth — має бути числом, прийшло «швидко»]");
 
-    // The model heard the same refusal in its own words, inside the same turn.
+    // The model heard the same refusal, in its own words, in the same turn.
     assert.equal(
       provider.conversations[1]?.at(-1)?.content,
       "[find_deep не запустилась: depth — має бути числом, прийшло «швидко»]",
     );
     assert.equal(answer.text, "Гаразд, беру число.");
 
-    // The turn hands the call back the way the record and the chat both read it.
+    // The turn hands the call back in the form the record and chat read.
     assert.deepEqual(
       answer.calls.map((one) => [one.name, one.line, one.output, one.exitCode, one.refusal]),
       [["find_deep", "", "", null, "[find_deep не запустилась: depth — має бути числом, прийшло «швидко»]"]],
@@ -677,7 +677,7 @@ describe("LlmService when the check refuses a call", () => {
       tools: [FIND_DEEP],
     });
 
-    // One round of the model and one refused call are the whole of a ceiling of two.
+    // One round and one refused call fill a ceiling of two.
     assert.equal(answer.isCallsExhausted, true);
     assert.equal(answer.text, "");
   });
@@ -707,7 +707,7 @@ describe("LlmService when the check refuses a call", () => {
       tools: [FIND_DEEP],
     });
 
-    // Nought is no ceiling: the call is made and the turn goes on to the model's own last word.
+    // Nought is no ceiling: the call is made and the model has the last word.
     assert.equal(answer.isCallsExhausted, false);
     assert.equal(answer.text, "Знайшов три файли.");
   });
@@ -777,7 +777,7 @@ describe("LlmService when the check refuses a call", () => {
       ),
     );
 
-    /** A refusal crosses as an answer, written nowhere: the library's object carries provider headers and cookies. */
+    /** A refusal crosses as an answer; the library's error object carries headers and cookies. */
     await assert.rejects(
       llmService.ask({
         ...TURN,
@@ -831,7 +831,7 @@ describe("LlmService when a server's function is called", () => {
 
     assert.deepEqual(ran, []);
     assert.equal(asked.length, 1);
-    // The reach of the server is answered from the list that travelled beside the tools, by the tool's id alone.
+    // The server's reach is answered from the list that travelled with the tools, by tool id.
     const { callId, signal, ...went } = <{ callId: string; signal: AbortSignal }>asked[0];
 
     assert.deepEqual(went, {
@@ -842,9 +842,9 @@ describe("LlmService when a server's function is called", () => {
         deep: true,
       },
     });
-    // The turn's own stop signal travels with the call, so «ЗУПИНИТИ» reaches the server mid-request.
+    // The turn's stop signal travels with the call, so «ЗУПИНИТИ» reaches the server mid-request.
     assert.ok(signal instanceof AbortSignal);
-    // The call goes out under the id the record keeps it by, so what fails can be led back to.
+    // The call goes out under the id the record keeps it by.
     assert.equal(callId, heard.find((piece) => piece.call !== null)?.call?.id);
     assert.equal(answer.text, "Два корені.");
   });
@@ -882,7 +882,7 @@ describe("LlmService when a server's function is called", () => {
       ],
     );
     assert.equal(said[0].id, said[1].id);
-    // Nothing is pinned on a server's function: there is no place to pin one.
+    // A server's function has nothing to pin.
     assert.deepEqual(said[1].pinned, []);
     assert.deepEqual(
       answer.calls.map((one) => [one.name, one.output, one.refusal]),
@@ -891,7 +891,7 @@ describe("LlmService when a server's function is called", () => {
   });
 
   it("says a server's «ні» as an end of its own, and the words go to the model whole", async () => {
-    // «функція є, але сервер сказав "ні"» — not a break and not a refusal of ours, so neither word fits.
+    // «функція є, але сервер сказав "ні"»: neither a break nor our refusal.
     const provider = speaking([
       asking({}),
       new AIMessageChunk({
@@ -921,7 +921,7 @@ describe("LlmService when a server's function is called", () => {
       ["running", "saidNo"],
     );
     assert.equal(said[1].isFailed, true);
-    // The server's own words are the answer: they go to the model as they came, and nothing of ours is added.
+    // The server's words go to the model as they came, with nothing added.
     assert.deepEqual(
       answer.calls.map((one) => [one.output, one.refusal, one.exitCode]),
       [["browser_click: ref=e17 not found on page", "", null]],
@@ -978,7 +978,7 @@ describe("LlmService when a server's function is called", () => {
     });
 
     assert.deepEqual(asked, []);
-    // The model is told, in its own words, inside the same turn; the record holds no call at all.
+    // The model is told in the same turn; the record holds no call.
     assert.equal(
       provider.conversations[1]?.at(-1)?.content,
       SERVER_NOT_THERE_NOTE.replace(SERVER_NAME_SLOT, "list_roots"),
@@ -1058,7 +1058,7 @@ describe("LlmService and an agent called as a tool", () => {
       answer.calls.map((call) => [call.source, call.name, call.output, call.isFailed]),
       [["agent", "reviewer", "Зауважень немає.", false]],
     );
-    // The agent asked says nothing onward: the person hears the caller's words and its call, never the sub-turn's.
+    // The called agent says nothing onward: the person hears the caller's words and its call, not the sub-turn's.
     assert.equal(
       heard.some((chunk) => chunk.text === "Зауважень немає."),
       false,

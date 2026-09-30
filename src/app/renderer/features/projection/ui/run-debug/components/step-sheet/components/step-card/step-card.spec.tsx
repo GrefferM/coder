@@ -23,7 +23,7 @@ describe("StepCard", () => {
   });
 
   it("says why the dash stands, once, under the line it is about", () => {
-    // The dash says a number is not there; this line says why, and it is the only place that does.
+    // The dash means a number is missing; this line is the only place that says why.
     render(
       <StepCard
         step={aStep({
@@ -69,7 +69,7 @@ describe("StepCard", () => {
   });
 
   it("keeps both on one line where the head has room for the card", () => {
-    // In the lower sheet the card stands beside the name, so its reason goes on the same line.
+    // In the lower sheet the reason goes on the same line as the name.
     render(
       <StepCard
         step={aStep({
@@ -85,7 +85,7 @@ describe("StepCard", () => {
   });
 
   it("stands a dash for the time and true noughts for the rest where the turn never went out", () => {
-    // «claude-haiku-4.5 · — · 0 ТКН · $0.00 · НЕ ПОЧИНАВСЯ» — there was no turn to take time or tokens.
+    // «claude-haiku-4.5 · — · 0 ТКН · $0.00 · НЕ ПОЧИНАВСЯ»: no turn, so no time or tokens.
     render(
       <StepCard
         step={aStep({
@@ -106,7 +106,7 @@ describe("StepCard", () => {
   });
 
   it("keeps the dash off a step that ran but carries the record's own zero tokens", () => {
-    // A turn that went out and said nothing still took time; only a refusal has no span at all.
+    // A turn that went out and said nothing still took time; only a refusal has no span.
     render(
       <StepCard
         step={aStep({

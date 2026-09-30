@@ -1,7 +1,7 @@
 import { CHIP_BORDER_RADIUS_PX, CHIP_FONT_SIZE_PX, CHIP_PADDING } from "./constants";
 import type { ChipProps } from "./interfaces";
 
-/** One mono value in a soft box, at the measure every such box keeps. */
+/** One mono value in a soft box. */
 export function Chip({ children, color, background, gap, className }: ChipProps) {
   const layout = gap === undefined ? "" : " d-flex align-items-center";
 

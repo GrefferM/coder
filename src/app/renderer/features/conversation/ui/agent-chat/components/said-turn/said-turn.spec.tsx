@@ -81,7 +81,7 @@ function draw(message: ChatMessage, patch: Partial<Parameters<typeof SaidTurn>[0
   );
 }
 
-/** The chat's own memory of open calls, standing in — here nothing is open, since nobody pressed. */
+/** Stand-in for the chat's open-calls memory: nothing is open. */
 function standInOpenCalls(): OpenCalls {
   return {
     isOpen: () => false,
@@ -92,8 +92,7 @@ function standInOpenCalls(): OpenCalls {
 
 describe("SaidTurn", () => {
   it("lights the card the press drove to, and lets it go again", () => {
-    // The light is what the eye finds the message by; it is not a part of the card, so it goes.
-    // The shadow is inset rather than a border: a border would move the card's own by a pixel for every card here.
+    // The highlight is not part of the card, so it is removed; it is an inset shadow so no border shifts the card.
     const { container, rerender } = draw(said(), {
       isFound: true,
     });
@@ -125,7 +124,7 @@ describe("SaidTurn", () => {
   });
 
   it("stands the calls above the word the app says about the turn", () => {
-    // A stop or a break is the end of the turn — the calls went out before it, so they stand above it.
+    // A stop or break ends the turn; its calls stand above it.
     const { container } = draw(
       said({
         text: "",
@@ -162,7 +161,7 @@ describe("SaidTurn", () => {
   });
 
   it("names every card by its message, so the stream has somewhere to ride to", () => {
-    // The press promised that message, and the stream finds it by the id the record gave it.
+    // The stream finds the message by the id the record gave it.
     const { container } = draw(said());
 
     expect(container.querySelector('[data-said="said-1"]')).not.toBeNull();
@@ -217,7 +216,7 @@ describe("SaidTurn", () => {
   });
 
   it("draws nothing at all for a turn whose word the step said for it, so no hole stands in the stream", () => {
-    // The rule stands at the last of the turns that broke together; the ones before it are not empty rows.
+    // The rule stands at the last of the turns that broke together, not on the earlier ones.
     const { container } = draw(
       said({
         text: "",
@@ -272,13 +271,13 @@ describe("SaidTurn", () => {
       ],
     });
 
-    // The turn out is another agent's, and what it has said so far stands in that agent's own name.
+    // A turn out from another agent shows under that agent's name.
     expect(screen.getByText("TESTER")).toBeInTheDocument();
     expect(screen.getByText("Пишу…")).toBeInTheDocument();
   });
 
   it("lights the searched word inside an agent's own answer", () => {
-    // Every match in the stream wears the accent, and not the one the stream stands on alone.
+    // Every match wears the accent, not only the current one.
     draw(
       said({
         text: "Поклав кешування у fetchUser",
@@ -310,7 +309,7 @@ describe("SaidTurn", () => {
   });
 
   it("lights nothing in a card the search counts no place in", () => {
-    // The app's own words are no place to walk to, so lighting them would promise one.
+    // The app's own words are not a place to walk to, so they are not highlighted.
     const { container } = draw(
       said({
         notStarted: "noAddress",

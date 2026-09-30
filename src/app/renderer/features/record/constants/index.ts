@@ -1,4 +1,4 @@
-// A run's own words are the boundary's: written once in `src/contracts`, taken from there.
+// A run's words are the boundary's, defined in `src/contracts`.
 export * from "../../../../../contracts/runs";
 export * from "./found-count.constant";
 export * from "./found-address.constant";

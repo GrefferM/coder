@@ -1,4 +1,4 @@
-/** A record without one of its keys; what is not held is not remembered. */
+/** A record without the given key. */
 export function forgotten<TValue>(standing: Record<string, TValue>, key: string): Record<string, TValue> {
   const rest = {
     ...standing,

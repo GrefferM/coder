@@ -6,16 +6,13 @@ import type { PastedAgent } from "../../../../interfaces";
 import type { AgentWrites } from "../use-agent-writes";
 import type { Point } from "../../../../utils/math";
 
-/**
- * The copy in hand. An agent is held by its own id, so a copy of one deleted since is offered no
- * more; the copy put down says whose it is until the mark is taken off, and the hand keeps holding the original.
- */
+/** The copied agent, held by id; the pasted copy carries its mark until taken off, and the original stays held. */
 export function useAgentClipboard(project: OpenProject, writes: AgentWrites): AgentClipboard {
   // The agent held for copying, by its own id.
   const [copiedAgentId, setCopiedAgentId] = useState<string | null>(null);
   const [pasted, setPasted] = useState<PastedAgent | null>(null);
 
-  /** Puts the copy on the point and marks whose copy it is; who is selected is the page's to say. */
+  /** Puts the copy at the point and marks it as a copy; selection is the page's. */
   async function putCopyAt(at: Point): Promise<string | null> {
     if (copiedAgentId === null) {
       return null;

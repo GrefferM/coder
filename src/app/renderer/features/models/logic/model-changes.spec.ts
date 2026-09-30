@@ -34,7 +34,7 @@ describe("modelChanges", () => {
   });
 
   it("counts every field of a model being written from scratch as moved", () => {
-    // Six fields, and an empty form moved every one of them: neither ceiling opens on a number now.
+    // All six fields differ for an empty form; neither ceiling opens on a number.
     expect(modelChanges(modelFormValues(null), SAVED)).toHaveLength(6);
   });
 });

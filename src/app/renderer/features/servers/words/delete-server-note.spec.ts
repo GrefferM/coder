@@ -16,7 +16,7 @@ describe("deleteServerNote", () => {
   });
 
   it("says nothing of a burden that is not there, rather than counting a zero", () => {
-    // The row in the project file is never named either — every deed changes it, so it is not news.
+    // The project-file row is never named either: every deed changes it, so it is not news.
     expect(
       deleteServerNote("brave_search", {
         grants: 0,

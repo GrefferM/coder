@@ -6,7 +6,7 @@ import {
   PANEL_GROUND_COLOR,
 } from "../../../../../../../constants";
 
-/** One call, folded into a line; the same block a step of the projection opens. */
+/** One call folded into a line; same block a step of the projection opens. */
 export const CALL_ROW_BACKGROUND_COLOR = PANEL_GROUND_COLOR;
 export const CALL_ROW_BORDER_COLOR = BORDER_AT_REST_COLOR;
 export const CALL_ROW_OPEN_BORDER_COLOR = "#2c3550";
@@ -18,10 +18,10 @@ export const CALL_ROW_HEAD_GAP_PX = 8;
 export const CALL_ROW_MARK_SIZE_PX = 6;
 export const CALL_ROW_MARK_STILL_RADIUS_PX = 1;
 export const CALL_ROW_MARK_STILL_COLOR = "#6b7490";
-/** While the call is out its mark takes the agent's colour and breathes; that, the word and the seconds say it runs. */
+/** A running call's mark takes the agent's colour and breathes. */
 export const CALL_ROW_BREATH_CLASS = "call-breath";
 export const CALL_ROW_BREATH_MS = 1_600;
-/** Only a troubled end takes a colour, and it is the words that take it; the mark stays as it is. */
+/** Only a troubled end takes a colour, and only on the words. */
 export const CALL_ROW_SAID_NO_COLOR = BROKEN_COLOR;
 
 export const CALL_ROW_NAME_COLOR = FIRST_LEVEL_TEXT_COLOR;
@@ -29,35 +29,29 @@ export const CALL_ROW_NAME_FONT_SIZE_PX = 10.5;
 export const CALL_ROW_STATE_COLOR = "#5c6478";
 export const CALL_ROW_STATE_LETTER_SPACING_PX = 1;
 
-/** The right cell names the end — the code when there is one, words when a call never started. */
+/** Right cell: the exit code, or words when the call never started. */
 export const CALL_ROW_RUNNING_LABEL = "БІЖИТЬ";
 export const CALL_ROW_REFUSED_LABEL = "НЕ ЗАПУСТИЛАСЬ · КОДУ НЕМА";
 export const CALL_ROW_CODE_LABEL = "КОД ";
 export const CALL_ROW_SEPARATOR = " · ";
 
-/**
- * A call to a server has no exit code — the server was asked, no program was run — so on the code's place
- * stands the one number a server has: how long it took to answer. «Порожніх полів не тримаємо».
- */
+/** A server call has no exit code; this label introduces its answer time instead. */
 export const CALL_ROW_ANSWERED_LABEL = "ВІДПОВІВ ЗА ";
-/** The server was asked and said «ні» — the function is there, so this is neither a break nor a refusal. */
+/** The server answered «ні»: neither a break nor a refusal. */
 export const CALL_ROW_SAID_NO_LABEL = "СЕРВЕР ВІДМОВИВ";
-/** The agent was asked and could not run to an answer — it is there, so this is neither a break nor a refusal. */
+/** The agent could not run to an answer: neither a break nor a refusal. */
 export const CALL_ROW_AGENT_FAILED_LABEL = "АГЕНТ НЕ ВІДПОВІВ";
 export const CALL_ROW_SECONDS_LABEL = " С";
 export const CALL_ROW_SECONDS_DIGITS = 2;
-/** Where the call went, said in the opened block above the arguments. */
+/** Where the call went, shown above the arguments in the opened block. */
 export const CALL_ROW_SOURCE_LABEL = "ДЖЕРЕЛО";
-/**
- * The server's answer is a block of its own in the card, named, and beside the name stands the one thing
- * offered about it: taking it away whole. A command's output keeps no such head.
- */
+/** Head of the server's answer block, with «СКОПІЮВАТИ» beside it; a command's output has no head. */
 export const CALL_ROW_SAID_LABEL = "ВІДПОВІДЬ СЕРВЕРА";
-/** The agent's answer is a block of its own too, and «СКОПІЮВАТИ» takes it away whole. */
+/** Head of the agent's answer block, with «СКОПІЮВАТИ» beside it. */
 export const CALL_ROW_AGENT_SAID_LABEL = "ВІДПОВІДЬ АГЕНТА";
 export const CALL_ROW_SAID_GAP_PX = 9;
 export const CALL_ROW_SOURCE_KIND = "сервер";
-/** On the source line of a call that went to an agent, said where a server's name would stand. */
+/** Stands where a server's name would on the source line of an agent call. */
 export const CALL_ROW_AGENT_KIND = "агент";
 
 export const CALL_ROW_BODY_BACKGROUND_COLOR = "#0d0f16";
@@ -68,7 +62,7 @@ export const CALL_ROW_BODY_LINE_HEIGHT = 1.7;
 export const CALL_ROW_BODY_COLOR = CONTROL_AT_REST_COLOR;
 export const CALL_ROW_BODY_QUIET_COLOR = "#4a5164";
 export const CALL_ROW_BODY_PINNED_COLOR = "#38a3ff";
-/** A long output scrolls inside its own block; the chat itself never scrolls sideways. */
+/** A long output scrolls inside its block; the chat never scrolls sideways. */
 export const CALL_ROW_BODY_MAX_HEIGHT_PX = 220;
 
 export const CALL_ROW_FROM_MODEL_LABEL = "ВІД МОДЕЛІ";

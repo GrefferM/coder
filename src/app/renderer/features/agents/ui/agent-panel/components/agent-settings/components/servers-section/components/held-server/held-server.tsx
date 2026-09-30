@@ -19,10 +19,7 @@ import { HELD_SERVER_COUNT_COLOR, HELD_SERVER_COUNT_LETTER_SPACING_PX, HELD_SERV
 import { focusRing } from "../../../../../../../../../../utils/focus";
 import type { HeldServerProps } from "./interfaces";
 
-/**
- * One server this agent is connected to. Connecting and disconnecting are the list's above; the row itself opens
- * what the server hands over, so that a big server can be let in without letting in all of it.
- */
+/** One connected server; the row opens its functions so part of a big server can be let in. */
 export function HeldServer({ name, held, functions, onOpen }: HeldServerProps) {
   const { isLit, isFocused, handlers } = useInteraction();
 

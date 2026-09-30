@@ -34,7 +34,7 @@ function turnCall(step: WholeStep): TurnCall[] {
   }));
 }
 
-/** An empty turn of a message the stream draws the same way it draws a live one. */
+/** An empty turn card, drawn the same way as a live one. */
 function message(
   patch: Partial<ChatMessage> & Pick<ChatMessage, "id" | "agentId" | "from" | "at" | "questionId" | "askedAt">,
 ): ChatMessage {
@@ -59,13 +59,10 @@ function message(
   };
 }
 
-/**
- * The app's word about a recorded step — the same word the live stream said. The calls ceiling names
- * its own number, and the calls stand in the record beside the step.
- */
+/** The app's word about a recorded step, matching the live stream's; the calls ceiling names its own number. */
 function noteOf(step: WholeStep): string | null {
   if (step.state === RUN_STEP_FAILED) {
-    // What the record holds for a fallen step is the provider's own sentence, and the rule says it after our word.
+    // A fallen step's record holds the provider's own sentence, said after our word.
     return fellNote(step.said);
   }
 
@@ -84,14 +81,14 @@ function noteOf(step: WholeStep): string | null {
   return step.state === RUN_STEP_CALLS ? callsExhaustedNote(step.calls.length) : null;
 }
 
-/** Whether a link's work came to a turn of its own, which the stream draws where the work arrived. */
+/** Whether a link's work came to a turn of its own, drawn where the work arrived. */
 function ledOn(walk: WholeStep[], step: WholeStep, toAgentId: string): boolean {
   return walk.some((other) => other.agentId === toAgentId && other.fromStepIds.includes(step.id));
 }
 
 /**
- * A run read back from the record in the shape of a live turn — a block per question, holding the
- * steps that name it in the order they ran. A question that reached nobody keeps its block.
+ * A run read back from the record in live-turn shape: a block per question holding its steps in run order; a question
+ * that reached nobody keeps its block.
  */
 export function runStream(run: WholeRun): ChatMessage[] {
   const walk = [...run.walk].sort((one, other) => one.place - other.place);
@@ -100,7 +97,7 @@ export function runStream(run: WholeRun): ChatMessage[] {
   for (const question of [...run.questions].sort((one, other) => one.place - other.place)) {
     const askedAt = question.askedAt.getTime();
     const grew = walk.filter((step) => step.questionId === question.id);
-    // The record does not keep whom a question was aimed at: it is the first turn nobody fed.
+    // The record does not keep whom a question was aimed at; it is the first turn nobody fed.
     const aimed = grew.find((step) => step.fromStepIds.length === 0) ?? null;
 
     said.push(
@@ -112,13 +109,13 @@ export function runStream(run: WholeRun): ChatMessage[] {
         questionId: question.id,
         askedAt,
         text: question.asked,
-        // The walk this question started, so the projection is opened by it and not by the hour.
+        // The walk this question started, which opens the projection instead of the hour.
         walkId: aimed?.walkId ?? null,
       }),
     );
 
     for (const step of grew) {
-      // One row per supplier, over the turn their work started — where the work arrived.
+      // One row per supplier, over the turn its work started.
       for (const fed of walk.filter((other) => step.fromStepIds.includes(other.id))) {
         said.push(
           message({
@@ -134,7 +131,7 @@ export function runStream(run: WholeRun): ChatMessage[] {
         );
       }
 
-      // A turn that never began is a step, and the card it stood as is read back off its end.
+      // A turn that never began is a step; its card is read from its end.
       const notStarted = notStartedOf(step.state);
 
       said.push(
@@ -145,17 +142,16 @@ export function runStream(run: WholeRun): ChatMessage[] {
           at: step.endedAt.toISOString(),
           questionId: question.id,
           askedAt,
-          // What the provider said, kept as it came; for a turn that ran, the model's own words. A fall said
-          // nothing of its own — what came back was the refusal, and that stands on the rule, not in a card.
+          // The model's own words for a turn that ran; a fall has none, the refusal stands on the rule.
           text: step.state === RUN_STEP_FAILED ? "" : step.said,
-          // Its own question and the steps that fed it, for a repeat to pick the walk up on.
+          // Its own question and the steps that fed it, for a repeat to resume from.
           asked: step.asked,
           fedBy: step.fromStepIds,
           attached: [],
           isFailure: step.state === RUN_STEP_FAILED,
           note: noteOf(step),
           notStarted,
-          // The breakdown is counted again from the words and the ceiling the model had then.
+          // Recounted from the words and the ceiling the model had then.
           wouldGo:
             step.state === RUN_STEP_TOO_LONG && step.contextCeiling !== null
               ? turnLength(step.prompt, step.asked, step.contextCeiling)
@@ -170,15 +166,15 @@ export function runStream(run: WholeRun): ChatMessage[] {
                   money: step.money,
                 },
           calls: turnCall(step),
-          // Which step of the walk this was, counted off the same edges the record keeps.
+          // The step of the walk, counted off the same edges the record keeps.
           began: step.startedAt.toISOString(),
           stepId: step.id,
           walkId: step.walkId,
         }),
       );
 
-      // A link that led nowhere — the neighbour switched off, or the stop caught the turn before it began.
-      // A link whose work came to a turn is drawn over that turn, not twice.
+      // A link that led nowhere: the neighbour was off, or a stop caught the turn before it began. A link whose work
+      // reached a turn is drawn over that turn.
       for (const handoff of step.handoffs.filter((one) => !ledOn(walk, step, one.toAgentId))) {
         said.push(
           message({

@@ -46,7 +46,7 @@ function call(patch: Partial<LiveCall> = {}): LiveCall {
   };
 }
 
-/** The same call, but asked of a server — no line, no code, and a source instead. */
+/** The same call asked of a server: no line, no code, a source instead. */
 function onServer(patch: Partial<LiveCall> = {}): LiveCall {
   return call({
     name: "browser_navigate",
@@ -67,8 +67,8 @@ function onServer(patch: Partial<LiveCall> = {}): LiveCall {
 }
 
 /**
- * The memory of open calls belongs to the chat, so the row is driven through it here too — that is the
- * whole point of the rule: the same call keeps its place when the working card gives way to the finished turn.
+ * The open-calls memory belongs to the chat, so the row is driven through it here too; the same call keeps its place
+ * when the working card gives way to the finished turn.
  */
 function Row({ call: one }: { call: LiveCall }) {
   const openCalls = useOpenCalls();
@@ -78,7 +78,7 @@ function Row({ call: one }: { call: LiveCall }) {
 
 describe("CallRow · a call asked of a server", () => {
   it("says how long the server took instead of a code it never had", async () => {
-    // «коду виходу немає · процесу не було» — and an empty field is not left standing in its place.
+    // «коду виходу немає · процесу не було», with no empty field left in its place.
     render(<Row call={onServer()} />);
 
     expect(screen.getByText(`${CALL_ROW_ANSWERED_LABEL}0.42 С`)).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe("CallRow · a call asked of a server", () => {
   });
 
   it("colours the words that name a refusal, and leaves the quiet ends grey", () => {
-    // The words of this end take the colour and nothing else of the row; only the troubled ends take one.
+    // The words of this end take the row's colour and nothing else; only troubled ends take one.
     const { rerender } = render(
       <Row
         call={onServer({
@@ -128,7 +128,7 @@ describe("CallRow · a call asked of a server", () => {
   });
 
   it("names the server's answer and offers it whole, and offers nothing of a command's output", async () => {
-    // The answer is a block of its own, and «СКОПІЮВАТИ» takes it away whole.
+    // The answer is a block of its own and «СКОПІЮВАТИ» copies it whole.
     const writeText = vi.fn().mockResolvedValue(undefined);
 
     Object.defineProperty(navigator, "clipboard", {
@@ -153,12 +153,12 @@ describe("CallRow · a call asked of a server", () => {
 
     rerender(<Row call={call()} />);
 
-    // A command's output has no head of its own, so nothing is added over it here either.
+    // A command's output has no head of its own, so none is added.
     expect(screen.queryByText(CALL_ROW_SAID_LABEL)).not.toBeInTheDocument();
   });
 
   it("marks a server's call round and a command's square, the way the arc marks its own", () => {
-    // The mark is the source's shape, and the same shape stands on the sphere's arc.
+    // The mark is the source's shape, the same as on the sphere's arc.
     const { container, rerender } = render(<Row call={onServer()} />);
 
     expect(container.querySelector("button > span")).toHaveStyle({
@@ -173,7 +173,7 @@ describe("CallRow · a call asked of a server", () => {
   });
 
   it("breathes while the call is out, and stands still the moment it is over", () => {
-    // The mark keeps its place and its size — only the light in it comes and goes.
+    // The mark keeps its place and size; only its light changes.
     const { container, rerender } = render(
       <Row
         call={onServer({
@@ -215,7 +215,7 @@ describe("CallRow", () => {
   });
 
   it("says a call refused at the door has no code at all, rather than showing a zero", () => {
-    // A refused call never ran, so there is nothing for a code to mean.
+    // A refused call never ran, so there is no code to show.
     render(
       <Row
         call={call({
@@ -232,7 +232,7 @@ describe("CallRow", () => {
   });
 
   it("stands folded while the call is out, and says it is running all the same", () => {
-    // A call is one line in the stream — a turn of a dozen calls is a dozen lines, not a dozen blocks.
+    // A call is one line in the stream; a dozen calls are a dozen lines, not blocks.
     render(
       <Row
         call={call({
@@ -250,7 +250,7 @@ describe("CallRow", () => {
   });
 
   it("keeps a call the person opened while it was out open once it is over", async () => {
-    // The row that draws it changes with the card, and the answer landing is not a reason to close what is being read.
+    // The row changes with the card, and the answer landing must not close what is being read.
     const { rerender } = render(
       <Row
         call={call({
@@ -302,7 +302,7 @@ describe("CallRow", () => {
   });
 
   it("says of each argument whether the person fixed it or the model decided it", async () => {
-    // A pinned argument never reached the model, and the record must not blur the two.
+    // A pinned argument never reached the model; the record keeps the two apart.
     render(<Row call={call()} />);
     await userEvent.click(screen.getByRole("button"));
 

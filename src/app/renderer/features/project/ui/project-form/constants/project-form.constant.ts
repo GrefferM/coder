@@ -11,11 +11,8 @@ export const PROJECT_FORM_NAME_NOTE = "Підставлена з імені па
 export const PROJECT_FORM_WILL_APPEAR_LABEL = "З'ЯВИТЬСЯ В ПАПЦІ";
 
 /**
- * Everything a project is on the disk, in the order the rail stands in — all of it, so the form promises no
- * less than the project actually keeps.
- *
- * The folders appear as there is something to put in them — a project with no agents has no `agents/` — so the
- * block's word is «З'ЯВИТЬСЯ» and not «є».
+ * Everything a project is on disk, in the rail's order. Folders appear only once there is something to put in them,
+ * hence «З'ЯВИТЬСЯ» and not «є».
  */
 export const PROJECT_FORM_APPEARING: AppearingPart[] = [
   {
@@ -45,11 +42,7 @@ export const PROJECT_FORM_APPEARING: AppearingPart[] = [
 ];
 export const PROJECT_FORM_PLACE_NOTE = "Прямо в теці, без крапки на початку — видно у Finder і в діалогах відкриття";
 
-/**
- * A folder that already holds a project never reaches this form: nothing is created over a project that exists,
- * and a form whose one answer is «Відкрити» is a question nobody needed asked. The words that read out what such a
- * folder holds went with it — the app opens it instead of describing it.
- */
+/** A folder already holding a project never reaches this form; the app opens it instead of describing it. */
 export const PROJECT_FORM_CANCEL_LABEL = "Скасувати";
 export const PROJECT_FORM_CREATE_LABEL = "Створити";
 

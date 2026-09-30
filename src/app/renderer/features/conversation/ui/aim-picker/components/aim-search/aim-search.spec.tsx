@@ -20,7 +20,7 @@ describe("AimSearch", () => {
   });
 
   it("hands its keys straight back to the list, the arrows being the list's own", async () => {
-    // The letters stay in the field while the arrows walk the rows.
+    // Typed letters stay in the field while arrows walk the rows.
     const onKeyDown = vi.fn();
 
     render(<AimSearch asked="" onAsk={() => {}} onKeyDown={onKeyDown} />);

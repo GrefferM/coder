@@ -11,12 +11,12 @@ describe("slotInQuotes", () => {
   });
 
   it("says nothing of a slot standing bare", () => {
-    // Nothing is left behind: the slot goes and takes its place with it.
+    // The slot goes and leaves nothing behind.
     expect(slotInQuotes("npm test -- {mask}", "mask")).toBe(false);
   });
 
   it("says nothing of a slot inside a longer quoted string", () => {
-    // Dropping it leaves the rest of the string, not an empty pair — a different case and a different warning.
+    // Dropping it leaves the rest of the string, not an empty pair.
     expect(slotInQuotes("grep '{mask} out'", "mask")).toBe(false);
   });
 

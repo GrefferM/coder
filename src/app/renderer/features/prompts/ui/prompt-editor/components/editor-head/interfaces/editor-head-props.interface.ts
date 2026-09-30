@@ -1,5 +1,5 @@
 export interface EditorHeadProps {
-  /** The prompt's own name, or nothing yet — the head then says the placeholder in its place. */
+  /** The prompt's name; empty shows the placeholder. */
   name: string;
   words: number;
   hasUnsaved: boolean;

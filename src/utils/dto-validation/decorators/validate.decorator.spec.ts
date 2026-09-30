@@ -36,7 +36,7 @@ describe("Validate", () => {
   });
 
   it("does not run the method at all when an argument breaks its rule", async () => {
-    // The refusal must come before the body: a half-written thing is worse than a thing not written.
+    // Refusal comes before the method body runs.
     const controller = new Controller();
 
     await assert.rejects(() => controller.set(dto("")));
@@ -44,7 +44,7 @@ describe("Validate", () => {
   });
 
   it("leaves the method standing on its own object", async () => {
-    // The decorator wraps the method; a wrapper that loses `this` would take the class's own words with it.
+    // The wrapper keeps `this`.
     const controller = new Controller();
 
     await controller.set(dto("ollama"));

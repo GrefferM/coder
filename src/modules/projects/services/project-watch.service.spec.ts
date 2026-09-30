@@ -11,10 +11,10 @@ import type { ProjectVoice } from "../interfaces";
 /** Long enough for the watch to settle and read the file. */
 const HEARD_MS = PROJECT_WATCH_SETTLE_MS * 4;
 
-/** How many such waits a word is given before it counts as never said. */
+/** Waits allowed before a word counts as never said. */
 const HEARD_TRIES = 10;
 
-/** A part file's name is the thing's own id, and only such a name is the project's. */
+/** A part file is named by its own id; only such names belong to the project. */
 const AGENT_ID = "0f1e2d3c-4b5a-4968-8778-69504a3b2c1d";
 
 describe("ProjectWatchService", () => {
@@ -23,7 +23,7 @@ describe("ProjectWatchService", () => {
   let voice: ProjectVoice;
   let watches: ProjectWatchService[];
 
-  /** A watch this test made, put down when the test ends so its folder stops being listened to. */
+  /** A watch put down when the test ends. */
   function watching(): ProjectWatchService {
     const watch = new ProjectWatchService(voice);
 
@@ -32,7 +32,7 @@ describe("ProjectWatchService", () => {
     return watch;
   }
 
-  /** What the watch said, given time to say it: how long the file system takes is not ours to fix. */
+  /** What the watch said, after giving the file system time to say it. */
   async function spoken(): Promise<string[]> {
     for (let step = 0; step < HEARD_TRIES && heard.length === 0; step += 1) {
       await wait(HEARD_MS);
@@ -106,8 +106,8 @@ describe("ProjectWatchService", () => {
   });
 
   it("notices a change that landed before the watch was listening", async () => {
-    // The system takes a moment between opening a watch and delivering from it, and a change inside that moment
-    // is never queued for anybody. One read the watch owes itself is what finds it — see `sweep`.
+    // A change between opening a watch and its first delivery is never queued; the watch's own sweep read finds it (see
+    // `sweep`).
     const watch = watching();
 
     await watch.follow(directory);
@@ -121,7 +121,7 @@ describe("ProjectWatchService", () => {
     const filePath = path.join(directory, PROJECT_FILE_NAME);
 
     await watch.follow(directory);
-    // Every write the app makes is a rename over the old file, and so is every editor's save.
+    // Every app write and every editor save is a rename over the old file.
     await writeFile(`${filePath}.tmp`, "version: 1\nname: two\n");
     await rename(`${filePath}.tmp`, filePath);
 
@@ -130,7 +130,7 @@ describe("ProjectWatchService", () => {
     heard.length = 0;
     await writeFile(filePath, "version: 1\nname: three\n");
 
-    // The watch is on the folder, so replacing the file does not take it away.
+    // The watch is on the folder, so replacing the file does not end it.
     assert.deepEqual(await spoken(), [directory]);
   });
 
@@ -159,7 +159,7 @@ describe("ProjectWatchService", () => {
     });
     await writeFile(agentPath, "name: EDITOR\n");
     await watch.follow(directory);
-    // Taking a file away is one event and no more: a watch not yet armed misses it outright.
+    // A removal is a single event; an unarmed watch misses it.
     await wait(PROJECT_WATCH_SETTLE_MS);
     await rm(agentPath);
 
@@ -170,7 +170,7 @@ describe("ProjectWatchService", () => {
     const watch = watching();
 
     await watch.follow(directory);
-    // An agent writing its report into the project folder is not the project changing.
+    // A report written into the folder is not a project change.
     await writeFile(path.join(directory, "report.md"), "# Звіт\n");
     await wait(HEARD_MS);
 

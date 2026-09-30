@@ -53,7 +53,7 @@ const LOOKS: Record<string, McpLook> = {
   [OTHER_ID]: aLook(OTHER_ID, ["browser_click"]),
 };
 
-/** A command's grant, which this section neither counts nor touches — it belongs to the section above. */
+/** A command's grant, which this section neither counts nor touches. */
 const COMMAND_GRANT: ToolGrant = {
   id: "grant-command",
   source: "command",
@@ -160,7 +160,7 @@ describe("ServersSection", () => {
   });
 
   it("asks for a server's own step when its row is pressed, and opens nothing itself", () => {
-    // The functions of a server are a step of the tab, the way an opened grant is, not a swap inside a field.
+    // A server's functions open as a step of the tab, not as a swap inside the field.
     const { onOpenServer } = renderSection([held("pulls.create")]);
 
     fireEvent.click(screen.getByLabelText(/Переглянути функції github-mcp/));

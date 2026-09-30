@@ -19,7 +19,7 @@ const AGENT = anAgent({
   color: "#b18aff",
 });
 
-/** The machine answering every channel with one and the same thing. */
+/** A machine that answers every channel with the same value. */
 function machine(answer: unknown) {
   const invoke = vi.fn(async () => answer);
 
@@ -30,7 +30,7 @@ function machine(answer: unknown) {
   return invoke;
 }
 
-/** The machine that cannot answer at all — the record is unreadable, the window is closing, the write threw. */
+/** A machine that cannot answer at all: unreadable record, closing window, or a throwing write. */
 function brokenMachine() {
   const invoke = vi.fn(async () => {
     throw new Error("no record");
@@ -45,7 +45,7 @@ function brokenMachine() {
 
 describe("run-record · what is sent to the machine", () => {
   it("opens a run with the agent's name and colour as they stand at that moment", async () => {
-    // The row is named before its first step lands, so the name goes with the opening and not after it.
+    // The row is named with the opening, before its first step lands.
     const invoke = machine({
       runId: "run-1",
       questionId: "question-1",
@@ -138,7 +138,7 @@ describe("run-record · what is sent to the machine", () => {
 
 describe("run-record · what comes back when the machine cannot answer", () => {
   it("says «не прочиталось» about a list and about one run, which is not the same as «порожньо»", async () => {
-    // An unread record and an empty one look alike on screen and are not the same thing.
+    // An unread record and an empty one are different.
     brokenMachine();
 
     expect(await listRuns("/tmp/coder")).toBeNull();
@@ -179,7 +179,7 @@ describe("run-record · what comes back when the machine cannot answer", () => {
   });
 
   it("says nothing was deleted, each deletion in its own words", async () => {
-    // «false» is «this row is still there»; «null» is «the record refused», and the list is not emptied on it.
+    // «false» means the row is gone; «null» means the record refused, and the list is not emptied.
     brokenMachine();
 
     expect(await forgetRun("run-1")).toBe(false);
@@ -187,7 +187,7 @@ describe("run-record · what comes back when the machine cannot answer", () => {
   });
 
   it("turns a machine that answers nothing into the same «нічого», not into undefined", async () => {
-    // The bridge answers `undefined` when a channel is not registered at all.
+    // The bridge answers `undefined` for an unregistered channel.
     machine(undefined);
 
     expect(

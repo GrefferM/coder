@@ -24,7 +24,7 @@ const turn: WorkingAgent = {
   questionId: "question-1",
 };
 
-/** The chat's own memory of open calls, standing in — here nothing is open, since nobody pressed. */
+/** Stand-in for the chat's open-calls memory: nothing is open. */
 function standInOpenCalls(): OpenCalls {
   return {
     isOpen: () => false,
@@ -53,7 +53,7 @@ describe("WorkingTurn", () => {
   });
 
   it("takes the turn's own agent, not the stream's, one stream holding the turns of all of them", () => {
-    // The chat is aimed at one agent, but a walk runs through several.
+    // A walk runs through several agents though the chat is aimed at one.
     const { container } = render(
       <WorkingTurn
         openCalls={standInOpenCalls()}
@@ -80,7 +80,7 @@ describe("WorkingTurn", () => {
   });
 
   it("shows no answer card while nothing has been said yet", () => {
-    // The words arrive token by token; until the first one there is nothing to draw.
+    // Nothing to draw until the first token arrives.
     render(
       <WorkingTurn openCalls={standInOpenCalls()} turn={turn} agents={[]} agentName="Шукач" agentColor="#6fd3d8" />,
     );

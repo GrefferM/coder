@@ -1,4 +1,4 @@
-/** How the question about leaving names each field of a prompt's editor. */
+/** Names of a prompt editor's fields in the question about leaving. */
 export const PROMPT_NAME_CHANGE_LABEL = "назва";
 export const PROMPT_TEXT_CHANGE_LABEL = "текст";
 

@@ -12,14 +12,10 @@ import {
 } from "../../constants";
 import type { EditorNameProps } from "./interfaces";
 
-/** The prompt's name — a word until it is pressed, a field while it is being written. */
+/** The prompt's name: a word until pressed, a field while being written. */
 export function EditorName({ name, wasName, isRenaming, onRenaming, onRename }: EditorNameProps) {
   const press = usePressable(() => onRenaming(true));
-  /**
-   * What the word and the field must share to be the same slot. Written once: two copies of a width that must
-   * agree are two copies that will one day disagree, and the disagreement shows as everything beside the name
-   * jumping sideways at the press.
-   */
+  /** Shared by the word and the field so both fill the same slot and nothing beside shifts on press. */
   const slot = {
     width: PROMPT_EDITOR_NAME_WIDTH_PX,
     fontSize: PROMPT_EDITOR_NAME_FONT_SIZE_PX,

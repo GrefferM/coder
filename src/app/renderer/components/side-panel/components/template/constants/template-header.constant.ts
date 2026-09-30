@@ -1,6 +1,6 @@
 import { BORDER_AT_REST_COLOR, CONTROL_AT_REST_COLOR, SECOND_LEVEL_TEXT_COLOR } from "../../../../../constants";
 
-/** Background color of the template's header — one step lighter than its body. */
+/** Header background, one step lighter than the body. */
 export const TEMPLATE_HEADER_BACKGROUND_COLOR = "#191d29";
 
 /** Border color under the template's header. */

@@ -24,24 +24,22 @@ import type { ProjectMcpServerDto } from "../../projects";
 import { Refusal } from "../../../utils/refusals";
 
 /**
- * Every MCP server is reached through this one client, held open once it answers and kept by its id alone: one
- * renamed or moved to another address is the same server, and two running the same line are two.
- *
- * Written to no file — the connection and the list of functions are asked of the server itself.
+ * Every MCP server is reached through this client, held open once it answers and kept by id alone: a renamed or moved
+ * server is the same server, two running the same line are two. Nothing is written to a file.
  */
 export class McpClient {
-  /** The machine's keychain, where a token and every environment value are — never the file. */
+  /** The machine's keychain, where a token and every environment value live, never the file. */
   constructor(private readonly secrets: McpSecretStore) {}
 
   private readonly live = new Map<string, Client>();
-  /** What a server printed beside the protocol while it was starting, by server id; kept only until it has. */
+  /** What a server printed beside the protocol while starting, by server id. */
   private readonly printed = new Map<string, string[]>();
-  /** What the calls to each server have come to since it was connected; the catalogue's row is drawn from it. */
+  /** What the calls to each server have come to since it was connected; the catalogue row is drawn from it. */
   private readonly calls = new McpCalls();
 
   /**
-   * One look at a server, as the row and the opened list are drawn from it. A server that does not
-   * answer is not an error to anybody: it is drawn fallen, with the words it failed with, and «ЗАПУСТИТИ» beside it.
+   * One look at a server, as the row and the opened list are drawn from it. A server that does not answer is drawn
+   * fallen, with the words it failed with.
    */
   async look(server: ProjectMcpServer, directory: string): Promise<McpLook> {
     try {
@@ -53,8 +51,7 @@ export class McpClient {
         functions,
         answeredAt: Date.now(),
         failure: null,
-        // The memory of the last look is not the client's: it is asked of this machine's own database, and the
-        // door that asked for the look puts the two together.
+        // The memory of the last look is kept in this machine's database; the door that asked puts the two together.
         changedAt: null,
         wasCount: null,
         calls: this.calls.of(server.id),
@@ -63,11 +60,11 @@ export class McpClient {
       return {
         serverId: server.id,
         isUp: false,
-        // What it handed over last time is not repeated as if it still did: this is what it says now, and it is none.
+        // Nothing is reported from the last look; this is what it says now.
         functions: [],
         answeredAt: null,
         failure: String(failure),
-        // A fall says nothing about the list: it did not go to zero, there is simply nobody there to ask.
+        // A fall says nothing about the list; nobody is there to ask.
         changedAt: null,
         wasCount: null,
         calls: this.calls.of(server.id),
@@ -75,27 +72,27 @@ export class McpClient {
     }
   }
 
-  /** The functions a server hands over, asked of the server itself; it is started first if it is not up. */
+  /** The functions a server hands over, asked of the server itself; started first if not up. */
   async functionsOf(server: ProjectMcpServerDto, directory: string): Promise<McpFunction[]> {
     const client = await this.held(server, directory);
     const answer = await client.listTools();
 
     return answer.tools.map((tool) => ({
       name: tool.name,
-      // A server need not describe a function; the model is then given the name alone rather than a made-up line.
+      // A server need not describe a function; the model gets the name alone.
       description: tool.description ?? "",
       parameters: tool.inputSchema,
     }));
   }
 
   /**
-   * Calls one function of a server and brings back what it said. A call that did not happen — the server fell, or
-   * never knew the function — comes back named rather than thrown, so a turn is not lost over one function.
+   * Calls one function of a server and returns what it said. A call that did not happen (server fell, or unknown
+   * function) comes back named, not thrown.
    */
   async call(payload: McpCall): Promise<McpResult> {
     const result = await this.asked(payload);
 
-    // The row's state is a fact about calls, and this is the one place where a call ends.
+    // The one place a call ends.
     this.calls.noted(payload.server.id, payload, result);
 
     return result;
@@ -119,7 +116,7 @@ export class McpClient {
 
       return {
         output: saidWhole(answer.content),
-        // A server says a failure of its own in the answer; it is the function's outcome, not a broken call.
+        // A server's own failure is the function's outcome, not a broken call.
         isFailed: answer.isError === true,
       };
     } catch (failure) {
@@ -144,7 +141,7 @@ export class McpClient {
     }
 
     this.live.delete(serverId);
-    // Letting a server go takes what its calls came to with the connection they were made on.
+    // Letting a server go forgets what its calls came to.
     this.calls.forget(serverId);
     await client.close();
   }
@@ -166,11 +163,11 @@ export class McpClient {
 
     const client = await this.started(server, directory);
 
-    // A new connection is a new chance — what the old one's calls came to says nothing about it.
+    // A new connection is a new chance.
     this.calls.forget(server.id);
 
-    // A server that falls is noticed where it falls: the connection says so, and holding a dead one would make
-    // the next call fail for a reason nobody could see. Only this very connection lets go of its own place.
+    // A fallen server is noticed where it falls, so a dead connection is not held; only this connection releases its
+    // own place.
     client.onclose = () => {
       if (this.live.get(server.id) === client) {
         this.live.delete(server.id);
@@ -194,8 +191,8 @@ export class McpClient {
       throw new Refusal(MCP_SERVER_UNREACHABLE);
     }
 
-    // What it will run with is settled before anything runs — a key missing is «не запуститься», and
-    // the process must not exist to say so, or it says so later, elsewhere, in somebody else's words.
+    // The environment is settled before anything runs; a missing key is «не запуститься» and no process exists to say
+    // so.
     const environment = await this.environment(server);
     const client = new Client({
       name: MCP_CLIENT_NAME,
@@ -204,13 +201,13 @@ export class McpClient {
     const transport = new StdioClientTransport({
       command,
       args,
-      // The server is started where the project stands, so a line naming a relative path means what it says.
+      // Started in the project's folder, so relative paths in the line resolve.
       cwd: directory,
       env: environment,
-      // What the server prints beside the protocol is the one thing that says why it will not start, so it is kept.
+      // Its stderr is the only thing that says why it will not start, so it is kept.
       stderr: "pipe",
     });
-    // The connection is begun before its stderr is listened to, because the process does not exist until it is.
+    // The connection is begun before stderr is listened to; the process does not exist until then.
     const connecting = client.connect(transport, {
       timeout: MCP_CONNECT_TIMEOUT_MS,
     });
@@ -220,7 +217,7 @@ export class McpClient {
     try {
       await connecting;
     } catch (failure) {
-      // A server that would not start has said why on its stderr, and by itself the library's error does not.
+      // The library's error does not carry what the server printed on stderr, so it is added.
       throw new Error(this.withSaid(server.id, String(failure)), {
         cause: failure,
       });
@@ -231,10 +228,7 @@ export class McpClient {
     return client;
   }
 
-  /**
-   * A remote server is not started but reached, and the token that opens it is read from this machine's keychain
-   * at the moment of reaching — never held here, never written near the project.
-   */
+  /** A remote server is reached, not started; its token is read from the keychain at that moment and never held. */
   private async reached(server: ProjectMcpServerDto): Promise<Client> {
     if (server.address === "") {
       throw new Refusal(MCP_SERVER_UNREACHABLE);
@@ -253,8 +247,8 @@ export class McpClient {
   }
 
   /**
-   * The filtered environment every server gets — `HOME LOGNAME PATH SHELL TERM USER` and their like — plus the
-   * values this machine holds for the declared names. A project opened elsewhere has the names and no keys.
+   * The filtered environment every server gets (`HOME LOGNAME PATH SHELL TERM USER` and the like) plus the values held
+   * for the declared names.
    */
   private async environment(server: ProjectMcpServerDto): Promise<Record<string, string>> {
     const given: Record<string, string> = getDefaultEnvironment();
@@ -272,7 +266,7 @@ export class McpClient {
     return given;
   }
 
-  /** What the token is carried in, and nothing at all where the server asks for none. */
+  /** What the token is carried in; nothing where the server asks for none. */
   private async opened(server: ProjectMcpServerDto): Promise<{ requestInit?: RequestInit }> {
     if (server.signIn !== "token") {
       return {};
@@ -280,7 +274,7 @@ export class McpClient {
 
     const token = await this.secrets.value(`${MCP_TOKEN_PREFIX}${server.id}`);
 
-    // Nothing to go with is its own answer: neither a fallen server nor a wrong address, and said as itself.
+    // Nothing to go with is its own answer, neither fallen nor a wrong address.
     if (token === null || token === "") {
       throw new Refusal(MCP_TOKEN_MISSING);
     }
@@ -294,7 +288,7 @@ export class McpClient {
     };
   }
 
-  /** Keeps the last of what a server printed beside the protocol; only the tail is of any use, so only it is held. */
+  /** Keeps the last lines a server printed beside the protocol; only the tail is held. */
   private listen(serverId: string, transport: StdioClientTransport): void {
     transport.stderr?.on("data", (chunk: Buffer) => {
       const lines = [...(this.printed.get(serverId) ?? []), ...String(chunk).split("\n")].filter(
@@ -305,7 +299,7 @@ export class McpClient {
     });
   }
 
-  /** The failure with what the server printed under it, where it printed anything at all. */
+  /** The failure with what the server printed under it, if anything. */
   private withSaid(serverId: string, failure: string): string {
     const lines = this.printed.get(serverId) ?? [];
 

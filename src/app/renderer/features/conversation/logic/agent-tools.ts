@@ -3,9 +3,8 @@ import type { Agent, AgentTool, GrantTargets, McpLook, ProjectCommand, ToolGrant
 import type { AgentToolGrant, CommandToolGrant, McpToolGrant } from "../../../interfaces";
 
 /**
- * Tools an agent may call. A grant is left out where its command is gone, where its server did not answer, where
- * its function left the server's list, or where the agent it named has been let go: the grant stands, but a turn
- * has nothing to hand the model.
+ * Tools an agent may call. A grant is left out when its command is gone, its server did not answer, its function left
+ * the server's list, or the agent it names is gone.
  */
 export function agentTools(grants: ToolGrant[], targets: GrantTargets): AgentTool[] {
   const tools: AgentTool[] = [];
@@ -13,8 +12,8 @@ export function agentTools(grants: ToolGrant[], targets: GrantTargets): AgentToo
   for (const grant of grants) {
     const tool = toolOf(grant, targets);
 
-    // One name is one tool to a model. The person's own declaration keeps the name, and a server's function or
-    // an agent of the same name is left out rather than quietly taking its place.
+    // One name is one tool: the person's own declaration keeps the name, and a same-named server function or agent is
+    // left out.
     if (tool !== null && !tools.some((standing) => standing.name === tool.name)) {
       tools.push(tool);
     }
@@ -23,7 +22,7 @@ export function agentTools(grants: ToolGrant[], targets: GrantTargets): AgentToo
   return tools;
 }
 
-/** The tool one grant hands the model, whichever kind it is, or nothing where it points at nothing. */
+/** The tool one grant hands the model, or null where it points at nothing. */
 function toolOf(grant: ToolGrant, targets: GrantTargets): AgentTool | null {
   if (isCommandGrant(grant)) {
     return commandTool(grant, targets.commands);
@@ -36,7 +35,7 @@ function toolOf(grant: ToolGrant, targets: GrantTargets): AgentTool | null {
   return serverTool(grant, targets.looks);
 }
 
-/** A declared command, with the open parameters handed over and the fixed ones kept back. */
+/** A declared command: open parameters handed over, fixed ones kept back. */
 function commandTool(grant: CommandToolGrant, commands: ProjectCommand[]): AgentTool | null {
   const command = commands.find((held) => held.id === grant.commandId) ?? null;
 
@@ -65,7 +64,7 @@ function commandTool(grant: CommandToolGrant, commands: ProjectCommand[]): Agent
   };
 }
 
-/** Another agent as one tool: its name, and its short description as what the model reads of it. */
+/** Another agent as a tool: its name, and its short description as what the model reads. */
 function agentTool(grant: AgentToolGrant, agents: Agent[]): AgentTool | null {
   const agent = agents.find((held) => held.id === grant.agentId) ?? null;
 
@@ -82,8 +81,8 @@ function agentTool(grant: AgentToolGrant, agents: Agent[]): AgentTool | null {
 }
 
 /**
- * One function of a server, as the server described it this time: looked up by the server's id and then by the
- * name the server gave it, the only handle there is, with the schema passed on as it came.
+ * A server function as the server described it this time, found by server id then by the name it gave; the schema
+ * passes through as received.
  */
 function serverTool(grant: McpToolGrant, looks: Record<string, McpLook>): AgentTool | null {
   const look = looks[grant.serverId] ?? null;

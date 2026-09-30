@@ -3,8 +3,8 @@ import { standsWithRepeat } from "./stands-with-repeat";
 import type { WalkState, WordsAwaitingHand } from "../interfaces";
 
 /**
- * Words of this session that stand with a repeat under them, split by whether the person is looking at them.
- * What is elsewhere feeds the dot on «ІСТОРІЯ»; a run broken before the app opened is not here but in the record.
+ * Words of this session with a repeat under them, split by whether the person is looking at them; the elsewhere part
+ * feeds the dot on «ІСТОРІЯ». Runs broken before the app opened live in the record, not here.
  */
 export function wordsAwaitingHand(walk: WalkState): WordsAwaitingHand {
   const elsewhere: string[] = [];

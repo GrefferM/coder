@@ -1,6 +1,6 @@
 import type { DotProps } from "./interfaces";
 
-/** The dot that carries a colour beside a name — a state, an agent, or a provider that answers. */
+/** A colored dot beside a name: a state, an agent, or an answering provider. */
 export function Dot({ color, size, glow, border, className, label }: DotProps) {
   return (
     <span

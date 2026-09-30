@@ -1,4 +1,4 @@
-/** Work that went down a link and never became a turn — it stands where it landed. */
+/** Work that went down a link and never became a turn. */
 export interface UnfinishedArrival {
   toAgentId: string;
   fromStepId: string;

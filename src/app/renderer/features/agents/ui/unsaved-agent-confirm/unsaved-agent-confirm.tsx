@@ -22,7 +22,7 @@ import {
 } from "./constants";
 import type { UnsavedAgentConfirmProps } from "./interfaces";
 
-/** The ask on every way out of an unsaved agent, fields written `було → стало`. */
+/** The ask on every way out of an unsaved agent, fields as `було → стало`. */
 export function UnsavedAgentConfirm({
   name,
   changes,
@@ -68,7 +68,7 @@ export function UnsavedAgentConfirm({
         }}
       >
         {changes.map((change) => {
-          // The line's room is what the label and the arrow leave; the two values share it between them.
+          // The line's room after label and arrow, shared by the two values.
           const [was, now] = sharedLabels(
             change.was,
             change.now,
@@ -88,7 +88,7 @@ export function UnsavedAgentConfirm({
               }}
             >
               <span className="flex-shrink-0">{`${change.label}${UNSAVED_AGENT_DIFF_SEPARATOR}`}</span>
-              {/* A value here is whatever the person typed: it is cut to its share of the line, whole on the pointer. */}
+              {/* A typed value is cut to its share of the line, whole on hover. */}
               <span
                 className="text-truncate"
                 title={change.was}

@@ -5,10 +5,10 @@ export interface TextButtonProps {
   /** The word, and the glyph beside it where the act has one. */
   children: ReactNode;
   onPress: () => void;
-  /** The word's shade at rest and under the pointer or the keyboard. */
+  /** The word's shade at rest and under pointer or keyboard. */
   tone: IconTone;
   /** The air between a glyph and the word beside it. */
   gap?: number;
-  /** Where the button stands in its row — the layout is the caller's. */
+  /** Placement in the caller's row. */
   className?: string;
 }

@@ -1,4 +1,4 @@
-/** Where this machine was looking in a project: canvas place and scale, and the open section; machine-scoped. */
+/** Machine-scoped view of a project: canvas place and scale, and the open section. */
 export interface ProjectView {
   pan: {
     x: number;
@@ -7,8 +7,8 @@ export interface ProjectView {
   scale: number;
   sectionId: string;
   isCollapsed: boolean;
-  /** Whom the chat was aimed at; the aim outlives the window, as the section does. */
+  /** Whom the chat was aimed at; outlives the window. */
   aimedAgentId: string | null;
-  /** How tall the person pulled the field under the stream; nothing where it was never pulled. */
+  /** Height the person pulled the field under the stream to; `null` if never pulled. */
   fieldHeight: number | null;
 }

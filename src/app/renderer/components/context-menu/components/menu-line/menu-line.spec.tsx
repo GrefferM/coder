@@ -21,7 +21,7 @@ describe("MenuLine", () => {
   });
 
   it("prints the keystroke that does the same thing, where there is one", () => {
-    // The menu teaches its own shortcuts, so a person need not open it twice.
+    // The menu shows its own shortcuts.
     render(
       <MenuLine
         item={item({

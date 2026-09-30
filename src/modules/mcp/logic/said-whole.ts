@@ -10,7 +10,7 @@ export function saidWhole(content: unknown): string {
   const parts = (<Record<string, unknown>[]>content).map((part) =>
     part.type === "text" ? String(part.text) : MCP_NOT_TEXT_NOTE.replace(MCP_KIND_SLOT, String(part.type)),
   );
-  // What the server said, with the terminal's paint taken off — the colours were never its words.
+  // The server's words with terminal colours removed.
   const said = withoutColors(parts.join("\n")).trim();
 
   return said === "" ? MCP_EMPTY_OUTPUT_NOTE : said;

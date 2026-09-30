@@ -123,7 +123,7 @@ describe("ProjectFileService", () => {
 
     const config = await projectFileService.read(projectDirectory);
 
-    // What is gone is not restored; an agent that names it says so where it names it.
+    // A lost prompt is not restored.
     assert.deepEqual(config.prompts, []);
   });
 
@@ -228,7 +228,7 @@ describe("ProjectFileService", () => {
     assert.match(index, new RegExp(`file: servers/${SERVER_ID}.yaml`));
     assert.doesNotMatch(index, /EDITOR/);
     assert.doesNotMatch(index, /npm test/);
-    // A server has no ties, so nothing of it stays in the project file — the line that starts it least of all.
+    // A server has no ties, so nothing of it, including its run line, is in the project file.
     assert.doesNotMatch(index, /server-filesystem/);
 
     const agent = await readFile(path.join(projectDirectory, "agents", `${AGENT_ID}.yaml`), "utf8");
@@ -272,7 +272,7 @@ describe("ProjectFileService", () => {
     assert.equal(config.agents[0].name, "unknown");
     // The tie stood in the project file.
     assert.equal(config.agents[0].modelId, MODEL_ID);
-    // A read writes nothing: a file the person has just taken away does not come back under their hands.
+    // A read writes nothing: a removed file does not come back.
     await assert.rejects(readFile(path.join(projectDirectory, "agents", `${AGENT_ID}.yaml`), "utf8"));
   });
 
@@ -319,7 +319,7 @@ describe("ProjectFileService", () => {
 
     const config = await projectFileService.read(projectDirectory);
 
-    // What is gone is not restored; the agent that named it says so where it names it.
+    // A lost model is not restored.
     assert.deepEqual(config.models, []);
     assert.equal(config.agents[0].modelId, MODEL_ID);
   });
@@ -333,7 +333,7 @@ describe("ProjectFileService", () => {
     const config = await projectFileService.read(projectDirectory);
 
     assert.deepEqual(config.commands, []);
-    // A grant, where one stands, is left in the project file for the agent's own tab to name as lost.
+    // A grant stays in the project file, for the agent's tab to show as lost.
     assert.equal(config.agents[0].id, AGENT_ID);
   });
 
@@ -348,7 +348,7 @@ describe("ProjectFileService", () => {
     assert.match(server, /run: npx server-filesystem \./);
     // The id stays in the project file's reference.
     assert.doesNotMatch(server, new RegExp(`id: ${SERVER_ID}`));
-    // A token is never written; the keychain holds it and the file names only the way in.
+    // A token is never written; the file names only the sign-in kind.
     assert.doesNotMatch(server, /token/);
   });
 
@@ -451,7 +451,7 @@ describe("ProjectFileService", () => {
 
     await projectFileService.write(projectDirectory, config);
 
-    // An atomic write renames a fresh file into place, so a file nobody wrote keeps the inode it had.
+    // An atomic write renames a fresh file into place, so an unchanged file keeps its inode.
     assert.equal((await stat(agentPath)).ino, first.ino);
   });
 

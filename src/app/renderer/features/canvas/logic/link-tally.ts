@@ -1,10 +1,7 @@
 import type { LinkTally } from "../interfaces";
 import type { Agent, Link } from "../../../interfaces";
 
-/**
- * The lines of the selected agent, counted each way. Nothing is counted where nobody is selected, and an
- * agent with no lines at all is counted all the same — the canvas decides for itself whether to say a pair of zeroes.
- */
+/** The selected agent's lines counted each way; null when nobody is selected, zeroes for an agent with no lines. */
 export function linkTally(agent: Agent | null, links: Link[]): LinkTally | null {
   if (agent === null) {
     return null;

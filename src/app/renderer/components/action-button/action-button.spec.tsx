@@ -42,7 +42,7 @@ describe("ActionButton", () => {
       background: ACTION_BUTTON_PALETTES.delete.litBackground,
       color: ACTION_BUTTON_PALETTES.delete.litColor,
     });
-    // Only that the ring stands: jsdom rewrites the colors inside the shorthand it is written in.
+    // Only that the ring stands: jsdom rewrites the colors inside the shorthand.
     expect(button.style.boxShadow).not.toBe("");
   });
 
@@ -88,7 +88,7 @@ describe("ActionButton", () => {
   });
 
   it("wears the ring while dimmed, and says it is dimmed rather than hiding from the keyboard", async () => {
-    // A dimmed act is walked to like a dead row in a list — seen, and its closed door readable.
+    // A dimmed button still takes focus.
     const user = userEvent.setup();
 
     render(<ActionButton variant="save" label="Зберегти" isDisabled />);

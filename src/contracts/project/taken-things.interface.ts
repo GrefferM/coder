@@ -5,12 +5,12 @@ export interface TakenThings {
   models: ProjectModel[];
   prompts: ProjectPrompt[];
   commands: ProjectCommand[];
-  /** A server goes with its grants, and comes back with them if the undo is taken up. */
+  /** A server goes with its grants and returns with them on undo. */
   servers: ProjectMcpServer[];
   agents: Agent[];
   links: Link[];
-  /** Staying agents that lost their prompt, with that prompt's id. */
+  /** Staying agents that lost their prompt, with its id. */
   promptTakenFrom: { agentId: string; promptId: string }[];
-  /** Agents that stayed and lost a granted function — of a command or of a server alike. */
+  /** Staying agents that lost a granted function, of a command or a server. */
   grantsTakenFrom: { agentId: string; grant: ToolGrant }[];
 }

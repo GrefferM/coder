@@ -1,13 +1,10 @@
-/** A price of nothing that somebody did write — not the dash, which is a price nobody wrote. */
+/** An explicitly written price of nothing, as opposed to the dash for an unwritten price. */
 export const STEP_MONEY_FREE_LABEL = "ЛОКАЛЬНО";
 
-/** Why the dashes in a step's head stand there, said once per step and speaking for all of them. */
+/** Says once per step why its head shows dashes. */
 export const STEP_MONEY_NO_PRICES_LABEL = "ЦІНИ НЕ ВПИСАНО";
 
-/**
- * A step whose turn never went out. Its nought is not the dash: the dash means a number nobody wrote down,
- * and here the number is known — nothing was spent, because there was nothing to spend it on.
- */
+/** A step whose turn never went out: spent nothing, a known zero rather than the dash. */
 export const STEP_NOT_STARTED_LABEL = "НЕ ПОЧИНАВСЯ";
 export const STEP_NOT_STARTED_SPAN = "—";
 export const STEP_NOT_STARTED_TOKENS = 0;

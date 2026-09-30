@@ -26,12 +26,12 @@ function project(view: ProjectView | null = null): OpenProject {
   };
 }
 
-/** The rail's neighbours, each standing in for what it does when the rail moves. */
+/** Stubs for the rail's neighbours. */
 function rail(
   stands: {
     view?: ProjectView | null;
     selectedAgentId?: string | null;
-    /** A gate that holds every way out, as it does while a draft is unsaved. */
+    /** Holds every way out, like an unsaved draft. */
     isHeld?: boolean;
   } = {},
 ) {
@@ -121,7 +121,7 @@ describe("useRailStanding · moving between sections", () => {
   });
 
   it("keeps the selection when the rail moves to the chat, since the chat is aimed at it", () => {
-    // The chat speaks to whoever is selected, so going there must not take the selection away.
+    // Going to the chat keeps the selection.
     const { result, agents } = rail({
       selectedAgentId: "agent-1",
     });
@@ -154,7 +154,7 @@ describe("useRailStanding · moving between sections", () => {
   });
 
   it("moves nothing at all while the gate holds every way out", () => {
-    // An unsaved draft asks first, and until it is answered the rail stands where it is.
+    // An unsaved draft asks first; the rail stays until answered.
     const { result, agents, prompts } = rail({
       isHeld: true,
     });
@@ -170,7 +170,7 @@ describe("useRailStanding · moving between sections", () => {
 
 describe("useRailStanding · opening and putting the panel away", () => {
   it("leaves the chat where it is when a canvas act asks for the agents section", () => {
-    // An open chat keeps the rail — a click on a sphere aims the chat, it does not replace it.
+    // An open chat keeps the rail; a sphere click aims the chat.
     const { result } = rail();
 
     act(() => result.current.handleActiveIdChange(CHAT_SECTION_ID));
@@ -190,7 +190,7 @@ describe("useRailStanding · opening and putting the panel away", () => {
   });
 
   it("puts the agent panel away on the empty canvas, and leaves a catalogue open", () => {
-    // A catalogue is not the selection's, so a click on empty space says nothing to it.
+    // A click on empty space does nothing in a catalogue.
     const { result } = rail();
 
     act(() => result.current.openAgentForm());
@@ -218,7 +218,7 @@ describe("useRailStanding · opening and putting the panel away", () => {
   });
 
   it("leaves the projection whether the panel is opened or put away", () => {
-    // The projection stands over the panel, so both ways are a way out of it.
+    // Both ways are a way out of the projection.
     const { result, pass } = rail();
 
     act(() => result.current.handleCollapsedChange(false));
@@ -230,9 +230,8 @@ describe("useRailStanding · opening and putting the panel away", () => {
 
 describe("useRailStanding · the press on the arc", () => {
   it("opens the agent's tab on its tools and claims no middle for a new one", () => {
-    // The press names the agent it stands on and the page selects it in the same act, so the selection
-    // this hook could read is still the one from before the press — and claiming on it would open the create form
-    // over the very tools the press asked for.
+    // A press names its agent and selects it in the same act, so the hook's selection is stale and must not open the
+    // create form.
     const { result, agents } = rail();
 
     act(() => result.current.openAgentTools("server:playwright-mcp", null));
@@ -244,8 +243,7 @@ describe("useRailStanding · the press on the arc", () => {
   });
 
   it("names the press anew every time, so the same head opens and lights twice", () => {
-    // Every press is its own object — that is what makes the second press on the same mini-sphere a
-    // second answer and not nothing at all. Two equal names would have looked like nothing happening.
+    // Each press is a new object, so a repeat press on the same mini-sphere is a new answer.
     const { result } = rail({
       selectedAgentId: "agent-1",
     });
@@ -272,7 +270,7 @@ describe("useRailStanding · the press on the arc", () => {
   });
 
   it("opens nothing at all while the gate holds every way out", () => {
-    // An unsaved draft asks first, and the arc is no way around it.
+    // An unsaved draft asks first; the arc does not bypass it.
     const { result } = rail({
       isHeld: true,
     });
@@ -299,7 +297,7 @@ describe("useRailStanding · the ways a card opens a tab", () => {
   });
 
   it("opens the model an agent stands on, on its own form", () => {
-    // The ceiling is written on the model, so that is where the card's act leads.
+    // The ceiling lives on the model, so the card leads there.
     const { result, models } = rail();
 
     act(() => result.current.openAgentModel("agent-1"));
@@ -319,7 +317,7 @@ describe("useRailStanding · the ways a card opens a tab", () => {
   });
 
   it("takes an installed model up in the catalogue with its name and provider already in the form", () => {
-    // The model is on the machine and not in the project, so the form opens filled in.
+    // The model is on the machine, not in the project, so the form opens prefilled.
     const { result, models } = rail();
 
     act(() => result.current.takeUpModel("ollama", "qwen2.5-coder"));

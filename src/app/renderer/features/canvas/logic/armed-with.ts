@@ -9,18 +9,12 @@ import { AGENTS_GROUP_KEY, COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX, groupOfGrant
 import type { ToolGrant } from "../../../interfaces";
 
 /**
- * The arc of mini-spheres over an agent — what it is armed with, never which functions exactly. Each wears its
- * **source's** colour, so tools from three different places are seen at a glance.
+ * The arc of mini-spheres over an agent: what it is armed with, not which functions. Each mark wears its source's
+ * colour.
  *
- * The nine places are shared by **порода** and not by number: two commands, two servers, two agents, and a third
- * place under each порода's own «+». So the arc says which kinds the agent carries and where there are many, rather
- * than naming sources — which holds at three sources and at twenty alike.
- *
- * A порода never takes another's places: with no servers the arc is simply shorter, because three corners in
- * a row would mean «two commands and the rest» beside one agent and «three commands» beside another.
- *
- * A source whose every grant points at nothing keeps its mark and takes the trouble tone; where the two places
- * hid it, the порода's «+» takes that tone instead, and nothing on the arc is ever rearranged for it.
+ * Nine places by kind, not by number: two commands, two servers, two agents, and a third place under each kind's «+». A
+ * kind never takes another's places, so the arc may be shorter. A source whose every grant points at nothing takes the
+ * trouble tone; if folded, its kind's «+» takes it.
  */
 export function armedWith(tools: ToolGrant[], said: GrantTargets): ArmedOrb[] {
   return [
@@ -30,19 +24,15 @@ export function armedWith(tools: ToolGrant[], said: GrantTargets): ArmedOrb[] {
   ];
 }
 
-/** One mini-sphere before it is drawn: a single command, a whole server, or a single agent granted as a tool. */
+/** One mini-sphere before it is drawn: a command, a whole server, or an agent granted as a tool. */
 interface ArmedMark extends ArmedFold {
-  /** A command's and an agent's mark names its own grant, so a press has one page to open; a server names none. */
+  /** A command's or agent's mark names its own grant; a server names none. */
   grantId: string | null;
-  /** Every grant behind this mark points at nothing, so the mark itself is the trouble. */
+  /** Every grant behind this mark points at nothing. */
   isBroken: boolean;
 }
 
-/**
- * One порода's own stretch of the arc — up to two marks, and a «+» of that same порода where there is
- * something left. The third place stands **only** when there is something to fold: an empty hole on the arc would
- * say «there is more» where there is not, and the arc's width is itself the answer to «how much has this agent».
- */
+/** One kind's stretch of the arc: up to two marks, plus a «+» only when something is left to fold. */
 function sideOf(marks: ArmedMark[], said: GrantTargets): ArmedOrb[] {
   const standing = marks.slice(0, ARMED_MARKS_EACH).map((mark) => orbOf(mark, said));
   const folded = marks.slice(ARMED_MARKS_EACH);
@@ -51,12 +41,8 @@ function sideOf(marks: ArmedMark[], said: GrantTargets): ArmedOrb[] {
 }
 
 /**
- * Which two stand is read off the **project file** — commands in the order they were declared — and not
- * off this agent's ticks. A mark that changes place when a tick is taken reads as a different mark, so taking one
- * back must move nothing on the arc: only the number under «+» changes.
- *
- * A grant whose command the project has let go keeps its mark and stands after the known ones: it is broken, the
- * panel says so, and the arc is no place to learn it from.
+ * The two that stand come from the project file's order, not from this agent's ticks. A grant whose command the project
+ * dropped is broken and stands after the known ones.
  */
 function commandMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
   const declared = tools.filter((tool) => groupOfGrant(tool) === COMMANDS_GROUP_KEY);
@@ -74,9 +60,8 @@ function commandMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
 }
 
 /**
- * One mark per agent granted as a tool, in the order the project holds them — an agent arrives whole and the
- * hand chose nothing inside it, so like a command each is one mark of its own. A grant whose agent the project has
- * let go keeps its mark and stands after the known ones, broken.
+ * One mark per agent granted as a tool, in the project's order; a grant whose agent the project dropped is broken and
+ * stands after the known ones.
  */
 function agentMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
   const granted = tools.filter((tool) => groupOfGrant(tool) === AGENTS_GROUP_KEY);
@@ -93,10 +78,7 @@ function agentMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
   }));
 }
 
-/**
- * One mark per server whatever it hands over, in the order the project connected them — a server
- * arrives whole and the hand chose nothing inside it, so there is nothing there to count places by.
- */
+/** One mark per server, in the order the project connected them, whatever it hands over. */
 function serverMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
   const byServer = new Map<string, ToolGrant[]>();
 
@@ -122,12 +104,12 @@ function serverMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
   }));
 }
 
-/** One mini-sphere: a whole server, a single declared command, or a single agent granted as a tool. */
+/** One mini-sphere: a server, a declared command, or an agent granted as a tool. */
 function orbOf(mark: ArmedMark, said: GrantTargets): ArmedOrb {
   return {
     group: mark.group,
     grantId: mark.grantId,
-    // The tone of trouble is the states' family and not a source's, so it stands over the source colour.
+    // The trouble tone overrides the source colour.
     color: mark.isBroken ? ARMED_BROKEN_COLOR : ARMED_SOURCE_COLOR[sourceOfGroup(mark.group)],
     more: null,
     folded: null,
@@ -137,26 +119,19 @@ function orbOf(mark: ArmedMark, said: GrantTargets): ArmedOrb {
   };
 }
 
-/**
- * The heap of one порода, in that порода's own shape and colour — two identical grey ones side by side would read
- * as a single heap. It names no source, so a press leads to the section and not to a page.
- */
+/** The heap of one kind, in its own shape and colour; names no source, so a press leads to the section. */
 function foldOf(folded: ArmedMark[], said: GrantTargets): ArmedOrb {
   const source = sourceOfGroup(folded[0].group);
-  // The hard two places could have hidden this state along with its source, so the heap carries it.
+  // The folded «+» carries the broken state of marks that did not fit.
   const broken = folded.filter((mark) => mark.isBroken).length;
 
   return {
     group: null,
     grantId: null,
     color: broken > 0 ? ARMED_BROKEN_COLOR : ARMED_SOURCE_COLOR[source],
-    // One mark apiece: a folded server is one however much it hands over.
+    // One mark apiece: a folded server counts as one.
     more: `${ARMED_REST_PREFIX}${folded.length}`,
-    /**
-     * The press raises the list of exactly these, and each line carries the id of what it stands for.
-     * What is broken stands **first** — the arc's own order does not move, but the list opened to say
-     * what is inside, and what is wrong is the first thing it has to say.
-     */
+    /** The list a press raises: exactly these, each line with the id of what it stands for, broken ones first. */
     folded: [...folded]
       .sort((one, other) => Number(other.isBroken) - Number(one.isBroken))
       .map((mark) => ({
@@ -173,20 +148,18 @@ function foldOf(folded: ArmedMark[], said: GrantTargets): ArmedOrb {
 }
 
 /**
- * A source is the trouble itself only where **every** grant of it points at nothing — «нуль
- * виданих — позначки немає, але всі видачі зламані — позначка є». One broken grant among whole ones is the panel's
- * to say with its own pill, and colouring the arc for it would make the tone mean two different things.
+ * A source is broken only when every grant of it points at nothing; a single broken grant is the panel's pill to say.
  */
 function isBroken(granted: ToolGrant[], said: GrantTargets): boolean {
   return granted.length > 0 && granted.every((grant) => brokenCause(grant, said) !== null);
 }
 
-/** A grant outlives the command under it, and the id it kept is still how that command is looked for. */
+/** A grant keeps the id of its command even after the command is gone. */
 function commandIdOf(grant: ToolGrant): string | null {
   return isCommandGrant(grant) ? sourceOf(grant).id : null;
 }
 
-/** A grant outlives the agent it named, and the id it kept is still how that agent is looked for. */
+/** A grant keeps the id of its agent even after the agent is gone. */
 function agentIdOf(grant: ToolGrant): string | null {
   return isAgentGrant(grant) ? sourceOf(grant).id : null;
 }

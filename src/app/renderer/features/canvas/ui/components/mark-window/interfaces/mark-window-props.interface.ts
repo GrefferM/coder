@@ -1,18 +1,15 @@
 import type { ArmedMarkRow } from "../../../../interfaces";
 
 export interface MarkWindowProps {
-  /** Where the mark stands on the screen: the window opens over it, and under it where there is no room above. */
+  /** Where the mark stands on screen; the window opens above it, or below when there is no room. */
   at: DOMRect;
-  /** «ЩЕ 3 СЕРВЕРИ»: the window says what the mark under it would have said. */
+  /** «ЩЕ 3 СЕРВЕРИ»: what the mark under it would say. */
   head: string;
-  /** Only what is folded — the two standing on the arc are at hand already. */
+  /** Only the folded marks; the two on the arc are already at hand. */
   rows: ArmedMarkRow[];
-  /** A line leads where its mark would have led, and the window shuts: it was a road, not a place. */
+  /** A line leads where its mark would, and the window shuts. */
   onOpen: (row: ArmedMarkRow) => void;
   onDismiss: () => void;
-  /**
-   * Whether the hand is on the window itself. It opens on the pointer resting on the «+» and would go the moment
-   * the pointer left it — but the way in is across that very gap, so the window says when it holds the hand.
-   */
+  /** Whether the pointer is on the window itself; while it is, leaving the mark does not close it. */
   onHold: (isHeld: boolean) => void;
 }

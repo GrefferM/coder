@@ -1,7 +1,4 @@
-/**
- * One door, and it is «Підключити»: there is no store to install from, so the footer carries the one action,
- * and an empty section lifts it into the middle.
- */
+/** The one action, «Підключити», in the footer; an empty section lifts it into the middle. */
 export const SERVERS_PANEL_EMPTY_LABEL = "Серверів ще немає. Агентам нічого викликати.";
 export const SERVERS_PANEL_NEW_LABEL = "Підключити сервер";
 export const SERVERS_PANEL_FOOTER_BORDER_COLOR = "#1c2030";
@@ -10,7 +7,7 @@ export const SERVERS_PANEL_EMPTY_PADDING_PX = 22;
 export const SERVERS_PANEL_EMPTY_ICON_SIZE_PX = 30;
 export const SERVERS_PANEL_EMPTY_ICON_COLOR = "#3a4258";
 
-/** The note under the list — why a server is a section of its own and not a command. */
+/** The note under the list. */
 export const SERVERS_PANEL_NOTE =
   "У сервера свій життєвий цикл: він піднімається, відповідає або падає, а функції приходять із нього й можуть зникнути після оновлення.";
 export const SERVERS_PANEL_NOTE_COLOR = "#5c6478";

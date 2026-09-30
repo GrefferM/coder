@@ -4,9 +4,8 @@ import type { ProviderDraft } from "../../../../../interfaces";
 export interface ProviderCardProps {
   provider: ProviderState;
   /**
-   * What stands in each field, or **nothing at all** where nobody has typed in it. The two are not the
-   * same: an untouched field shows the hint of the key already here and leaves it alone, while an emptied one is
-   * a key being taken off this machine on purpose.
+   * What is in each field, or `null` where nothing was typed: untouched shows the existing key's hint and leaves it
+   * alone, while emptied removes the key on purpose.
    */
   value: ProviderDraft;
   models: ProjectModel[];

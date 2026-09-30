@@ -6,7 +6,7 @@ export interface ModelFormProps {
   values: ModelFormValues;
   saved: ModelFormValues | null;
   isNew: boolean;
-  /** Opened by a card's act, so the form puts the cursor on the field that card named. */
+  /** Opened by a card's act, so the cursor goes to the field the card named. */
   isMending: boolean;
   onChange: (patch: Partial<ModelFormValues>) => void;
   onSave: () => Promise<void>;

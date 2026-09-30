@@ -1,4 +1,4 @@
-/** How many words a text holds — counted on a prompt and in its header. */
+/** The number of words in a text. */
 export function wordCount(text: string): number {
   const words = text.trim();
 

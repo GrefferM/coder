@@ -17,14 +17,7 @@ import {
 } from "./constants";
 import type { ServerPageProps } from "./interfaces";
 
-/**
- * One server on a page of its own — the same shape every step inside a tab takes: its own head with the way
- * back, and its body under it. A page and not a card inside the row, because a list of twenty-five functions
- * folded into one row of a list leaves the catalogue unreadable and every other row a screen away.
- *
- * Nothing here folds: how the server is reached, what it said when it fell, everything it hands over, and the foot
- * where it is changed all stand at once.
- */
+/** One server on a page of its own, with the way back in its head; nothing folds. */
 export function ServerPage({
   server,
   look,
@@ -38,17 +31,13 @@ export function ServerPage({
   onDelete,
 }: ServerPageProps) {
   const failure = !isAsking && look !== null && !look.isUp ? look.failure : null;
-  /**
-   * When it last answered, on the app's one scale of freshness and re-read by that scale's
-   * own beat. A server that has not answered has nothing here — a dash would say «уже не дізнатись», and
-   * we have simply not been told yet.
-   */
+  /** When it last answered, on the app's freshness scale; nothing for a server that has not answered. */
   const answered = useFresh(look?.answeredAt ?? null);
-  /** When its list last changed, and what it was before — both from the memory of this machine. */
+  /** When its list last changed, and what it was before, from this machine's memory. */
   const updated = useFresh(look?.changedAt ?? null);
   const freshness = freshnessLine(look, answered, updated);
 
-  // Escape leaves this step exactly as it leaves an opened grant, and the tab stays where it is.
+  // Escape leaves this step as it leaves an opened grant; the tab stays.
   useStandingStep(true);
   useWindowKeydown(true, (event) => {
     if (event.key === "Escape") {

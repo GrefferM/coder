@@ -43,9 +43,8 @@ describe("awaitedSuppliers", () => {
   });
 
   it("counts the suppliers from where the walk actually began, and not from some other agent", () => {
-    // The bug this guards: a repeat began the walk at the flow's first agent instead of the one the question was
-    // put to. Where that first agent stood apart from the drawing, the converging point lost its suppliers, the
-    // wait never formed, and the point ran on one answer while the other was still out.
+    // Guards a repeat beginning the walk at the flow's first agent instead of the asked one, which dropped the
+    // converging point's suppliers and its wait.
     const drawn = config(
       [agent("alone"), agent("thesaurus"), agent("shortener"), agent("headline")],
       [
@@ -56,7 +55,7 @@ describe("awaitedSuppliers", () => {
     );
 
     expect(awaitedSuppliers(drawn, "thesaurus", "headline")).toEqual(["thesaurus", "shortener"]);
-    // From an agent the drawing does not connect, nothing is reachable — and the point would run at once.
+    // From an agent the drawing does not connect, nothing is reachable.
     expect(awaitedSuppliers(drawn, "alone", "headline")).toEqual([]);
   });
 
@@ -72,7 +71,7 @@ describe("awaitedSuppliers", () => {
       ],
     );
 
-    // The off supplier is not counted, and neither is the agent the run cannot get to.
+    // A supplier that is off, or one the run cannot reach, is not counted.
     expect(awaitedSuppliers(drawn, "start", "reviewer")).toEqual(["tester"]);
   });
 
@@ -85,7 +84,7 @@ describe("awaitedSuppliers", () => {
       ],
     );
 
-    // A run starts here: what stands before this agent was never asked, so it is not waited for.
+    // The run starts here, so what stands before this agent is not waited for.
     expect(awaitedSuppliers(drawn, "editor", "editor")).toEqual([]);
   });
 });

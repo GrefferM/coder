@@ -11,7 +11,7 @@ export const PROMPTS_SECTION_ID = "prompts";
 
 export const PROMPTS_PANEL_LABEL = "Промпти";
 
-/** The MCP servers, which stand before the commands in the rail. */
+/** The MCP servers, before the commands in the rail. */
 export const SERVERS_SECTION_ID = "servers";
 
 export const SERVERS_PANEL_LABEL = "MCP";
@@ -21,7 +21,7 @@ export const COMMANDS_SECTION_ID = "commands";
 
 export const COMMANDS_PANEL_LABEL = "Команди";
 
-/** The chat — one stream for the whole project, first under the rail's rule. */
+/** The chat: one stream for the whole project. */
 export const CHAT_SECTION_ID = "chat";
 export const CHAT_PANEL_LABEL = "Чат";
 

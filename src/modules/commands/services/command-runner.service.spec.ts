@@ -45,7 +45,7 @@ describe("CommandRunner", () => {
       declared: ["text"],
     });
 
-    // The value goes in as it stands, and the shell reads the semicolon.
+    // A value goes in as it stands, and the shell reads the semicolon.
     assert.equal(result.output, "one\ntwo");
   });
 
@@ -72,7 +72,7 @@ describe("CommandRunner", () => {
       declared: [],
     });
 
-    // Nobody declared «path», so those braces are the line's own text.
+    // «path» is undeclared, so those braces are the line's own text.
     assert.equal(result.isFailed, true);
     assert.ok(result.output.includes("{path}"));
   });

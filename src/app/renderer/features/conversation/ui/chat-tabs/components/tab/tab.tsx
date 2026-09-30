@@ -43,7 +43,7 @@ export function Tab({ label, isActive, isNews, onSelect }: TabProps) {
       }}
     >
       {label}
-      {/* The sign of another conversation — a quiet dot, no number and no word beside it. */}
+      {/* A quiet dot signalling another conversation; no number or word. */}
       {isNews && <Dot color={CHAT_TABS_NEWS_COLOR} size={CHAT_TABS_NEWS_SIZE_PX} label={CHAT_TABS_NEWS_LABEL} />}
     </button>
   );

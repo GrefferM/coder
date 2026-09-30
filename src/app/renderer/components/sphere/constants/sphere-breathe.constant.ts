@@ -1,4 +1,4 @@
-/** The halo of the agent a question would go to; only the light breathes, the sphere and grid stand still. */
+/** Halo breathing of the agent a question would go to; the sphere and grid stand still. */
 export const SPHERE_BREATHE_CYCLE_MS = 3800;
 export const SPHERE_BREATHE_INSET_PERCENT = -26;
 export const SPHERE_BREATHE_SIZE_PERCENT = 152;

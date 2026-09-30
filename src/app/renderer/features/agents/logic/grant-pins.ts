@@ -1,6 +1,6 @@
 import type { CommandToolGrant, PinnedArgument } from "../../../interfaces";
 
-/** Pins a parameter with an empty value; what it is worth is typed on the row afterwards. */
+/** Pins a parameter with an empty value. */
 export function withPinned(grant: CommandToolGrant, parameterId: string, id: string): CommandToolGrant {
   const pinned: PinnedArgument = {
     id,
@@ -14,7 +14,7 @@ export function withPinned(grant: CommandToolGrant, parameterId: string, id: str
   };
 }
 
-/** Unpins the parameter; its value is discarded, since the model fills it in itself again. */
+/** Unpins the parameter and discards its value. */
 export function withoutPinned(grant: CommandToolGrant, pinnedId: string): CommandToolGrant {
   return {
     ...grant,
@@ -22,7 +22,7 @@ export function withoutPinned(grant: CommandToolGrant, pinnedId: string): Comman
   };
 }
 
-/** What one pinned parameter is worth, by its own id — the others stand as they were. */
+/** Sets one pinned parameter's value by id. */
 export function withPinnedValue(grant: CommandToolGrant, pinnedId: string, value: string): CommandToolGrant {
   return {
     ...grant,

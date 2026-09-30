@@ -5,11 +5,11 @@ import {
   CANVAS_TROUBLE_BORDER_COLOR,
 } from "../../../../constants";
 
-/** The ring: dashed, because the wireframe is the thing itself and here the thing is gone. */
+/** A dashed ring: the thing the wireframe stands for is gone. */
 export const DEAD_SPHERE_BORDER = "1.5px dashed #3a4258";
 export const DEAD_SPHERE_GLOW = "radial-gradient(circle, rgba(58, 66, 88, 0.14) 0%, transparent 70%)";
 
-/** Under the ring: the id from the line where a name would be, and the one word about it. */
+/** Under the ring: the line's id in place of a name, and the one word about it. */
 export const DEAD_SPHERE_GAP_PX = 7;
 export const DEAD_SPHERE_ID_COLOR = QUIET_MARK_COLOR;
 export const DEAD_SPHERE_ID_FONT_SIZE_PX = 11;

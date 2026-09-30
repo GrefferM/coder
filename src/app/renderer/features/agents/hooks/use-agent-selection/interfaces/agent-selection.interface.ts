@@ -1,7 +1,7 @@
 import type { PendingPlacement } from "../../../../../interfaces";
 import type { Point } from "../../../../../utils/math";
 
-/** The agent under the hand — the one selected, the one being placed, the one asked about. */
+/** The agent selected, being placed, or asked about. */
 export interface AgentSelection {
   selectedAgentId: string | null;
   /** Selects a copy just put down and drops any claim standing. */

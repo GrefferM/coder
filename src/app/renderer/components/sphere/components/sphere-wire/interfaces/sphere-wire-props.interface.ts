@@ -1,9 +1,9 @@
 export interface SphereWireProps {
-  /** The agent's own colour, or the dead one where it is switched off. */
+  /** The agent's colour, or the dead one when switched off. */
   accentColor: string;
   glowColor: string;
   ambientGlowColor: string;
-  /** The aim breathes and nothing else moves; an off agent has no light to breathe. */
+  /** Only the aim breathes; an off agent has no light. */
   isBreathing: boolean;
   isPointedAt: boolean;
 }

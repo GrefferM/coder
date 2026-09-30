@@ -28,9 +28,8 @@ export const COMMANDS_PANEL_NAME_FIELD_NOTE = "Тільки латинські �
 export const COMMANDS_PANEL_DESCRIPTION_PLACEHOLDER = "Прогнати тести проєкту й повернути звіт";
 export const COMMANDS_PANEL_RUN_PLACEHOLDER = "npm test -- {pattern}";
 /**
- * The one line under the run field, and the only place the app says where the border runs. A value goes in
- * as it stands — the line is joined, nothing is quoted and nothing is escaped — so the quoting is the person's, and
- * the line says so outright rather than describing the machinery.
+ * The line under the run field, the only place the app states where responsibility ends: the line is joined, nothing
+ * quoted or escaped, so quoting is the person's.
  */
 export const COMMANDS_PANEL_RUN_FIELD_NOTE =
   "Лапки ставите ви: застосунок нічого не екранує — беріть слот у лапки: '{mask}'";

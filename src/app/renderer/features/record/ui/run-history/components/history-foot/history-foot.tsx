@@ -9,7 +9,7 @@ import {
 } from "../../constants";
 import { Mark } from "../../../../../../components";
 
-/** Two rules under the last row — how long the record lives, and where it lives. */
+/** Two rules under the last row: how long the record lives and where. */
 export function HistoryFoot() {
   return (
     <div

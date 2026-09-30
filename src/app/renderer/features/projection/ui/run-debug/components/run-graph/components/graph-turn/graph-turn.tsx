@@ -22,9 +22,8 @@ const NUMBER_HALF_PX = RUN_GRAPH_NUMBER_SIZE_PX / 2;
 const RING_RADIUS_PX = WALK_SPHERE_RADIUS_PX + RUN_GRAPH_RING_GAP_PX;
 
 /**
- * One turn of the pass — its sphere, named by the agent and by how long the turn took, and its number over
- * the rim. A sphere here is a step, not an agent: one that worked twice stands twice. The sphere opens the
- * step, and the open one wears a ring in its own colour outside its rim.
+ * One turn of the pass: a sphere named by the agent and the turn's duration, with its number over the rim. A sphere is
+ * a step, not an agent: an agent that worked twice appears twice. The open one wears a ring in its own colour.
  */
 export function GraphTurn({ turn, standing, isOpen, onOpen }: GraphTurnProps) {
   return (
@@ -58,7 +57,7 @@ export function GraphTurn({ turn, standing, isOpen, onOpen }: GraphTurnProps) {
           color={turn.place.step.agentColor}
           isActive
           isSelected={isOpen}
-          // The pill stands here and never on the step's card — one thing on one screen is said once.
+          // The pill is shown here only, never on the step's card.
           underLabel={standing === null ? null : <StandingPill standing={standing} />}
           onSelect={onOpen}
         />

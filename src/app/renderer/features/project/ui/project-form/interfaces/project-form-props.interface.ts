@@ -1,4 +1,4 @@
-/** The chosen folder, the name being typed into it, and the form's handlers. */
+/** The chosen folder, the name being typed, and the form's handlers. */
 export interface ProjectFormProps {
   directory: string;
   name: string;

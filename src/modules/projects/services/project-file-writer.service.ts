@@ -5,7 +5,7 @@ import { ProjectConfigSerializer } from "./project-config-serializer.service";
 import { ProjectFileReader } from "./project-file-reader.service";
 import { ProjectFolder } from "./project-folder.service";
 
-/** One config written into its folder: every changed part file, then the project file, then the files nothing names. */
+/** Writes a config into its folder: changed part files, then the project file, then deletes files nothing names. */
 export class ProjectFileWriter {
   constructor(
     private readonly serializer: ProjectConfigSerializer,
@@ -13,7 +13,7 @@ export class ProjectFileWriter {
     private readonly reader: ProjectFileReader,
   ) {}
 
-  /** Validates the config, writes each changed part file, then the project file; files of removed parts are deleted. */
+  /** Validates, writes each changed part file then the project file; deletes files of removed parts. */
   async write(projectDirectory: string, source: ProjectConfigDto): Promise<void> {
     const held = await this.reader.promptFiles(projectDirectory);
     const config = await this.serializer.toValidConfig({
@@ -69,7 +69,7 @@ export class ProjectFileWriter {
     await this.forgetGoneParts(projectDirectory, config);
   }
 
-  /** A model's own fields; its provider is a tie and stays in the project file. */
+  /** A model's own fields; its provider tie stays in the project file. */
   private describedModel(model: ProjectModelDto): Record<string, unknown> {
     return {
       title: model.title,
@@ -95,7 +95,7 @@ export class ProjectFileWriter {
     };
   }
 
-  /** Writes each part of one kind into its own file; a file already holding that text is left alone. */
+  /** Writes each part of one kind to its own file; a file already holding that text is skipped. */
   private async writeParts(
     projectDirectory: string,
     directory: string,
@@ -109,7 +109,7 @@ export class ProjectFileWriter {
     }
   }
 
-  /** The project file's content: version, name, one reference per part, and every tie (agent ties and links). */
+  /** The project file: version, name, one reference per part, and every tie (agent ties, links). */
   private indexOf(config: ProjectConfigDto): Record<string, unknown> {
     return {
       version: config.version,
@@ -142,7 +142,7 @@ export class ProjectFileWriter {
     };
   }
 
-  /** Deletes part files of removed things; names not matching PART_FILE_PATTERN are left alone. */
+  /** Deletes files of removed parts; names not matching PART_FILE_PATTERN are kept. */
   private async forgetGoneParts(projectDirectory: string, config: ProjectConfigDto): Promise<void> {
     const standing: [string, { id: string }[]][] = [
       [PROJECT_PART_DIRECTORIES.models, config.models],
@@ -162,7 +162,7 @@ export class ProjectFileWriter {
     }
   }
 
-  /** Deletes the files of prompts that were there before this write and are not in it. */
+  /** Deletes prompt files present before this write and absent from it. */
   private async forgetGonePrompts(
     projectDirectory: string,
     held: Map<string, string>,

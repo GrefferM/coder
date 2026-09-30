@@ -1,2 +1,2 @@
-/** How often the standing offers are looked at: often enough for the trace, which stands `DELETED_PLACE_MS`. */
+/** How often standing offers are checked; often enough for the trace, which lasts `DELETED_PLACE_MS`. */
 export const UNDO_TICK_MS = 500;

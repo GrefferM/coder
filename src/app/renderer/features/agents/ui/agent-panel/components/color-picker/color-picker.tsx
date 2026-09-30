@@ -21,7 +21,7 @@ import type { ColorPickerProps } from "./interfaces";
 export function ColorPicker({ color, isChanged = false, onColorChange }: ColorPickerProps) {
   return (
     <div
-      // Five swatches, one colour — the keyboard stops once and walks the row with the arrows.
+      // Five swatches, one tab stop; arrows walk the row.
       data-choice
       className="d-flex align-items-center"
       style={{

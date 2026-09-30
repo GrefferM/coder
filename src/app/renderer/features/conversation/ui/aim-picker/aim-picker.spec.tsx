@@ -22,7 +22,7 @@ function agent(patch: Partial<Agent> = {}): Agent {
   });
 }
 
-/** As many agents as the search needs, named apart so one can be searched for. */
+/** Enough agents for the search, each named apart. */
 function crowd(): Agent[] {
   return Array.from(
     {
@@ -60,7 +60,7 @@ describe("AimPicker", () => {
 
     fireEvent.click(aim());
 
-    // The name stands twice — on the button and in the list; this is about the one in the list.
+    // The name appears on the button and in the list; this targets the list's.
     const row = within(screen.getByRole("listbox")).getByText("Тезар");
 
     // Eight coloured names in a row made a list nobody could read.

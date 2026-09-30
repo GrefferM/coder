@@ -25,7 +25,7 @@ const SLOTS = [
   },
 ];
 
-/** The field is controlled: a caller that never writes back cannot be typed into at all. */
+/** The field is controlled: a caller that never writes back cannot be typed into. */
 function TypedField({ slots }: { slots: { name: string; type: string; isUsed: boolean }[] }) {
   const [value, setValue] = useState("npm test ");
 
@@ -51,7 +51,7 @@ describe("TemplateField", () => {
     expect(slot).toHaveStyle({
       color: TEMPLATE_FIELD_SLOT_COLOR,
     });
-    // The literal half carries no colour of its own — it is the field's own text.
+    // The literal half carries no colour of its own.
     expect(
       screen.getByText("npm test --", {
         exact: false,
@@ -79,7 +79,7 @@ describe("TemplateField", () => {
       />,
     );
 
-    // A name no parameter answers to is not a slot at all — it goes to the shell as it stands.
+    // A name no parameter answers to is not a slot; it goes to the shell as it stands.
     expect(screen.getByText("{format}")).not.toHaveStyle({
       color: TEMPLATE_FIELD_SLOT_COLOR,
     });
@@ -91,7 +91,7 @@ describe("TemplateField", () => {
   it("draws what the shell owns as text, without a word about it", () => {
     render(<TemplateField label={LABEL} value="awk '{print $5}'" onChange={() => {}} slots={SLOTS} />);
 
-    // No parameter answers to «print $5», so the braces are text — no pill, and nothing said under the field.
+    // No parameter answers to «print $5», so the braces are plain text: no pill, no note.
     expect(screen.getByText("{print $5}")).not.toHaveStyle({
       color: TEMPLATE_FIELD_SLOT_COLOR,
     });
@@ -117,7 +117,7 @@ describe("TemplateField", () => {
     render(<TypedField slots={SLOTS} />);
     await user.type(screen.getByLabelText(LABEL), "{{");
 
-    // At the list's own ground the chip said nothing, so a used row raises both.
+    // A used row raises the row and its type chip.
     expect(
       screen.getByRole("option", {
         name: /pattern/,

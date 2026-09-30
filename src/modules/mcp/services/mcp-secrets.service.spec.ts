@@ -8,7 +8,7 @@ import type { McpDroppedStore, McpSecretStore } from "../interfaces";
 const SERVER_ID = "99999999-9999-4999-8999-999999999999";
 const OTHER_SERVER_ID = "88888888-8888-4888-8888-888888888888";
 
-/** The machine's keychain as this service sees it: keys in, keys out, and hints for everything held. */
+/** An in-memory keychain: keys in, keys out, and hints for everything held. */
 function aKeychain(held: Map<string, string>): McpSecretStore {
   return {
     value: (key) => Promise.resolve(held.get(key) ?? null),
@@ -35,7 +35,7 @@ function aKeychain(held: Map<string, string>): McpSecretStore {
   };
 }
 
-/** What this machine wrote down about servers deleted here, and nothing else it knows. */
+/** A stand-in for the record of servers deleted here. */
 function aDebt(rows: Map<string, number>): McpDroppedStore {
   return {
     all: () =>
@@ -89,7 +89,7 @@ describe("McpSecrets", () => {
   });
 
   it("takes a value off this machine when the field is emptied, rather than keeping an empty one", async () => {
-    // An emptied field removes the value from this machine; a stored "" would read as «вписано».
+    // An emptied field removes the value; a stored "" would read as «вписано».
     await secrets.saveToken({
       serverId: SERVER_ID,
       value: "sk-the-token",
@@ -122,7 +122,7 @@ describe("McpSecrets", () => {
       serverId: SERVER_ID,
     });
 
-    // A hint and nothing more: enough to recognise which key is in there, never enough to be the key.
+    // A hint only: enough to recognise the key, never the key.
     assert.equal(mine.token, "sk-the-token");
     assert.deepEqual(Object.keys(mine.env), ["BRAVE_API_KEY"]);
     assert.equal(Object.keys(mine.env).includes("GITHUB_TOKEN"), false);
@@ -138,7 +138,7 @@ describe("McpSecrets", () => {
   });
 
   it("writes the debt down at the press, and takes nothing off the machine yet", async () => {
-    // The undo has thirty seconds, and ⌘Z must hand the server back **with** its keys.
+    // ⌘Z within the undo's thirty seconds returns the server with its keys.
     await secrets.saveToken({
       serverId: SERVER_ID,
       value: "sk-the-token",
@@ -165,7 +165,7 @@ describe("McpSecrets", () => {
     await secrets.sweep([]);
 
     assert.deepEqual([...held.keys()], []);
-    // The debt is paid and is not carried into the next opening of the project.
+    // The debt is paid and not carried into the next opening.
     assert.deepEqual([...dropped.keys()], []);
   });
 
@@ -197,7 +197,7 @@ describe("McpSecrets", () => {
   });
 
   it("never touches a server it did not drop, since the keychain holds other projects too", async () => {
-    // A rule of «not in this project» would take a colleague's token off with it; only a written debt is swept.
+    // Only a recorded drop is swept; a «not in this project» rule would take a colleague's token.
     await secrets.saveToken({
       serverId: OTHER_SERVER_ID,
       value: "sk-another-project",

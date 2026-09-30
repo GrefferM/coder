@@ -2,8 +2,8 @@ import { SLOT_CLOSE, SLOT_OPEN } from "./constants";
 import type { OpenBrace } from "./interfaces";
 
 /**
- * The brace under the caret — where it opened and what has been typed since — if the caret stands inside
- * one that is open at all. A space or a closing brace ends it, so a written-out slot offers nothing any more.
+ * The open brace under the caret: where it opened and what was typed since; `null` if none is open. A space or closing
+ * brace ends it.
  */
 export function openBrace(value: string, caret: number): OpenBrace | null {
   const at = value.lastIndexOf(SLOT_OPEN, caret - 1);

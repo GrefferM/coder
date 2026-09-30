@@ -15,7 +15,7 @@ import {
 import { Mark } from "../../../../../../components";
 import type { SwitcherButtonProps } from "./interfaces";
 
-/** The project the app is open on — its name, where it lies, and the way to the rest. */
+/** The open project: its name, location, and the way to the rest. */
 export function SwitcherButton({ name, directory, isOpen, onPress }: SwitcherButtonProps) {
   return (
     <button

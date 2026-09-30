@@ -31,7 +31,7 @@ import { modelInstalled } from "../../logic";
 import type { ModelsPanelProps } from "./interfaces";
 import { focusRing } from "../../../../utils/focus";
 
-/** Model catalogue; the open row carries «Редагувати» and «Видалити», asked about over the canvas. */
+/** Model catalogue; the open row carries «Редагувати» and «Видалити», confirmed over the canvas. */
 export function ModelsPanel({
   providers,
   providerAnswers,

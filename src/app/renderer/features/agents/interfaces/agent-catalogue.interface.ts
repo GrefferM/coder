@@ -8,14 +8,14 @@ import type {
   ProviderState,
 } from "../../../interfaces";
 
-/** Everything an agent's tab chooses from — what the project declares, and what the machine answers about it. */
+/** Everything an agent's tab chooses from: what the project declares and what the machine reports. */
 export interface AgentCatalogue {
   models: ProjectModel[];
-  /** The declared providers, so a model standing on one nobody announced says so under the field. */
+  /** Declared providers, so a model on an undeclared one is flagged under the field. */
   providers: ProviderState[];
   prompts: ProjectPrompt[];
   commands: ProjectCommand[];
-  /** The servers the project names, and what each hands over right now. */
+  /** The project's servers and what each currently offers. */
   servers: ProjectMcpServer[];
   looks: Record<string, McpLook>;
   agents: Agent[];

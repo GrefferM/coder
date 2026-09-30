@@ -1,7 +1,5 @@
-// What both processes agree on: the shapes that cross the bridge, the names of the channels they speak over,
-// and the rules they both hold to. A rule stands here when the two sides must answer it alike — what a grant
-// points at, which step of a walk a turn stands on, how several bills add up — and it is written once, proved
-// once, and imports nothing from either process. Everything else about running belongs to the side that runs it.
+// What both processes share: the shapes crossing the bridge, the channel names, and rules both sides must answer alike.
+// Imports nothing from either process.
 export * from "./attachments";
 export * from "./bridge";
 export * from "./channels";

@@ -12,7 +12,7 @@ import { armedTally, callOut, deadEnd, deadEnds, sphereStanding } from "../../..
 import type { CanvasLayersProps } from "./interfaces";
 import type { LinkEnd } from "../../../interfaces";
 
-/** Everything the canvas draws in its own coordinates: the lines, the line in hand, the spheres and their marks. */
+/** Everything the canvas draws in its own coordinates: lines, the line in hand, spheres and their marks. */
 export function CanvasLayers({
   standing,
   living,
@@ -36,9 +36,9 @@ export function CanvasLayers({
   const { drag, draft, cancelled, target, chosenLinkId, markScale, isDrawnSmall } = drawing;
   const isDragged = drag !== null && agents.some((agent) => agent.id === drag.agentId);
   const selectedLink = links.find((link) => link.id === chosenLinkId) ?? null;
-  // A line the file holds is drawn as it is; the end that names nobody is a dead sphere in free space (50a).
+  // A line the file holds is drawn as it is; an end that names nobody is a dead sphere in free space.
   const dead = deadEnds(agents, links);
-  /** One end of the chosen line, whether an agent stands there or only the id the line carries. */
+  /** One end of the chosen line: an agent, or just the id the line carries. */
   const endOf = (agentId: string): LinkEnd | null => {
     const agent = agents.find((one) => one.id === agentId) ?? null;
 
@@ -71,10 +71,7 @@ export function CanvasLayers({
         pointerEvents: "none",
       }}
     >
-      {/*
-       * Outgoing lines take the agent's colour for the panel's sake and never for the
-       * aim's — a coloured line from a source is how work flowing reads, and an aim stands for hours.
-       */}
+      {/* Outgoing lines take the agent's colour for the panel's selection, never for the aim. */}
       <LinkLayer
         links={links}
         deadEnds={dead}
@@ -133,8 +130,7 @@ export function CanvasLayers({
             modelTitle: models.find((model) => model.id === agent.modelId)?.title,
             trouble: troubles[agent.id] ?? null,
             /**
-             * The trail's third line. A prompt the project has let go is not a prompt the trail may show — the
-             * sphere's own mark says it is gone — and the key counts only what can actually be called.
+             * The trail's third line; a prompt the project dropped is not shown, and the key counts only what can be called.
              */
             trail: {
               hasPrompt: prompts.some((prompt) => prompt.id === agent.promptId),
@@ -144,12 +140,10 @@ export function CanvasLayers({
             isToolless: toolless.includes(agent.id),
           }}
           doing={{
-            // An agent may work in several walks at once, and the sphere is no list of works —
-            // the rows come oldest first, so its first one is the turn the pill wears.
+            // Rows come oldest first, so the first one is the turn the pill shows.
             working: workingAgents.find((held) => held.agentId === agent.id) ?? null,
             waiting: waitingAgents.find((held) => held.agentId === agent.id) ?? null,
-            // What this agent has out this moment — said by a pill beside the sphere, and the
-            // arc under it does not move at all.
+            // What this agent has out, shown by a pill beside the sphere.
             calling: callOut(workingAgents, callsOut, agent.id),
             agents,
           }}

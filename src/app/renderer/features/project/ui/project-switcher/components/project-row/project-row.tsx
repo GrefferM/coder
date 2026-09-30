@@ -26,7 +26,7 @@ import {
 } from "../../constants";
 import type { ProjectRowProps } from "./interfaces";
 
-/** One project row: name, folder, tick on the open one, cross to drop it; a gone folder is grey, unpickable. */
+/** One project row: name, folder, tick on the open one, cross to drop it; a gone folder is grey and unpickable. */
 export function ProjectRow({
   name,
   directory,
@@ -38,7 +38,7 @@ export function ProjectRow({
 }: ProjectRowProps) {
   const row = useInteraction();
   const forget = useInteraction();
-  // A wordless control says what it is in the app's own window, and never in the browser's `title`.
+  // A wordless control names itself through the app's hint, not the browser `title`.
   const said = useHint<HTMLButtonElement>(SWITCHER_FORGET_LABEL, forget.isLit, forget.isFocused);
   const isPickable = !isCurrent && exists;
   const isRowLit = row.isLit && isPickable;

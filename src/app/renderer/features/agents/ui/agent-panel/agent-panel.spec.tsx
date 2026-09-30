@@ -33,7 +33,7 @@ const draft: AgentDraft = aDraft({
   temperature: 0.3,
 });
 
-/** What one case changes, part by part; everything it leaves out stands as this fixture sets it. */
+/** Per-case overrides; everything left out stands as the fixture sets it. */
 interface PanelOverrides {
   catalogue?: Partial<AgentCatalogue>;
   writing?: Partial<AgentWriting>;
@@ -101,12 +101,12 @@ describe("AgentPanel", () => {
     );
 
     expect(screen.getByText(AGENT_FORM_TITLE)).toBeInTheDocument();
-    // The form names a model too, so what tells the two apart is a row only the settings have.
+    // The form also names a model, so the settings are told apart by a row only they have.
     expect(screen.queryByText(AGENT_SETTINGS_SWITCH_LABEL)).not.toBeInTheDocument();
   });
 
   it("is the create form where there is no agent to show, whatever else was asked for", () => {
-    // The panel's place is one; with nothing selected it is where an agent is made.
+    // With nothing selected the panel shows the create form.
     render(
       <AgentPanel
         {...props({
@@ -129,7 +129,7 @@ describe("AgentPanel", () => {
   });
 
   it("gives the whole panel to one grant while it stands open, head and all", async () => {
-    // The grant is read on its own, so nothing of the agent stands over it.
+    // The grant is read on its own, without the agent over it.
     render(<AgentPanel {...props()} />);
     await userEvent.click(
       screen.getByRole("button", {
@@ -162,9 +162,8 @@ describe("AgentPanel", () => {
   });
 
   it("stays out of the grant the arc sent it to, though the press is still standing", async () => {
-    // The press stays until the rail takes it off, so the way out of the page must not be heard as a fresh press.
-    // The tab holds its place in the panel while a step is open for exactly this: a tab born anew would have heard
-    // the standing press on the way out and opened the very page the person just left.
+    // The press stays until the rail takes it off, so leaving a step must not be heard as a fresh press; the tab keeps
+    // its place while a step is open.
     render(
       <AgentPanel
         {...props({
@@ -193,8 +192,7 @@ describe("AgentPanel", () => {
   });
 
   it("stands back at the settings when the agent's own sphere is pressed, from whatever step", () => {
-    // The sphere is the agent, and the agent is these settings. The canvas stays in sight while a step
-    // is open, so the sphere is the way back from one, exactly as it is the way to the agent from anywhere else.
+    // The sphere returns from an open step to the agent's settings.
     const opened = props({
       presses: {
         tools: {

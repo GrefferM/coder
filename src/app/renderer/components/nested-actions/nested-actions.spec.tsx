@@ -19,7 +19,7 @@ describe("NestedActions", () => {
   });
 
   it("holds the confirm shut while what it would confirm is not there yet", async () => {
-    // An unlit act is not a refusal — there is simply nothing to confirm.
+    // An unlit action is not a refusal; there is nothing to confirm.
     const onConfirm = vi.fn();
 
     render(

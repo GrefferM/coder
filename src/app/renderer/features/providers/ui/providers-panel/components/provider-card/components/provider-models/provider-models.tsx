@@ -41,7 +41,7 @@ import {
 } from "./constants";
 import type { ProviderModelsProps } from "./interfaces";
 
-/** Installed models as the provider named them; a quiet provider's last list stays, dimmed. */
+/** Installed models as the provider named them; a silent provider's last list stays, dimmed. */
 export function ProviderModels({ models, catalogue, isAnswering, onAsk, onTakeUp }: ProviderModelsProps) {
   const [isShowingAll, setIsShowingAll] = useState(false);
   const hasList = models.length > 0;

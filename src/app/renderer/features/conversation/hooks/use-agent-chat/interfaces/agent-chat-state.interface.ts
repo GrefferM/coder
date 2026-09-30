@@ -7,52 +7,49 @@ import type { LinkLife, WaitingAgent, WorkingAgent } from "../../../../../interf
 export interface AgentChatState {
   /** When an agent's last word was a fall, for «упав · 14:26». */
   fellAt: Record<string, string>;
-  /** Whom a question would go to — the selected agent, or the one asked last. */
+  /** Whom a question would go to: the selected agent, or the one asked last. */
   aimedAgentId: string | null;
   /** Points the chat at an agent without the canvas taking part. */
   aim: (agentId: string) => void;
-  /** Empties the stream and leaves the record, the aim and the drafts alone. */
+  /** Empties the stream; leaves the record, aim and drafts alone. */
   fresh: () => void;
-  /** Asks one agent the same question again — a turn of its own in the same conversation. */
+  /** Asks one agent the same question again, as a turn of its own in the same conversation. */
   sayAgain: (said: ChatMessage) => void;
   /** The turns already asked again — the act under them is spent. */
   saidAgain: string[];
-  /** The run this stream writes into, so the projection can be opened on it. */
+  /** The run this stream writes into, so the projection can open on it. */
   runId: string | null;
-  /** A run opened from the history is the record the stream now goes on writing into. */
+  /** A run opened from history becomes the record the stream keeps writing into. */
   goOnIn: (runId: string) => void;
-  /** The record this stream writes into was deleted — let the conversation go with it. */
+  /** The record this stream writes into was deleted; the conversation goes with it. */
   letGo: (runId: string) => void;
   messages: ChatMessage[];
   draft: string;
   isWorking: boolean;
-  /** A conversation not on screen holds a turn that waits for the hand — news of this session alone. */
+  /** A conversation not on screen holds a turn that waits for the hand; this session's news only. */
   isNewsElsewhere: boolean;
-  /** The history is open, so what stood as news is news no longer. */
+  /** The history is open; standing news is cleared. */
   readNews: () => void;
-  /** How many times the record has been written to — the history reads it to follow a walk. */
+  /** Count of writes to the record; the history reads it to follow a walk. */
   written: number;
   startedAt: number | null;
   working: WorkingAgent[];
   /** The agents holding work while lines converge. */
   waiting: WaitingAgent[];
-  /** How every line of the canvas stands right now; one with no life is not in it. */
+  /** How each canvas line stands now; a line with no life is absent. */
   linkLives: Record<string, LinkLife>;
-  /**
-   * Which call rows stand open. It lives with the chat because it is the chat's own memory, and it is
-   * handed out because the catalogue opens one too — one memory, or the two would disagree.
-   */
+  /** Which call rows stand open; shared with the catalogue, which opens rows too. */
   openCalls: OpenCalls;
-  /** How tall the person pulled the field of this project; nothing where they never pulled it. */
+  /** Height the person pulled the project's field to; null if never pulled. */
   fieldHeight: number | null;
-  /** Sets it, at the end of a pull; the page notes it down beside the canvas's own scale. */
+  /** Sets it at the end of a pull; the page notes it beside the canvas scale. */
   setFieldHeight: (height: number) => void;
   changeDraft: (draft: string) => void;
-  /** What is attached under the field of the stream on screen, waiting to go with the next question. */
+  /** Attached under the on-screen stream's field, to go with the next question. */
   attachments: PickedAttachment[];
-  /** «+ ПРИКРІПИТИ» — opens the native pick and adds what is chosen to this stream's attachments. */
+  /** «+ ПРИКРІПИТИ»: opens the native pick and adds the choice to this stream's attachments. */
   attach: () => void;
-  /** The × on a chip — takes one attachment off by its own path before the question goes. */
+  /** The × on a chip: removes the attachment with that path. */
   detach: (path: string) => void;
   send: () => void;
   stop: () => void;

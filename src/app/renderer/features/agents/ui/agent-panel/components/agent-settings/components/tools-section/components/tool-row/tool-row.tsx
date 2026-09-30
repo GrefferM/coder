@@ -25,7 +25,7 @@ import {
 import type { ToolRowProps } from "./interfaces";
 import { focusRing } from "../../../../../../../../../../utils/focus";
 
-/** One held function under the field; the whole row opens the grant, revoking is the list's tick. */
+/** One held function under the field; the row opens the grant, revoking is the list's tick. */
 export function ToolRow({ name, pinnedCount, onOpen }: ToolRowProps) {
   const { isLit, isFocused, handlers } = useInteraction();
 

@@ -14,11 +14,7 @@ import {
 } from "../constants";
 import type { ServerBurden } from "../interfaces";
 
-/**
- * What goes with the server, said in words. Three burdens, and only the ones that are there are named
- * — a sentence saying «0 функцій» would be counting nothing. The row in the file is never named: every deed in
- * this app changes it, and a burden everybody carries is not news.
- */
+/** What goes with the server, in words. Only the burdens that are there are named; the project-file row never is. */
 export function deleteServerNote(name: string, burden: ServerBurden): string {
   const parts = [grantsPart(burden), keysPart(burden)].filter((part) => part !== null);
   const said = parts.length === 2 ? `${parts[0]}${DELETE_SERVER_LAST_JOIN}${parts[1]}` : (parts[0] ?? "");
@@ -26,7 +22,7 @@ export function deleteServerNote(name: string, burden: ServerBurden): string {
   return `${DELETE_SERVER_NOTE_PREFIX}${name}${said === "" ? "" : DELETE_SERVER_GRANT_JOIN}${said}${DELETE_SERVER_NOTE_END}`;
 }
 
-/** «12 його функцій в 1 агента» — what the agents lose, counted by the grants they hold. */
+/** «12 його функцій в 1 агента»: what the agents lose, counted by grants. */
 function grantsPart(burden: ServerBurden): string | null {
   if (burden.grants === 0) {
     return null;
@@ -40,7 +36,7 @@ function grantsPart(burden: ServerBurden): string | null {
   return `${functions}${DELETE_SERVER_IN_AGENTS}${agents}`;
 }
 
-/** «токен і значення 2 змінних із ключника цієї машини» — what leaves this machine and no file. */
+/** «токен і значення 2 змінних із ключника цієї машини»: what leaves this machine's keychain. */
 function keysPart(burden: ServerBurden): string | null {
   const [one, few, many] = DELETE_SERVER_VALUE_FORMS;
   const held: string[] = [];

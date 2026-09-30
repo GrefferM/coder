@@ -12,13 +12,13 @@ import { RUN_STEP_FEED_TABLE_NAME } from "../constants";
 import { RunStepEntity } from "./run-step.entity";
 import type { RunStepFeedRecord } from "../interfaces";
 
-/** The `run_step_feeds` table row — one step's work coming into another; a converging point has several. */
+/** A row of `run_step_feeds`: one step's work coming into another; a converging point has several. */
 @Entity(RUN_STEP_FEED_TABLE_NAME)
 export class RunStepFeedEntity implements RunStepFeedRecord {
   @PrimaryGeneratedColumn("uuid")
   declare id: string;
 
-  // Where this supplier stands among the ones the turn was fed by, from one; the order they were named.
+  // Position among the turn's suppliers, from one, in naming order.
   @Column({
     type: "integer",
   })

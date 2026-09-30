@@ -1,4 +1,4 @@
-// The `secrets` module's surface: secret values stay inside; screens get only hints.
+// The `secrets` module's surface: values stay inside, screens get only hints.
 export * from "./constants";
 export * from "./dto";
 export * from "./interfaces";

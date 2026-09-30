@@ -17,7 +17,7 @@ function clipboard(writeText = vi.fn().mockResolvedValue(undefined)) {
 
 describe("CopyAction", () => {
   it("hands the clipboard the whole text, and nothing cut out of it", async () => {
-    // «копіюємо відповідь і мовчимо» — nothing here knows which part of it the person wants.
+    // Copies the whole text, nothing picked out of it.
     const writeText = clipboard();
 
     render(<CopyAction text={"### Error\nError: page.goto\nCall log:"} />);
@@ -39,7 +39,7 @@ describe("CopyAction", () => {
   });
 
   it("stands where the clipboard refused, and lets nothing of it out at the app", async () => {
-    // A refusal nobody catches is an unhandled rejection, and a turn can go down with one of those.
+    // A refused clipboard write is caught, not an unhandled rejection.
     const refused = vi.fn().mockRejectedValue(new Error("no clipboard"));
 
     clipboard(refused);

@@ -16,8 +16,8 @@ import type { PassSwitchProps } from "./interfaces";
 import { Arrow } from "./components";
 
 /**
- * «‹ ПИТАННЯ 2 З 2 ›» in the head of the projection. It walks the passes of this flow and no further:
- * another flow is another row of the history. A question that never went is no pass of it.
+ * «‹ ПИТАННЯ 2 З 2 ›» in the projection's head; walks this flow's passes only, and a question that never went is no
+ * pass.
  */
 export function PassSwitch({ place, count, onGo }: PassSwitchProps) {
   return (

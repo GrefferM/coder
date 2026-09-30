@@ -8,13 +8,13 @@ export interface SettingsTiesProps {
   was: WasAgent;
   models: ProjectModel[];
   prompts: ProjectPrompt[];
-  /** The other agents, so a picker can say how many of them stand on the same thing. */
+  /** The other agents, so a picker can count how many share a choice. */
   agents: Agent[];
-  /** The model the project no longer has, or a provider nobody declared. */
+  /** The model is gone from the project, or its provider is undeclared. */
   isModelGone: boolean;
   isPromptGone: boolean;
   goneProviderId: string | null;
-  /** The field a mended card points at, so the panel opens with the eye already on it. */
+  /** The field a mended card points at, focused on open. */
   mendedField: RefObject<HTMLButtonElement | null> | undefined;
   onDraftChange: (patch: Partial<AgentDraft>) => void;
 }

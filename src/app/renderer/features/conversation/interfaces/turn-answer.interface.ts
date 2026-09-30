@@ -2,20 +2,20 @@ import type { ChatCost } from "./chat-cost.interface";
 import type { NotStartedReason, TurnCall } from "../../../interfaces";
 import type { TurnLength } from "./turn-length.interface";
 
-/** One turn come back from the machine — what the model said, and every word the app has about it. */
+/** One turn back from the machine: what the model said and every word the app has about it. */
 export interface TurnAnswer {
   text: string;
-  /** The app's own word about this turn, if it has one; it never joins the model's text. */
+  /** The app's own word about this turn, if any; never joins the model's text. */
   note: string | null;
   cost: ChatCost | null;
-  /** The ceiling this turn ran with, so the counts can be read against it; unknown where no model answered. */
+  /** The ceiling this turn ran with, for reading the counts; null where no model answered. */
   answerCeiling: number | null;
   isFailure: boolean;
-  /** The provider's own sentence about a fall, kept for the record; nothing where the turn did not fall. */
+  /** The provider's own sentence about a fall, kept for the record; null if the turn did not fall. */
   fell: string | null;
   /** The turn ended without the agent saying its piece, so nothing goes down a line. */
   isCut: boolean;
-  /** Set when the turn never began, which is not a fall — there was no attempt to fall. */
+  /** Set when the turn never began, which is not a fall. */
   notStarted: NotStartedReason | null;
   /** What would have gone, in characters, on the one turn the ceiling refused. */
   wouldGo: TurnLength | null;

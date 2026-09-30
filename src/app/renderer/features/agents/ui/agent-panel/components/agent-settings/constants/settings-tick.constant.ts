@@ -1,9 +1,5 @@
 import { CONTROL_AT_REST_COLOR } from "../../../../../../../constants";
-/**
- * The tick row of the settings, drawn twice — one function of the project offered in the open list, and one
- * function a server hands over. The two lists are different; the row the person presses is the same row, and its
- * shape stands here rather than in either of them, where it was kept twice with the same numbers in both.
- */
+/** Shape of the tick row, shared by the open list's project functions and a server's functions. */
 export const SETTINGS_TICK_PADDING = "7px 9px";
 export const SETTINGS_TICK_GAP_PX = 9;
 export const SETTINGS_TICK_BORDER_RADIUS_PX = 8;

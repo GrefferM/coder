@@ -15,8 +15,8 @@ import type { KnownProjects } from "./interfaces";
 import type { OpenProject, ProjectEntry } from "../../../../interfaces";
 
 /**
- * What the switcher knows and can do — the machine's own list of projects, read while the list
- * stands open, and the acts over it. Every act says its own failure in words and never throws at the drawing.
+ * The switcher's state and acts: the machine's list of projects, read while the list is open. Every act reports its
+ * failure in words and never throws into rendering.
  */
 export function useKnownProjects(
   project: OpenProject,
@@ -26,7 +26,7 @@ export function useKnownProjects(
 ): KnownProjects {
   const [known, setKnown] = useState<ProjectEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
-  // The empty folder a new project is being named into, and the first guess at that name.
+  // The empty folder being named as a new project, and the first guess at the name.
   const [naming, setNaming] = useState<{ directory: string; name: string } | null>(null);
 
   useEffect(() => {
@@ -64,11 +64,8 @@ export function useKnownProjects(
     });
 
   /**
-   * «Новий проєкт» is not the same act as «Відкрити папку», though both begin with the same picker.
-   *
-   * A folder that already holds a project is opened where it stands: nothing is ever created over one, so there is
-   * nothing to ask. An empty folder is where the two acts part — it is about to become a project, and a project is
-   * named by the person, not by whatever the folder happened to be called. So it waits here for the form.
+   * «Новий проєкт» differs from «Відкрити папку» only for an empty folder: it waits here for the person to name the
+   * project. A folder already holding a project is opened as is.
    */
   const startChosen = () =>
     run(async () => {
@@ -124,7 +121,7 @@ export function useKnownProjects(
           return;
         }
 
-        // The folder is gone from the disk, and the row says so instead of the list saying nothing.
+        // The folder is gone from disk; the row says so.
         setKnown((entries) => withProjectGone(entries, directory));
       }
     },

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-/** One sentence saying what is gone, under the rows it speaks for. */
+/** A sentence saying what is gone, under the rows it covers. */
 export interface LostNoteProps {
   children: ReactNode;
 }

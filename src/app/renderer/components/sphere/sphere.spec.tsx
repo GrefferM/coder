@@ -22,7 +22,7 @@ const AGENT_COLOR = "#38a3ff";
 /** jsdom writes a colour back inside the `border` shorthand as `rgb()`. */
 const AGENT_COLOR_AS_RGB = "rgb(56, 163, 255)";
 
-/** The ambient glow is the box drawn directly behind the sphere's own SVG. */
+/** The ambient glow is the box directly behind the sphere's own SVG. */
 function ambientGlow(container: HTMLElement) {
   return container.querySelector("svg")?.previousElementSibling;
 }
@@ -63,7 +63,7 @@ describe("Sphere", () => {
     });
     const breathing = container.querySelector(".sphere-breathe");
 
-    // The light around it takes and gives; the sphere and its grid stand still.
+    // Only the glow breathes; the sphere and its grid stand still.
     expect(breathing).toBeInTheDocument();
     expect(breathing).toHaveStyle({
       animationDuration: `${SPHERE_BREATHE_CYCLE_MS}ms`,

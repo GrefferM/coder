@@ -2,10 +2,10 @@
 export interface LinkLine {
   x1: number;
   y1: number;
-  /** The arrow's tip, and the far end of the run a click is taken on. */
+  /** The arrow's tip, and the far end of the click-hit run. */
   x2: number;
   y2: number;
-  /** Where the drawn line stops: the arrow's base, so a round cap never pokes out past the point. */
+  /** Where the drawn line stops: the arrow's base, so a round cap never pokes past the tip. */
   stem: {
     x: number;
     y: number;

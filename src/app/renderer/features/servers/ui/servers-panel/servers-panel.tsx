@@ -22,25 +22,18 @@ import {
 import type { ServersPanelProps } from "./interfaces";
 
 import { pointsAt } from "../../../../interfaces";
-/** The catalogue of MCP servers — each with the state of its connection, and what it hands over. */
+/** The catalogue of MCP servers, each with its connection state and what it hands over. */
 export function ServersPanel({ catalogue, declaring, serverActs, declaringActs }: ServersPanelProps) {
   const { servers, looks, askingSince, agents } = catalogue;
   const { openServerId, form, held, secrets } = declaring;
   const { onRestart, onCancel, onAskAgain, onSeen, onShowCall, onArm } = serverActs;
   const { onSecretChange, onOpenForm, onFormChange, onSaveForm, onCancelForm } = declaringActs;
-  /**
-   * Which server's own page stands over the list. A page and not a card inside the row: a list of functions
-   * folded into one row of a list left the catalogue unreadable and every other row a screen away.
-   */
+  /** Which server's own page stands over the list. */
   const [shownServerId, setShownServerId] = useState<string | null>(null);
   const shown = servers.find((server) => server.id === shownServerId) ?? null;
 
-  /**
-   * A server that goes takes its page with it, and does not bring it back. Without this the id outlived the
-   * server: deleting one from its own page dropped you into the catalogue, and then ⌘Z — which puts the server
-   * back within the thirty seconds — threw you onto the page of the thing you had just deleted.
-   */
-  // The arrow is news, and news is read by the page being opened — not by the trouble being mended.
+  /** A server that goes takes its page with it, so ⌘Z after a delete lands on the catalogue. */
+  // The arrow is news: opening the page reads it, mending the trouble does not.
   useEffect(() => {
     if (shownServerId !== null) {
       onSeen(shownServerId);
@@ -52,7 +45,7 @@ export function ServersPanel({ catalogue, declaring, serverActs, declaringActs }
       setShownServerId(null);
     }
   }, [shown, shownServerId]);
-  // «5 АГЕНТІВ» counts the agents holding any function of this server, by the server's id alone.
+  // «5 АГЕНТІВ»: agents holding any function of this server, by server id.
   const agentsOn = (serverId: string) =>
     agents.filter((agent) => agent.tools.some((grant) => pointsAt(grant, serverId))).length;
 
@@ -89,7 +82,7 @@ export function ServersPanel({ catalogue, declaring, serverActs, declaringActs }
     );
   }
 
-  // An empty section lifts the one action out of the footer into its middle, and the footer goes with it.
+  // An empty section puts the one action in its middle and drops the footer.
   if (servers.length === 0) {
     return (
       <div
@@ -161,7 +154,7 @@ export function ServersPanel({ catalogue, declaring, serverActs, declaringActs }
           borderTop: `1px solid ${SERVERS_PANEL_FOOTER_BORDER_COLOR}`,
         }}
       >
-        {/* «З магазину» would stand beside it; there is no store, so the one door that exists stands alone. */}
+        {/* No store exists, so no «З магазину» door beside it. */}
         <CatalogueAction label={SERVERS_PANEL_NEW_LABEL} onClick={() => onOpenForm("new")} />
       </div>
     </div>

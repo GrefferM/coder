@@ -5,7 +5,7 @@ import {
   QUIET_MARK_COLOR,
 } from "../../../../../constants";
 
-/** Editor across the whole working area, over the standing canvas. */
+/** Editor across the whole working area, over the canvas. */
 export const PROMPT_EDITOR_INSET_PX = 6;
 export const PROMPT_EDITOR_BACKGROUND_COLOR = PANEL_GROUND_COLOR;
 export const PROMPT_EDITOR_BORDER_RADIUS_PX = 10;
@@ -30,11 +30,7 @@ export const PROMPT_EDITOR_COLLAPSE_ICON_SIZE_PX = 10;
 export const PROMPT_EDITOR_BODY_PADDING = "26px 34px";
 export const PROMPT_EDITOR_BODY_GAP_PX = 16;
 export const PROMPT_EDITOR_NAME_GAP_PX = 12;
-/**
- * The width of the name's own slot, whether a word stands in it or the field it turns into. One width for both,
- * because a field left to itself is twenty characters wide whatever it holds — and then everything beside the name
- * jumps sideways the moment it is pressed.
- */
+/** Width of the name's slot, shared by the word and its field so nothing beside it jumps on press. */
 export const PROMPT_EDITOR_NAME_WIDTH_PX = 200;
 export const PROMPT_EDITOR_NAME_COLOR = "#e6e9f2";
 export const PROMPT_EDITOR_NAME_FONT_SIZE_PX = 19;

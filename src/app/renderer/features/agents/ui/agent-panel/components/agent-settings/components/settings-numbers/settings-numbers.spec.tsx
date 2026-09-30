@@ -112,7 +112,7 @@ describe("SettingsNumbers", () => {
   });
 
   it("says under a row what it was, where the draft has moved it", () => {
-    // Each row says its own «було», and a row that stands as saved says nothing.
+    // Each changed row shows its own «було»; an unchanged row shows none.
     render(
       <SettingsNumbers
         draft={draft}

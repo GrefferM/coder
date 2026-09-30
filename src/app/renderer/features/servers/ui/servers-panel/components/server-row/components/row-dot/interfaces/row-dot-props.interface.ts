@@ -1,7 +1,7 @@
 export interface RowDotProps {
-  /** It is being raised right now — the dot takes the waiting colour and breathes. */
+  /** Being raised right now: waiting colour, breathing. */
   isAsking: boolean;
-  /** Nothing has been asked of it, or nothing came back — the dot stands empty. */
+  /** Nothing asked of it, or nothing came back: the dot stands empty. */
   isEmpty: boolean;
   /** The process is gone; the dot is coloured and still. */
   hasFallen: boolean;

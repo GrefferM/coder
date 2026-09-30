@@ -48,7 +48,7 @@ describe("ForgetCross", () => {
   });
 
   it("stands on nothing until the row is raised, so a resting list is a list of rows alone", () => {
-    // The cross is there all along and keeps its place; only its ground comes and goes.
+    // The cross stays in place; only its ground comes and goes.
     const { rerender } = render(<ForgetCross press={press()} isRaised={false} onForget={() => {}} />);
 
     expect(

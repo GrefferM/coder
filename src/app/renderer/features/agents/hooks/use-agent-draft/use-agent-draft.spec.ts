@@ -63,7 +63,7 @@ describe("useAgentDraft", () => {
   });
 
   it("does not count the agent's own name against it", () => {
-    // Opening the tab and typing the name back is not a collision with itself.
+    // Typing the agent's own name back is not a collision.
     const { result } = renderHook(() => useAgentDraft(project(), writes(), "agent-1"));
 
     act(() =>
@@ -109,7 +109,7 @@ describe("useAgentDraft", () => {
   });
 
   it("counts a name written in another case as the same name", () => {
-    // The sphere's label is drawn in capitals, so two agents like this would be one picture on the canvas.
+    // Names that differ only in case collide, as labels are drawn in capitals.
     const { result } = renderHook(() => useAgentDraft(project(), writes(), "agent-1"));
 
     act(() =>

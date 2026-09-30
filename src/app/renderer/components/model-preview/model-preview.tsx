@@ -18,7 +18,7 @@ import {
 } from "./constants";
 import type { ModelPreviewProps } from "./interfaces";
 
-/** The command as the model sees it — as declared, or per-agent with fixed parameters removed. */
+/** The command as the model sees it: as declared, or per agent with fixed parameters removed. */
 export function ModelPreview({ name, description, parameters, note }: ModelPreviewProps) {
   return (
     <div

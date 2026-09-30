@@ -13,7 +13,7 @@ const seeker: Agent = anAgent({
 
 describe("AimButton", () => {
   it("names whom the chat is aimed at", () => {
-    // The header says it, so a person never has to guess where a question would go.
+    // The header shows where a question would go.
     render(<AimButton aimed={seeker} isOpen={false} onPress={() => {}} />);
 
     expect(

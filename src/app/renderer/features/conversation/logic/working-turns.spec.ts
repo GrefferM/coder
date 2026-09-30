@@ -21,7 +21,7 @@ const out: Record<string, TurnOut> = {
   },
 };
 
-/** One stream's walks, with only the parts this reader looks at written. */
+/** One stream's walks with only the parts this reader looks at. */
 function walk(patch: Partial<WalkState>): WalkState {
   return {
     ...emptyWalk(),
@@ -48,7 +48,7 @@ describe("workingTurns", () => {
       questionId: "question-1",
       askedAt: 50,
     });
-    // The second one belongs to the same question; what either of them is saying arrives elsewhere.
+    // The second belongs to the same question; what either is saying arrives elsewhere.
     expect(working[1].askedAt).toBe(50);
   });
 
@@ -65,7 +65,7 @@ describe("workingTurns", () => {
   });
 
   it("leaves out a turn of a walk let go with its stream", () => {
-    // The canvas draws the conversation on screen, and that walk is not of it any more.
+    // The canvas draws the conversation on screen, and that walk is not of it.
     const working = workingTurns(
       walk({
         out: {
@@ -102,7 +102,7 @@ describe("workingTurns", () => {
 
 describe("workingTurns · an agent holding several turns", () => {
   it("stands in every walk asking it, so each question's block says it works", () => {
-    // Two walks asked the editor at once; both are working, and neither block is empty.
+    // Two walks asked the editor at once; both are working, neither block is empty.
     const working = workingTurns(
       walk({
         out: {
@@ -129,7 +129,7 @@ describe("workingTurns · an agent holding several turns", () => {
     );
 
     expect(working.map((one) => one.questionId)).toEqual(["question-1", "question-2"]);
-    // The sphere wears the agent's first row here, and its clock only ever grows.
+    // The sphere shows the agent's first row, and its clock only grows.
     expect(working[0].startedAt).toBe(100);
   });
 });

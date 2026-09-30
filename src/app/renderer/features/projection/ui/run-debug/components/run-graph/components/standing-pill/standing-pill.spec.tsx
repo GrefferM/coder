@@ -22,7 +22,7 @@ function standing(patch: Partial<AgentStanding> = {}): AgentStanding {
 
 describe("StandingPill", () => {
   it("says nothing where the record and the project call the agent the same", () => {
-    // Most runs are this one, and a rule said on every screen stops being read.
+    // Renders nothing when the record and the project agree.
     const { container } = render(<StandingPill standing={standing()} />);
 
     expect(container).toBeEmptyDOMElement();
@@ -43,7 +43,7 @@ describe("StandingPill", () => {
   });
 
   it("wears a solid border for a renamed agent: it stands in the project, only under another name", () => {
-    // The language: solid is a state that is, dashed is something the project does not have.
+    // Solid is a state that exists, dashed is something the project does not have.
     const { container } = render(
       <StandingPill
         standing={standing({
@@ -87,7 +87,7 @@ describe("StandingPill", () => {
   });
 
   it("writes the recorded name in the capitals every name on a canvas is drawn in", () => {
-    // The sphere's own label is upper-cased; a name beside it in its typed case would read as another name.
+    // The name is upper-cased like the sphere's label.
     const { container } = render(
       <StandingPill
         standing={standing({

@@ -58,7 +58,7 @@ describe("MCP_IPC_CHANNELS", () => {
     });
 
     assert.ok(received[0] instanceof LookMcpServerDto);
-    // The nested one is rebuilt too: a check on a plain object inside a DTO reads nothing and refuses everything.
+    // The nested server is rebuilt too.
     assert.ok((<LookMcpServerDto>received[0]).server instanceof ProjectMcpServerDto);
     assert.equal((<LookMcpServerDto>received[0]).server.run, "npx server-filesystem .");
   });
@@ -75,7 +75,7 @@ describe("MCP_IPC_CHANNELS", () => {
   });
 
   it("rebuilds every door of the keychain, so an id that is not one is refused at the door", async () => {
-    // These three carry what opens a server, and a plain object inside a DTO checks nothing.
+    // These three carry what opens a server.
     const received: unknown[] = [];
     const controller = controllerRecording(received);
 

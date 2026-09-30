@@ -1,6 +1,6 @@
 import type { Agent, ProjectConfig } from "../../../interfaces";
 
-/** The agents whose lines come into this one, in the order the lines stand in the project file. */
+/** The agents whose lines come into this one, in project-file order. */
 export function suppliersOf(config: ProjectConfig, agentId: string | null): Agent[] {
   return config.links
     .filter((link) => link.to === agentId)

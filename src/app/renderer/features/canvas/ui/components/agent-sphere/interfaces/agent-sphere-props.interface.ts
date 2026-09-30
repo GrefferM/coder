@@ -5,8 +5,8 @@ import type { SpherePlace } from "./sphere-place.interface";
 import type { SphereWearing } from "./sphere-wearing.interface";
 
 /**
- * One agent's sphere: the agent itself, and four parts named after what each decides — where it is drawn,
- * what it wears, what it is doing this moment, and every hand on it.
+ * One agent's sphere: the agent, and four parts: where it is drawn, what it wears, what it is doing, and every act on
+ * it.
  */
 export interface AgentSphereProps {
   agent: Agent;

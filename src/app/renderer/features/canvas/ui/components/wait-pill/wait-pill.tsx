@@ -23,7 +23,7 @@ import type { WaitPillProps } from "./interfaces";
 
 /** «●●● ЧЕКАЄ LINTER · ВІДПОВІВ 1 З 2» under the sphere's labels; catches no pointer. */
 export function WaitPill({ awaitedNames, isAwaitingRepeat, answered, ofSuppliers, color }: WaitPillProps) {
-  // With the walk broken, no supplier is on its way — the pill names what will end the wait.
+  // When the walk is broken no supplier is coming; the pill names the repeat.
   const awaited = isAwaitingRepeat ? WAIT_PILL_REPEAT_WORD : awaitedNames.join(WAIT_PILL_NAME_SEPARATOR);
 
   return (

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { nextScaleStop, scaleStopAtMost } from "./scale-stops";
 
-/** The canvas's own: a plain grid of tens, floor and ceiling standing on it like every other stop. */
+/** The canvas's stops: a grid of tens, with floor and ceiling on it. */
 const STOPS = {
   min: 0.3,
   max: 1,
@@ -29,8 +29,7 @@ describe("nextScaleStop", () => {
   });
 
   it("keeps its footing where the step divides into a bound inexactly", () => {
-    // A step of a tenth is not exact in binary, so a scale on a stop can read a hair off it; the slack is what makes
-    // a press near a bound move.
+    // A tenth is inexact in binary, so a scale can sit a hair off its stop; the slack lets a press near a bound move.
     expect(nextScaleStop(0.30000000000000004, -1, STOPS)).toBeCloseTo(0.3);
     expect(nextScaleStop(0.30000000000000004, 1, STOPS)).toBeCloseTo(0.4);
   });

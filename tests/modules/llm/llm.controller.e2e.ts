@@ -30,7 +30,7 @@ function controller(): LlmController {
   return new LlmController(service);
 }
 
-/** A turn as the boundary builds it: a real dto, since a plain object carries no rules to read. */
+/** A turn as the boundary builds it: a real dto, since a plain object carries no rules. */
 function turn(patch: Record<string, unknown> = {}): AskAgentDto {
   return Object.assign(new AskAgentDto(), {
     turnId: "turn-1",
@@ -49,9 +49,9 @@ function turn(patch: Record<string, unknown> = {}): AskAgentDto {
       },
     ],
     tools: [],
-    // Frame 36a: the reach of every declared server rides with the ask; a project with none says so.
+    // The reach of every declared server rides with the ask; empty when none.
     servers: [],
-    // Every agent reachable as a tool from this one; a project with none to reach says so.
+    // Every agent reachable as a tool from this one; empty when none.
     agents: [],
     ...patch,
   });
@@ -78,14 +78,14 @@ describe("LlmController", () => {
       }),
     );
 
-    // The payload is a dto instance, so it is asked about field by field: deep equality would compare the shapes too.
+    // The payload is a dto instance, so fields are asserted one by one; deep equality would compare shapes too.
     assert.equal(asked.length, 1);
     assert.equal(asked[0].name, "stop");
     assert.equal((<StopAgentDto>asked[0].with).turnId, "turn-1");
   });
 
   it("refuses a temperature outside the bounds the form itself holds", async () => {
-    // Frame 4e: the field on screen cannot hold such a number, so nothing that does may reach a provider.
+    // A number the screen field cannot hold never reaches a provider.
     await assert.rejects(() =>
       controller().ask(
         turn({
@@ -104,7 +104,7 @@ describe("LlmController", () => {
   });
 
   it("refuses a turn with nothing said in it", async () => {
-    // A turn with no messages would spend a call and a key on nothing at all.
+    // A turn with no messages is refused, sparing a call and a key.
     await assert.rejects(() =>
       controller().ask(
         turn({

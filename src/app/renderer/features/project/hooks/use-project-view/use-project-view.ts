@@ -3,7 +3,7 @@ import { rememberProjectView } from "../../api";
 import { PROJECT_VIEW_SETTLE_MS } from "./constants";
 import type { ProjectView } from "../../../../interfaces";
 
-/** This machine's note of where it is looking in the open project, written once the view has stood still. */
+/** This machine's note of where it is looking in the open project, written once the view settles. */
 export function useProjectView(directory: string): (view: ProjectView) => void {
   const settling = useRef<number | null>(null);
   const wanted = useRef<ProjectView | null>(null);
@@ -16,7 +16,7 @@ export function useProjectView(directory: string): (view: ProjectView) => void {
     }
 
     wanted.current = null;
-    // A failed note is swallowed: the view is a convenience, not the project.
+    // A failed note is swallowed; the view is a convenience, not the project.
     void rememberProjectView(directory, view).catch(() => undefined);
   }, [directory]);
 

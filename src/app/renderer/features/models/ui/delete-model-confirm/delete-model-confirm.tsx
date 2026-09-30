@@ -18,7 +18,7 @@ import {
 } from "./constants";
 import type { DeleteModelConfirmProps } from "./interfaces";
 
-/** Model deletion — agents on it go along, in the danger tone; nobody on it, the question quieter. */
+/** Model deletion: with agents, they go along in the danger tone; without, a quieter question. */
 export function DeleteModelConfirm({ title, agents, onConfirm, onDismiss }: DeleteModelConfirmProps) {
   const isEmpty = agents.length === 0;
 
@@ -31,9 +31,9 @@ export function DeleteModelConfirm({ title, agents, onConfirm, onDismiss }: Dele
       }
       tone={isEmpty ? "calm" : "danger"}
       yesLabel={isEmpty ? DELETE_MODEL_EMPTY_YES_LABEL : undefined}
-      // Taking a declaration away is not the act the box is for, so it stands outlined.
+      // Deleting a bare declaration is outlined, not destructive.
       yesVariant={isEmpty ? "outlined" : undefined}
-      // Nothing behind the box is going, so nothing behind it darkens.
+      // Nothing behind the box is going, so no scrim.
       hasScrim={!isEmpty}
       onConfirm={onConfirm}
       onDismiss={onDismiss}

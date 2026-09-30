@@ -1,7 +1,7 @@
 import type { FunctionRow } from "../../../interfaces";
 import type { McpLook, ProjectMcpServer } from "../../../../../interfaces";
 
-/** One server as a step of the MCP tab: everything it is, with nothing folded away. */
+/** One server as a step of the MCP tab. */
 export interface ServerPageProps {
   server: ProjectMcpServer;
   look: McpLook | null;
@@ -9,11 +9,11 @@ export interface ServerPageProps {
   rows: FunctionRow[];
   /** «N АГ.» — how many agents hold any function of this server. */
   agentCount: number;
-  /** It is being raised right now — the page says so and offers nothing about the process. */
+  /** It is being raised right now; no process action is offered. */
   isAsking: boolean;
   /** «ЗАПУСТИТИ» and «ПЕРЕЗАПУСТИТИ»: let the process go and raise it afresh. */
   onRestart: () => void;
-  /** «ПЕРЕПИТАТИ»: a remote server is a connection, so its list is asked for again and nothing dies. */
+  /** «ПЕРЕПИТАТИ»: asks a remote server for its list again. */
   onAskAgain: () => void;
   onBack: () => void;
   onEdit: () => void;

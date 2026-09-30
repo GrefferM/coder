@@ -19,7 +19,7 @@ export const ACTION_BUTTON_CANCEL_LIT_BACKGROUND_COLOR = "#1b1f2c";
 export const ACTION_BUTTON_CANCEL_LIT_BORDER_COLOR = "#38a3ff";
 export const ACTION_BUTTON_CANCEL_LIT_TEXT_COLOR = FIRST_LEVEL_TEXT_COLOR;
 
-/** The outlined accent action — an act that carries the accent without claiming the eye. */
+/** The outlined accent action. */
 export const ACTION_BUTTON_OUTLINED_BORDER_COLOR = BORDER_AT_REST_COLOR;
 export const ACTION_BUTTON_OUTLINED_TEXT_COLOR = "#38a3ff";
 export const ACTION_BUTTON_OUTLINED_LIT_BACKGROUND_COLOR = "#1b1f2c";

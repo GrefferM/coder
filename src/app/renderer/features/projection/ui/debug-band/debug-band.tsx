@@ -14,7 +14,7 @@ import {
 } from "./constants";
 import type { DebugBandProps } from "./interfaces";
 
-/** «ДЕБАҐ ЗАПУСКУ» over the question it belongs to — the way into that pass's flat projection. */
+/** «ДЕБАҐ ЗАПУСКУ» over its question: the way into that pass's flat projection. */
 export function DebugBand({ onOpen }: DebugBandProps) {
   const open = useInteraction();
 

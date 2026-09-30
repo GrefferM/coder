@@ -1,4 +1,4 @@
-/** Create action — outlined in the footer, filled in an empty section. */
+/** Create action: outlined in the footer, filled in an empty section. */
 export const CATALOGUE_ACTION_BORDER_RADIUS_PX = 9;
 export const CATALOGUE_ACTION_FONT_SIZE_PX = 12.5;
 export const CATALOGUE_ACTION_GAP_PX = 8;

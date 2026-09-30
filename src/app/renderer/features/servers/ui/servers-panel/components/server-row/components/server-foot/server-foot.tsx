@@ -15,9 +15,8 @@ import {
 import type { ServerFootProps } from "./interfaces";
 
 /**
- * «Змінити» is not one of the state's actions, so it never stands in the head of a row, where at most one
- * action lives. It stands here, in the foot of the opened card, in the same place in every state — beside the
- * words of the failure on a fallen row. «Видалити» stands to its right and is not built yet.
+ * The foot of the opened card: «Змінити» in the same place in every state, with «Видалити» to its right (not built
+ * yet).
  */
 export function ServerFoot({ onEdit, onDelete }: ServerFootProps) {
   const { isLit, handlers } = useInteraction();
@@ -29,7 +28,7 @@ export function ServerFoot({ onEdit, onDelete }: ServerFootProps) {
         gap: SERVER_FOOT_GAP_PX,
       }}
     >
-      {/* Its own button rather than a bordered box around a text action: only then is the padding its own too. */}
+      {/* Its own button, so the padding is its own too. */}
       <button
         type="button"
         onClick={onEdit}
@@ -50,7 +49,7 @@ export function ServerFoot({ onEdit, onDelete }: ServerFootProps) {
       >
         {SERVER_EDIT_LABEL}
       </button>
-      {/* A bare word beside the framed one — their weights differ, and the red belongs to the box. */}
+      {/* A bare word beside the framed one; the red belongs to the box. */}
       <TextAction label={SERVER_DELETE_LABEL} onClick={onDelete} />
     </div>
   );

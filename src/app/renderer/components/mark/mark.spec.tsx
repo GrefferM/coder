@@ -34,7 +34,7 @@ describe("Mark", () => {
   it("spaces by an em where a mark is spaced against its own size", () => {
     render(<Mark spacing="0.12em">ШАБЛОН</Mark>);
 
-    // The computed style resolves an em to pixels, so what the mark declared is what is read here.
+    // The computed style resolves an em to pixels, so the declared value is read.
     expect(screen.getByText("ШАБЛОН").style.letterSpacing).toBe("0.12em");
   });
 
@@ -45,7 +45,7 @@ describe("Mark", () => {
   });
 
   it("keeps its own case where the mark says a whole sentence, a price or a path", () => {
-    // Upper case is the mark's own voice, and a sentence is not spoken in it.
+    // A sentence is not upper-cased.
     render(<Mark isUpperCase={false}>Каталог провайдера, як він відповів</Mark>);
 
     const mark = screen.getByText("Каталог провайдера, як він відповів");

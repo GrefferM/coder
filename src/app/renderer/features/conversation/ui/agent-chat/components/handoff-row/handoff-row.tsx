@@ -13,8 +13,8 @@ import {
 import type { HandoffRowProps } from "./interfaces";
 
 /**
- * «EDITOR ПЕРЕДАЄ → REVIEWER», each name in its colour and the arrow in the sender's; with `reason`, dashed.
- * With no sender the row is about one agent alone: «ПИТАННЯ НЕ ПІШЛО ⇢ EDITOR · ВИМКНЕНИЙ».
+ * «EDITOR ПЕРЕДАЄ → REVIEWER»: each name in its colour, the arrow in the sender's; dashed with `reason`. Without a
+ * sender the row concerns one agent: «ПИТАННЯ НЕ ПІШЛО ⇢ EDITOR · ВИМКНЕНИЙ».
  */
 export function HandoffRow({ word, fromName, fromColor, name, color, reason }: HandoffRowProps) {
   const isStopped = reason !== null;

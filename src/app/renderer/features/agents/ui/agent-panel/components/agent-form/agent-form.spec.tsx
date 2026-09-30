@@ -24,7 +24,7 @@ describe("AgentForm", () => {
   });
 
   it("writes nothing while either is missing, and marks the one that is", async () => {
-    // An agent stands on a model, so a nameless or model-less one is not written at all.
+    // A nameless or model-less agent is not written.
     const onCreate = vi.fn();
 
     render(<AgentForm models={[flash]} agents={[]} onCreate={onCreate} onCancel={() => {}} />);
@@ -72,7 +72,7 @@ describe("AgentForm", () => {
     await userEvent.click(screen.getByText(AGENT_FORM_CREATE_LABEL));
 
     expect(await screen.findByText("Не вдалося записати файл проєкту")).toBeInTheDocument();
-    // What was typed stands where it was: a refused write must not take the person's words with it.
+    // A refused write keeps what was typed.
     expect(screen.getByLabelText(AGENT_FORM_NAME_LABEL)).toHaveValue("Шукач");
   });
 

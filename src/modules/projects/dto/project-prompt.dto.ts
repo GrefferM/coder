@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, IsUUID } from "class-validator";
 
-/** One prompt; `file` is the body's path relative to the project folder, `text` the body itself. */
+/** A prompt; `file` is the body's path relative to the project folder, `text` the body. */
 export class ProjectPromptDto {
   @IsUUID()
   declare id: string;

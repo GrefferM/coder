@@ -1,9 +1,6 @@
 import { CANVAS_GRAIN_IMAGE, CANVAS_GRAIN_OPACITY } from "../../../constants";
 
-/**
- * The grain over the whole field: a drawing and nothing else — it takes no pointer, knows no state, and is here
- * only so the canvas's own file stays about what happens on it rather than about what it looks like.
- */
+/** The grain over the whole field: a pure drawing, no pointer, no state. */
 export function CanvasGrain() {
   return (
     <span

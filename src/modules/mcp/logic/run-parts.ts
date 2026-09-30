@@ -1,19 +1,15 @@
 /**
- * The line that starts a local server, split into the program and its arguments. Started as a process and not
- * through a shell — a shell would only add a way for a line to mean something other than it says — with quotes
- * honoured, because a folder with a space in its name is ordinary.
- *
- * A quote that is never closed is not a quote: an apostrophe stands in people's paths. So where honouring quotes
- * leaves one hanging, the line is split again with none.
+ * The line that starts a local server, split into program and arguments. Run as a process, not through a shell; quotes
+ * are honoured. An unclosed quote is not a quote, so the line is then split again without quotes.
  */
 export function runParts(run: string): string[] {
   const quoted = split(run, true);
 
-  // The second pass cannot leave a quote open, since it reads none.
+  // The second pass reads no quotes, so it cannot leave one open.
   return quoted ?? <string[]>split(run, false);
 }
 
-/** One pass; nothing at all where a quote is left open and the caller must go round again. */
+/** One pass; `null` where a quote is left open and the caller must go round again. */
 function split(run: string, honourQuotes: boolean): string[] | null {
   const parts: string[] = [];
   let standing = "";
@@ -32,7 +28,7 @@ function split(run: string, honourQuotes: boolean): string[] | null {
     }
 
     if (honourQuotes && (letter === '"' || letter === "'")) {
-      // A quote opens a part even where nothing stands inside it: `--root ""` passes one empty argument.
+      // A quote opens a part even when empty: `--root ""` passes one empty argument.
       quote = letter;
       isOpen = true;
 

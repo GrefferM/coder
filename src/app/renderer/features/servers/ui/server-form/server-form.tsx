@@ -35,9 +35,8 @@ import { NAME_TAKEN_COMMAND_NOTE } from "../../../../constants";
 import type { ServerFormProps } from "./interfaces";
 
 /**
- * The one form both kinds of server are declared in. The switch in its head decides which
- * half is asked for; the other half keeps whatever was typed in it, because changing one's mind must cost nothing,
- * and the file is written with only the half this server actually is.
+ * The one form both kinds of server are declared in. The head switch picks the half asked for; the other half keeps
+ * what was typed, and the file is written with only the half this server is.
  */
 export function ServerForm({
   values,
@@ -64,21 +63,19 @@ export function ServerForm({
 
   const isTaken = nameTaken(values.name, takenNames);
   const isMissing = (value: string) => wasTried && !value.trim();
-  // What stands in the token field — nothing anybody typed, and so the hint of what is already there.
+  // The token field's hint of what is already held, as nothing was typed.
   const token = secrets[""];
   const isTokenHeld = token === undefined && held.token !== null;
 
   /**
-   * What is typed stays, and the field refuses in words. A server's rule is its own — the dash is
-   * legal, because this name never reaches a model — and it answers for what is typed here and not for what
-   * stands in the file: a name this app once accepted is the file's truth, and refusing it now would hold the
-   * run line hostage to renaming the server.
+   * Typed text stays and the field refuses in words. The name rule is checked on what is typed, not on the file: an
+   * already accepted name is the file's truth, so it does not block the run line.
    */
   const opened = useRef(values.name);
   const isNameWrong = isServerNameWrong(values.name) && values.name !== opened.current;
 
   async function save() {
-    // Pressing with something missing marks it rather than refusing in words nobody asked for.
+    // Pressing with something missing marks the field, without a refusal in words.
     if (serverBlocker(values).length > 0 || isTaken || isNameWrong) {
       setWasTried(true);
 
@@ -174,7 +171,7 @@ export function ServerForm({
             ]}
             onChoose={(signIn) =>
               onChange({
-                // The row offers exactly these two, so the answer is one of them and no cast says it.
+                // The row offers exactly these two, so no cast is needed.
                 signIn: signIn === "token" ? "token" : "none",
               })
             }
@@ -183,7 +180,7 @@ export function ServerForm({
             <Field
               label={SERVER_FORM_TOKEN_LABEL}
               value={token ?? ""}
-              // The hint stands until somebody types or presses the cross; after that the field is plainly empty.
+              // The hint stays until something is typed or the cross is pressed.
               placeholder={isTokenHeld ? (held.token ?? "") : SERVER_FORM_TOKEN_PLACEHOLDER}
               note={held.token === null ? undefined : SERVER_FORM_SECRET_NOTE}
               isMono

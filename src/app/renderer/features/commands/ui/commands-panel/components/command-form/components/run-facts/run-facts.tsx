@@ -15,10 +15,7 @@ import {
 } from "../../constants";
 import type { JSX } from "react";
 
-/**
- * Where the border of responsibility runs, said once under the line it is about. It wears a field's own
- * skin because it belongs to the form: a block sunk into the panel's floor reads as a footnote, and this is not one.
- */
+/** Where responsibility ends, said once under the run line, in a field's own skin because it belongs to the form. */
 export function RunFacts(): JSX.Element {
   return (
     <div

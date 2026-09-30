@@ -1,5 +1,5 @@
 export interface PassSwitchProps {
-  /** Which pass of the flow stands open, counted from one, and how many passes there are. */
+  /** The open pass's position in the flow, from one, and the number of passes. */
   place: number;
   count: number;
   onGo: (place: number) => void;

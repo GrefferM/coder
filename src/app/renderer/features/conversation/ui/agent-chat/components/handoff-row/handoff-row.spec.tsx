@@ -21,7 +21,7 @@ describe("HandoffRow", () => {
       />,
     );
 
-    // The row stands over the turn it started, so whose work is moving has to be said.
+    // The row names whose work is moving.
     expect(screen.getByText(HANDOFF_ROW_LABEL)).toBeInTheDocument();
     expect(screen.getByText("EDITOR")).toHaveStyle({
       color: "#b18aff",
@@ -46,7 +46,7 @@ describe("HandoffRow", () => {
     expect(screen.getByText(HANDOFF_ROW_STOPPED_LABEL)).toBeInTheDocument();
     expect(screen.getByText(/вимкнений/)).toBeInTheDocument();
 
-    // A line nothing went down carries no colour, at either end of it.
+    // A line nothing went down has no colour at either end.
     expect(screen.getByText("REVIEWER")).toHaveStyle({
       color: HANDOFF_ROW_STOPPED_COLOR,
     });
@@ -66,10 +66,10 @@ describe("HandoffRow", () => {
       />,
     );
 
-    // The person's own question has no sender, so «НЕ ПЕРЕДАЄ» would be somebody else's word.
+    // The person's own question has no sender, so no «НЕ ПЕРЕДАЄ».
     expect(screen.getByText(HANDOFF_ROW_NOT_SENT_LABEL)).toBeInTheDocument();
     expect(screen.queryByText(HANDOFF_ROW_STOPPED_LABEL)).not.toBeInTheDocument();
-    // The one it was for keeps its own colour: the word is about that agent, not about the conversation.
+    // The agent it was for keeps its own colour.
     expect(screen.getByText("EDITOR")).toHaveStyle({
       color: "#38a3ff",
     });

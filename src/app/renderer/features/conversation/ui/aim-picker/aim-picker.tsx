@@ -23,20 +23,20 @@ import {
 import { AimButton, AimRow, AimSearch } from "./components";
 import type { AimPickerProps } from "./interfaces";
 
-/** Whom the chat is aimed at — said in the header, and chosen there when a sphere is far. */
+/** Whom the chat is aimed at: shown in the header, chosen there. */
 export function AimPicker({ agents, aimedAgentId, onAim }: AimPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [asked, setAsked] = useState("");
   const box = useRef<HTMLDivElement>(null);
   const aimed = agents.find((agent) => agent.id === aimedAgentId) ?? null;
-  // The search comes with the thirteenth agent — a list of eight is read at a glance.
+  // Search appears from the thirteenth agent.
   const hasSearch = agents.length >= AIM_PICKER_SEARCH_FROM;
   const found = agents.filter((agent) => agent.name.toLowerCase().includes(asked.trim().toLowerCase()));
-  // The project's own order, and the ones switched off together at the end of it.
+  // The project's order, with switched-off agents together at the end.
   const walkable = [...found.filter((agent) => agent.isActive), ...found.filter((agent) => !agent.isActive)];
   const offAt = found.filter((agent) => agent.isActive).length;
 
-  // The arrows walk the rows while the typing stays in the field, and it opens on the one aimed at.
+  // Arrows walk the rows while typing stays in the field; opens on the aimed agent.
   const walk = useListWalk(
     walkable.length,
     isOpen,
@@ -65,7 +65,7 @@ export function AimPicker({ agents, aimedAgentId, onAim }: AimPickerProps) {
     onAim(agentId);
   }
 
-  /** An open list answers Escape itself; the walk and Enter are the list's own rule. */
+  /** An open list handles Escape itself; the walk and Enter are the list's own. */
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === "Escape") {
       setIsOpen(false);

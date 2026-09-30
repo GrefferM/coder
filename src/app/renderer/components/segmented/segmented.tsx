@@ -18,13 +18,13 @@ import {
 } from "./constants";
 import type { SegmentedProps } from "./interfaces";
 
-/** Segmented choice — options on one track, or as chips for machine-read names. */
+/** Segmented choice: options on one track, or as chips for machine-read names. */
 export function Segmented<Value extends string>({ options, value, onChange, isChips = false }: SegmentedProps<Value>) {
   const [pointedAtValue, setPointedAtValue] = useState<Value | null>(null);
 
   return (
     <div
-      // The row is one value, so the keyboard stops on the chosen option and the arrows move it.
+      // The row is one value: the keyboard stops on the chosen option and arrows move it.
       data-choice
       className="d-flex"
       style={{
@@ -37,7 +37,7 @@ export function Segmented<Value extends string>({ options, value, onChange, isCh
     >
       {options.map((option) => {
         const isChosen = option.value === value;
-        // An unchosen option brightens its text on hover, with no background.
+        // An unchosen option brightens its text on hover, no background.
         const isLit = pointedAtValue === option.value;
 
         return (

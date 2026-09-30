@@ -3,12 +3,12 @@ import { keepInSight } from "../../utils/sight";
 import type { ListWalk, WalkedKey } from "./interfaces";
 
 /**
- * A list that opens is walked — the arrows move along the rows and Enter takes the one they stand on. It
- * opens standing on `from`, which is the row already chosen where there is one.
+ * An open list is walked: arrows move along the rows, Enter takes the current one. It opens on `from`, the already
+ * chosen row if any.
  */
 export function useListWalk(count: number, isOpen: boolean, onEnter: (index: number) => void, from = 0): ListWalk {
   const [walked, setWalked] = useState(from);
-  // Ref mirrors state: the row to open on is read when the list opens, and the walk is the person's own after that.
+  // The opening row is read once when the list opens; the walk is the person's after that.
   const opensOn = useRef(from);
 
   opensOn.current = from;
@@ -17,7 +17,7 @@ export function useListWalk(count: number, isOpen: boolean, onEnter: (index: num
     setWalked(opensOn.current);
   }, [isOpen]);
 
-  // Only the walked row holds this, so React calls it the moment the walk arrives at a row.
+  // Held by the walked row only, so React calls it as the walk arrives.
   const walkedRow = useCallback((node: HTMLElement | null) => {
     if (node !== null) {
       keepInSight(node);

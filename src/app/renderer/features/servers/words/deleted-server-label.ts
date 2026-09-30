@@ -1,7 +1,7 @@
 import { ukrainianPlural } from "../../../utils/text";
 import { DELETED_SERVER_GONE_FORMS, DELETED_SERVER_GRANT_FORMS, DELETED_SERVER_LABEL } from "../constants";
 
-/** The undo line's shape, for a server: the undo line names the grants that went with it. */
+/** The undo line for a server, naming the grants that went with it. */
 export function deletedServerLabel(grants: number): string {
   if (grants === 0) {
     return DELETED_SERVER_LABEL;

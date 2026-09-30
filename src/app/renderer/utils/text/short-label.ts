@@ -1,6 +1,6 @@
 import { LABEL_CUT_MARK } from "./constants";
 
-/** A label cut to the room a head has for it: past that many letters it ends in an ellipsis. */
+/** A label cut to `most` letters, ending in an ellipsis when longer. */
 export function shortLabel(label: string, most: number): string {
   if (label.length <= most) {
     return label;

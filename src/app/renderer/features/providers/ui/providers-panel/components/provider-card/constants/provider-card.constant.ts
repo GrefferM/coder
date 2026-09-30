@@ -28,13 +28,13 @@ export const PROVIDER_CARD_BADGE_COLOR = CONTROL_AT_REST_COLOR;
 export const PROVIDER_CARD_BADGE_FONT_SIZE_PX = 9;
 export const PROVIDER_CARD_BADGE_LETTER_SPACING_PX = 1;
 
-/** A field for each thing the provider asks for — a key, an address, or both — its hint in the placeholder. */
+/** A field per thing the provider asks for, a key, an address or both, with its hint as placeholder. */
 export const PROVIDER_CARD_KEY_LABEL = "КЛЮЧ";
 export const PROVIDER_CARD_KEY_PLACEHOLDER = "sk-…";
 export const PROVIDER_CARD_ADDRESS_LABEL = "АДРЕСА";
 export const PROVIDER_CARD_KEY_NOTE = "Порожнє поле прибирає ключ із цієї машини.";
 export const PROVIDER_CARD_ADDRESS_NOTE = "Порожнє поле означає звичну адресу.";
-/** A provider with no customary address of its own: the person's own endpoint, written as its page gives it. */
+/** For a provider with no customary address: the person's own endpoint, in the shape its page gives. */
 export const PROVIDER_CARD_ADDRESS_PLACEHOLDER = "https://api.runpod.ai/v2/…";
 export const PROVIDER_CARD_OWN_ADDRESS_NOTE =
   "Корінь точки зі сторінки провайдера; решту шляху застосунок дописує сам.";

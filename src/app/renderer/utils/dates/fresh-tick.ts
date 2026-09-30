@@ -9,11 +9,8 @@ import {
 } from "./constants";
 
 /**
- * How long until a line on the freshness scale is worth reading again — a minute while it counts in
- * minutes, an hour while it counts in hours or days, and **never** once it says a date.
- *
- * Nothing here beats every second: a second-by-second line would be a running clock, and a running clock belongs
- * to what is running now and not to how fresh something is.
+ * Milliseconds until a freshness line is worth re-reading: a minute while counting minutes, an hour while counting
+ * hours or days, `null` once it shows a date.
  */
 export function freshTick(at: number, now: number): number | null {
   const minutes = Math.max(0, Math.floor((now - at) / MS_IN_SECOND / SECONDS_IN_MINUTE));

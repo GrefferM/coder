@@ -16,7 +16,7 @@ describe("RailButton", () => {
   });
 
   it("says «згорнути панель» once its own section stands open, since that is what a press does then", () => {
-    // The button of the open section is the way out of it, and says so.
+    // The open section's button closes it, and says so.
     render(<RailButton glyph={null} label="Агенти" isActive side="right" onSelect={() => {}} />);
 
     expect(
@@ -44,7 +44,7 @@ describe("RailButton", () => {
 
     rerender(<RailButton glyph={null} label="Агенти" isActive={false} side="left" onSelect={() => {}} />);
 
-    // The rail stands at an edge, so a tooltip on the other side would open off the window.
+    // The tooltip opens inwards, away from the window edge.
     expect(screen.getByText("Агенти").style.left).not.toBe("");
   });
 

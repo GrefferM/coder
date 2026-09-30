@@ -9,7 +9,7 @@ import {
 } from "../../constants";
 import type { TroublePillProps } from "./interfaces";
 
-/** The dashed pill under the name — what is missing, said in a word. */
+/** The dashed pill under the name saying in a word what is missing. */
 export function TroublePill({ label, isBreak }: TroublePillProps) {
   return (
     <span

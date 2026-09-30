@@ -8,7 +8,7 @@ import {
 import type { ChatTabsProps, TabRow } from "./interfaces";
 import { ForgetAll, Fresh, Tab } from "./components";
 
-/** The stream and the history stand as two tabs of the one section. */
+/** The stream and the history as two tabs of one section. */
 export function ChatTabs({ active, runs, isNews, onFresh, onForgetAll, onActiveChange }: ChatTabsProps) {
   const tabs: TabRow[] = [
     {
@@ -19,7 +19,7 @@ export function ChatTabs({ active, runs, isNews, onFresh, onForgetAll, onActiveC
     {
       id: "history",
       label: CHAT_TABS_HISTORY_LABEL,
-      // The dot stands on the list it speaks about, and goes out the moment that list is opened.
+      // The dot stands on the list it concerns and goes out when that list is opened.
       isNews: isNews && active !== "history",
     },
   ];

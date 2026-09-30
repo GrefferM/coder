@@ -6,7 +6,7 @@ import {
   DELETED_MODEL_NOTE_SUFFIX,
 } from "../constants";
 
-/** What the question takes — the model itself and the agents that dimmed behind it. */
+/** What the question takes: the model and the agents dimmed behind it. */
 export function deletedModelNote(title: string, agents: number): string {
   const [one, few, many] = DELETED_MODEL_NOTE_AGENT_FORMS;
 

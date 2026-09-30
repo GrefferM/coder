@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedCol
 import { PROJECT_ENTRY_TABLE_NAME } from "../constants";
 import { ProjectEntryRecord } from "../interfaces";
 
-/** The `project_entries` table row — one project this machine has opened. */
+/** A row of `project_entries`: one project this machine has opened. */
 @Entity(PROJECT_ENTRY_TABLE_NAME)
 export class ProjectEntryEntity implements ProjectEntryRecord {
   @PrimaryGeneratedColumn("uuid")
@@ -26,7 +26,7 @@ export class ProjectEntryEntity implements ProjectEntryRecord {
   })
   declare openedAt: Date;
 
-  // Where this machine was looking last time — the canvas's place and scale, and the open section.
+  // Last view on this machine: canvas place and scale, open section.
   @Column({
     type: "text",
     nullable: true,

@@ -3,6 +3,6 @@ import type { KeyboardEvent } from "react";
 export interface AimSearchProps {
   asked: string;
   onAsk: (asked: string) => void;
-  /** The keys belong to the list, so the field hands them straight back to it. */
+  /** Keys belong to the list; the field hands them back. */
   onKeyDown: (event: KeyboardEvent) => void;
 }

@@ -2,10 +2,8 @@ import { PROVIDER_NO_ADDRESS_LABEL, PROVIDER_NO_KEY_LABEL } from "../constants";
 import type { ProviderState } from "../../../interfaces";
 
 /**
- * What a provider still lacks before it can be called, in the words the catalogue says it in — and nothing
- * where it lacks nothing. Only what the provider itself asked for is looked at: a key is missing where there is
- * no hint of one, and an address where neither the person nor the provider's own customary one stands behind
- * the field, which is why a local provider is never short of an address.
+ * What a provider still lacks before it can be called, in the catalogue's words; empty when nothing. A key is missing
+ * with no hint of one; an address is missing where neither the person nor a customary one is behind it.
  */
 export function providerMissing(provider: ProviderState): string[] {
   const words = [];

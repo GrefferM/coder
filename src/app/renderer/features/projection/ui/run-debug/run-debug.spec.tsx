@@ -76,11 +76,11 @@ describe("RunDebug", () => {
       />,
     );
 
-    // The pass is named by its hour and its question, and no agent stands in that name.
+    // The pass is named by its hour and question, not by an agent.
     expect(screen.getByText("Прогін · 15:41")).toBeInTheDocument();
     expect(screen.getByText("Додай кешування у fetchUser і онови тести")).toBeInTheDocument();
     expect(screen.getByText(runStateLabel(RUN_DONE))).toBeInTheDocument();
-    // «3 хв 06 · 2 КРОКИ · 1 200 ТКН · $0.21» — the whole run in one line.
+    // The whole run in one line: «3 хв 06 · 2 КРОКИ · 1 200 ТКН · $0.21».
     expect(screen.getByText(/2 КРОКИ · 1 200 ТКН · \$0\.21/)).toBeInTheDocument();
   });
 
@@ -105,7 +105,7 @@ describe("RunDebug", () => {
       />,
     );
 
-    // The second step stands one level below the first, and that is the step it fell on.
+    // The second step is one level below the first, and is the step it fell on.
     expect(screen.getByText(runStateLabel(RUN_FAILED, 2))).toBeInTheDocument();
   });
 
@@ -167,7 +167,7 @@ describe("RunDebug", () => {
       />,
     );
 
-    // «‹ ПИТАННЯ 2 З 2 ›» — the passes of this flow, in the order they were asked.
+    // «‹ ПИТАННЯ 2 З 2 ›»: the flow's passes in the order asked.
     expect(screen.getByText("Питання 2 з 2")).toBeInTheDocument();
     screen.getByLabelText(PASS_SWITCH_BACK_LABEL).click();
 
@@ -190,7 +190,7 @@ describe("RunDebug", () => {
       />,
     );
 
-    // The edge of the flow is seen on the arrow itself, so it is never tried by mistake.
+    // The flow's edge shows on the arrow as disabled.
     expect(screen.getByLabelText(PASS_SWITCH_ON_LABEL)).toBeDisabled();
     screen.getByLabelText(PASS_SWITCH_ON_LABEL).click();
 

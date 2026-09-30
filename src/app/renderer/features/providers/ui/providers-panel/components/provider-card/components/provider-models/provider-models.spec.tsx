@@ -50,7 +50,7 @@ describe("ProviderModels", () => {
   });
 
   it("offers to take up an installed model the catalogue does not declare, and prices one it does", () => {
-    // What the machine has and what the project declared are two lists, and the row says which.
+    // The machine's models and the project's declared models are two lists; the row says which.
     render(
       <ProviderModels
         models={[installed("llama3"), installed("qwen3")]}
@@ -123,7 +123,7 @@ describe("ProviderModels", () => {
   });
 
   it("keeps the last list a silent provider gave, saying it is the last known", () => {
-    // Silence is not an empty machine, so what it last said stands, dimmed and named as old.
+    // Silence is not an empty machine: the last list stays, dimmed and marked old.
     render(
       <ProviderModels
         models={[installed("llama3")]}

@@ -1,9 +1,6 @@
-// Starts the renderer's Vite dev server, then launches Electron pointed at it — `npm run dev:app`
-// needs both running together, and neither `concurrently` nor `wait-on` sit in package.json, so a
-// short script does what they would.
+// Starts the renderer's Vite dev server, then launches Electron pointed at it.
 //
-// Vite itself ships ESM-only, so its Node API is loaded through a dynamic `import()` rather than
-// `require()`, even from this otherwise-CommonJS script.
+// Vite is ESM-only, so its Node API is loaded with dynamic `import()` from this CommonJS script.
 const path = require("node:path");
 const { spawn } = require("node:child_process");
 

@@ -14,11 +14,11 @@ import {
 import type { RunCallEntity, RunEntity, RunQuestionEntity, RunStepEntity } from "../entities";
 import type { CallPlace, ChatStopReason, Run, RunStore, RunWhole, WholeCall, WholeStep } from "../interfaces";
 
-/** The record as it is read back — the list of runs, and one run whole. */
+/** The record read back: the run list and one run whole. */
 export class RunReader {
   constructor(private readonly store: RunStore) {}
 
-  /** The project's runs, newest first, each with how many steps it took. */
+  /** The project's runs, newest first, each with its step count. */
   async list(directory: string): Promise<Run[]> {
     const rows = await this.store.runsIn(directory);
     const runs: Run[] = [];
@@ -27,11 +27,11 @@ export class RunReader {
       runs.push(this.toRun(row, await this.store.stepsOf(row.id), await this.store.askedIn(row.id)));
     }
 
-    // Newest first by the flow's last word — the reply that came back, or the question still out.
+    // Newest first by the flow's last word: the last reply, or the question still out.
     return runs.sort((one, other) => this.lastWord(other).getTime() - this.lastWord(one).getTime());
   }
 
-  /** One run opened — every step in the order it ran, every call inside it in its own. */
+  /** One run whole: steps in running order, calls within each. */
   async one(id: string): Promise<RunWhole | null> {
     const row = await this.store.runById(id);
 
@@ -50,23 +50,20 @@ export class RunReader {
 
     return {
       ...this.toRun(row, stood, asked),
-      // The flow's own questions, so a reader can group the walk by them and not by the clock.
+      // The flow's questions, so a reader can group the walk by them rather than by clock.
       questions: asked.map((question) => ({
         id: question.id,
         place: question.place,
         asked: question.asked,
         askedAt: question.askedAt,
-        // A question written before the record kept an addressee falls back to the agent the run started from.
+        // A question without an addressee falls back to the agent the run started from.
         askedAgentId: question.askedAgentId ?? row.startedByAgentId,
       })),
       walk,
     };
   }
 
-  /**
-   * Where one call stands, by its own id. Nothing is found for a call the record does not hold — a forgotten run
-   * takes its calls with it — and then «ПОКАЗАТИ ВИКЛИК» has nowhere to lead, and says so by not being there.
-   */
+  /** Where one call stands, by its id; null for a call the record does not hold (e.g. its run was forgotten). */
   async placeOfCall(callId: string): Promise<CallPlace | null> {
     const call = await this.store.callById(callId);
 
@@ -81,7 +78,7 @@ export class RunReader {
     };
   }
 
-  /** One step with everything written beside it: who ran it, on what, with what words, and what it did. */
+  /** One step with everything beside it: who ran it, on what, with what words, what it did. */
   private async toStep(row: RunStepEntity): Promise<WholeStep> {
     const made = await this.store.callsOf(row.id);
     const fed = await this.store.feedsOf(row.id);
@@ -141,9 +138,9 @@ export class RunReader {
       refusal: row.refusal,
       exitCode: row.exitCode,
       serverId: row.serverId,
-      // A call written before the record knew about servers has no name, and none is not an empty one.
+      // Empty string where the call has no server name.
       serverName: row.serverName ?? "",
-      // The end is where a server's «ні» is kept, so reading it back is reading that word.
+      // A server's «ні» is stored as the call's end.
       isFailed: row.end === RUN_CALL_SAID_NO,
       end: row.end,
       startedAt: row.startedAt,
@@ -151,9 +148,9 @@ export class RunReader {
     };
   }
 
-  /** One row of the history — the run, and what its steps add up to. */
+  /** One history row: the run and what its steps add up to. */
   private toRun(row: RunEntity, steps: RunStepEntity[], asked: RunQuestionEntity[]): Run {
-    // The row of the history is named by the last question of the flow, and dated by it.
+    // The row is named and dated by the flow's last question.
     const last = asked.at(-1) ?? null;
 
     return {
@@ -170,20 +167,19 @@ export class RunReader {
       worked: steps.reduce((sum, step) => sum + (step.endedAt.getTime() - step.startedAt.getTime()), 0),
       startedByAgentName: row.startedByAgentName,
       startedByAgentColor: row.startedByAgentColor,
-      // The head of the row names whom the flow was asked last, and the last question is who knows it.
-      // A question written before the record kept an addressee falls back to the agent the run started from — the
-      // only thing an older record can say, and what the migration wrote into those rows.
+      // Names whom the flow was last asked; a question without an addressee falls back to the agent the run started
+      // from.
       askedAgentId: last?.askedAgentId ?? row.startedByAgentId,
       askedAgentName: last?.askedAgentName ?? row.startedByAgentName,
     };
   }
 
-  /** The flow's last word — the reply that came back, or the question that is still out. */
+  /** The flow's last word: the last reply, or the question still out. */
   private lastWord(run: Run): Date {
     return run.endedAt ?? run.askedAt;
   }
 
-  /** How the flow stands — the state of its last turn, counted on every read. */
+  /** The flow's state: that of its last walk, counted on every read. */
   private stateOf(row: RunEntity, steps: RunStepEntity[]): string {
     if (row.endedAt === null) {
       return RUN_RUNNING;
@@ -194,15 +190,12 @@ export class RunReader {
       null,
     );
 
-    // A flow closed without a single step sent nothing anywhere — nothing fell, because nothing went.
+    // A flow closed with no step sent nothing, so nothing fell.
     if (last === null) {
       return RUN_NOT_SENT;
     }
 
-    // «the last turn» is the last walk, and a walk is not a line — one agent hands to two, the
-    // turns run beside each other and come back in whatever order they finish in. Reading only the one that came
-    // back last would let a branch that fell hide behind a branch that answered after it, and the row would say
-    // «ГОТОВО» over half a walk that never arrived. So every turn of that walk is read, not the latest of them.
+    // The last walk may branch, and turns finish in any order, so every turn of it is read, not just the latest.
     const walk = steps.filter((step) => step.walkId === last.walkId);
     const unanswered = walk.filter((step) => step.state !== RUN_STEP_DONE);
 
@@ -210,15 +203,13 @@ export class RunReader {
       return RUN_DONE;
     }
 
-    // A stop is a person's act, so a walk the person stopped is stopped and not fallen. Where one branch
-    // was stopped and another ended some other way, the other way is the news — a hand explains only what it stopped.
+    // A stop is a person's act, so a stopped walk is stopped, not fallen; when another branch ended otherwise, that
+    // outcome wins.
     if (unanswered.every((step) => step.state === RUN_STEP_STOPPED)) {
       return RUN_STOPPED;
     }
 
-    // Where the branches ended differently the worse word is taken, and «УПАВ» is worse than «НЕ ПІШОВ»
-    // — a turn that was sent and broke is news of a kind a turn that never left can never be. An end word this side
-    // does not know is a new end and not a gentle one, so it counts as a fall rather than quietly as nothing sent.
+    // Differing branches take the worse word: «УПАВ» over «НЕ ПІШОВ». An unknown end word counts as a fall.
     const fell = unanswered.filter(
       (step) => step.state !== RUN_STEP_STOPPED && !RUN_STEP_NOT_SENT_ENDS.includes(step.state),
     );
@@ -227,10 +218,7 @@ export class RunReader {
   }
 }
 
-/**
- * The base keeps the reason as text, and the two sides agree on two of them; anything else is a word
- * this side does not know, and a link with no reason it can name is a link that went through.
- */
+/** The reason is stored as text and only two values are known; anything else counts as a link that went through. */
 function stopReasonOf(said: string | null): ChatStopReason | null {
   return said !== null && CHAT_STOP_REASONS.includes(<ChatStopReason>said) ? <ChatStopReason>said : null;
 }

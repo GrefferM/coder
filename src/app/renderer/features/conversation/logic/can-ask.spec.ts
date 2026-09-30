@@ -11,7 +11,7 @@ describe("canAsk", () => {
   });
 
   it("sends nothing while the conversation walks: what is typed waits", () => {
-    // The hand under the field is «ЗУПИНИТИ», and the words stay where they were typed.
+    // The button under the field is «ЗУПИНИТИ» and the typed words stay.
     expect(canAsk("Прогони тести", "walking")).toBe(false);
   });
 

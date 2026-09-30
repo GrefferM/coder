@@ -23,7 +23,7 @@ describe("ToolRow", () => {
   });
 
   it("counts the fixed arguments, and says nothing where none are fixed", () => {
-    // A pinned argument leaves the model's schema, so the row says how many were taken out.
+    // The row shows how many pinned arguments left the model's schema.
     const { rerender } = render(<ToolRow name="open_pr" pinnedCount={0} onOpen={() => {}} />);
 
     expect(screen.queryByText("0")).not.toBeInTheDocument();

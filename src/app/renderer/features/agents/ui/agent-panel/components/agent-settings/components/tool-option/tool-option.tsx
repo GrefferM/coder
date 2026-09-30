@@ -20,7 +20,7 @@ import {
 } from "../../constants";
 import type { ToolOptionProps } from "./interfaces";
 
-/** One function in the open list; the tick both grants and revokes. */
+/** One function in the open list; the tick grants and revokes. */
 export function ToolOption({ name, isGranted, onToggle }: ToolOptionProps) {
   const { isLit, handlers } = useInteraction();
 

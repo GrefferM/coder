@@ -3,7 +3,7 @@ import { leadsBack } from "./leads-back";
 import { aConfig, aLink } from "../../../testing";
 import type { ProjectConfig } from "../../../interfaces";
 
-/** The project as nothing but its lines, which is all this question is about. */
+/** The project as only its lines. */
 function linked(pairs: [string, string][]): ProjectConfig {
   return aConfig({
     links: pairs.map(([from, to], index) =>
@@ -26,7 +26,7 @@ describe("leadsBack", () => {
   });
 
   it("follows the lines further along, so a ring of three is a ring", () => {
-    // The ring need not be next door — work handed down two lines still arrives where it started.
+    // The ring need not be adjacent: work handed down two lines still arrives where it started.
     expect(
       leadsBack(
         linked([
@@ -53,7 +53,7 @@ describe("leadsBack", () => {
   });
 
   it("answers «ні» about a ring that does not hold this agent, instead of walking it for ever", () => {
-    // The two agents ahead feed each other. Without the walked set the question would never come back with an answer.
+    // The two agents ahead feed each other; the walked set keeps the question from recursing forever.
     expect(
       leadsBack(
         linked([

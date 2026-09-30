@@ -29,10 +29,10 @@ export const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas(
     view.opening,
   );
 
-  // The view is reported up on every change; this machine notes it beside the open project.
+  // The view is reported on every change and noted beside the open project.
   const noteView = view.onChange;
 
-  // The hand itself is what this stands on — never the part holding it, which is a fresh object each render.
+  // Depends on the hand itself, not the part holding it, which is a fresh object each render.
   useEffect(() => {
     noteView({
       pan,
@@ -46,7 +46,7 @@ export const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas(
   const hasJustDraggedRef = useRef(false);
   const [centreClaim, setCentreClaim] = useState<Point | null>(null);
 
-  // Paste mark dismisses on the next press anywhere, in the capture phase.
+  // The paste mark dismisses on the next press anywhere (capture phase).
   useWindowDismiss(pasted !== null, agentActs.onPastedDismiss, "press", false);
   useImperativeHandle(handle, () => ({
     centre: () => centreClaim ?? ZOOM_UNMOVED,

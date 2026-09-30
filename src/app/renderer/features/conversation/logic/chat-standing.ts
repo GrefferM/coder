@@ -3,12 +3,8 @@ import { RUN_DONE, RUN_STEP_FAILED, RUN_STEP_SILENT, RUN_STEP_STOPPED, runStandi
 import type { ChatMessage } from "../interfaces";
 
 /**
- * How the conversation on screen stands, in the words the history uses — said once here so the dot over the live
- * stream and the dot in the row cannot drift apart.
- *
- * Every turn of the last walk is read, not the one that came back last: turns run beside each other and finish in
- * any order, so a fall must not hide behind an answer that came after it. A repeat is a walk of its own, so a
- * fall it has mended is not read again. Which word the walk comes to is `runStanding`'s rule, not this one's.
+ * How the conversation on screen stands, in the history's words, shared by the live-stream dot and the row dot. Every
+ * turn of the last walk is read, not just the last to return; the walk's word is `runStanding`'s rule.
  */
 export function chatStanding(messages: ChatMessage[]): string {
   const last = messages.findLast((message) => message.from === "agent") ?? null;
@@ -26,9 +22,9 @@ export function chatStanding(messages: ChatMessage[]): string {
   return runStanding(walk.map((message) => endOf(message)));
 }
 
-/** The end word this turn would have been written into the record with. */
+/** The end word this turn would be recorded with. */
 function endOf(message: ChatMessage): string {
-  // The family names its own end word for each reason, and that is the word the record would keep.
+  // The family names its own end word per reason; that is the recorded word.
   if (message.notStarted !== null) {
     return NOT_STARTED_ENDS[message.notStarted].state;
   }

@@ -74,9 +74,8 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
   },
   [RUNPOD_PROVIDER_ID]: {
     /**
-     * A serverless endpoint of the person's own, reached through its queue: the key is theirs and the address
-     * carries the endpoint's id, so both are asked for. The address is taken as it stands — the queue's paths
-     * hang off it, and OpenAI's `/v1` is not one of them.
+     * A serverless endpoint of the person's own, reached through its queue: the key is theirs and the address carries the
+     * endpoint's id. The address is taken as it stands, with no `/v1`.
      */
     needs: ["key", "address"],
     open: (opening) =>

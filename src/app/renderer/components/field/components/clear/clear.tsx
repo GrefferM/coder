@@ -2,7 +2,7 @@ import { useInteraction } from "../../../../hooks";
 import { FIELD_CLEAR_COLOR, FIELD_CLEAR_LABEL, FIELD_CLEAR_LIT_COLOR, FIELD_CLEAR_SIZE_PX } from "../../constants";
 import type { ClearProps } from "./interfaces";
 
-/** The cross at the field's right edge; it empties what the field stands for, not what the field shows. */
+/** The cross at the field's right edge; empties what the field stands for, not what it shows. */
 export function Clear({ onClear }: ClearProps) {
   const { isLit, handlers } = useInteraction();
 

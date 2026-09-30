@@ -24,7 +24,7 @@ export function SidePanel({
 }: SidePanelProps) {
   const activeItem = items.find((item) => item.id === activeId) ?? items[0];
 
-  /** The rule across the rail is drawn once, before the first machine-scope section. */
+  /** The rule across the rail goes before the first machine-scope section. */
   const firstMachineId = items.find((item) => item.realm === "machine")?.id ?? null;
 
   const railButtons: ReactNode = items.map((item) => {

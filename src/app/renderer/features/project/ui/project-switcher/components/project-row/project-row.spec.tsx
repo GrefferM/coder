@@ -14,7 +14,7 @@ describe("ProjectRow", () => {
   });
 
   it("ticks the open project and is no way anywhere, being where the person already is", () => {
-    // The project the app stands on is the first row and cannot be walked to.
+    // The current project is the first row and cannot be walked to.
     render(<ProjectRow name="Coder" directory="/code/coder" agentCount={7} isCurrent />);
 
     const row = screen.getByRole("menuitem");
@@ -46,7 +46,7 @@ describe("ProjectRow", () => {
     await userEvent.click(screen.getByLabelText(SWITCHER_FORGET_LABEL));
 
     expect(onForget).toHaveBeenCalledOnce();
-    // The cross drops the row from this machine's list; it is not the project's deletion.
+    // The cross drops the row from this machine's list; it does not delete the project.
     expect(onSelect).toHaveBeenCalledOnce();
   });
 

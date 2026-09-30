@@ -1,6 +1,6 @@
 import type { McpFunction, McpLookMemory, McpLookStore } from "../interfaces";
 
-/** What the memory says about the look just taken — the halves of the row's closing line a look cannot know. */
+/** What the memory says about the look just taken: the halves of the row's closing line a look cannot know. */
 export interface McpRemembered {
   changedAt: number | null;
   wasCount: number | null;
@@ -12,10 +12,8 @@ const NOTHING_REMEMBERED: McpRemembered = {
 };
 
 /**
- * The memory of the last look — «оновлено вчора · 34 → 33».
- *
- * Written **only for a server that answered**: a fallen one hands over nothing, and writing that down would say
- * the list went to zero. The first look writes the list and says nothing about it — a change needs two looks.
+ * The memory of the last look, «оновлено вчора · 34 → 33». Written only for a server that answered. The first look
+ * writes the list and says nothing; a change needs two looks.
  */
 export class McpMemory {
   constructor(private readonly store: McpLookStore) {}
@@ -42,8 +40,7 @@ export class McpMemory {
       };
     }
 
-    // The count before the change is the news; a second change before anybody looked keeps the **first** number,
-    // because the arrow answers «what did it use to be», not «what was it an hour ago».
+    // The count before the change is the news; a second change before anyone looked keeps the first number.
     const changed: McpLookMemory = {
       serverId,
       names,
@@ -59,7 +56,7 @@ export class McpMemory {
     };
   }
 
-  /** The page was opened, so the news has been read. What changed and when stays; only the arrow goes. */
+  /** The page was opened, so the news is read; what changed and when stays, only the arrow goes. */
   async seen(serverId: string): Promise<void> {
     const held = await this.store.of(serverId);
 
@@ -74,7 +71,7 @@ export class McpMemory {
   }
 }
 
-/** Order is the server's own and means nothing to us: two lists are the same list when they hold the same names. */
+/** Order means nothing: two lists are the same when they hold the same names. */
 function isSameList(held: string[], now: string[]): boolean {
   if (held.length !== now.length) {
     return false;

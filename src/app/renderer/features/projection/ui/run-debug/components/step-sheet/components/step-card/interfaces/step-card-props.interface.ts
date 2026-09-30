@@ -1,6 +1,6 @@
 import type { WholeStep } from "../../../../../../../../record";
 
-/** Inputs of the card: the step it is about, and whether it stands beside the name instead of a row of its own. */
+/** The step the card is about, and whether it sits beside the name rather than in its own row. */
 export interface StepCardProps {
   step: WholeStep;
   isBeside: boolean;

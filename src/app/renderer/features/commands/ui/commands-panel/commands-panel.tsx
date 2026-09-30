@@ -44,7 +44,7 @@ export function CommandsPanel({
     );
   }
 
-  // An empty section lifts the one action out of the footer into its middle, and the footer goes with it.
+  // An empty section moves the one action into its middle and drops the footer.
   if (commands.length === 0) {
     return (
       <div

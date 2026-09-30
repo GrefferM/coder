@@ -2,12 +2,9 @@ import { IsArray, IsIn, IsInt, IsNotEmpty, IsObject, IsOptional, IsString, Min }
 import { RUN_CALL_ENDS, TOOL_SOURCES } from "../../../contracts";
 import type { ToolSource } from "../../../contracts";
 
-/** One call as it happened; a refused one carries `refusal` and no code, a call that ran carries both. */
+/** One call as it happened; a refused call has `refusal` and no code, a run call has both. */
 export class AddCallDto {
-  /**
-   * The call's own id — the one it wore in the stream, and the one a server's count of failures points at. An id
-   * made here instead would give the same call two, and nothing could be led back to it from anywhere else.
-   */
+  /** The call's id from the stream, also the one a server's failure count points at. */
   @IsString()
   @IsNotEmpty()
   declare id: string;
@@ -23,7 +20,7 @@ export class AddCallDto {
   @IsObject()
   declare arguments: Record<string, string>;
 
-  /** The names the person pinned, so the record can tell them from what the model decided. */
+  /** Names the person pinned, to tell them from the model's choices. */
   @IsArray()
   @IsString({
     each: true,
@@ -43,7 +40,7 @@ export class AddCallDto {
   @IsInt()
   declare exitCode: number | null;
 
-  /** Which server the call went to, and its name then; a command's call carries neither. */
+  /** The server the call went to and its name then; none for a command's call. */
   @IsOptional()
   @IsString()
   declare serverId: string | null;

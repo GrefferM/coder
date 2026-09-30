@@ -18,7 +18,7 @@ const PROJECT: OpenProject = {
   view: null,
 };
 
-/** The one listener the hook puts on the channel, kept so a test can be the main process. */
+/** The one channel listener the hook adds, kept so a test can act as the main process. */
 let tell: (changed: { directory: string }) => void;
 
 const DRAFT: UnsavedWork = {
@@ -30,7 +30,7 @@ const DRAFT: UnsavedWork = {
   discard: () => {},
 };
 
-/** The hook renders nothing; what it holds is shown through the probe's own line. */
+/** The hook renders nothing; the probe shows what it holds. */
 function Probe({ isDirty, sayNote }: { isDirty: boolean; sayNote: (note: WriteNote) => void }) {
   const { arrived } = useProjectFile(PROJECT, () => {}, isDirty ? DRAFT : null, sayNote);
 
@@ -99,7 +99,7 @@ describe("useProjectFile", () => {
   });
 });
 
-/** The channel the hook listens on is the one the main process sends on. */
+/** The hook listens on the channel the main process sends on. */
 describe("PROJECT_CHANGED_CHANNEL", () => {
   it("is the projects channel that runs the other way", () => {
     expect(PROJECT_CHANGED_CHANNEL).toBe("projects:changed");

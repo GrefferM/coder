@@ -3,7 +3,7 @@ import { CANVAS_LAYER, CONFIRM_LAYER, PROMPT_EDITOR_LAYER, RUN_DEBUG_LAYER, SWIT
 
 describe("layers", () => {
   it("stands the project's open list over the canvas's own marks", () => {
-    // The list is opened by a click and the marks are not: what somebody just opened is never covered.
+    // The list is opened by a click and the marks are not, so it is never covered.
     expect(SWITCHER_LAYER).toBeGreaterThan(CANVAS_LAYER);
   });
 

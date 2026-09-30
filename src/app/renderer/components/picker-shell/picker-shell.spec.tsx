@@ -33,7 +33,7 @@ function open(chose = vi.fn()) {
   return chose;
 }
 
-/** The ring the walked row wears is the last thing its wrapper draws. */
+/** The walked row's ring is the last thing its wrapper draws. */
 function ringOf(name: string): string {
   const row = screen.getByRole("button", {
     name,

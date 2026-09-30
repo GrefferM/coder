@@ -61,7 +61,7 @@ describe("brokenGrants · nothing is broken", () => {
   });
 
   it("breaks nothing while the server has not answered yet", () => {
-    // A server still starting knows no functions this moment; «unknown» is not «gone».
+    // A server still starting knows no functions yet: unknown, not gone.
     const asked = look({
       isUp: false,
       functions: [],
@@ -114,7 +114,7 @@ describe("brokenGrants · the three reasons", () => {
   });
 
   it("breaks every grant of a server the project no longer names, and says no name for it", () => {
-    // The name lived in the server's own file and went with it; only the id is left.
+    // A gone server's name went with its file; only the id is left.
     const groups = brokenGrants([granted("fs.read_file", "server-gone"), granted("fs.write_file", "server-gone")], {
       commands: [],
       servers: [],
@@ -140,7 +140,7 @@ describe("brokenGrants · the three reasons", () => {
   });
 
   it("breaks a grant whose command is gone, and gives it no name to strike through", () => {
-    // A command grant carries an id, not a name — there is nothing of the command left to show.
+    // A command grant carries an id, not a name.
     const groups = brokenGrants(
       [
         {

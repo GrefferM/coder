@@ -7,7 +7,7 @@ export interface ProvidersState {
   answers: Record<string, ProviderAnswer>;
   askingIds: string[];
   ask: (providerId: string) => void;
-  /** Told what a turn heard at a provider's address, so the sphere's dot does not wait for the card's own asking. */
+  /** Reports what a turn heard at a provider's address, so the sphere's dot need not wait for the card's asking. */
   heard: (providerId: string, isAnswering: boolean) => void;
   save: (provider: ProviderState, draft: ProviderDraft) => Promise<void>;
 }

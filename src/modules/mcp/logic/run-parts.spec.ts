@@ -36,7 +36,7 @@ describe("runParts", () => {
   });
 
   it("reads a quote that is never closed as the character it is, so an apostrophe in a path stands", () => {
-    // A line is worth more read as it looks than refused over one character.
+    // A line is read as it looks, not refused over a stray quote.
     assert.deepEqual(runParts("node /Users/o'brien/server.js"), ["node", "/Users/o'brien/server.js"]);
   });
 });

@@ -1,9 +1,6 @@
 import type { Walk } from "../interfaces";
 
-/**
- * A walk the moment it begins — nothing said, nothing waiting, nothing stopped, nothing put away. The row
- * is the one its stream stands on; a stream that has none learns it when the question opens one.
- */
+/** A walk at its start: nothing said, waiting, stopped or put away; the row is the one its stream stands on, if any. */
 export function begunWalk(questionId: string, askedAt: number, runId: string | null = null): Walk {
   return {
     questionId,

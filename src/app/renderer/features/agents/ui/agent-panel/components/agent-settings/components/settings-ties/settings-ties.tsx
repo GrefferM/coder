@@ -12,7 +12,7 @@ import {
 } from "../../constants";
 import type { SettingsTiesProps } from "./interfaces";
 
-/** What the agent is tied to — its model, its prompt and its colour, each saying what it was. */
+/** What the agent is tied to: model, prompt and colour, each showing its previous value. */
 export function SettingsTies({
   draft,
   was,

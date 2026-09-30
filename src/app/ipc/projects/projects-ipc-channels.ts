@@ -21,7 +21,7 @@ import {
   SAVE_PROJECT_CHANNEL,
 } from "../../../contracts";
 
-/** Project channels; each handler rebuilds a real DTO instance from the cloned payload. */
+/** Project channels; each handler rebuilds a DTO instance from the cloned payload. */
 export const PROJECTS_IPC_CHANNELS: IpcChannelMap<ProjectController> = {
   [CREATE_PROJECT_CHANNEL]: (controller, payload) => controller.create(Object.assign(new CreateProjectDto(), payload)),
   [OPEN_PROJECT_CHANNEL]: (controller, payload) => controller.open(Object.assign(new OpenProjectDto(), payload)),

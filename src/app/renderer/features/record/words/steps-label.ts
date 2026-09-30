@@ -1,6 +1,6 @@
 import { RUN_STEPS_FEW, RUN_STEPS_MANY, RUN_STEPS_ONE } from "../constants";
 
-/** «2 КРОКИ», «5 КРОКІВ» — how many steps a run took, said in Ukrainian. */
+/** «2 КРОКИ», «5 КРОКІВ»: a run's step count in Ukrainian. */
 export function stepsLabel(steps: number): string {
   const last = steps % 10;
   const tens = steps % 100;

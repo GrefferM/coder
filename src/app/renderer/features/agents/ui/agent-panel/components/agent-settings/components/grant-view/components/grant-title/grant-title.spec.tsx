@@ -4,7 +4,7 @@ import { GrantTitle } from "./grant-title";
 
 describe("GrantTitle", () => {
   it("names the function and says what it says of itself", () => {
-    // The description is the command's own words, the ones the model will read.
+    // The description is the command's own, as the model reads it.
     render(<GrantTitle name="open_pr" description="Відкриває pull request у поточній гілці" />);
 
     expect(screen.getByText("open_pr")).toBeInTheDocument();

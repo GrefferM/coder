@@ -60,7 +60,7 @@ describe("PromptEditor", () => {
   it("says what the name stood at before the draft moved it", () => {
     render(<EditorHarness wasName="Правки коду" />);
 
-    // The name is a field like any other, however large it is written.
+    // The name is a field like any other.
     expect(screen.getByText(`${FIELD_SLOT_WAS_PREFIX}Правки коду`)).toBeInTheDocument();
   });
 
@@ -173,7 +173,7 @@ describe("PromptEditor", () => {
 
     await userEvent.click(screen.getByText(PROMPT_EDITOR_SAVE_LABEL));
 
-    // The name rule: the press is answered — the name opens for writing and the line under it says whose it is.
+    // A taken name: the name field opens and the line under it says whose it is.
     expect(onSave).not.toHaveBeenCalled();
     expect(screen.getByText(NAME_TAKEN_PROMPT_NOTE)).toBeInTheDocument();
   });

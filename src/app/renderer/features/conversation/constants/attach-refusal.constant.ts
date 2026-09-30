@@ -1,9 +1,8 @@
 import type { AttachmentKind } from "../../../interfaces";
 
 /**
- * A pick refused before it became a chip, said in a few words on the line over the canvas: which one, and why.
- * «Завелика» where even its fewest characters would not fit under the ceiling, and «немає доступу» where the
- * system would not let us read it.
+ * A pick refused before it became a chip: «Завелика» where even its fewest characters would not fit under the ceiling,
+ * «немає доступу» where the system denies reading.
  */
 export const ATTACH_REFUSAL_QUOTE_OPEN = "«";
 export const ATTACH_REFUSAL_QUOTE_CLOSE = "»";

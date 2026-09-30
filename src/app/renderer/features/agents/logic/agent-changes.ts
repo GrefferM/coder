@@ -36,12 +36,12 @@ import {
 import type { FieldChange, ProjectModel, ProjectPrompt, ToolGrant } from "../../../interfaces";
 import type { AgentDraft, AgentNaming } from "../interfaces";
 
-/** A model as a diff line names it; a model no longer in the project stands as its id. */
+/** A model's name in a diff line; its id when no longer in the project. */
 function modelTitle(models: ProjectModel[], modelId: string): string {
   return models.find((model) => model.id === modelId)?.title ?? modelId;
 }
 
-/** A prompt as a diff line names it; no-prompt is a state of its own and the question names it in words. */
+/** A prompt's name in a diff line; no prompt is worded by the question. */
 function promptTitle(prompts: ProjectPrompt[], promptId: string | null): string {
   return prompts.find((prompt) => prompt.id === promptId)?.name ?? AGENT_NO_PROMPT_LABEL;
 }
@@ -50,7 +50,7 @@ function promptTitle(prompts: ProjectPrompt[], promptId: string | null): string 
 export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: AgentNaming): FieldChange[] {
   const { models, prompts } = naming;
 
-  /** Each field is asked about its own kind of grant alone, in the words that field shows. */
+  /** Words one field's own kind of grants only. */
   const saidOf = (grants: ToolGrant[], isOfKind: (grant: ToolGrant) => boolean) =>
     grantedToolsLabel(grants.filter(isOfKind), naming);
 
@@ -79,7 +79,7 @@ export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: Agent
       was: promptTitle(prompts, saved.promptId),
       now: promptTitle(prompts, draft.promptId),
     },
-    // Two fields on the tab are two lines in the question: «команди» and «MCP» are not one thing that moved.
+    // «команди» and «MCP» are two tab fields, so two lines.
     {
       label: AGENT_COMMANDS_CHANGE_LABEL,
       droppedLabel: AGENT_COMMANDS_DROPPED_LABEL,

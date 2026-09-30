@@ -1,9 +1,8 @@
 import type { StandInBridge } from "./interfaces";
 
 /**
- * Puts a stand-in bridge on the window for one spec. Both halves of the real one are typed by the channel, so a spec
- * answering them by hand can never line up with either; this is the one place that says so, instead of every spec
- * casting through `unknown` on its own.
+ * Installs a stand-in bridge on the window for one spec; the real bridge's channel types cannot be matched by hand, so
+ * the cast lives here.
  */
 export function standInBridge<TPushed = never>(bridge: StandInBridge<TPushed> = {}): void {
   const { invoke = () => undefined, subscribe = () => undefined } = bridge;

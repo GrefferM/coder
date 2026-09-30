@@ -37,7 +37,7 @@ import type { ModelFormProps } from "./interfaces";
 export function ModelForm({ providers, values, saved, isNew, isMending, onChange, onSave, onCancel }: ModelFormProps) {
   const [wasTried, setWasTried] = useState(false);
   const mended = useRef<HTMLInputElement>(null);
-  // Sent here by a card, the cursor lands on the row the card named, and the person types.
+  // Sent here by a card, the cursor lands on the row the card named.
   const mendedRow = isMending ? mendedField(values) : null;
 
   useEffect(() => {
@@ -56,8 +56,8 @@ export function ModelForm({ providers, values, saved, isNew, isMending, onChange
 
   const isMissing = (value: string) => wasTried && !value;
   /**
-   * A ceiling under the floor the file itself refuses. Said by the field the moment it is typed and not at the
-   * press: a number that cannot stand is wrong while it is being read, where an empty required field is not.
+   * A ceiling under the floor the file refuses; flagged as typed, unlike an empty required field, which is flagged at the
+   * press.
    */
   const isContextCeilingWrong = isCeilingWrong(values.contextCeiling, MODEL_CONTEXT_CEILING_LEAST);
   const isAnswerCeilingWrong = isCeilingWrong(values.answerCeiling, MODEL_ANSWER_CEILING_LEAST);

@@ -53,7 +53,7 @@ export function LinkLayer({
   draggedAt,
   onSelectLink,
 }: LinkLayerProps) {
-  /** Where one end of a line stands — the agent, the point it is being dragged to, or its dead place (50a). */
+  /** Where one end of a line stands: an agent, the dragged point, or a dead place. */
   function placeOf(agentId: string) {
     if (agentId === draggedAgentId && draggedAt) {
       return draggedAt;
@@ -86,13 +86,13 @@ export function LinkLayer({
         const isSelected = link.id === selectedLinkId;
         const isDoomed = link.from === doomedAgentId || link.to === doomedAgentId;
         const isLit = !isDoomed && (isSelected || link.from === selectedAgentId);
-        // What this line is doing — flowing, awaited, answered or silent.
+        // What the line is doing: flowing, awaited, answered or silent.
         const life = isDoomed ? null : (linkLives[link.id] ?? null);
         const isRunning = life === "running";
         const isAwaited = life === "awaited";
         const isAnswered = life === "answered";
         const isSilent = life === "silent";
-        // A line of the run in hand takes its source's colour, whether its answer is in or still coming.
+        // A line of the run in hand takes its source's colour, answered or still awaited.
         const isLive = isAnswered || isAwaited;
         const sourceColor = agents.find((agent) => agent.id === link.from)?.color ?? CANVAS_LINK_COLOR;
         const selectedColor = mixWithTransparent(sourceColor, CANVAS_LINK_SELECTED_PERCENT);

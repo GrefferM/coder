@@ -6,7 +6,7 @@ import type { ProjectConfigDto } from "../dto";
 import { ProjectConfigSerializer } from "./project-config-serializer.service";
 import { ProjectFolder } from "./project-folder.service";
 
-/** One project folder read into a config: the project file, and each part's own file merged under its entry. */
+/** Reads a project folder into a config: the project file with each part's own file merged under its entry. */
 export class ProjectFileReader {
   constructor(
     private readonly serializer: ProjectConfigSerializer,
@@ -14,7 +14,7 @@ export class ProjectFileReader {
   ) {}
 
   async read(projectDirectory: string): Promise<ProjectConfigDto> {
-    // The one read that must not swallow its failure: a folder with no project file is the caller's to answer for.
+    // Not swallowed: a folder without a project file is the caller's to answer.
     const source = this.serializer.toSource(await readFile(this.folder.filePath(projectDirectory), "utf8"));
     const config = await this.serializer.toValidConfig({
       ...source,
@@ -24,8 +24,7 @@ export class ProjectFileReader {
       agents: await this.readParts(projectDirectory, source.agents, AGENT_SKELETON),
     });
 
-    // A prompt whose own file is gone leaves the library with the rest: what is gone is not restored, and the agent
-    // that names it says so where it names it. An empty file is a different thing — that prompt is written, and empty.
+    // A prompt whose file is gone is dropped; an empty file is a written, empty prompt.
     const written = [];
 
     for (const prompt of config.prompts) {
@@ -42,9 +41,9 @@ export class ProjectFileReader {
     return config;
   }
 
-  /** The counts a row and the new-project form show; a folder with no project is named by its basename. */
+  /** Counts for a row and the new-project form; a folder without a project is named by its basename. */
   async glance(projectDirectory: string): Promise<FolderContents> {
-    // Counts come from the references alone; no part file is opened and nothing is validated.
+    // Counts come from the references alone; no part file is opened or validated.
     const text = await this.folder.textOf(this.folder.filePath(projectDirectory));
 
     if (text === null) {
@@ -73,7 +72,7 @@ export class ProjectFileReader {
     return this.folder.isThere(this.folder.filePath(projectDirectory));
   }
 
-  /** Prompt id → file map as the project file has it, read from the references alone. */
+  /** Prompt id to file, from the project file's references. */
   async promptFiles(projectDirectory: string): Promise<Map<string, string>> {
     const text = await this.folder.textOf(this.folder.filePath(projectDirectory));
 
@@ -93,8 +92,8 @@ export class ProjectFileReader {
   }
 
   /**
-   * Merges each part's own file under its project-file entry; an entry with no `file` field is taken as-is. A part
-   * whose file is gone is left out, unless a skeleton is given to stand in its place.
+   * Merges each part's file under its project-file entry (an entry without `file` is taken as-is); a part whose file is
+   * gone is dropped unless a skeleton stands in.
    */
   private async readParts(
     projectDirectory: string,
@@ -118,7 +117,7 @@ export class ProjectFileReader {
       const part = await this.partSource(projectDirectory, entry.file);
 
       if (part === null) {
-        // A part the catalogue holds is simply left out; only an agent, whose sphere the lines are drawn to, stands in.
+        // Catalogue parts are dropped; only an agent is restored from a skeleton.
         if (skeleton !== null) {
           parts.push({
             ...this.restoredAgent(skeleton, restored++),
@@ -138,14 +137,14 @@ export class ProjectFileReader {
     return parts;
   }
 
-  /** Reads one part's own file; nothing at all where it cannot be read. */
+  /** One part's file; null where unreadable. */
   private async partSource(projectDirectory: string, file: string): Promise<Record<string, unknown> | null> {
     const text = await this.folder.textOf(path.join(projectDirectory, file));
 
     return text === null ? null : this.serializer.partSource(text);
   }
 
-  /** An agent whose own file is gone: its place went with the file, so restored ones are laid out in a row. */
+  /** A restored agent, laid out in a row because its place went with its file. */
   private restoredAgent(skeleton: Record<string, unknown>, place: number): Record<string, unknown> {
     return {
       ...skeleton,

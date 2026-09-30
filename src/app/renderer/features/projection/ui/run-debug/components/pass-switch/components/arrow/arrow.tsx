@@ -2,7 +2,7 @@ import { IconButton } from "../../../../../../../../components";
 import { PASS_SWITCH_ICON_SIZE_PX, PASS_SWITCH_ICON_STROKE, PASS_SWITCH_TONE } from "../../constants";
 import type { ArrowProps } from "./interfaces";
 
-/** One arrow of the switch — lit under the mouse, gone out where the flow ends. */
+/** One arrow of the switch: lit under the mouse, dimmed at the flow's end. */
 export function Arrow({ label, path, isDead, onGo }: ArrowProps) {
   return (
     <IconButton label={label} onPress={onGo} tone={PASS_SWITCH_TONE} isDisabled={isDead}>

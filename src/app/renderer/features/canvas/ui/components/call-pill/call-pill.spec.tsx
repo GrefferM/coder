@@ -5,7 +5,7 @@ import { CALL_PILL_GAP_PX } from "./constants";
 import { SPHERE_ORB_RADIUS_PX, SPHERE_SIZE_PX } from "../../../../../components/sphere/constants";
 import { ARMED_COMMANDS_COLOR, ARMED_SERVERS_COLOR } from "../../../constants";
 
-/** The style attribute reads a colour back as `rgb(...)`, and the constants are written as hexes. */
+/** The style attribute reads colours back as `rgb(...)`; the constants are hexes. */
 function rgb(hex: string): string {
   const [red, green, blue] = [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16));
 
@@ -20,8 +20,7 @@ describe("CallPill", () => {
   });
 
   it("says a server by the server's name, in the servers' own colour", () => {
-    // «пілюля збоку — тільки сервер: "notion-mcp", без функції» — which of its functions is out is the
-    // page's to say, and the colour is that source's, so the pill and its mark on the arc agree.
+    // Only the server name, no function; the colour is the source's, matching its mark on the arc.
     const { container } = render(<CallPill name="notion-mcp" source="mcp" />);
     const pill = container.firstElementChild as HTMLElement;
 
@@ -37,8 +36,7 @@ describe("CallPill", () => {
   });
 
   it("stands beside the sphere and level with the top of the arc, catching no pointer", () => {
-    // Nothing on the arc marks the call, so the pill stands by the sphere itself — and at the
-    // arc's highest point, where it covers no mini-sphere however many of them there are.
+    // The pill stands beside the sphere at the arc's highest point, covering no mini-sphere.
     const { container } = render(<CallPill name="run_test" source="command" />);
     const pill = container.firstElementChild as HTMLElement;
 

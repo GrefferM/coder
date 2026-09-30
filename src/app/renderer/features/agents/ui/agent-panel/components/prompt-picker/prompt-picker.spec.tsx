@@ -26,7 +26,7 @@ const AGENTS: Agent[] = ["agent-1", "agent-2", "agent-3"].map((id, index) => ({
   name: id.toUpperCase(),
   purpose: null,
   modelId: "model-1",
-  // Two of the three stand on the first prompt, which is what both the field and its row count.
+  // Two of the three agents share the first prompt, counted in both the field and its row.
   promptId: index === 2 ? null : "prompt-1",
   color: "#38a3ff",
   isActive: true,
@@ -38,7 +38,7 @@ const AGENTS: Agent[] = ["agent-1", "agent-2", "agent-3"].map((id, index) => ({
   tools: [],
 }));
 
-/** The field is controlled from the agent's draft — this stands in for that draft. */
+/** Stands in for the agent's draft, which controls the field. */
 function PickerHarness({ promptId: initial = null }: { promptId?: string | null }) {
   const [promptId, setPromptId] = useState(initial);
 

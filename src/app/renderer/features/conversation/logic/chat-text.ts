@@ -26,10 +26,8 @@ import type { AttachedFile, ChatMessage } from "../interfaces";
 import type { NamedAgent, TurnCall } from "../../../interfaces";
 
 /**
- * The whole stream as a plain-text transcript, read on its own away from the app: every turn by who spoke and
- * when, the words they said, the files a question carried, and each tool call with what went in and what came
- * back. Nothing of the app's own counting — no tokens, no price, no step — crosses into it; those are the app's
- * way of watching a run, not part of the conversation.
+ * The stream as a plain-text transcript: each turn's speaker and time, words, attached files, and tool calls with input
+ * and output; no tokens, price or step.
  */
 export function chatText(messages: ChatMessage[], agents: NamedAgent[]): string {
   const nameOf = (agentId: string | null): string => agents.find((agent) => agent.id === agentId)?.name ?? "";
@@ -39,12 +37,12 @@ export function chatText(messages: ChatMessage[], agents: NamedAgent[]): string 
   return [head, CHAT_EXPORT_RULE, "", ...join(blocks)].join("\n");
 }
 
-/** The name the save chooser opens on — «розмова-РРРР-ММ-ДД.txt», the day it is written. */
+/** The save chooser's default name, «розмова-РРРР-ММ-ДД.txt», for the day written. */
 export function chatFileName(at: Date = new Date()): string {
   return `${CHAT_EXPORT_FILE_PREFIX}-${isoDay(at)}${CHAT_EXPORT_FILE_EXTENSION}`;
 }
 
-/** One turn as its lines, or null where the turn has nothing a reader would want — an empty agent beat. */
+/** One turn as lines, or null when it has nothing worth reading. */
 function turnBlock(message: ChatMessage, nameOf: (agentId: string | null) => string): string | null {
   const at = timeLabel(new Date(message.at));
 
@@ -75,7 +73,7 @@ function turnBlock(message: ChatMessage, nameOf: (agentId: string | null) => str
     lines.push(...callLines(call));
   }
 
-  // An agent beat that neither spoke, attached nor called says nothing a transcript should keep.
+  // An agent beat that neither spoke, attached nor called.
   if (lines.length === 1) {
     return null;
   }
@@ -83,7 +81,7 @@ function turnBlock(message: ChatMessage, nameOf: (agentId: string | null) => str
   return lines.join("\n");
 }
 
-/** Who the turn is from: the person, the agent whose turn it is, or the neighbour a piece of work came from. */
+/** Who the turn is from: the person, the agent whose turn it is, or the neighbour the work came from. */
 function authorOf(message: ChatMessage, nameOf: (agentId: string | null) => string): string {
   if (message.from === "person") {
     return CHAT_EXPORT_PERSON;
@@ -96,7 +94,7 @@ function authorOf(message: ChatMessage, nameOf: (agentId: string | null) => stri
   return nameOf(message.agentId);
 }
 
-/** The «Прикріплено:» line under a question, or null where nothing was attached. */
+/** The «Прикріплено:» line under a question, or null when nothing was attached. */
 function attachedLine(attached: AttachedFile[]): string | null {
   if (attached.length === 0) {
     return null;
@@ -107,7 +105,7 @@ function attachedLine(attached: AttachedFile[]): string | null {
   return `${CHAT_EXPORT_ATTACHED_LABEL}${named.join(CHAT_EXPORT_ATTACHED_SEPARATOR)}`;
 }
 
-/** One call: its name, the line it ran where it ran one, what went in, and what came back. */
+/** One call: its name, its line where it ran one, input, and output. */
 function callLines(call: TurnCall): string[] {
   const lines: string[] = [`${CHAT_EXPORT_CALL_PREFIX}${call.name}`];
 

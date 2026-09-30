@@ -5,7 +5,7 @@ import { groupedNumber, moneyLabel } from "../../../utils/numbers";
 import { TOKENS_SUFFIX } from "../../../utils/numbers/constants";
 import type { WholeRun } from "../interfaces";
 
-/** «3 хв 06 · 6 КРОКІВ · 18 240 ТКН · $0.21» — the whole run in one line: time, steps, tokens, money. */
+/** «3 хв 06 · 6 КРОКІВ · 18 240 ТКН · $0.21»: time, steps, tokens, money. */
 export function runTotalsLabel(run: WholeRun): string {
   const tokens = run.walk.reduce((sum, step) => sum + step.inputTokens + step.outputTokens, 0);
 

@@ -3,10 +3,10 @@ import type { Point } from "../../../../../../utils/math";
 
 export interface LinkLayerProps {
   links: Link[];
-  /** How every line stands right now; one with no life is not in it. */
+  /** How each line stands now; a line with no life is absent. */
   linkLives: Record<string, LinkLife>;
   agents: Agent[];
-  /** Where each end that names nobody stands, by the id the line carries (50a). */
+  /** Where each end that names nobody stands, by the id the line carries. */
   deadEnds: Record<string, Point>;
   selectedAgentId: string | null;
   selectedLinkId: string | null;

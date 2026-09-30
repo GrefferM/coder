@@ -4,7 +4,7 @@ import { useOpenCalls } from "./use-open-calls";
 
 describe("useOpenCalls", () => {
   it("stands every call folded until somebody opens it", () => {
-    // A call is one line in the stream; a turn of a dozen calls is a dozen lines and not a dozen blocks.
+    // A call is one line in the stream; a dozen calls are a dozen lines, not blocks.
     const { result } = renderHook(() => useOpenCalls());
 
     expect(result.current.isOpen("call-1")).toBe(false);

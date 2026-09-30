@@ -21,7 +21,7 @@ function aServer(patch: Partial<ProjectMcpServer> = {}): ProjectMcpServer {
   };
 }
 
-/** A machine that answers every look for a server that is up, and remembers what it was asked. */
+/** A machine that answers every look with a server that is up, and records what it was asked. */
 function machine() {
   const asked: { channel: string; payload: unknown }[] = [];
   const invoke = vi.fn(async (channel: string, payload: unknown) => {
@@ -60,10 +60,7 @@ function machine() {
 }
 
 const looks = (asked: { channel: string }[]) => asked.filter((one) => one.channel === LOOK_MCP_SERVER_CHANNEL);
-/**
- * The walk to and from one server, and nothing else that goes down the same wire. The sweep of a deleted
- * server's keys rides here too and is somebody else's errand: it says nothing about how a server is asked.
- */
+/** The walk to and from one server, without other traffic on the wire such as the key sweep. */
 const walk = (asked: { channel: string }[]) =>
   asked
     .map((one) => one.channel)
@@ -109,7 +106,7 @@ describe("useServers", () => {
     servers = [aServer(), other];
     rerender();
 
-    // The wait is for the answers, not for the asks: the second look is sent long before it comes back.
+    // Waits for the answers, not the asks.
     await waitFor(() => expect(Object.keys(result.current.looks).sort()).toEqual([other.id, aServer().id].sort()));
     expect(looks(asked)).toHaveLength(2);
   });
@@ -137,13 +134,12 @@ describe("useServers", () => {
 
     await waitFor(() => expect(looks(asked)).toHaveLength(2));
 
-    // The order is the whole of it: asking a fallen server again without letting it go asks the same dead process.
+    // Order matters: asking a fallen server again without closing it asks the same dead process.
     expect(walk(asked)).toEqual([LOOK_MCP_SERVER_CHANNEL, CLOSE_MCP_SERVER_CHANNEL, LOOK_MCP_SERVER_CHANNEL]);
   });
 
   it("lets a redeclared server go and asks it afresh, dropping what the old one said", async () => {
-    // The id stays and everything behind it changed: a process started from the old line is not this server,
-    // and the old way in's refusal would stand over the new one until somebody thought to restart it by hand.
+    // The id stays but the launch changed: the old process and its refusal must not carry over.
     const asked = machine();
     let servers = [aServer()];
     const { rerender } = renderHook(() => useServers(DIRECTORY, servers));
@@ -164,7 +160,7 @@ describe("useServers", () => {
   });
 
   it("leaves a server alone when only its name changed", async () => {
-    // A name is nobody's way in: renaming must not stop a running server and start it over.
+    // A rename does not restart a running server.
     const asked = machine();
     let servers = [aServer()];
     const { rerender } = renderHook(() => useServers(DIRECTORY, servers));
@@ -182,8 +178,7 @@ describe("useServers", () => {
   });
 
   it("«СКАСУВАТИ» lets the process go, stops the waiting and keeps the late answer out", async () => {
-    // An ask cannot be called back once it is out, so the answer to it is dropped when it arrives —
-    // otherwise a row somebody let go of lights up by itself half a minute later.
+    // An answer arriving after the ask was let go is dropped.
     let answer: (look: unknown) => void = () => {};
     const asked: string[] = [];
     const invoke = vi.fn(async (channel: string) => {
@@ -227,7 +222,7 @@ describe("useServers", () => {
   });
 
   it("pays the debt of a deleted server's keys once, when the project opens", async () => {
-    // An app closed inside the undo's thirty seconds left the keys owed; this is where they go.
+    // Keys left owed by an app closed within the undo's thirty seconds are swept here.
     const asked = machine();
     const servers = [aServer()];
     const { rerender } = renderHook(() => useServers(DIRECTORY, servers));

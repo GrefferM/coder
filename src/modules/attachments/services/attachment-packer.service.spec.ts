@@ -13,7 +13,7 @@ describe("AttachmentPacker", () => {
   const HUGE = 1_000_000;
   const packer = new AttachmentPacker();
 
-  /** A pick with no room to count against is always counted to the end. */
+  /** With no room to count against, a pick is counted to the end. */
   async function measured(target: string): Promise<PickedAttachment> {
     const picked = await packer.measure(target);
 
@@ -59,7 +59,7 @@ describe("AttachmentPacker", () => {
     assert.match(packed.text, new RegExp(ATTACHMENT_TREE_LABEL));
     assert.match(packed.text, /src\/index\.ts/);
     assert.match(packed.text, /export const a = 1;/);
-    // Nothing excluded: node_modules is walked like any other folder.
+    // Nothing excluded: `node_modules` is walked like any folder.
     assert.match(packed.text, /node_modules\/dep\.js/);
     assert.match(packed.text, /module\.exports/);
     // The binary is in, as base64.
@@ -77,7 +77,7 @@ describe("AttachmentPacker", () => {
   });
 
   it("never says more characters are the least than the pack truly comes to", async () => {
-    // The least is what refuses a pick before it is a chip; saying more than the truth would refuse one that fits.
+    // The least count refuses a pick before it becomes a chip, so it must never exceed the truth.
     for (const target of [path.join(root, "readme.md"), path.join(root, "logo.png"), root]) {
       const picked = await measured(target);
       const packed = await packer.pack(target);
@@ -101,8 +101,8 @@ describe("AttachmentPacker", () => {
 
       assert.equal(picked.kind, "folder");
       assert.match(packed.text, /видно/);
-      // Whether the system honoured the shutting is its own: a folder it kept shut stands marked in the tree, and
-      // one it let us into all the same stands as any other. Either way the pick went through.
+      // Whether the system honours the shut folder varies: a refused one is marked in the tree, an open one is listed
+      // normally; the pick succeeds either way.
       if (packed.text.includes(`wizards/${ATTACHMENT_DENIED_TAG}`)) {
         assert.doesNotMatch(packed.text, /усередині/);
       } else {
@@ -133,8 +133,8 @@ describe("AttachmentPacker", () => {
   });
 
   it("reads no further than it takes to cross the ceiling, and crosses it", async () => {
-    // A megabyte under a ceiling of a hundred characters: the wall is the ceiling's to say, and the pack has
-    // only to reach over it — reading the whole file for that would be the gigabyte folder all over again.
+    // A megabyte under a ceiling of a hundred characters: the pack reaches over the ceiling without reading the whole
+    // file.
     const [packed] = await packer.packAll([path.join(big, "huge.txt")], 100);
 
     assert.ok([...packed.text].length > 100);
@@ -145,7 +145,7 @@ describe("AttachmentPacker", () => {
     const [first, second] = await packer.packAll([path.join(big, "huge.txt"), path.join(root, "readme.md")], 100);
 
     assert.ok([...first.text].length > 100);
-    // The first already crossed it, so the second is named and not read.
+    // The first already crossed the ceiling, so the second is named and not read.
     assert.doesNotMatch(second.text, /Привіт/);
   });
 

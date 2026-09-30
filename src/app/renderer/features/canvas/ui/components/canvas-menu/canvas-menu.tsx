@@ -12,7 +12,7 @@ import {
 } from "../../../constants";
 import type { CanvasMenuProps } from "./interfaces";
 
-/** The menu the right click opens — the canvas's own where it fell on nothing, the sphere's where it fell on one. */
+/** The right-click menu: the canvas's where it fell on nothing, the sphere's where it fell on one. */
 export function CanvasMenu({
   at,
   contentAt,

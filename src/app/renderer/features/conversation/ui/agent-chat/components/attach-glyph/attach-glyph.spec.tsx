@@ -4,7 +4,7 @@ import { AttachGlyph } from "./attach-glyph";
 
 describe("AttachGlyph", () => {
   it("draws a folder and a file with different marks", () => {
-    // The two kinds must be told apart by the glyph alone, so the paths cannot be the same.
+    // The two kinds are told apart by glyph alone, so their paths differ.
     const folder = render(<AttachGlyph kind="folder" size={11} color="#838ba6" />);
     const folderPaths = folder.container.querySelectorAll("path").length;
 

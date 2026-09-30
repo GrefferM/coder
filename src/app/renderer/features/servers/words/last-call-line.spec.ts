@@ -14,7 +14,7 @@ describe("lastCallLine", () => {
   });
 
   it("takes the first line alone of an answer that runs on", () => {
-    // The whole of it stands in the call's own card, and the row is its beginning — never a retelling.
+    // The row is the beginning of the call card's text, never a retelling.
     expect(
       lastCallLine({
         callId: "call-1",
@@ -26,7 +26,7 @@ describe("lastCallLine", () => {
   });
 
   it("steps over a heading and shows the sentence under it", () => {
-    // playwright-mcp opens a failure with «### Error»; a row showing that has told the person nothing.
+    // A «### Error» heading is not shown as the row's text.
     expect(
       lastCallLine({
         callId: "call-1",

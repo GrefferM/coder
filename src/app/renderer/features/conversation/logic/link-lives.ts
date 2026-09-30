@@ -16,9 +16,8 @@ function supplierLife(stood: WaitedWork, fromAgentId: string): LinkLife | null {
 }
 
 /**
- * The life of every line of the canvas now: work flowing down, or an agent waiting on its suppliers. The two
- * never meet — a wait is let go the moment its turn begins. A line with no life is left out, and only the
- * conversation on screen gives life at all.
+ * The life of every canvas line: work flowing down, or an agent waiting on its suppliers (never both). Lines without
+ * life are left out; only the conversation on screen gives life.
  */
 export function linkLives(links: Link[], walk: WalkState): Record<string, LinkLife> {
   const lives: Record<string, LinkLife> = {};

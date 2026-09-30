@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { SCROLL_MARK_CLASS, SCROLL_MARK_MS } from "./constants";
 
-/** Marks the box being scrolled so the scrollbar can be drawn only then. */
+/** Marks the box being scrolled, so the scrollbar is drawn only then. */
 export function useScrollMark(): void {
   useEffect(() => {
     const fading = new Map<Element, number>();

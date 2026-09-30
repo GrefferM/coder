@@ -40,7 +40,7 @@ describe("ProviderRow", () => {
   });
 
   it("draws no glow on a provider that has gone silent, filled though it is", () => {
-    // The dot is the provider's own life; a silent one is filled but not living.
+    // The dot shows the provider's liveness; a silent one is filled but not alive.
     const { container } = render(
       <ProviderRow name="OpenRouter" facts="не відповідає" isFilled isSilent onOpen={() => {}} />,
     );

@@ -3,8 +3,8 @@ import { withinField } from "../../../../../../logic";
 import type { FieldHeight } from "./interfaces";
 
 /**
- * The field is pulled by the strip over it and grows upwards; its floor never moves, because the hand that
- * sends is under it. Where the pull came to is told out at its end, not on every move.
+ * The field is resized by the strip over it and grows upwards; the height is reported at the end of the pull, not on
+ * every move.
  */
 export function useFieldHeight(height: number, onHeight: (height: number) => void): FieldHeight {
   const [pulled, setPulled] = useState<number | null>(null);
@@ -24,7 +24,7 @@ export function useFieldHeight(height: number, onHeight: (height: number) => voi
     const target = <HTMLElement>event.currentTarget;
 
     function moved(move: PointerEvent): void {
-      // Up is taller: the strip is the field's ceiling, and the hand under the field stays where it stands.
+      // Dragging up makes it taller; the floor stays put.
       setPulled(withinField(from.current.height + (from.current.y - move.clientY)));
     }
 

@@ -37,7 +37,7 @@ const run: RunRow = {
   worked: 1_000,
 };
 
-/** Only the fields a standing question is decided by; the rest of each facade is not asked for here. */
+/** Only the fields a standing question depends on. */
 function props(patch: Record<string, unknown> = {}): MainQuestionsProps {
   return {
     project,
@@ -110,7 +110,7 @@ describe("MainQuestions", () => {
   });
 
   it("stands the question whose own thing is armed, and only that one", () => {
-    // Every question is over the same working area, so two at once would be two dialogs deep.
+    // Every question is over the same working area, so never two at once.
     const { rerender } = render(
       <MainQuestions
         {...props({

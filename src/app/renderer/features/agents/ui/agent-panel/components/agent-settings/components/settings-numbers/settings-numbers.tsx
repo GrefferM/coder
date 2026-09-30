@@ -17,7 +17,7 @@ import {
 } from "../../constants";
 import type { SettingsNumbersProps } from "./interfaces";
 
-/** The agent's own numbers and its switch — each row saying what it was, if it changed. */
+/** The agent's numbers and its switch, each showing its previous value when changed. */
 export function SettingsNumbers({
   draft,
   was,
@@ -64,7 +64,7 @@ export function SettingsNumbers({
         />
       </SettingRow>
 
-      {/* The wait is a converging point's own: with one line coming in there is nothing to wait for. */}
+      {/* The wait applies only to a converging point: one incoming line has nothing to wait for. */}
       {isConverging && (
         <SettingRow label={AGENT_SETTINGS_WAIT_LABEL} wasValue={was.waitsForAll} hint={AGENT_SETTINGS_WAIT_HINT}>
           <Toggle

@@ -6,11 +6,8 @@ import { fellNote } from "../words";
 import type { TurnAnswer, TurnToAsk } from "../interfaces";
 
 /**
- * One turn asked of the machine. Every wall before the ask is the walk's own, so it is asked first and the
- * model is never troubled; an answer, a refusal at the door or a fall all come back as words with their cost.
- *
- * The agent's own thread of this conversation goes out ahead of the question, so the model is answering
- * the latest of a conversation rather than a question out of nowhere.
+ * One turn asked of the machine. Walls are checked first, so the model is never asked past one; an answer, a refusal or
+ * a fall all return as words with their cost. The agent's thread of this conversation goes ahead of the question.
  */
 export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
   const { turnId, asked, thread, catalogue, agents, directory } = turn;
@@ -32,7 +29,7 @@ export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
       maxCalls: filled.maxCalls,
       temperature: filled.temperature,
       answerCeiling: held.answerCeiling,
-      // A granted function names its server by id; this is where that id is answered.
+      // A granted function names its server by id; this answers that id.
       servers: catalogue.servers,
       systemPrompt,
       messages: [
@@ -48,14 +45,14 @@ export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
     const cut = cutEnd(said, filled.maxCalls, held.answerCeiling);
 
     return {
-      // A card holds the model's words alone; ours stand on the rule under it.
+      // A card holds only the model's words.
       text: said.text,
       note: cut?.note ?? null,
       cost: turnCost(said.inputTokens, said.outputTokens, held),
       answerCeiling: held.answerCeiling,
       isFailure: false,
       fell: null,
-      // A note the app wrote is not an answer: only the agent's own words go down the line.
+      // A note the app wrote is not an answer; only the agent's own words go down the line.
       isCut: cut !== null,
       notStarted: null,
       wouldGo: null,
@@ -71,8 +68,7 @@ export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
       return notStartedTurn(notStartedNote(reason, held, turn.stands.provider), reason);
     }
 
-    // The turn fell, and the agent wears «упав» until one of its own goes through. The provider's own sentence
-    // goes with it — a fall that says only that it fell sends the person to a terminal to learn why.
+    // The turn fell; the agent wears «упав» until one of its turns succeeds. The provider's own sentence goes with it.
     const said = providerWords(thrown);
 
     return {
@@ -86,13 +82,13 @@ export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
       notStarted: null,
       wouldGo: null,
       state: RUN_STEP_FAILED,
-      // The turn threw, so nothing came back — what it ran before that is lost with it.
+      // The turn threw, so nothing came back; calls run before it are lost.
       calls: [],
     };
   }
 }
 
-/** Ends a turn that is still out; a machine that no longer has it says nothing and neither do we. */
+/** Ends a turn still out; a machine that no longer has it is silent, and so are we. */
 export async function stopTurn(turnId: string): Promise<void> {
   await window.electronApi
     .invoke(STOP_AGENT_CHANNEL, {

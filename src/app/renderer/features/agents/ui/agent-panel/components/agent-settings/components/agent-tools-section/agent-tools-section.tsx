@@ -35,7 +35,7 @@ import { INTERACTION_REST_BACKGROUND_COLOR, INTERACTION_REST_BORDER_COLOR } from
 import type { ToolChoice } from "../../../../../../interfaces";
 import type { AgentToolsSectionProps } from "./interfaces";
 
-/** The third field of an agent's tools: the project's other agents, each granted whole and pinned to nothing. */
+/** The agents-as-tools field: the project's other agents, each granted whole with nothing pinned. */
 export function AgentToolsSection({
   agents,
   selfId,
@@ -45,10 +45,10 @@ export function AgentToolsSection({
   onGrantsChange,
 }: AgentToolsSectionProps) {
   const options = agentChoices(agents, selfId);
-  // The grants of agents alone: what the commands' and servers' fields hold is neither counted nor mended here.
+  // Only agent grants; the commands' and servers' grants are neither counted nor mended here.
   const mine = grants.filter(isAgentGrant);
   const chosen = options.filter((option) => grantedOf(option, grants) !== null);
-  // A grant can outlive the agent it named; a broken one is counted nowhere and stands only in the lost group.
+  // A grant can outlive its agent; a broken one is counted nowhere and shown only in the lost group.
   const broken = brokenGrants(mine, {
     commands: [],
     servers: [],
@@ -57,7 +57,7 @@ export function AgentToolsSection({
   });
   const brokenIds = new Set(broken.flatMap((group) => group.rows.map((row) => row.id)));
 
-  /** Tick: grants if not held, revokes if held. It writes the whole draft, so the other fields' grants stand. */
+  /** Grants if not held, revokes if held; writes the whole draft, so other fields' grants stand. */
   function toggle(option: ToolChoice) {
     const granted = grantedOf(option, grants);
 

@@ -25,7 +25,7 @@ describe("ZoomButton", () => {
   });
 
   it("goes dim and does nothing at the scale's own end", async () => {
-    // The end is a fact about the surface, so the button stays where it is and dims.
+    // At an end the button stays in place and dims.
     const onSelect = vi.fn();
 
     render(<ZoomButton label="+" isDisabled onSelect={onSelect} />);

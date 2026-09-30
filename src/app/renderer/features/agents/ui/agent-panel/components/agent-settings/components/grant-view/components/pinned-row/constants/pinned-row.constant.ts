@@ -1,6 +1,6 @@
 import { FIRST_LEVEL_TEXT_COLOR } from "../../../../../../../../../../../constants";
 
-/** One pinned argument — name, set mark, bare value field, unpin cross. */
+/** One pinned argument: name, set mark, bare value field, unpin cross. */
 export const PINNED_ROW_GAP_PX = 8;
 export const PINNED_ROW_FONT_SIZE_PX = 11.5;
 export const PINNED_ROW_NAME_COLOR = FIRST_LEVEL_TEXT_COLOR;

@@ -15,7 +15,7 @@ describe("quietly", () => {
 
     quietly(() => failed);
 
-    // Nothing throws out of the call, and nothing is left unhandled behind it.
+    // Nothing throws from the call and nothing is left unhandled.
     await expect(failed.catch((reason: unknown) => reason)).resolves.toBeInstanceOf(Error);
   });
 });

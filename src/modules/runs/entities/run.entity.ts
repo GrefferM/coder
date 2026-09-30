@@ -4,13 +4,13 @@ import { RunQuestionEntity } from "./run-question.entity";
 import { RunStepEntity } from "./run-step.entity";
 import type { RunRecord } from "../interfaces";
 
-/** The `runs` table row — one walk of the drawn line, from the person's question to its last step. */
+/** A row of `runs`: one walk of the drawn line, from the question to its last step. */
 @Entity(RUN_TABLE_NAME)
 export class RunEntity implements RunRecord {
   @PrimaryGeneratedColumn("uuid")
   declare id: string;
 
-  // Absolute path of the project's folder on this machine: a run belongs to the machine, not the folder.
+  // Absolute path of the project folder on this machine; a run belongs to the machine.
   @Index()
   @Column({
     type: "varchar",
@@ -22,10 +22,7 @@ export class RunEntity implements RunRecord {
   })
   declare startedByAgentId: string;
 
-  /**
-   * The name and colour that agent had when the run began — kept here, so the row is named from the
-   * moment the question is written and goes on being named after the agent is gone.
-   */
+  /** The agent's name and colour when the run began, so the row stays named after the agent is gone. */
   @Column({
     type: "varchar",
   })
@@ -56,7 +53,7 @@ export class RunEntity implements RunRecord {
   @OneToMany(() => RunStepEntity, (step) => step.run)
   declare steps: RunStepEntity[];
 
-  /** Everything the person asked in this flow, in the order they asked it. */
+  /** Everything the person asked in this flow, in order. */
   @OneToMany(() => RunQuestionEntity, (question) => question.run)
   declare questions: RunQuestionEntity[];
 }

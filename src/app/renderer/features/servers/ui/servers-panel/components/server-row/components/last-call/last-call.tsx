@@ -33,15 +33,14 @@ import {
 import type { LastCallProps } from "./interfaces";
 
 /**
- * What the last call to this server came to. The same body serves both states — the stripe on a row
- * that is otherwise whole, and the block under a row that says no function has answered — because it is the same
- * fact, and «двох різних текстів не буває».
+ * What the last call to this server came to: a stripe on a whole row, or the block under a row that says no function
+ * answered. The body is the same in both.
  */
 export function LastCall({ failure, isNews, onShow }: LastCallProps) {
   const label = isNews ? SERVER_LAST_CALL_FELL_LABEL : SERVER_LAST_CALL_LABEL;
   /**
-   * Whether the way was tried and led nowhere. The word takes the place of the press rather than standing beside
-   * it: the record will not find this call on a second press either, so offering it again would be a lie.
+   * Whether the way was tried and led nowhere; the word replaces the press, since a second press would find nothing
+   * either.
    */
   const [isLost, setIsLost] = useState(false);
 
@@ -98,7 +97,7 @@ export function LastCall({ failure, isNews, onShow }: LastCallProps) {
             fontSize: LAST_CALL_SAID_FONT_SIZE_PX,
             lineHeight: LAST_CALL_SAID_LINE_HEIGHT,
             overflowWrap: "anywhere",
-            // Two lines and no more — one loses the address, three make the row a paragraph.
+            // Two lines at most.
             display: "-webkit-box",
             WebkitLineClamp: LAST_CALL_SAID_LINES,
             WebkitBoxOrient: "vertical",
@@ -107,7 +106,7 @@ export function LastCall({ failure, isNews, onShow }: LastCallProps) {
         >
           {lastCallLine(failure)}
         </span>
-        {/* The sentence stands whole in the call's own card, and this hands the chat over to it. */}
+        {/* The full sentence stands in the call's own card; this hands the chat over to it. */}
         {isLost ? (
           <span
             className="font-monospace"

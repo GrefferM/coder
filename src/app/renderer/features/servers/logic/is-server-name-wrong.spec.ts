@@ -4,7 +4,7 @@ import { SERVER_NAME_MAX_LENGTH } from "../../../../../contracts";
 
 describe("isServerNameWrong", () => {
   it("takes the dash, because a server's name never reaches a model", () => {
-    // The rule here is ours, not a provider's — `playwright-mcp` is the name on the box.
+    // The rule is ours, not a provider's: `playwright-mcp` is a valid name.
     expect(isServerNameWrong("playwright-mcp")).toBe(false);
     expect(isServerNameWrong("brave-search")).toBe(false);
     expect(isServerNameWrong("brave_search")).toBe(false);
@@ -23,7 +23,7 @@ describe("isServerNameWrong", () => {
   });
 
   it("does not call an empty field wrong, since nothing is typed there yet", () => {
-    // An empty required field is answered at the press, and not while somebody is still thinking.
+    // An empty required field is answered at the press, not while typing.
     expect(isServerNameWrong("")).toBe(false);
   });
 });

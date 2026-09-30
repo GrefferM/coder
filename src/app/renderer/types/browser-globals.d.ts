@@ -1,8 +1,8 @@
 import type { Answer, Channel, Payload, Push, Pushed } from "../../../contracts";
 
 /**
- * The bridge every renderer call to the main process goes through. The channel decides what it is handed and what
- * comes back (`src/contracts`), so no caller says which type it expects — and none can say a wrong one.
+ * The bridge for every renderer call to the main process; the channel fixes the payload and result types
+ * (`src/contracts`).
  */
 interface ElectronApi {
   invoke: <C extends Channel>(

@@ -14,7 +14,7 @@ describe("LostPrompt", () => {
   });
 
   it("takes the tie off when asked, a prompt being something an agent can stand without", async () => {
-    // Unlike the model, a prompt may simply be dropped — so this tie has its own way out.
+    // A prompt, unlike a model, may be dropped: this tie has its own removal.
     const onRemove = vi.fn();
 
     render(<LostPrompt onRemove={onRemove} />);

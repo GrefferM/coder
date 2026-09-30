@@ -1,10 +1,6 @@
 import { BORDER_AT_REST_COLOR, CONTROL_AT_REST_COLOR, QUIET_MARK_COLOR } from "../../../../../constants";
 
-/**
- * The one sentence over the list — the same providers everywhere, and keys that stay on this machine.
- * What is not said here is said by the screen itself: a model belongs to its provider, so the model form is where
- * one is chosen; and there is no act to add a provider, so nothing has to explain the absence of one.
- */
+/** The sentence over the list: the same providers everywhere, and keys stay on this machine. */
 export const PROVIDERS_NOTE_BEFORE =
   "Список однаковий у кожній інсталяції. Ключі й адреси лишаються в сховищі цієї машини й у ";
 
@@ -25,7 +21,7 @@ export const PROVIDERS_NOTE_LINE_HEIGHT = 1.55;
 export const PROVIDERS_LIST_PADDING = "0 16px";
 export const PROVIDERS_LIST_GAP_PX = 10;
 
-/** Filled providers first, unfilled below under a rule and word shown only when both groups exist. */
+/** Filled providers first, unfilled below under a rule and this word, shown only when both groups exist. */
 export const PROVIDERS_UNSET_LABEL = "НЕ НАЛАШТОВАНІ";
 export const PROVIDERS_RULE_MARGIN = "2px 0";
 

@@ -5,7 +5,7 @@ import {
   SECOND_LEVEL_TEXT_COLOR,
 } from "../../../../../constants";
 
-/** The file changed under a standing draft; nothing is auto-chosen. */
+/** The file changed under a standing draft; nothing is chosen automatically. */
 export const FILE_CONFLICT_QUESTION = "Файл змінився, а у вас є незбережене";
 export const FILE_CONFLICT_NOTE = "Хтось перемкнув гілку — project.yaml на диску вже інший. Ваші зміни ще не записані.";
 export const FILE_CONFLICT_MINE_LABEL = "У ВАС НА ЕКРАНІ";

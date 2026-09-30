@@ -4,8 +4,7 @@ import type { IncomingWork } from "./incoming-work.interface";
 import type { WrittenTurn } from "./written-turn.interface";
 
 /**
- * What a walk asks the world to do. The machine only names them; the adapter carries them out and brings
- * back what happened as an event.
+ * What a walk asks the world to do; the machine names them, the adapter carries them out and reports back as an event.
  */
 export type WalkEffect =
   /** Put this turn to the provider. */
@@ -23,7 +22,7 @@ export type WalkEffect =
     }
   /** Stop the turn that is out. */
   | { kind: "stopMachine"; turnId: string }
-  /** Put the work a converging point has gathered to the agent standing there. */
+  /** Puts the work a converging point has gathered to the agent standing there. */
   | {
       kind: "askAgent";
       agent: Agent;
@@ -31,12 +30,12 @@ export type WalkEffect =
       startAgentId: string;
       viaLinkIds: string[];
       runKey: string;
-      /** A walk picked up out of the record, whose words already stand in the stream above it. */
+      /** A walk resumed from the record, whose words already stand in the stream. */
       isAgain: boolean;
     }
-  /** This point has nothing to give, so let down whoever waits behind it. */
+  /** This point has nothing to give, so whoever waits behind it is let down. */
   | { kind: "letDown"; fromId: string; startAgentId: string; runKey: string }
-  /** The words a turn was given — the person's own, or what arrived down each line. */
+  /** The words a turn was given: the person's own, or what arrived down each line. */
   | {
       kind: "sayAsked";
       runKey: string;
@@ -46,7 +45,7 @@ export type WalkEffect =
       askedAt: number;
       isAgain: boolean;
     }
-  /** The row about one link — where the work went, and where it could not. */
+  /** The row about one link: where the work went and where it could not. */
   | {
       kind: "sayHandoff";
       runKey: string;
@@ -57,8 +56,7 @@ export type WalkEffect =
       askedAt: number;
     }
   /**
-   * A walk begins — the writer takes it, and its question opens the row this conversation writes into or
-   * goes on in the one already standing.
+   * A walk begins: the writer takes it and its question opens the conversation's row or goes on in the standing one.
    */
   | {
       kind: "openWalk";
@@ -69,15 +67,15 @@ export type WalkEffect =
       agent: Agent;
       asked: string;
     }
-  /** The card one turn became, put in the stream of the walk it ran in. */
+  /** The card one turn became, put in the stream of its walk. */
   | { kind: "sayAnswer"; runKey: string; turn: AnsweredTurn }
-  /** Write one step of the walk; the card it was said as then takes the step's id. */
+  /** Writes one step of the walk; its card then takes the step's id. */
   | { kind: "writeTurn"; runKey: string; saidId: string; turn: WrittenTurn }
-  /** One turn of the walk is back — the walk is over when it was the last one out. */
+  /** One turn of the walk is back; the walk is over when it was the last one out. */
   | { kind: "turnBack"; runKey: string }
   /**
-   * Read the run back and pick the broken walk up where it stopped. The walk is named here; which question
-   * it stands under is found once the writes of that walk have settled, and only then.
+   * Reads the run back and resumes the broken walk; the question it stands under is found only after that walk's writes
+   * have settled.
    */
   | {
       kind: "askAgain";
@@ -85,8 +83,8 @@ export type WalkEffect =
       /** The question the turn stood under — the card knows it by id. */
       questionId: string;
       walkId: string | null;
-      /** The agent a question that never went was aimed at, since the record holds no step for it. */
+      /** The agent a never-sent question was aimed at; the record holds no step for it. */
       notSentTo: string | null;
     }
-  /** A walk picked up out of the record — the writer takes it, and it writes on into the row it has. */
+  /** A walk resumed from the record: the writer takes it and it writes on into its existing row. */
   | { kind: "takeWalk"; runKey: string; askedAt: number; runId: string; questionId: string };

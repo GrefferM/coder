@@ -1,5 +1,5 @@
 /**
- * What stands between a refusal's code and the one thing it has to say beside it — the place a file goes
- * wrong, say. The message is all that survives the crossing, so both sides have to join and split it alike.
+ * Separates a refusal's code from the one thing it says beside it; the message is all that crosses, so both sides join
+ * and split by it.
  */
 export const REFUSAL_SAID_SEPARATOR = " :: ";

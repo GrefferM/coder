@@ -2,8 +2,8 @@ import { IsString, IsUUID, Matches } from "class-validator";
 import { COMMAND_NAME_PATTERN } from "../../../contracts";
 
 /**
- * The value of one environment variable of one server. The name rides in the project file and is
- * named here only to say which value this is; the value itself never leaves this machine.
+ * The value of one environment variable of one server; the name only says which, and the value never leaves this
+ * machine.
  */
 export class SaveMcpEnvValueDto {
   @IsUUID()

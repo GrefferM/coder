@@ -36,7 +36,7 @@ describe("DtoArgumentValidator", () => {
   });
 
   it("looks at every argument and not only the first", async () => {
-    // A method takes several dto arguments; the one behind the good one must be looked at just the same.
+    // Every dto argument is checked, not just the first.
     await assert.rejects(() =>
       new DtoArgumentValidator().validateAll([
         dto(),
@@ -48,7 +48,7 @@ describe("DtoArgumentValidator", () => {
   });
 
   it("walks past what is not an object at all", async () => {
-    // Directories, ids and hours cross the boundary beside the dtos, and they carry no rules to break.
+    // Plain values crossing beside dtos carry no rules and pass.
     await new DtoArgumentValidator().validateAll(["/tmp/coder", 12, true, null, undefined]);
   });
 });

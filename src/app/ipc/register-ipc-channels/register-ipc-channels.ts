@@ -24,19 +24,18 @@ export function registerIpcChannels<TController>(
   });
 }
 
-/** A Refusal goes back as `refusal`; anything else is logged here and goes back as `failure`. */
+/** A Refusal goes back as `refusal`; anything else is logged and goes back as `failure`. */
 function answerOf(channel: string, thrown: unknown): IpcAnswer {
   if (thrown instanceof Refusal) {
     return {
       value: null,
-      // The whole message, not the code alone: a refusal that says one thing more (which place a file
-      // goes wrong, say) rides in the message after the code, and the screen reads it from there.
+      // The whole message, not only the code: the refusal's detail follows the code.
       refusal: thrown.message,
       failure: null,
     };
   }
 
-  /** The stack alone: a library's error object carries the provider's headers and cookies. */
+  /** The stack only: a library's error carries the provider's headers and cookies. */
   console.error(`${IPC_FAILURE_PREFIX}${channel}`, thrown instanceof Error ? thrown.stack : String(thrown));
 
   return {

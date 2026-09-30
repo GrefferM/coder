@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AgentForm, AgentHeader, AgentSettings } from "./components";
 import type { AgentPanelProps } from "./interfaces";
 
-/** The create form when none is selected, else the agent's own settings; the chat stands apart. */
+/** The create form when none is selected, else the agent's settings; the chat stands apart. */
 export function AgentPanel({ agentId, catalogue, writing, standing, presses, acts }: AgentPanelProps) {
   const [openGrantId, setOpenGrantId] = useState<string | null>(null);
 
@@ -34,10 +34,8 @@ export function AgentPanel({ agentId, catalogue, writing, standing, presses, act
   );
 
   /**
-   * A step of the tab wears a head of its own, so the agent's head stands down while one is open — but the
-   * tab itself stays exactly where it was. Returning the settings bare instead took them out of this box and put
-   * them back in, and React tears down what changes place: the way out of a step opened that step again, because
-   * the tab was born anew and heard the standing press as a fresh one. The head goes; the tab stays.
+   * A step has its own head, so the agent's head stands down while one is open; the tab stays mounted, or leaving a step
+   * would hear the standing press and reopen it.
    */
   return (
     <div

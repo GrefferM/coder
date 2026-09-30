@@ -1,5 +1,5 @@
-/** A run lives thirty days on this machine, then goes without being asked. */
+/** Days a run is kept on this machine before it is removed. */
 export const HISTORY_DAYS = 30;
 
-/** How long that is in milliseconds, so the sweep can compare two dates and nothing else. */
+/** A day in milliseconds, for the sweep's date comparison. */
 export const HISTORY_DAY_MS = 24 * 60 * 60 * 1000;

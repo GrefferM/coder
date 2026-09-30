@@ -5,7 +5,7 @@ export interface AgentAnswer {
   text: string;
   isStopped: boolean;
   isCallsExhausted: boolean;
-  /** The model stopped because the answer reached its ceiling, so what came back is cut mid-word. */
+  /** The answer reached its ceiling, so it is cut mid-word. */
   isCeilingHit: boolean;
   inputTokens: number;
   outputTokens: number;

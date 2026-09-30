@@ -7,12 +7,12 @@ import {
 } from "../../projects/constants";
 import type { AgentTool, ChatTurn, ProjectMcpServer, ReachableAgent } from "../interfaces";
 
-/** One turn asked of an agent; the key is never sent from the screen and is looked up on this side. */
+/** One turn asked of an agent; the key is not sent from the screen but looked up here. */
 export class AskAgentDto {
   @IsString()
   declare turnId: string;
 
-  // Whose turn this is; an agent-tool calling it back would close a ring.
+  // Whose turn this is; used to detect a ring through an agent-tool.
   @IsString()
   declare agentId: string;
 
@@ -49,7 +49,7 @@ export class AskAgentDto {
   @IsArray()
   declare tools: AgentTool[];
 
-  // The reach of every server a granted function belongs to; a tool names its server by id alone.
+  // The reach of every server a granted function belongs to; a tool names its server by id only.
   @IsArray()
   declare servers: ProjectMcpServer[];
 

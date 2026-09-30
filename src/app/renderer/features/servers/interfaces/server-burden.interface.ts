@@ -1,6 +1,6 @@
-/** What goes with a server when it goes — counted where it can be counted, and named where it cannot. */
+/** What goes with a server, counted where countable. */
 export interface ServerBurden {
-  /** How many grants on this server's functions the agents hold altogether. */
+  /** How many grants on this server's functions the agents hold in all. */
   grants: number;
   /** How many agents those grants belong to. */
   agents: number;

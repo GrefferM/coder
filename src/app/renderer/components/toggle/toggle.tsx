@@ -11,7 +11,7 @@ import {
 } from "./constants";
 import type { ToggleProps } from "./interfaces";
 
-/** Switch — the track takes the live colour while on, the knob sits at the on side. */
+/** Switch: the track takes the live colour while on, the knob sits at the on side. */
 export function Toggle({ label, isOn, onChange }: ToggleProps) {
   return (
     <button

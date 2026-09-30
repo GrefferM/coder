@@ -1,11 +1,8 @@
 import type { AgentAnswer, TurnCall } from "../interfaces";
 
 /**
- * What a turn has said, spent and run so far — the one thing every end of it is counted from.
- *
- * The five move together and are read together: a turn that hit the ceiling keeps the words it had already said
- * and the calls it had already made, and so does one a hand stopped. Kept as five loose counters they were
- * threaded through the loop, the round and the calls by hand, and every end had to name all five in order.
+ * What a turn has said, spent and run so far; every end of the turn is counted from it. A turn cut by the ceiling or
+ * stopped by hand keeps what it had said and done.
  */
 export class TurnLedger {
   private said = "";
@@ -14,22 +11,22 @@ export class TurnLedger {
   private outputTokens = 0;
   private calls = 0;
 
-  /** Whether the turn has spent the calls the person allowed it; a ceiling of nought is no ceiling, never spent. */
+  /** Whether the turn has spent the calls allowed; a ceiling of nought is never spent. */
   isSpent(maxCalls: number): boolean {
     return maxCalls !== 0 && this.calls >= maxCalls;
   }
 
-  /** Whether this many more calls would take the turn past what the person allowed it; nought allows any number. */
+  /** Whether this many more calls would pass the allowance; nought allows any number. */
   wouldOverspend(more: number, maxCalls: number): boolean {
     return maxCalls !== 0 && this.calls + more > maxCalls;
   }
 
-  /** One call spent: a round of the model and a tool run count the same. */
+  /** One call spent; a model round and a tool run count the same. */
   spend(): void {
     this.calls += 1;
   }
 
-  /** A piece of the answer as it arrives, and what the provider counted for it. */
+  /** A piece of the answer and the provider's count for it. */
   heard(words: string, inputTokens: number, outputTokens: number): void {
     this.said += words;
     this.inputTokens += inputTokens;
@@ -41,10 +38,7 @@ export class TurnLedger {
     this.made.push(call);
   }
 
-  /**
-   * The answer as the turn stands. Each end names itself and nothing else — a turn that answered names none of
-   * them, which is what an ordinary answer is.
-   */
+  /** The answer as the turn stands; each end names itself, an ordinary answer names none. */
   answer(end: { isCallsExhausted?: boolean; isCeilingHit?: boolean; isStopped?: boolean } = {}): AgentAnswer {
     return {
       text: this.said,

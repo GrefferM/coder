@@ -11,7 +11,7 @@ const ago = (span: number) => freshLabel(NOW - span, NOW);
 
 describe("freshLabel", () => {
   it("says «щойно» for the whole first minute, and never a number of seconds", () => {
-    // Seconds belong to the clock of what is running now, and nothing on this scale counts them.
+    // Seconds are not counted on this scale.
     expect(ago(0)).toBe("щойно");
     expect(ago(59 * SECOND)).toBe("щойно");
   });
@@ -28,7 +28,7 @@ describe("freshLabel", () => {
   });
 
   it("counts «вчора» in hours and not in turns of the calendar", () => {
-    // 24 to 47 hours, and no exception — a row an hour before midnight does not become «вчора» at it.
+    // 24 to 47 hours is «вчора», with no calendar exception.
     expect(ago(47 * HOUR)).toBe("вчора");
     expect(ago(48 * HOUR)).toBe("2 дні тому");
   });
@@ -49,7 +49,7 @@ describe("freshLabel", () => {
   });
 
   it("takes a moment still to come as «щойно» rather than counting backwards", () => {
-    // Clocks drift and machines disagree; a row saying «-3 хв тому» would be telling on them and helping nobody.
+    // A future time (clock drift) reads «щойно».
     expect(ago(-HOUR)).toBe("щойно");
   });
 });

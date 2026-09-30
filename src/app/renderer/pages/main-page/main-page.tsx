@@ -17,10 +17,10 @@ import { RIGHT_SIDE_PANEL_WIDTH_PX, RUN_DEBUG_LAYER_STYLE } from "./constants";
 import type { CanvasHandle } from "../../interfaces";
 import type { MainPageProps, PageSubjects } from "./interfaces";
 
-/** The screen an open project is worked on; the page keeps the keyboard and the wiring between subjects. */
+/** The screen an open project is worked on; it keeps the keyboard and the wiring between subjects. */
 export function MainPage({ project, setProject }: MainPageProps) {
   const canvasRef = useRef<CanvasHandle>(null);
-  // The link the canvas holds chosen; the page keeps it only to know whose a key press is.
+  // The link the canvas holds chosen; kept only to know whose a key press is.
   const [chosenLinkId, setChosenLinkId] = useState<string | null>(null);
   const actions = useProjectActions(project, setProject);
   const clipboard = useAgentClipboard(project, actions);
@@ -32,7 +32,7 @@ export function MainPage({ project, setProject }: MainPageProps) {
   const prompts = usePromptSection(project, actions);
   // Only the open section can be holding unsaved work.
   const wayOut = useWayOut(drafted.unsaved ?? models.unsaved ?? commands.unsaved ?? servers.unsaved ?? prompts.unsaved);
-  // The subjects the screen is worked through, gathered once; the page's own hooks take them whole.
+  // The subjects the screen works through, gathered once for the page's hooks.
   const subjects: PageSubjects = {
     project,
     agents,
@@ -46,14 +46,14 @@ export function MainPage({ project, setProject }: MainPageProps) {
     wayOut,
   };
   const parts = usePageParts(subjects, clipboard.pasted !== null, requestDeleteAgent);
-  /** Which function each turn has out; it changes a few times a turn, not sixty times a second. */
+  /** Which function each turn has out; changes a few times a turn. */
   const callsOut = useCallsOut();
 
   const file = useProjectFile(project, setProject, wayOut.unsaved, actions.sayNote);
-  // Where the canvas stands is this machine's note about this project, kept beside the open section.
+  // Where the canvas stands: this machine's note about the project, kept beside the open section.
   const noteView = useNotedView(project.directory, parts);
 
-  /** A copy put down is the one selected, and the claim that stood goes with it. */
+  /** A copy put down becomes the selection and clears the standing claim. */
   async function putCopy(put: () => Promise<string | null>) {
     const agentId = await put();
 
@@ -62,7 +62,7 @@ export function MainPage({ project, setProject }: MainPageProps) {
     }
   }
 
-  /** Deleting another agent asks about an open draft first; deleting the edited one takes it with them. */
+  /** Deleting another agent asks about an open draft first; deleting the edited one takes the draft with it. */
   function requestDeleteAgent(agentId: string) {
     const raise = () => {
       agents.requestDelete(agentId);
@@ -95,10 +95,10 @@ export function MainPage({ project, setProject }: MainPageProps) {
       <ProjectSwitcher
         project={project}
         onProjectChange={(next) => wayOut.guard(() => setProject(next))}
-        // With no project open the start screen is what stands; unsaved work asks first, as a switch does.
+        // With no project open the start screen stands; unsaved work asks first, as a switch does.
         onClose={() =>
           wayOut.guard(() => {
-            // The folder of a project nobody has open is nobody's to watch.
+            // A project nobody has open has no folder to watch.
             void closeProject();
             setProject(null);
           })
@@ -117,14 +117,14 @@ export function MainPage({ project, setProject }: MainPageProps) {
               agentTrouble(agent, project.config, parts.machine.providers, parts.looks),
             ]),
           ),
-          // Their tools are still in the file and still listed; what the arc says is that none of them can be called.
+          // Their tools stay in the file and listed; the arc says none can be called.
           toolless: drafted.drawnAgents
             .filter((agent) => takesNoTools(agent.modelId, project.config.models, parts.machine.providers))
             .map((agent) => agent.id),
           states: Object.fromEntries(
             drafted.drawnAgents.map((agent) => [agent.id, parts.agentStates[agent.id]?.color ?? ""]),
           ),
-          // A mini-sphere names its source, and the names live in the project file and in the looks.
+          // A mini-sphere names its source; the names live in the project file and the looks.
           sources: {
             commands: project.config.commands,
             servers: project.config.servers,
@@ -136,8 +136,7 @@ export function MainPage({ project, setProject }: MainPageProps) {
           workingAgents: parts.chat.working,
           waitingAgents: parts.chat.waiting,
           linkLives: parts.chat.linkLives,
-          // What each turn has out this moment, and nothing of what it is saying — the canvas is not
-          // redrawn by an arriving token.
+          // What each turn has out now, not what it says; an arriving token does not redraw the canvas.
           callsOut,
         }}
         picked={{
@@ -166,12 +165,12 @@ export function MainPage({ project, setProject }: MainPageProps) {
         }}
         agentActs={{
           onSelectedAgentIdChange: (agentId) => {
-            // A list, menu or switcher standing open takes the first click for itself; the canvas does nothing.
+            // An open list, menu or switcher takes the first click; the canvas does nothing.
             if (isSomethingOpen()) {
               return;
             }
 
-            // The click is still the way out of a half-written catalogue, so the question is asked first.
+            // The click is a way out of a half-written catalogue, so the question comes first.
             wayOut.guard(() => {
               /** Empty canvas lets the agent go only while the panel is the selection's. */
               if (agentId === null && !parts.rail.isPanelOnAgent) {
@@ -183,18 +182,18 @@ export function MainPage({ project, setProject }: MainPageProps) {
               if (agentId === null) {
                 parts.rail.closeAgentsSection();
               } else {
-                // A click aims the chat at that sphere — said here and not left to a change of selection, since
-                // the history moves the aim on its own and a click on the already-selected sphere must still land.
+                // A click aims the chat at that sphere; done here, not on selection change, since the history moves the
+                // aim itself and a click on the selected sphere must still land.
                 parts.chat.aim(agentId);
-                // The sphere is the agent, so the tab stands at the agent — not on a step left open behind.
+                // The sphere is the agent, so the tab stands at the agent, not at a step left open.
                 parts.rail.openAgentSelf(agentId);
               }
             });
           },
-          // The list a «+» raised chooses the sphere under it and nothing else — the tab stays put.
+          // The list a «+» raised only selects the sphere under it; the tab stays.
           onPick: agents.select,
           onOpenTools: (agentId, group, grantId) => {
-            // One press, one choice — the sphere is selected exactly as a press on the sphere selects it.
+            // Selects the sphere as a press on it would.
             agents.select(agentId);
             parts.rail.openAgentTools(group, grantId);
           },
@@ -240,7 +239,7 @@ export function MainPage({ project, setProject }: MainPageProps) {
         isCollapsed={parts.rail.isCollapsed}
         onCollapsedChange={parts.rail.handleCollapsedChange}
       />
-      {/* The projection takes the whole field the canvas stands in; the rail stays. */}
+      {/* The projection takes the whole canvas field; the rail stays. */}
       {parts.pass.isOpen && (
         <div className="d-flex" style={RUN_DEBUG_LAYER_STYLE}>
           <RunDebug

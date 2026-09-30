@@ -14,10 +14,7 @@ import type { ProjectConfig } from "../../../interfaces";
 import type { IncomingWork, LineNotTaken, LinkOut, RunLedger, Walk } from "../interfaces";
 import type { WalkEffect, WalkEvent, WalkFact, WalkNext, WalkRule, WalkRules, WalkState } from "../interfaces";
 
-/**
- * A fact's own kind is the name of the rule that answers it. Every kind stands here and no kind stands
- * twice, so a fact nobody answers does not compile — the same table the effects already answer by.
- */
+/** Each fact kind names its rule; every kind appears exactly once, so an unanswered fact does not compile. */
 const WALK_RULES: WalkRules = {
   answered,
   asked,
@@ -33,16 +30,16 @@ const WALK_RULES: WalkRules = {
 };
 
 /**
- * The walk itself: told what happened and what the drawn lines are, it says what the walk became and what it
- * asks of the world. It touches no provider, no record and no React, so every rule is provable without them.
+ * The walk itself: given an event and the drawn lines, yields the new walk state and the effects it asks for. Touches
+ * no provider, record or React.
  */
 export function walkMachine(state: WalkState, event: WalkEvent, config: ProjectConfig): WalkNext {
   return (<WalkRule<WalkEvent["kind"]>>WALK_RULES[event.kind])(state, event, config);
 }
 
 /**
- * The stream was emptied. Every walk still out is put away: it runs to its end, writes its record, and its
- * words go with it. What was typed here goes with the stream that held it.
+ * The stream was emptied: every walk still out is put away (runs to its end, writes its record, its words go with it),
+ * and what was typed goes with the stream.
  */
 function putAway(state: WalkState, event: WalkFact<"putAway">): WalkNext {
   return {
@@ -67,8 +64,8 @@ function putAway(state: WalkState, event: WalkFact<"putAway">): WalkNext {
 }
 
 /**
- * A walk that broke or was stopped, or with none named every walk of this stream. The end is marked before a
- * single turn is stopped, so nothing begins after it. A walk put away is not among them.
+ * Cuts a broken or stopped walk, or every walk of this stream when none is named. The end is marked before any turn is
+ * stopped; a walk put away is not included.
  */
 function cutWalks(state: WalkState, runKey: string | null): WalkNext {
   const cut = new Set(runKey === null ? everyWalk(state) : [runKey]);
@@ -98,17 +95,14 @@ function cutWalks(state: WalkState, runKey: string | null): WalkNext {
 }
 
 /**
- * Every walk of the stream on screen — the ones the button under the field speaks for. A walk writing into
- * another row is another conversation and is not cut from here.
+ * Every walk of the stream on screen, those the button speaks for; a walk writing into another row is another
+ * conversation.
  */
 function everyWalk(state: WalkState): string[] {
   return Object.keys(state.walks).filter((runKey) => isOnScreen(state, runKey));
 }
 
-/**
- * The question of this walk opened a row, and the walk writes into it from here on. A walk that already
- * knows its row keeps it: a row is opened once, by the question that began the conversation.
- */
+/** The walk's question opened a row and the walk writes into it from now on; a walk that knows its row keeps it. */
 function rowOpened(state: WalkState, event: WalkFact<"rowOpened">): WalkNext {
   const walk = state.walks[event.runKey];
 
@@ -129,8 +123,8 @@ function rowOpened(state: WalkState, event: WalkFact<"rowOpened">): WalkNext {
 }
 
 /**
- * A point left waiting by a walk that is over holds its pill only until a new walk begins. The walk itself
- * is not let go of — its words are the stream on screen — it is the waits that go.
+ * Drops the waits (and their pills) of walks that are over once a new walk begins; the walks themselves stay, their
+ * words being the stream on screen.
  */
 function withoutOverWaits(state: WalkState): Record<string, Walk> {
   return Object.fromEntries(
@@ -146,7 +140,7 @@ function withoutOverWaits(state: WalkState): Record<string, Walk> {
   );
 }
 
-/** One walk with one of its parts changed — the walk it is found by its own id. */
+/** One walk replaced, found by its own id. */
 function withWalk(state: WalkState, runKey: string, walk: Walk): WalkState {
   return {
     ...state,
@@ -158,11 +152,11 @@ function withWalk(state: WalkState, runKey: string, walk: Walk): WalkState {
 }
 
 /**
- * One supplier of a converging point has had its turn. While another is to come the point only holds what
- * arrived; when the last has been, it forgets the wait and works, or with empty hands lets down whoever waits.
+ * One supplier of a converging point has had its turn. While another is to come the point holds what arrived; after the
+ * last it works, or with empty hands lets down whoever waits.
  */
 function settled(state: WalkState, event: WalkFact<"settled">): WalkNext {
-  // The wait is this walk's own — found by the walk first, and only then by the point standing in it.
+  // The wait is the walk's own: found by the walk, then by the point in it.
   const walk = state.walks[event.runKey];
 
   if (walk === undefined) {
@@ -179,7 +173,7 @@ function settled(state: WalkState, event: WalkFact<"settled">): WalkNext {
     arrived: [],
     viaLinkIds: [],
     isAwaitingRepeat: false,
-    // A point that does not wait keeps a tally, not a wait; the screen reads this and draws it no pill.
+    // A point that does not wait keeps a tally, not a wait, and is drawn no pill.
     isSilent: !event.to.waitsForAll,
   };
   const stood = settledWait(standing, {
@@ -189,8 +183,8 @@ function settled(state: WalkState, event: WalkFact<"settled">): WalkNext {
     isBroken: walk.isStopped,
   });
 
-  // A point that does not wait sends each arrival on the moment it comes; it keeps the tally only to know,
-  // once every supplier has settled, whether anything came at all — and if nothing did, lets down whoever waits.
+  // A point that does not wait sends each arrival on at once; the tally only tells, after every supplier settled,
+  // whether anything came.
   if (!event.to.waitsForAll) {
     const sent: WalkEffect[] =
       event.work === null
@@ -225,7 +219,7 @@ function settled(state: WalkState, event: WalkFact<"settled">): WalkNext {
       waiting: forgotten(walk.waiting, event.to.id),
     });
 
-    // Nothing ever arrived: there is no work here and none behind this agent — whoever waited is let down.
+    // Nothing arrived: no work here or behind this agent, so whoever waited is let down.
     if (stood.arrived.length === 0) {
       return {
         state: cleared,
@@ -264,7 +258,7 @@ function settled(state: WalkState, event: WalkFact<"settled">): WalkNext {
     waiting: forgotten(walk.waiting, event.to.id),
   });
 
-  // Nothing arrived at all: there is no work to do here, and none behind this agent either.
+  // Nothing arrived: no work here or behind this agent.
   if (stood.arrived.length === 0) {
     return {
       state: released,
@@ -296,8 +290,8 @@ function settled(state: WalkState, event: WalkFact<"settled">): WalkNext {
 }
 
 /**
- * An agent that will not answer in this run lets down whoever waited on it, and the release walks on down
- * the lines: a point with one supplier simply passes it along, a converging point settles that supplier with nothing.
+ * An agent that will not answer in this run lets down whoever waited on it; the release passes through a
+ * single-supplier point and settles a converging point's supplier with nothing.
  */
 function released(state: WalkState, event: WalkFact<"released">, config: ProjectConfig): WalkNext {
   const effects: WalkEffect[] = [];
@@ -320,7 +314,7 @@ function released(state: WalkState, event: WalkFact<"released">, config: Project
 
       const awaited = awaitedSuppliers(config, event.startAgentId, to.id);
 
-      // Nobody was waiting on this line, so there is nothing here to release.
+      // Nobody was waiting on this line; nothing to release.
       if (!awaited.includes(atId)) {
         continue;
       }
@@ -356,8 +350,8 @@ function released(state: WalkState, event: WalkFact<"released">, config: Project
 }
 
 /**
- * A line that could not be taken: nothing ever goes down it. A converging point at its end is settled with
- * nothing, so it does not wait for what will never come; an agent standing alone lets down whoever waits behind.
+ * A line that could not be taken: nothing goes down it. A converging point at its end settles it with nothing; an agent
+ * standing alone lets down whoever waits behind.
  */
 function notTaken(state: WalkState, line: LineNotTaken, config: ProjectConfig): WalkNext {
   const { fromId, to, awaited, startAgentId, runKey } = line;
@@ -388,15 +382,15 @@ function notTaken(state: WalkState, line: LineNotTaken, config: ProjectConfig): 
 }
 
 /**
- * The answer takes its lines out. Every link says its own row, taken or not, and hands the work on: to an agent
- * standing alone at once, to a converging point as one supplier of its wait, and down an untaken link never.
+ * The answer's lines go out: each link says its own row, taken or not, and hands the work on: at once to an agent
+ * alone, as one supplier's wait to a converging point, never down an untaken link.
  */
 function handedOn(state: WalkState, event: WalkFact<"handedOn">, config: ProjectConfig): WalkNext {
   const effects: WalkEffect[] = [];
   const walk = state.walks[event.runKey];
   let standing = state;
 
-  // A walk the machine does not hold hands nothing on — the id found nothing, and standing still says so.
+  // An unknown walk hands nothing on; standing still says so.
   if (walk === undefined) {
     return {
       state,
@@ -445,7 +439,7 @@ function handedOn(state: WalkState, event: WalkFact<"handedOn">, config: Project
       attached: [],
     };
 
-    // One live supplier is not a converging point: the work goes in the moment it arrives.
+    // One live supplier is not a converging point: the work goes in as it arrives.
     if (awaited.length < 2) {
       effects.push({
         kind: "askAgent",
@@ -482,12 +476,12 @@ function handedOn(state: WalkState, event: WalkFact<"handedOn">, config: Project
 }
 
 /**
- * The person put a question. The walk begins with the question written down, even where it reaches nobody, and
- * a point left waiting by the walk that is over is let down: its wait held only until a new walk began.
+ * The person put a question. The walk begins with the question written down, even if it reaches nobody, and the waits
+ * of walks that are over are let down.
  */
 function put(state: WalkState, event: WalkFact<"put">): WalkNext {
-  // A conversation walks one walk at a time — while a turn of this stream is out, the hand under the field
-  // is «ЗУПИНИТИ» and nothing is sent. Another conversation is «+ НОВИЙ ЧАТ», and it walks beside this one.
+  // One walk at a time per conversation: while a turn of this stream is out, the button is «ЗУПИНИТИ» and nothing is
+  // sent; another conversation is «+ НОВИЙ ЧАТ».
   if (isWalking(state)) {
     return {
       state,
@@ -512,7 +506,7 @@ function put(state: WalkState, event: WalkFact<"put">): WalkNext {
         fromAgentId: null,
         fromStepIds: event.fedFrom,
         seconds: null,
-        // The attached files ride with the person's own words into the turn; the stream shows neither.
+        // Attached files ride with the person's words into the turn; the stream shows neither.
         attached: event.attached,
       },
     ],
@@ -532,9 +526,9 @@ function put(state: WalkState, event: WalkFact<"put">): WalkNext {
         runKey: event.runKey,
         questionId: event.questionId,
         askedAt: event.askedAt,
-        // The row this walk writes into is the conversation's, older than the walk whenever one was asked.
+        // The row this walk writes into is the conversation's, older than the walk once one was asked.
         runId: state.flowRunId,
-        // The row is named by the agent it began with, as that agent stands now.
+        // The row is named by the agent it began with, as it stands now.
         agent: event.agent,
         asked: event.text,
       },
@@ -544,8 +538,8 @@ function put(state: WalkState, event: WalkFact<"put">): WalkNext {
 }
 
 /**
- * Work was put to an agent. A stopped walk begins nothing, and a switched-off agent takes nothing — said as the
- * question that stayed, never in silence. Whatever else the agent is doing is no wall.
+ * Work was put to an agent. A stopped walk begins nothing; a switched-off agent takes nothing and the question stays,
+ * said aloud. Other work the agent is doing is no wall.
  */
 function asked(state: WalkState, event: WalkFact<"asked">): WalkNext {
   const [first] = event.incoming;
@@ -569,8 +563,8 @@ function asked(state: WalkState, event: WalkFact<"asked">): WalkNext {
   const saying = wordsGiven(event, walk);
 
   /**
-   * Only the person's question reaches a switched-off agent; work down a line stops at the link. The words stand
-   * in the stream all the same, with the row saying why they stayed, and the walk is over before it began.
+   * Only the person's question reaches a switched-off agent; work down a line stops at the link. The words stand in the
+   * stream with the row saying why they stayed, and the walk ends before it began.
    */
   if (!event.agent.isActive) {
     return {
@@ -612,21 +606,21 @@ function asked(state: WalkState, event: WalkFact<"asked">): WalkNext {
   };
 }
 
-/** The words a turn was given, said in the stream — the person's own, or what arrived down each line. */
+/** The words a turn was given, said in the stream: the person's own, or what arrived down each line. */
 function wordsGiven(event: WalkFact<"asked">, walk: Walk): WalkEffect {
   return {
     kind: "sayAsked",
     runKey: event.runKey,
     agentId: event.agent.id,
     incoming: event.incoming,
-    // Every word of this walk stands in the block of the question that began it — the walk names it.
+    // Every word of the walk stands in the block of the question that began it.
     questionId: walk.questionId,
     askedAt: walk.askedAt,
     isAgain: event.isAgain,
   };
 }
 
-/** The turn itself, put to the provider with the words it is to work on. */
+/** The turn itself, put to the provider with the words it works on. */
 function turnPut(event: WalkFact<"asked">, first: IncomingWork): WalkEffect {
   return {
     kind: "askMachine",
@@ -638,7 +632,7 @@ function turnPut(event: WalkFact<"asked">, first: IncomingWork): WalkEffect {
     runKey: event.runKey,
     isAgain: event.isAgain,
     startedAt: event.startedAt,
-    // A person's words go in as they were typed, and work that came by a line goes in as it was said.
+    // A person's words go in as typed; work that came by a line as it was said.
     asked:
       first.fromAgentId === null
         ? askedWithAttached(first.text, first.attached)
@@ -651,26 +645,25 @@ function turnPut(event: WalkFact<"asked">, first: IncomingWork): WalkEffect {
 }
 
 /**
- * The turn is back: the agent is free and the words stop arriving. Only an answer walks on — a fall, a cut turn
- * and one that never began each end the walk, and a question that never went is given back to its field.
+ * The turn is back: the agent is free and words stop arriving. Only an answer walks on; a fall, a cut turn or one that
+ * never began ends the walk.
  */
 function answered(state: WalkState, event: WalkFact<"answered">, config: ProjectConfig): WalkNext {
   const ledger = state.ledgers[event.runKey] ?? null;
-  // Every word of this walk stands in the block of the question that began it — the walk names it.
+  // Every word of the walk stands in the block of the question that began it.
   const walk = state.walks[event.runKey];
   const said = tidyAnswer(event.answer.text);
-  // The walk goes on through the agent's own words alone; a fall, a cut turn or one that never began
-  // takes no line out.
+  // The walk goes on through the agent's own words alone; a fall, a cut turn or one that never began takes no line out.
   const goesOn = !event.answer.isFailure && !event.answer.isCut && event.answer.notStarted === null && said !== "";
-  // A question that never went is not given back to the field — it stands in the stream and in the record
-  // the moment it is asked, and the field is the person's to write the next one in.
+  // A question that never went is not given back to the field; it already stands in the stream and record, and the
+  // field is free for the next one.
   let standing: WalkState = {
     ...state,
-    // The turn that came back is forgotten by its own id; another turn of this agent is not this one.
+    // The returned turn is forgotten by its own id; another turn of the same agent is not this one.
     out: forgotten(state.out, event.turnId),
   };
 
-  // A turn of a walk the machine does not hold is forgotten and nothing more: the id found nothing.
+  // A turn of a walk the machine does not hold is only forgotten.
   if (walk === undefined) {
     return {
       state: standing,
@@ -681,8 +674,7 @@ function answered(state: WalkState, event: WalkFact<"answered">, config: Project
   // The lines out of this turn, worked out once from the lines drawn out of the agent.
   const out = goesOn ? linkOuts(config, event.agent) : [];
   const effects: WalkEffect[] = [answerCard(event, walk, ledger, said)];
-  // A turn that fell said nothing of its own, and what came back instead was the provider's sentence: the
-  // record keeps it, so a run opened tomorrow says why it fell and not merely that it did.
+  // A fallen turn said nothing itself; the provider's sentence is recorded so a later-opened run says why it fell.
   const written = said === "" ? (event.answer.fell ?? "") : said;
 
   // A turn that never began is a step too, so a walk broken that way survives closing.
@@ -695,7 +687,7 @@ function answered(state: WalkState, event: WalkFact<"answered">, config: Project
   standing = next.state;
   effects.push(...next.effects);
 
-  // Everything this turn set going is going now: if nothing else is out, the walk is over.
+  // Everything this turn set going is going now; if nothing else is out, the walk is over.
   if (ledger !== null) {
     effects.push({
       kind: "turnBack",
@@ -721,7 +713,7 @@ function answerCard(event: WalkFact<"answered">, walk: Walk, ledger: RunLedger |
       asked: event.asked,
       fedBy: fedStepIds(ledger, event.incoming),
       said,
-      // Every word of this walk stands in the block of the question that began it — the walk names it.
+      // Every word of the walk stands in the block of the question that began it.
       questionId: walk.questionId,
       askedAt: walk.askedAt,
       startedAt: event.startedAt,
@@ -731,7 +723,7 @@ function answerCard(event: WalkFact<"answered">, walk: Walk, ledger: RunLedger |
   };
 }
 
-/** The same turn as the record takes it: what it ran with, kept as it stood then, and where it handed on. */
+/** The turn as the record takes it: what it ran with, as it stood then, and where it handed on. */
 function writtenStep(event: WalkFact<"answered">, config: ProjectConfig, said: string, out: LinkOut[]): WalkEffect {
   return {
     kind: "writeTurn",
@@ -758,7 +750,7 @@ function writtenStep(event: WalkFact<"answered">, config: ProjectConfig, said: s
   };
 }
 
-/** The answer as the lines out of it hear it — the words, what they cost, and how long they took. */
+/** The answer as the lines out of it receive it: the words, their cost, and their duration. */
 function handOut(event: WalkFact<"answered">, said: string, out: LinkOut[]): WalkFact<"handedOn"> {
   return {
     kind: "handedOn",
@@ -773,8 +765,8 @@ function handOut(event: WalkFact<"answered">, said: string, out: LinkOut[]): Wal
 }
 
 /**
- * A turn that answered nothing is the end of its walk — the walk is marked before anything else, so no
- * turn of it begins after, and whoever waited on this agent is let down.
+ * A turn that answered nothing ends its walk: the walk is marked first so no turn of it begins after, and whoever
+ * waited on this agent is let down.
  */
 function brokeOff(state: WalkState, event: WalkFact<"answered">, config: ProjectConfig): WalkNext {
   const cut = cutWalks(state, event.runKey);
@@ -796,8 +788,8 @@ function brokeOff(state: WalkState, event: WalkFact<"answered">, config: Project
 }
 
 /**
- * «СПИТАТИ ЩЕ РАЗ» was pressed under one turn. The act is used up the moment it is pressed, and the record is
- * asked for the walk to pick up. Without a row of its own the stream has nothing to read.
+ * «СПИТАТИ ЩЕ РАЗ» pressed under one turn: the act is used up at once and the record is asked for the walk to pick up;
+ * a stream without a row has nothing to read.
  */
 function sayAgain(state: WalkState, event: WalkFact<"sayAgain">): WalkNext {
   const standing: WalkState = {
@@ -819,8 +811,8 @@ function sayAgain(state: WalkState, event: WalkFact<"sayAgain">): WalkNext {
         kind: "askAgain",
         runId: state.flowRunId,
         questionId: event.said.questionId,
-        // The walk names the question, and never the hour — two questions of one breath differ by
-        // milliseconds, and a repeat put under somebody else's words is worse than no repeat at all.
+        // The walk names the question, not the hour; two questions can differ by milliseconds, and a repeat under the
+        // wrong words is worse than none.
         walkId: event.said.walkId,
         notSentTo: event.said.from === "notSent" ? event.said.otherAgentId : null,
       },
@@ -828,8 +820,8 @@ function sayAgain(state: WalkState, event: WalkFact<"sayAgain">): WalkNext {
   };
 }
 /**
- * A question's walk picked up where it broke: the walk begins again, what arrived and was never taken up goes
- * in, the question that never went is put, and every turn that did not answer runs again word for word.
+ * A question's walk picked up where it broke: the walk begins again, unconsumed arrivals go in, a question that never
+ * went is put, and every turn that did not answer runs again word for word.
  */
 function repeated(state: WalkState, event: WalkFact<"repeated">, config: ProjectConfig): WalkNext {
   const begun = pickedUp(state, event);
@@ -841,20 +833,20 @@ function repeated(state: WalkState, event: WalkFact<"repeated">, config: Project
     effects: [
       ...begun.effects,
       ...arrived.effects,
-      // The question that never went stands between the two: it is nobody's arrival and no turn to run again.
+      // The question that never went is nobody's arrival and no turn to run again.
       ...questionNeverPut(event, config),
       ...again.effects,
     ],
   };
 }
 
-/** The walk stands again on the row and the question it already has; the repeat opens neither. */
+/** The walk stands again on the row and question it already has; the repeat opens neither. */
 function pickedUp(state: WalkState, event: WalkFact<"repeated">): WalkNext {
   return {
     state: {
       ...state,
       walks: {
-        // A point left waiting by a walk that is over holds its pill only until a new walk begins.
+        // Waits left by walks that are over hold their pills only until a new walk begins.
         ...withoutOverWaits(state),
         [event.runKey]: begunWalk(event.questionId, event.askedAt, event.runId),
       },
@@ -872,8 +864,8 @@ function pickedUp(state: WalkState, event: WalkFact<"repeated">): WalkNext {
 }
 
 /**
- * Work that reached a point and was never taken up goes in first, so a point waiting on two suppliers
- * already holds one. A neighbour the repeat cannot reach is said, not skipped.
+ * Work that reached a point and was never taken up goes in first, so a point waiting on two suppliers already holds
+ * one; a neighbour the repeat cannot reach is said, not skipped.
  */
 function workThatArrived(state: WalkState, event: WalkFact<"repeated">, config: ProjectConfig): WalkNext {
   let standing = state;
@@ -964,8 +956,8 @@ function workThatArrived(state: WalkState, event: WalkFact<"repeated">, config: 
 }
 
 /**
- * A question that never went left no step to run again, so the repeat puts that question itself. It is the
- * one case with nothing at all in the record: anything that did arrive or did run is the walk's own story.
+ * A question that never went left no step, so the repeat puts the question itself; the only case with nothing in the
+ * record.
  */
 function questionNeverPut(event: WalkFact<"repeated">, config: ProjectConfig): WalkEffect[] {
   const aimed =
@@ -1000,8 +992,8 @@ function questionNeverPut(event: WalkFact<"repeated">, config: ProjectConfig): W
 }
 
 /**
- * Every turn that did not answer runs again word for word. An agent the repeat cannot reach is said by
- * whoever fed it — a turn the person asked has no feeder, so the row is about the question itself.
+ * Every turn that did not answer runs again word for word. An unreachable agent is said by whoever fed it; a person's
+ * turn has no feeder, so the row is about the question itself.
  */
 function turnsToRunAgain(state: WalkState, event: WalkFact<"repeated">, config: ProjectConfig): WalkNext {
   let standing = state;
@@ -1074,7 +1066,7 @@ function turnsToRunAgain(state: WalkState, event: WalkFact<"repeated">, config: 
   };
 }
 
-/** The line one agent's work came by, so a walk picked up lights the canvas as a live one does. */
+/** The line one agent's work came by, so a picked-up walk lights the canvas like a live one. */
 function lineTo(config: ProjectConfig, fromAgentId: string | null, toAgentId: string): string | null {
   return config.links.find((link) => link.from === fromAgentId && link.to === toAgentId)?.id ?? null;
 }

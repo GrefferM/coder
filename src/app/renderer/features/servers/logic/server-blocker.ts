@@ -2,8 +2,7 @@ import { SERVER_ADDRESS_DROPPED_LABEL, SERVER_NAME_DROPPED_LABEL, SERVER_RUN_DRO
 import type { ServerFormValues } from "../interfaces";
 
 /**
- * Required fields still empty, by the names the leave question uses. Only the half the switch points at is asked
- * for: the other one keeps whatever was typed in it, and nothing is owed for a kind this server is not.
+ * Required fields still empty, by the names the leave question uses; only the half the switch points at is asked for.
  */
 export function serverBlocker(values: ServerFormValues): string[] {
   const missing: string[] = [];

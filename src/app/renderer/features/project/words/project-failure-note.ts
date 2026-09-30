@@ -39,10 +39,8 @@ export function projectFailureNote(reason: unknown): string {
 }
 
 /**
- * The broken place the refusal carried, or null where it named none. It is read off the say after the first
- * separator, so a thing's own name that holds the separator does not split the line; a say that is not the
- * structure this build writes is read as no place, and the plainer note stands — the one contract the boundary
- * can drift on.
+ * The broken place the refusal carried, or null if it named none; read off the text after the first separator, and
+ * unparseable text yields null.
  */
 function brokenPlaceOf(message: string): BrokenPlace | null {
   const at = message.indexOf(REFUSAL_SAID_SEPARATOR);

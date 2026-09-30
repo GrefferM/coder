@@ -25,33 +25,16 @@ import {
 import type { MarkWindowProps } from "./interfaces";
 
 /**
- * What a mark of the arc says under the pointer. Over a «+» it holds **only what is folded** — the marks that
- * kept their places are already under the hand; over a mark of its own it holds that one name, because a
- * mini-sphere that says nothing under the cursor has to be pressed to be read.
- *
- * A line leads where its own mark would have led, straight to that source's page, and the window shuts behind
- * it: it was a road and not a place. It is bound to the mark rather than to the screen, so any move of the
- * canvas puts it away.
- *
- * It is kept small — it stands beside a sphere, not over a panel — and carries no row of keys along its bottom:
- * the scene answers the hand, the panel's fields answer the keyboard.
- *
- * It opens on the **pointer** and not on a press: a list you have to click open to find out what is behind a «+»
- * is a list you open twice. The press still chooses a line, and the window says when it holds the hand, so
- * leaving the mark does not snatch it away mid-reach.
- *
- * No count stands beside a server's name: a name cut short for a number is a worse line than one without it.
+ * What a mark of the arc says under the pointer. Over a «+» it lists only what is folded; over a mark of its own, that
+ * one name. A line leads to its source's page and shuts the window. Bound to the mark, so any canvas move closes it; no
+ * key row.
  */
 export function MarkWindow({ at, head, rows, onOpen, onDismiss, onHold }: MarkWindowProps) {
   const [chosen, setChosen] = useState(0);
-  // «вгору, а при браку місця — вниз»; the canvas itself does not move — the hand pulls it, not it the hand.
+  // Opens above the mark, or below when there is no room; the canvas itself does not move.
   const isAbove = at.top > window.innerHeight - at.bottom;
 
-  /**
-   * It is not one of the things that stand **over** the app: it came from the pointer resting somewhere and it
-   * goes when the pointer leaves. Counting it among them would put Escape in its hands, and Escape has one word
-   * on this page — it puts the side panel away — which a window nobody asked to open must not take.
-   */
+  /** Not counted among the windows over the app: it would take Escape, which belongs to the side panel. */
   useWindowDismiss(true, onDismiss, "click", false);
 
   return (
@@ -125,7 +108,7 @@ export function MarkWindow({ at, head, rows, onOpen, onDismiss, onHold }: MarkWi
             }}
           >
             <Dot color={row.color} size={MARK_WINDOW_DOT_SIZE_PX} />
-            {/* The name and nothing else: it is what the line is, and it takes the whole width to say it. */}
+            {/* The name alone, at full width. */}
             <span className="flex-fill text-truncate">{row.name}</span>
           </button>
         ))}

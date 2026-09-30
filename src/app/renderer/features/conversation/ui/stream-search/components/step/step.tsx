@@ -14,10 +14,7 @@ import {
 } from "../../constants";
 import type { StepProps } from "./interfaces";
 
-/**
- * One small act inside the search field — the two arrows Enter's walk is offered by, and the cross that
- * takes the word out. One shape for all three, because they stand side by side and are the same size of act.
- */
+/** One small act in the search field: the two arrows and the cross that clears the word; one shape for all three. */
 export function Step({
   label,
   path,
@@ -27,7 +24,7 @@ export function Step({
   stroke = STREAM_SEARCH_STEP_ICON_STROKE,
 }: StepProps) {
   const { isLit, isFocused, handlers } = useInteraction();
-  // A wordless control says what it is in the app's own window, and never in the browser's `title`.
+  // A wordless control names itself through the app's hint, not the browser `title`.
   const said = useHint<HTMLButtonElement>(label, isLit, isFocused);
 
   return (

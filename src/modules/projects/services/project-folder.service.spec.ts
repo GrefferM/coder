@@ -13,7 +13,7 @@ const PROMPT = <ProjectPromptDto>(<unknown>{
   text: "Ти правиш код.",
 });
 
-/** A folder of its own for each test, in the system's temporary place; nobody's project is touched. */
+/** A fresh folder per test in the system temporary directory. */
 let folder: string;
 let files: ProjectFolder;
 
@@ -46,7 +46,7 @@ describe("ProjectFolder · where the files lie", () => {
     assert.equal(files.partFile("agents", "agent-1"), "agents/agent-1.yaml");
     assert.equal(files.partPath("/tmp/coder", "agents", "agent-1"), "/tmp/coder/agents/agent-1.yaml");
     assert.equal(files.promptFile(PROMPT), "prompts/prompt-1.md");
-    // The prompt's own file is where the project says it is, and not where the id would put it.
+    // The prompt's path is where the project says, not where its id would put it.
     assert.equal(files.promptPath("/tmp/coder", PROMPT), "/tmp/coder/prompts/prompt-1.md");
   });
 
@@ -58,7 +58,7 @@ describe("ProjectFolder · where the files lie", () => {
   });
 
   it("gives a file's text, and nothing at all where there is no file", async () => {
-    // Nothing is not an empty file: one says «немає», the other says «є, і порожній».
+    // A missing file is distinct from an empty one.
     await put("project.yaml", "name: coder\n");
     await put("empty.yaml", "");
 
@@ -94,12 +94,12 @@ describe("ProjectFolder · writing and moving", () => {
     await files.writeAtomically(at, "Ти правиш код.");
 
     assert.equal(await files.textOf(at), "Ти правиш код.");
-    // The write goes through a temporary name, and that name must not be left lying in the person's folder.
+    // The temporary name of a write is not left in the folder.
     assert.deepEqual(await readdir(path.join(folder, "prompts")), ["prompt-1.md"]);
   });
 
   it("does not touch a file that already holds exactly this text", async () => {
-    // A write that changes nothing still changes the file's hour, and a folder watched from outside would say so.
+    // A write that changes nothing leaves the file's modification time alone.
     const at = await put("project.yaml", "name: coder\n");
     const before = await stat(at);
 
@@ -127,7 +127,7 @@ describe("ProjectFolder · writing and moving", () => {
   });
 
   it("says nothing about moving a file that is not there", async () => {
-    // The body will be written at the new path anyway, so a missing source is not a failure to shout about.
+    // A missing source is not a failure; the body is written at the new path anyway.
     const to = path.join(folder, "prompts", "prompt-2.md");
 
     await files.moveIfThere(path.join(folder, "prompts", "nothing.md"), to);

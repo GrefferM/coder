@@ -25,7 +25,7 @@ const at = {
 
 describe("LinkPill", () => {
   it("says which way the line runs, each end in its own agent's colour", () => {
-    // A line has a direction, and the pill is where that direction is readable.
+    // The pill shows the line's direction.
     render(<LinkPill from={from} to={to} at={at} onDelete={() => {}} />);
 
     expect(screen.getByText("Шукач")).toHaveStyle({

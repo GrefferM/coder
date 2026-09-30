@@ -59,7 +59,7 @@ describe("PromptCard", () => {
   });
 
   it("keeps the word count and the two acts for the chosen card alone", async () => {
-    // A list of cards stays a list; what one card can do belongs to the one that is chosen.
+    // A card list stays a list; actions belong to the chosen card.
     const said = acts();
     const { rerender } = render(<PromptCard prompt={prompt()} agentCount={1} isChosen={false} {...said} />);
 

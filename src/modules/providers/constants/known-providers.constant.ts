@@ -1,6 +1,6 @@
 import type { KnownProvider } from "../interfaces";
 
-/** The known providers, in the order they are offered, local ones last. */
+/** The known providers in offering order, local ones last. */
 export const KNOWN_PROVIDERS: KnownProvider[] = [
   {
     id: "anthropic",
@@ -35,15 +35,12 @@ export const KNOWN_PROVIDERS: KnownProvider[] = [
     customaryAddress: null,
   },
   {
-    /**
-     * Someone else's machine, but the address is the person's own: a serverless endpoint carries its id in the
-     * path, so a key alone says nothing about where to knock. Asked for both, and pinged like no remote one is.
-     */
+    /** Remote, yet asked for both key and address (a serverless endpoint carries its id in the path); never pinged. */
     id: "runpod",
     name: "RunPod",
     kind: "remote",
     needs: ["key", "address"],
-    // Its queue carries a conversation and nothing else: there is no way to hand a function to the model.
+    // Its queue carries a conversation only; functions cannot be handed to the model.
     takesTools: false,
     customaryAddress: null,
   },

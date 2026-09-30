@@ -1,6 +1,6 @@
 /** A call that did not work, in the server's own words. */
 export interface McpCallFailure {
-  /** The same id the record keeps and the stream draws for this call. */
+  /** The id the record keeps and the stream draws for this call. */
   callId: string;
   functionName: string;
   said: string;
@@ -8,11 +8,11 @@ export interface McpCallFailure {
 }
 
 /**
- * What the calls to one server have come to since it was connected: a server can stand green and answer no call
- * at all. Counted from the connection, so a restart is another chance, and written down nowhere.
+ * What calls to one server have come to since it connected (a green server may answer no call). Counted per connection,
+ * so a restart resets it; not persisted.
  */
 export interface McpCallsState {
-  /** Failures one after another; any call that works puts it back to none. */
+  /** Consecutive failures; a successful call resets it to zero. */
   failedInARow: number;
   hasWorked: boolean;
   lastFailure: McpCallFailure | null;

@@ -40,10 +40,10 @@ import { Mark, TextButton, Words } from "../../../../../../components";
 import { AGENT_CHAT_FOUND_EDGE, AGENT_CHAT_FOUND_EDGE_GONE, AGENT_CHAT_FOUND_FADE } from "../../constants";
 import type { CeilingRow, NotStartedCardProps } from "./interfaces";
 
-/** A turn that never began — one heading for the whole family, the reason's word, and the act. */
+/** A turn that never began: shared heading, the reason's word, and the act. */
 export function NotStartedCard({ reason, note, wouldGo, isAsked, onAct, isFound }: NotStartedCardProps) {
   const card = NOT_STARTED_ENDS[reason];
-  // The card says why it offers no second try; the rest say the words are back in the field.
+  // A ceiling refusal explains why there is no retry; other reasons say the words are back in the field.
   const under = wouldGo === null ? (isAsked ? NOT_STARTED_DRAFT_NOTE : null) : OVER_CEILING_NO_RETRY_NOTE;
   /** The breakdown's lines, in the order they add up. */
   const rows: CeilingRow[] =
@@ -68,7 +68,7 @@ export function NotStartedCard({ reason, note, wouldGo, isAsked, onAct, isFound 
         padding: NOT_STARTED_CARD_PADDING_PX,
         borderRadius: NOT_STARTED_CARD_BORDER_RADIUS_PX,
         border: `1px solid ${NOT_STARTED_CARD_BORDER_COLOR}`,
-        // The light that says where the search stopped, and lets go a moment later.
+        // Highlights where the search stopped, then fades.
         boxShadow: isFound === true ? AGENT_CHAT_FOUND_EDGE : AGENT_CHAT_FOUND_EDGE_GONE,
         transition: AGENT_CHAT_FOUND_FADE,
         background: NOT_STARTED_CARD_BACKGROUND_COLOR,
@@ -175,7 +175,7 @@ export function NotStartedCard({ reason, note, wouldGo, isAsked, onAct, isFound 
             >
               {OVER_CEILING_CEILING_LABEL}
             </span>
-            {/* A ceiling is the person's own number and stands as they wrote it, ungrouped. */}
+            {/* A ceiling is the person's own number, shown as written and ungrouped. */}
             {wouldGo.ceiling}
           </div>
         </div>

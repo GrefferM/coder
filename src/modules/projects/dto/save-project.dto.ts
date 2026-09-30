@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from "class-validator";
 import { ProjectConfigDto } from "./project-config.dto";
 
-/** What saving a project takes: the folder it lives in, and the config, which the module owning the file validates. */
+/** Saving a project: its folder and its config, validated by the module owning the file. */
 export class SaveProjectDto {
   @IsString()
   @IsNotEmpty()

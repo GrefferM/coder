@@ -1,8 +1,8 @@
 import type { WalkAct } from "./walk-act.interface";
 
 /**
- * The world's hands the effects reach for: the adapter holds them, the machine only names the work. A hand
- * answers to the effect's own kind and takes the act itself, so no effect can reach the wrong hand.
+ * The world's hands the effects reach for, held by the adapter; each answers to an effect's kind and takes the act
+ * itself, so no effect reaches the wrong hand.
  */
 export interface WalkHands {
   askAgent: (act: WalkAct<"askAgent">) => void;

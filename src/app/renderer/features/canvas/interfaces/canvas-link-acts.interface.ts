@@ -2,6 +2,6 @@
 export interface CanvasLinkActs {
   onAdd: (fromAgentId: string, toAgentId: string) => void;
   onDelete: (linkId: string) => void;
-  /** Which link stands chosen, so the page knows a destructive key belongs to it. */
+  /** The chosen link, so a destructive key can be routed to it. */
   onChosenChange: (linkId: string | null) => void;
 }

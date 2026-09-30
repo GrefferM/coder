@@ -15,12 +15,12 @@ function Page({
 
   return (
     <div>
-      {/* The head of the tab: a way back and a rail of its own. Roads, not fields. */}
+      {/* The head of the tab: a way back and a rail of its own; roads, not fields. */}
       <button type="button">назад</button>
 
       <div data-field>
         <span>ІМ&apos;Я</span>
-        {/* A slot's own action stands in its head, above the value; the walk came for the value. */}
+        {/* A slot's own action stands in its head, above the value; the walk goes to the value. */}
         <button type="button">закріпити</button>
         <input aria-label="ім'я" />
       </div>
@@ -31,13 +31,13 @@ function Page({
         <button type="button" aria-label="рожевий" aria-pressed={!isColorShut} disabled={isColorShut} />
       </div>
 
-      {/* A list of things to open: every row leads somewhere, and none of them is being filled in. */}
+      {/* A list of things to open: no row is a field. */}
       <div>
         <button type="button">run_lint</button>
         <button type="button">run_test</button>
       </div>
 
-      {/* The foot of the tab — drawn as the hand expects it, walked with the act that writes first. */}
+      {/* The foot of the tab: the act that writes is walked first. */}
       <div data-foot>
         <button type="button" data-action="cancel">
           скасувати
@@ -51,9 +51,8 @@ function Page({
 }
 
 /**
- * The key itself, not the walk a test library does in the browser's stead: `userEvent.tab()` moves the focus on
- * its own, which would pass whether this law was built or not. Here the event is all that is sent, and where the
- * focus lands afterwards is the hook's own doing.
+ * Sends only the key event; `userEvent.tab()` moves focus itself and would pass regardless. Where focus lands is the
+ * hook's doing.
  */
 function press(init: KeyboardEventInit = {}): KeyboardEvent {
   const event = new KeyboardEvent("keydown", {
@@ -94,7 +93,7 @@ describe("useFieldTab", () => {
   });
 
   it("counts a row of choices as one field, and lands on the one already chosen", () => {
-    // The colour is a field, not five fields — the choice inside it is one.
+    // The colour is one field; the choice inside it is one.
     render(<Page />);
 
     press();
@@ -110,12 +109,12 @@ describe("useFieldTab", () => {
     press();
     press();
 
-    // The rows stand between the last field and the foot, and the walk goes over them without a turn.
+    // Rows between the last field and the foot are walked over.
     expect(document.activeElement).toBe(save());
   });
 
   it("goes from the last field into the tab's foot, the act that writes first", () => {
-    // The road, not Enter — «Зберегти» comes before «Скасувати» though it is drawn after it.
+    // «Зберегти» comes before «Скасувати» in the walk though drawn after it.
     render(<Page />);
 
     press();
@@ -176,12 +175,12 @@ describe("useFieldTab", () => {
     press();
     press();
 
-    // Nothing in the colour slot can be pressed, so the name is the last field and the foot comes straight after.
+    // No pressable in the colour slot, so the name is the last field and the foot follows.
     expect(document.activeElement).toBe(save());
   });
 
   it("steps over an act the tab is not offering at all", () => {
-    // A shut act is not one of the answers, so the foot is the one act left in it and the walk says no more.
+    // A shut act is skipped, so the foot has one act left.
     render(<Page isSaveShut />);
 
     press();
@@ -192,7 +191,7 @@ describe("useFieldTab", () => {
   });
 
   it("still goes to a dimmed act, because the closed door is what the walk came to show", () => {
-    // The ring stands on it and Enter does nothing — the button says why it is shut, it does not hide.
+    // A dimmed act keeps the ring and ignores Enter.
     render(<Page isSaveDim />);
 
     press();
@@ -209,7 +208,7 @@ describe("useFieldTab", () => {
   });
 
   it("leaves the window's own keystrokes alone", () => {
-    // ⌘Tab and its like belong to the window and to the system; this law is about the bare key.
+    // ⌘Tab and its like are left to the window; only the bare key is handled.
     render(<Page />);
 
     const event = press({

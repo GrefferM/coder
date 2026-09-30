@@ -1,7 +1,7 @@
-/** Cost of one answer: tokens each way and the money at the answering model's prices, fixed on arrival. */
+/** Cost of one answer: tokens each way and money at the answering model's prices, fixed on arrival. */
 export interface ChatCost {
   inputTokens: number;
   outputTokens: number;
-  /** Nothing where the model carried no price, since the tokens are counted all the same. */
+  /** Null where the model carried no price; tokens are counted regardless. */
   money: number | null;
 }

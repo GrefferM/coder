@@ -16,9 +16,9 @@ export const AGENT_ACTIVE_DROPPED_LABEL = "стан";
 export const AGENT_PROMPT_CHANGE_LABEL = "промпт";
 export const AGENT_PROMPT_DROPPED_LABEL = "промпт";
 export const AGENT_NO_PROMPT_LABEL = "без промпта";
-/** The name a model field carries once the model behind it has lost its own file. */
+/** The name of a model field whose model lost its file. */
 export const AGENT_LOST_MODEL_NAME = "моделі немає";
-/** The name a prompt field carries once the prompt behind it has lost its own file. */
+/** The name of a prompt field whose prompt lost its file. */
 export const AGENT_LOST_PROMPT_NAME = "промпта немає";
 
 /** Names for the run-reach fields. */
@@ -27,7 +27,7 @@ export const AGENT_MAX_CALLS_DROPPED_LABEL = "максимум викликів"
 export const AGENT_TEMPERATURE_CHANGE_LABEL = "температура";
 export const AGENT_TEMPERATURE_DROPPED_LABEL = "температура";
 
-/** The two tool fields, each named as its own head names it on the tab. */
+/** The two tool fields, named as their heads on the tab. */
 export const AGENT_COMMANDS_CHANGE_LABEL = "команди";
 export const AGENT_COMMANDS_DROPPED_LABEL = "команди";
 export const AGENT_MCP_CHANGE_LABEL = "MCP";

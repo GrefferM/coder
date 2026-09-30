@@ -7,9 +7,9 @@ export interface PromptPickerProps {
   agents: Agent[];
   promptId: string | null;
   isChanged?: boolean;
-  /** The prompt this agent names has lost its file, so the field says that instead of «без промпта». */
+  /** The agent's prompt has lost its file: the field says so instead of «без промпта». */
   isLost?: boolean;
-  /** The field itself, so «ВІДКРИТИ ПРОМПТ» lands the cursor here. */
+  /** The field itself, receiving the cursor from «ВІДКРИТИ ПРОМПТ». */
   fieldRef?: RefObject<HTMLButtonElement | null>;
   onPromptIdChange: (promptId: string | null) => void;
 }

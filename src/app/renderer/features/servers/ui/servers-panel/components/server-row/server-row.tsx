@@ -42,15 +42,9 @@ import { TextAction } from "../../../../../../components";
 import type { ServerRowProps } from "./interfaces";
 
 /**
- * One server as the catalogue shows it — a dot for the connection, the name, and one line of facts. A fallen one
- * takes the trouble ground and carries «ЗАПУСТИТИ», which lets it go and starts it afresh.
- *
- * The head holds **at most one action** — the one the state asks for — and a chevron, which is not an action but
- * the sign that there is something to open. So the facts may be cut with an ellipsis while the name, the action
- * and the chevron are never squeezed.
- *
- * The chevron opens a **page** and not a card inside the row: a list of functions folded into one row leaves
- * the catalogue unreadable and every other server a screen away.
+ * One server in the catalogue: connection dot, name, one line of facts. The head holds at most one action, the one the
+ * state asks for, plus a chevron that opens the server's page. The facts may be cut with an ellipsis; the rest is never
+ * squeezed.
  */
 export function ServerRow({
   server,
@@ -64,32 +58,24 @@ export function ServerRow({
   onShowCall,
 }: ServerRowProps) {
   /**
-   * The clock counts up and there is no bar — how much is left is nobody's to know, and a bar would
-   * say it is. The seconds are told once a second, which is also what brings the second line on the twentieth.
+   * The clock counts up with no bar, since the time left is unknown; it ticks once a second, which also brings the second
+   * line on the twentieth.
    */
   const waited = useElapsedSeconds(askingSince ?? 0);
   const isAsking = askingSince !== null;
   const clock = isAsking ? elapsedClock(waited) : null;
   const hasFallen = !isAsking && look !== null && !look.isUp;
   const isUp = !isAsking && look !== null && look.isUp;
-  // A call that failed is a fact about calls, so it stands under the name and never in the dot.
+  // A failed call is a fact about calls: under the name, never in the dot.
   const lastFailure = isUp ? look.calls.lastFailure : null;
-  // The row that answers and works for nobody takes the trouble ground, while its dot stays green.
+  // A row that answers but works for nobody takes the trouble ground; its dot stays green.
   const worksForNobody = !isAsking && noneAnswered(look);
   const isTroubled = hasFallen || worksForNobody;
-  /**
-   * What the state asks for, and the head holds that one thing. A server nobody has a
-   * token for, or one whose variable has no value here, is not restarted — it is filled in, and starting it again
-   * without the thing it was missing would fail in exactly the same way.
-   */
-  // Being asked wins over what it said last time: the words of the old answer are about a server that is up
-  // or down, and this one is neither just now.
+  /** The one action the state asks for. A missing token or unset variable is filled in, not restarted. */
+  // Being asked wins over the last answer, which describes a server that is neither up nor down now.
   const trouble = isAsking ? null : serverTrouble(look);
   const isUnasked = trouble?.kind === "tokenMissing";
-  /**
-   * A server nobody has raised — never asked, or let go of by hand. Its dot is empty and it has no number to
-   * give; what it does have is a way back up, which «СКАСУВАТИ» would otherwise have taken away for good.
-   */
+  /** A server nobody has raised: never asked, or let go by hand. Empty dot, no number, and a way back up. */
   const isUnknown = !isAsking && look === null;
   const deed = isAsking ? null : serverDeed(look);
   const action =
@@ -111,8 +97,7 @@ export function ServerRow({
         }[deed];
 
   return (
-    // The whole row leads to the server's page — the words of a fall are part of the row, and a row that answers
-    // only where the name is has dead ground in it exactly where the eye stops to read.
+    // The whole row leads to the server's page.
     <div
       role="button"
       tabIndex={-1}
@@ -198,27 +183,25 @@ export function ServerRow({
           </svg>
         </div>
         {/*
-          The head holds the one thing the **state** asks for, and a server that simply stands answering asks for
-          nothing: what there is to do with its process lives on its page. The one being raised offers
-          «СКАСУВАТИ» below, beside the ceiling.
-        */}
+         * A server that simply answers asks for nothing; its process actions live on its page. One being raised offers
+         * «СКАСУВАТИ» below.
+         */}
         {action !== null && (
           <span
-            // The one action of the head is its own; pressing it must not also walk into the server's page.
+            // The head action must not also open the server's page.
             onClick={(press) => press.stopPropagation()}
-            // A flex box and not a line of text: a line reserves room under the action for letters that hang
-            // below the baseline, and the box then sits that much lower than the border drawn around it.
+            // A flex box, not a text line, which would reserve room under the action for descenders and sit lower than
+            // the border.
             className="d-flex"
             style={{
               flexShrink: 0,
               padding: SERVER_ROW_RESTART_PADDING,
               borderRadius: SERVER_ROW_RESTART_BORDER_RADIUS_PX,
-              // The trouble colour belongs to trouble alone: filling a hole in, letting a process go and
-              // raising one that never rose are all plain deeds, and only a row in trouble wears the red border.
+              // Only a row in trouble wears the red border.
               border: `1px solid ${isTroubled ? SERVER_ROW_FELL_BORDER_COLOR : SERVER_ROW_BORDER_COLOR}`,
             }}
           >
-            {/* A server that never fell is restarted, not started — and a new connection is a new chance. */}
+            {/* A server that never fell is restarted, not started. */}
             <TextAction label={action.label} isDanger={isTroubled} onClick={action.onPress} />
           </span>
         )}
@@ -236,12 +219,12 @@ export function ServerRow({
         </span>
       )}
       {lastFailure !== null && (
-        // «ПОКАЗАТИ ВИКЛИК» goes to the chat, so the press is its own and does not also open the server's page.
+        // «ПОКАЗАТИ ВИКЛИК» goes to the chat and does not also open the page.
         <span onClick={(press) => press.stopPropagation()}>
           <LastCall failure={lastFailure} isNews={!worksForNobody} onShow={() => onShowCall(lastFailure.callId)} />
         </span>
       )}
-      {/* The row has its own sentence for every trouble it knows; only a plain fall has nothing to say but this. */}
+      {/* Every known trouble has its own sentence; a plain fall has only this. */}
       {trouble?.kind === "fell" && look !== null && look.failure !== null && (
         <span
           style={{

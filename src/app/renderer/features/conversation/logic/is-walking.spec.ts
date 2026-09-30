@@ -44,7 +44,7 @@ describe("isWalking", () => {
   });
 
   it("counts a turn of the conversation on screen", () => {
-    // This is the walk «ЗУПИНИТИ» ends, and the one a second question would collide with.
+    // The walk «ЗУПИНИТИ» ends and a second question would collide with.
     expect(
       isWalking(
         state({
@@ -60,7 +60,7 @@ describe("isWalking", () => {
   });
 
   it("counts no turn of another conversation: it walks beside this one, not in it", () => {
-    // A walk let go with «+ НОВИЙ ЧАТ» goes on, and is neither drawn here nor stopped from here.
+    // A walk let go with «+ НОВИЙ ЧАТ» continues, neither drawn nor stoppable from here.
     expect(
       isWalking(
         state({
@@ -76,7 +76,7 @@ describe("isWalking", () => {
   });
 
   it("counts a turn of an opened run only while that run is the row on screen", () => {
-    // The walk of a run read back belongs to the screen exactly while the screen stands on its row.
+    // A read-back run's walk belongs to the screen only while the screen stands on its row.
     const out = {
       "turn-1": turnOut("walk-1"),
     };

@@ -38,8 +38,7 @@ export class ProjectAgentDto {
   @IsUUID()
   declare promptId: string | null;
 
-  // What this agent may call — declared commands and functions of MCP servers alike. One
-  // command, or one function of one server, is granted once; the same name on two servers is two different things.
+  // What this agent may call: declared commands and MCP server functions, each granted once.
   @IsArray()
   @ValidateNested({
     each: true,
@@ -53,7 +52,7 @@ export class ProjectAgentDto {
   @IsBoolean()
   declare isActive: boolean;
 
-  // A converging point waits for every supplier where this holds, or runs on each input on its own where it does not.
+  // Where true, a converging point waits for every supplier; otherwise it runs on each input separately.
   @IsBoolean()
   declare waitsForAll: boolean;
 
@@ -63,13 +62,13 @@ export class ProjectAgentDto {
   @IsNumber()
   declare y: number;
 
-  // Nothing where the file never carried the number; the field is empty and the agent says so.
+  // Empty where the file never carried the number.
   @IsOptional()
   @IsInt()
   @Min(AGENT_MAX_CALLS_LEAST)
   declare maxCalls: number | null;
 
-  // 0 holds to what it was handed, 1 puts it more freely; the same bounds for every provider.
+  // 0 sticks to the input, 1 is freer; same bounds for every provider.
   @IsOptional()
   @IsNumber()
   @Min(AGENT_TEMPERATURE_LEAST)
@@ -77,7 +76,7 @@ export class ProjectAgentDto {
   declare temperature: number | null;
 }
 
-/** What makes a grant the same grant; the handle is the boundary's, so the file and the screens agree on it. */
+/** Identity of a grant; the handle is the boundary's. */
 function grantKey(grant: ToolGrantDto): string {
   return handleOf(sourceOf(grant));
 }

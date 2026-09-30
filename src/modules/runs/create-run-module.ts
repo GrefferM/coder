@@ -5,8 +5,7 @@ import type { DataSource } from "typeorm";
 import type { RunModule } from "./interfaces";
 
 export function createRunModule(dataSource: DataSource): RunModule {
-  // Every service stands over one store, so what the writer wrote is what the reader reads, the search finds and
-  // the keeper sweeps.
+  // All services share one store.
   const store = new TypeormRunStore(runTablesOf(dataSource));
   const keeper = new RunKeeper(store);
 

@@ -14,7 +14,7 @@ import {
 } from "../../constants";
 import type { ParametersListProps } from "./interfaces";
 
-/** The command's parameters — a row each, the one being written as a card, and the way to add one. */
+/** The command's parameters: a row each, the open one as a card, and the add action. */
 export function ParametersList({
   parameters,
   run,

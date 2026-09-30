@@ -8,13 +8,13 @@ import type { PromptFormValues } from "../../interfaces";
 import type { PromptWrites } from "../use-prompt-writes";
 import type { PromptSection } from "./interfaces";
 
-/** Holds the editor's draft, so every way out meets the question. */
+/** Holds the editor's draft, so every exit meets the question. */
 export function usePromptSection(project: OpenProject, writes: PromptWrites): PromptSection {
   const [chosenPromptId, setChosenPromptId] = useState<string | null>(null);
   const [editedPromptId, setEditedPromptId] = useState<string | "new" | null>(null);
-  // The prompt whose deletion is being asked about, over the canvas.
+  // The prompt whose deletion is being asked about.
   const [armedPromptId, setArmedPromptId] = useState<string | null>(null);
-  // What the editor has typed and not written; `null` while the editor is not standing.
+  // The editor's unwritten draft; `null` while the editor is closed.
   const [form, setForm] = useState<PromptFormValues | null>(null);
 
   const editedPrompt = project.config.prompts.find((prompt) => prompt.id === editedPromptId) ?? null;
@@ -30,14 +30,14 @@ export function usePromptSection(project: OpenProject, writes: PromptWrites): Pr
   const saved = promptFormValues(editedPrompt);
   const changes = form === null ? [] : promptChanges(saved, form);
   const isDirty = changes.length > 0;
-  // The library names a prompt by its name — in the agent's tab, in the card and in the question that deletes it.
+  // Prompts are named by their name, so a name must be unique in the library.
   const isNameTaken =
     form !== null &&
     nameTaken(
       form.name,
       project.config.prompts.filter((prompt) => prompt.id !== editedPrompt?.id).map((prompt) => prompt.name),
     );
-  // What the page's one question shows and answers while the editor holds a draft.
+  // What the page's single question shows and answers while a draft exists.
   const unsaved: UnsavedWork | null =
     !isDirty || form === null
       ? null
@@ -50,14 +50,14 @@ export function usePromptSection(project: OpenProject, writes: PromptWrites): Pr
           discard: () => setForm(saved),
         };
 
-  /** Opens the card and the editor together; `null` opens the editor on a prompt not yet written. */
+  /** Opens the card and the editor together; `null` opens the editor on a new prompt. */
   function edit(promptId: string | null) {
     setChosenPromptId(promptId);
     setEditedPromptId(promptId ?? "new");
     setForm(promptFormValues(project.config.prompts.find((prompt) => prompt.id === promptId) ?? null));
   }
 
-  /** Puts a change into the editor's draft, leaving the rest of it standing. */
+  /** Merges a change into the draft. */
   function editForm(patch: Partial<PromptFormValues>) {
     setForm((current) =>
       current === null
@@ -92,7 +92,7 @@ export function usePromptSection(project: OpenProject, writes: PromptWrites): Pr
     setForm(null);
   }
 
-  /** The question's yes: the prompt goes, and its card's open state with it. */
+  /** Confirms deletion: removes the prompt and its card's open state. */
   function confirmDelete() {
     if (armedPrompt === null) {
       return;
@@ -114,7 +114,7 @@ export function usePromptSection(project: OpenProject, writes: PromptWrites): Pr
     editedPrompt,
     editedPromptAgentNames,
     form,
-    // A name only counts as moved once there is a written one to move away from.
+    // A name counts as moved only once a written one exists.
     wasName: editedPrompt === null || form === null || saved.name === form.name ? null : saved.name,
     isNameTaken,
     isDirty,

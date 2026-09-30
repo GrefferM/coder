@@ -22,7 +22,7 @@ const SERVER_ID = "99999999-9999-4999-8999-999999999999";
 const STUB = path.join(__dirname, "..", "testing", "stub-server.cjs");
 
 function aServer(patch: Partial<ProjectMcpServerDto> = {}): ProjectMcpServerDto {
-  // No cast here: a field added to the server is a field this fixture must answer for, and a cast would hide it.
+  // No cast: a field added to the server must be answered for in this fixture.
   return {
     id: SERVER_ID,
     name: "stub",
@@ -35,7 +35,7 @@ function aServer(patch: Partial<ProjectMcpServerDto> = {}): ProjectMcpServerDto 
   };
 }
 
-/** The machine's keychain, as far as this client is concerned — read by key, or nothing. */
+/** The machine's keychain for this client: read by key, or nothing. */
 const held = new Map<string, string>();
 const keychain: McpSecretStore = {
   value: (key) => Promise.resolve(held.get(key) ?? null),
@@ -140,8 +140,8 @@ describe("McpClient", () => {
   });
 
   it("will not start a local server whose declared variable this machine has no value for, and names it", async () => {
-    // «НЕ ЗАПУСТИТЬСЯ · НЕМА ЗНАЧЕННЯ: BRAVE_API_KEY». The process must not exist to say this, or it
-    // says it later, elsewhere, and in the server's own words rather than ours.
+    // «НЕ ЗАПУСТИТЬСЯ · НЕМА ЗНАЧЕННЯ: BRAVE_API_KEY»: said before any process exists, in the app's words not the
+    // server's.
     await assert.rejects(
       () =>
         client.functionsOf(
@@ -155,7 +155,7 @@ describe("McpClient", () => {
   });
 
   it("starts a local server with the values this machine holds, each under its own name", async () => {
-    // The name rides in the project file and the value never does, so the two meet only here, at the start.
+    // The name is in the project file and the value is not, so they meet only at the start.
     const starts = path.join(directory, "starts.txt");
 
     held.set(`${MCP_ENV_PREFIX}${SERVER_ID}:BRAVE_API_KEY`, "sk-brave");
@@ -172,7 +172,7 @@ describe("McpClient", () => {
   });
 
   it("refuses a remote server signed in to by token when this machine holds none", async () => {
-    // Neither fallen nor misaddressed — there is nothing to go with, and the words say which it is.
+    // Neither fallen nor misaddressed: there is nothing to go with, and the words say so.
     await assert.rejects(
       () =>
         client.functionsOf(
@@ -189,8 +189,8 @@ describe("McpClient", () => {
   });
 
   it("goes to the address with the token this machine holds, and no longer refuses on its own account", async () => {
-    // What the address answers is the address's business; what is settled here is that the token was found and
-    // the client went. It is held by the server's id, so a rename or a move keeps it.
+    // What the address answers is not tested; the token was found and the client went. It is held by server id, so a
+    // rename or move keeps it.
     held.set(`${MCP_TOKEN_PREFIX}${SERVER_ID}`, "sk-the-token");
 
     const look = await client.look(
@@ -268,7 +268,7 @@ describe("McpClient", () => {
     );
 
     assert.equal(look.isUp, false);
-    // What it handed over last time is not repeated as if it still did.
+    // What it handed over last time is not repeated.
     assert.deepEqual(look.functions, []);
     assert.equal(look.answeredAt, null);
     assert.equal(typeof look.failure, "string");
@@ -298,7 +298,7 @@ describe("McpClient", () => {
       arguments: {},
     });
 
-    // The model is told something came and what kind it was; nothing but text can reach it.
+    // The model is told something came and its kind; only text reaches it.
     assert.equal(result.output, `one\n${MCP_NOT_TEXT_NOTE.replace(MCP_KIND_SLOT, "image")}\ntwo`);
     assert.equal(result.isFailed, false);
   });
@@ -330,7 +330,7 @@ describe("McpClient", () => {
   });
 
   it("counts what the calls to a server came to, since no catalogue can say it", async () => {
-    // The server hands over its functions and fails a call in the same breath; only the calls say so.
+    // The server lists its functions yet fails a call; only the calls say so.
     await client.call({
       server: aServer(),
       directory,

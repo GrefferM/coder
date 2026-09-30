@@ -33,8 +33,7 @@ function said(patch: Partial<ChatMessage>): ChatMessage {
 }
 
 /**
- * One stream's walks, each with the words it said. Every word of a walk stands in that walk's own question, so the
- * fixture stamps it: the order of the stream is the order of the questions.
+ * One stream's walks with their words; each word is stamped with its walk's question so stream order is question order.
  */
 function walk(said: Record<string, { askedAt: number; words: ChatMessage[] }>): WalkState {
   return {
@@ -78,7 +77,7 @@ describe("fellAgents", () => {
   });
 
   it("clears the mark with one good turn said after it", () => {
-    // The dot follows the last word, and a walk asked later is the later word.
+    // The dot follows the last word; a later-asked walk is the later word.
     const fell = fellAgents(
       walk({
         "walk-1": {
@@ -106,8 +105,7 @@ describe("fellAgents", () => {
   });
 
   it("says nothing of a fall in another conversation: the mark belongs to the walk that fell", () => {
-    // A fall is an event of a walk, and a walk belongs to a conversation — on this canvas the sphere is
-    // clean, while «вимкнено» and the rest of the machine's walls stand in every conversation alike.
+    // A fall belongs to one conversation, while the machine's walls like «вимкнено» stand in every conversation.
     const state = walk({
       "walk-1": {
         askedAt: 1,

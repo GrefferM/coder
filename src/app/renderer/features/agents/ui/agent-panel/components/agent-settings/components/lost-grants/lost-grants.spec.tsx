@@ -26,7 +26,7 @@ function commands(rows: number): BrokenGrantGroup {
 
 describe("LostGrants", () => {
   it("says what is wrong: the command is gone and the grant calls what is not there", () => {
-    // A lost grant stands in its own group after the working ones, and is not counted with them.
+    // Lost grants form their own group after the working ones, not counted with them.
     render(<LostGrants groups={[commands(1)]} onRemove={() => {}} />);
 
     expect(screen.getByText(LOST_GRANTS_NOTES.command)).toBeInTheDocument();
@@ -56,7 +56,7 @@ describe("LostGrants", () => {
   });
 
   it("says the server beside a function it took away, and names no server where none is left", () => {
-    // The standing server has a name to say; the gone one left only its id in the grant.
+    // A standing server shows its name; a gone one leaves only its id.
     render(
       <LostGrants
         groups={[
@@ -103,7 +103,7 @@ describe("LostGrants", () => {
   });
 
   it("clears the whole group at once, and says how much that is", async () => {
-    // Two functions of one server are one act, and the act says what it takes away.
+    // Two functions of one server are one removal act, which says what it takes away.
     const onRemove = vi.fn();
 
     render(<LostGrants groups={[commands(2)]} onRemove={onRemove} />);

@@ -26,7 +26,7 @@ class ProjectFileStoreStub implements ProjectFileStore {
   async write(_projectDirectory: string, config: ProjectConfigDto): Promise<void> {
     this.steps.push(`write ${config.name}`);
 
-    // A folder of files takes more than one tick to write, which is where a second save gets in.
+    // Writing a folder of files takes more than one tick, which is where a second save gets in.
     await Promise.resolve();
 
     if (this.isFailing) {
@@ -74,7 +74,7 @@ class ProjectWatchStub implements ProjectWatch {
   }
 }
 
-/** The same project under another name, which is what a step in the log names its save by. */
+/** The same project under another name, to tell saves apart in the log. */
 function named(config: ProjectConfigDto, name: string): ProjectConfigDto {
   return <ProjectConfigDto>{
     ...config,
@@ -119,7 +119,7 @@ describe("ProjectService", () => {
 
     assert.equal(config.name, "Coder");
     assert.equal(projectFileStore.written, config);
-    // Every list is there and empty. One left out arrives at the screen as `undefined` and takes the screen down.
+    // Every list is present and empty; a missing one reaches the screen as `undefined`.
     assert.deepEqual(config.models, []);
     assert.deepEqual(config.prompts, []);
     assert.deepEqual(config.commands, []);

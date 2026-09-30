@@ -3,7 +3,7 @@ import type { ModelFormValues } from "../../../interfaces";
 
 export interface ModelsPanelProps {
   providers: ProviderState[];
-  /** Local providers' answers; lets a row say the machine no longer holds a model. */
+  /** Local providers' answers; lets a row say the machine does not hold a model. */
   providerAnswers: Record<string, ProviderAnswer>;
   models: ProjectModel[];
   agents: Agent[];

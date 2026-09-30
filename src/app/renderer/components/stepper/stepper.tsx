@@ -18,7 +18,7 @@ import {
 } from "./constants";
 import type { StepperProps } from "./interfaces";
 
-/** Stepper with −/+ buttons, held inside its bounds and written to its own places. */
+/** Stepper with −/+ buttons, kept within its bounds and written to its places. */
 export function Stepper({
   label,
   ref,
@@ -30,10 +30,10 @@ export function Stepper({
   places = STEPPER_PLACES,
   floorLabel,
 }: StepperProps) {
-  // A row nobody has written stands empty, and the first step up writes the least it may hold.
+  // An empty row stays empty; the first step up writes the least it may hold.
   const isLeast = value === null || value <= least;
   const isMost = value !== null && value >= most;
-  // A run of tenths is not exact, so each step is rounded to the places the value is written to.
+  // Each step is rounded to the places the value is written to.
   const step = (moved: number) =>
     onChange(value === null ? least : roundedTo(Math.min(most, Math.max(least, value + moved)), places));
   const buttonStyle = {

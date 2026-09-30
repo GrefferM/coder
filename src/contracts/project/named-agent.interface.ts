@@ -1,6 +1,6 @@
 /**
- * An agent as anything that only draws one needs it: who it is, what it is called, what colour it wears. A record
- * keeps this much of an agent that walked, so a conversation read back can name it after the project has let it go.
+ * An agent as a drawing needs it: id, name, colour. A record keeps it so a read-back conversation can still name an
+ * agent the project dropped.
  */
 export interface NamedAgent {
   id: string;

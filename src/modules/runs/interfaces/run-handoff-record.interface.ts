@@ -1,4 +1,4 @@
-/** The columns the `run_handoffs` table holds; the entity implements it. */
+/** Columns of `run_handoffs`; the entity implements it. */
 export interface RunHandoffRecord {
   id: string;
   place: number;

@@ -64,7 +64,7 @@ describe("RecentProjectRow", () => {
     await userEvent.click(screen.getByLabelText(ROW_FORGET_LABEL));
 
     expect(onForget).toHaveBeenCalledWith("/code/coder");
-    // The cross drops the row from this machine's list; it does not open the project on the way.
+    // The cross drops the row from the list without opening the project.
     expect(onOpen).toHaveBeenCalledOnce();
   });
 

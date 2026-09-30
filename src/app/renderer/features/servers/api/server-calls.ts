@@ -13,8 +13,8 @@ import { NOTHING_HELD } from "../constants";
 import type { McpLook, McpSecretsHeld, ProjectMcpServer } from "../../../interfaces";
 
 /**
- * Asks one server what it hands over. A server that will not answer is not a failure to this screen —
- * the main process says so in the look itself — so nothing here throws; only an unreachable machine falls through.
+ * Asks one server what it hands over. An unanswering server is not a failure here (the look says so); only an
+ * unreachable machine falls through.
  */
 export async function lookServer(directory: string, server: ProjectMcpServer): Promise<McpLook> {
   try {
@@ -29,7 +29,7 @@ export async function lookServer(directory: string, server: ProjectMcpServer): P
       functions: [],
       answeredAt: null,
       failure: String(failure),
-      // The main process says what the calls came to; a look that never reached it knows nothing of them.
+      // A look that never reached the main process knows nothing of the calls.
       changedAt: null,
       wasCount: null,
       calls: NO_MCP_CALLS,
@@ -48,20 +48,20 @@ export async function closeServer(serverId: string): Promise<void> {
   }
 }
 
-/** The page was opened, so «34 → 33» has been read — the arrow goes out and does not come back. */
+/** Marks the page as opened, so the «34 → 33» arrow goes out for good. */
 export async function seenServer(serverId: string): Promise<void> {
   try {
     await window.electronApi.invoke(SEEN_MCP_SERVER_CHANNEL, {
       id: serverId,
     });
   } catch {
-    // News nobody could write down is news nobody will be shown twice; the row is right either way.
+    // A failed write loses only the news; the row is right either way.
   }
 }
 
 /**
- * Says a server was deleted here, so its keys are owed a sweep. They do not go yet — the undo has
- * thirty seconds — and this is what lets the sweep finish the job even if the app closes in between.
+ * Records that a server was deleted, so its keys are owed a sweep. The keys stay for the thirty-second undo, and the
+ * record lets the sweep finish even if the app closes.
  */
 export async function dropServer(serverId: string): Promise<void> {
   try {
@@ -69,22 +69,22 @@ export async function dropServer(serverId: string): Promise<void> {
       id: serverId,
     });
   } catch {
-    // A debt nobody could write down is a key left behind, not a screen that should stop.
+    // A failed write leaves a key behind and does not stop the screen.
   }
 }
 
-/** Takes off this machine the keys of every server dropped here that the project no longer names. */
+/** Removes from this machine the keys of dropped servers the project no longer names. */
 export async function sweepServerKeys(serverIds: string[]): Promise<void> {
   try {
     await window.electronApi.invoke(SWEEP_MCP_KEYS_CHANNEL, {
       serverIds,
     });
   } catch {
-    // The sweep is owed, not urgent: the next opening of the project asks again.
+    // The sweep is not urgent: the next opening of the project asks again.
   }
 }
 
-/** Writes the token typed into the one field; an empty value takes it off this machine. */
+/** Writes the token from the one field; an empty value removes it from this machine. */
 export async function saveServerToken(serverId: string, value: string): Promise<void> {
   await window.electronApi.invoke(SAVE_MCP_TOKEN_CHANNEL, {
     serverId,
@@ -92,7 +92,7 @@ export async function saveServerToken(serverId: string, value: string): Promise<
   });
 }
 
-/** Writes one environment variable's value; the name rides in the file, the value stays here. */
+/** Writes one environment variable's value; the name stays in the file, the value here. */
 export async function saveServerEnvValue(serverId: string, name: string, value: string): Promise<void> {
   await window.electronApi.invoke(SAVE_MCP_ENV_VALUE_CHANNEL, {
     serverId,
@@ -102,9 +102,8 @@ export async function saveServerEnvValue(serverId: string, name: string, value: 
 }
 
 /**
- * What this machine holds for one server — never the secrets, only whether they are there.
- * A machine that cannot be asked holds nothing as far as the screen knows, and the screen then says what the
- * project says: the names are declared and the values are not here.
+ * What this machine holds for one server: only whether secrets are there, never their values. If the machine cannot be
+ * asked, it counts as holding nothing.
  */
 export async function serverSecretsHeld(serverId: string): Promise<McpSecretsHeld> {
   try {

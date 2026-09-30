@@ -40,7 +40,7 @@ describe("useWayOut", () => {
   });
 
   it("holds the way out and asks, when a draft is unsaved", () => {
-    // Every way out of a panel passes this one gate, «Скасувати» under the fields included.
+    // Every way out of a panel passes this gate, «Скасувати» included.
     const { result, wayOut } = gate(work());
 
     act(() => result.current.guard(wayOut, "drop"));
@@ -103,7 +103,7 @@ describe("useWayOut", () => {
   });
 
   it("stands no question once there is nothing unsaved to ask about", () => {
-    // The draft was written or let go elsewhere while the question stood: there is nothing left to ask.
+    // The draft was written or dropped elsewhere while the question stood: nothing left to ask.
     const { result, rerender, wayOut } = gate(work());
 
     act(() => result.current.guard(wayOut));

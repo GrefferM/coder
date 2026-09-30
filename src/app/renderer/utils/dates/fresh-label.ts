@@ -16,13 +16,8 @@ import {
 } from "./constants";
 
 /**
- * How fresh something is, on the one scale the whole app speaks — the server's row and its «оновлено»,
- * and the recent folders.
- *
- * Six steps and nothing between them, **the boundary belonging to the lower one and the rounding always down**:
- * «1 хв» comes on the sixtieth second and not on the thirtieth, because rounding up is promising what has not
- * happened yet. There are no seconds anywhere on this scale — seconds belong to the clock of what is running now
- * — and no weeks or months: from the seventh day the row says the date, which is a fact and not a step.
+ * How fresh something is, on the app's one scale (server row, «оновлено», recent folders). Six steps, rounded down with
+ * the boundary in the lower step («1 хв» from the sixtieth second); from the seventh day it gives the date.
  */
 export function freshLabel(at: number, now: number): string {
   const seconds = Math.max(0, Math.floor((now - at) / MS_IN_SECOND));
@@ -43,7 +38,7 @@ export function freshLabel(at: number, now: number): string {
     return `${hours} ${FRESH_HOURS_UNIT} ${FRESH_AGO_LABEL}`;
   }
 
-  // «вчора» is a count of hours and not a turn of the calendar — 24 to 47 of them, and no exception.
+  // «вчора» covers 24 to 47 hours, not a calendar day.
   if (hours < HOURS_IN_DAY * 2) {
     return FRESH_YESTERDAY_LABEL;
   }
@@ -56,7 +51,7 @@ export function freshLabel(at: number, now: number): string {
     : dayAndMonth(new Date(at), new Date(now));
 }
 
-/** «12 бер.», and «12 бер. 2025» in another year — the year is written only where it says something. */
+/** «12 бер.», with the year («12 бер. 2025») only in another year. */
 function dayAndMonth(then: Date, now: Date): string {
   const month = `${MONTH_ABBREVIATIONS[then.getMonth()].toLowerCase()}${FRESH_MONTH_SUFFIX}`;
   const said = `${then.getDate()} ${month}`;

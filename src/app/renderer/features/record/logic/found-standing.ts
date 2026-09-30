@@ -3,12 +3,9 @@ import type { NamedAgent } from "../../../interfaces";
 import type { AskedStanding, RunHit } from "../interfaces";
 
 /**
- * Whose message a found place is. The row of a place is the address of one message, so the name
- * on it is that message's own — not the flow's, and not whom the flow was asked last: a search that walks eight
- * steps of one run would otherwise sign all eight with the same name and tell the reader nothing.
- *
- * A place standing in the question is the person's own words, and the person is signed the way they are signed in
- * the stream. Everything else is an agent, looked up by id and never by what the record called it.
+ * Whose message a found place is: the name on a place row is that message's own, not the flow's or the last-asked
+ * agent's. A place in the question is the person's words, signed as in the stream; anything else is an agent, looked up
+ * by id.
  */
 export function foundStanding(found: RunHit, today: NamedAgent[]): AskedStanding {
   if (found.stepId === null) {

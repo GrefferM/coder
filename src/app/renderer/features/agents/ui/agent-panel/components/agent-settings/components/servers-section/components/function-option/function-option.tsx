@@ -25,11 +25,7 @@ import {
 } from "../../constants";
 import type { FunctionOptionProps } from "./interfaces";
 
-/**
- * One function of a server, on the screen behind its row: the tick, the name, and the server's own sentence about
- * it. The tick is the same act as the commands' — it grants and revokes — and the sentence is here because
- * twenty-four names alone tell nobody which of them to let through.
- */
+/** One function of a server: tick (grants/revokes), name, and the server's own sentence about it. */
 export function FunctionOption({ name, said, isHeld, textGapPx, onToggle }: FunctionOptionProps) {
   const { isLit, handlers } = useInteraction();
 

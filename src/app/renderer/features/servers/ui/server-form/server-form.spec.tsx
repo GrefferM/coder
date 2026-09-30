@@ -37,7 +37,7 @@ function form(patch: Partial<ServerFormValues> = {}, takenNames: string[] = [], 
 
 describe("ServerForm", () => {
   it("asks a local server for its line and a remote one for its address, and never for both", () => {
-    // The switch in the head says which kind this is; the form asks only that kind's questions.
+    // The head switch picks the kind; the form asks only that kind's questions.
     form();
 
     expect(screen.getByLabelText("РЯДОК ЗАПУСКУ")).toBeInTheDocument();
@@ -65,13 +65,13 @@ describe("ServerForm", () => {
     });
 
     expect(screen.getByLabelText("АДРЕСА")).toBeInTheDocument();
-    // A row of choices is one field, and the one already chosen says so.
+    // A row of choices is one field, and the chosen one says so.
     expect(
       screen.getByRole("button", {
         name: "ТОКЕН",
       }),
     ).toHaveAttribute("aria-pressed", "true");
-    // A choice that refuses at the first press is worse than no choice; the file still names it, the form does not.
+    // A choice the form refuses at the first press is not offered, though the file still names it.
     expect(
       screen.queryByRole("button", {
         name: "ЧЕРЕЗ БРАУЗЕР",
@@ -80,7 +80,7 @@ describe("ServerForm", () => {
   });
 
   it("marks what is missing rather than writing it", async () => {
-    // Pressing with something empty marks the field; nothing is refused in words nobody asked for.
+    // Pressing with a field empty marks it, with no refusal in words.
     const { onSave } = form();
 
     await userEvent.click(
@@ -108,7 +108,7 @@ describe("ServerForm", () => {
   });
 
   it("keeps a name it cannot take, rather than eating the character behind the person", async () => {
-    // «набране лишається набраним» — nothing is taken out of the name behind the person.
+    // Typed text is kept: nothing is taken out of the name.
     const { onChange } = form({
       name: "brave",
       run: "npx server",
@@ -122,7 +122,7 @@ describe("ServerForm", () => {
   });
 
   it("takes a dash in a server's name, because that name never reaches a model", async () => {
-    // The rule on a server's name is ours, not a provider's, and `playwright-mcp` is a name.
+    // The name rule is ours, not a provider's: `playwright-mcp` is a name.
     const { onSave } = form({
       name: "playwright-mcp",
       run: "npx -y @playwright/mcp@latest",
@@ -138,8 +138,7 @@ describe("ServerForm", () => {
   });
 
   it("leaves a name it once wrote into the file alone, and does not hold the run line hostage to it", async () => {
-    // A name this app accepted is the file's truth: a form that opens shouting at it, and then refuses to mend
-    // the run line until the server is renamed, is the app arguing with itself.
+    // A name the app accepted is the file's truth: the form does not refuse it or block fixing the run line.
     const { onSave } = form({
       name: "pulls.create",
       run: "npx -y @playwright/mcp@latest",
@@ -159,7 +158,7 @@ describe("ServerForm", () => {
   });
 
   it("asks a remote server that wants no way in for no token at all", () => {
-    // A public server is the plain case: an address and nothing else, so the token field has no business showing.
+    // A public server needs only an address, so no token field shows.
     form({
       isLocal: false,
     });
@@ -174,7 +173,7 @@ describe("ServerForm", () => {
   });
 
   it("takes a token for a remote server, handing it back under the empty name", async () => {
-    // The field is the form's, not its own: what is typed comes straight back out, a keystroke at a time.
+    // The field is controlled: what is typed comes straight back out, per keystroke.
     const { onSecretChange } = form({
       isLocal: false,
       signIn: "token",
@@ -186,7 +185,7 @@ describe("ServerForm", () => {
   });
 
   it("shows a token already on this machine by its hint, and says what takes it off", () => {
-    // Exactly as a provider's key shows itself — the same head, bullets and tail, the same sentence.
+    // A held secret shows like a provider's key: same head, bullets and tail, same sentence.
     form(
       {
         isLocal: false,
@@ -204,7 +203,7 @@ describe("ServerForm", () => {
   });
 
   it("takes the key off only when the cross is pressed, and says so by going plainly empty", async () => {
-    // Leaving a field alone must not cost a key: nothing on the screen says it would, and nobody guesses it.
+    // A secret field left alone is not cleared.
     const { onSecretChange } = form(
       {
         isLocal: false,
@@ -227,7 +226,7 @@ describe("ServerForm", () => {
   });
 
   it("keeps a local server's variables as names here and values on this machine", async () => {
-    // The name rides in the file and the value never does, so the two fields go to two different places.
+    // The name goes to the file and the value to the keychain, so the two fields report separately.
     const { onChange, onSecretChange } = form({
       env: ["BRAVE_API_KEY"],
     });
@@ -256,8 +255,8 @@ describe("ServerForm", () => {
   });
 
   it("marks a named variable with nothing behind it, without repeating what the catalogue will say", () => {
-    // Not a refusal by the form — «Підключити» is still given. The warned edge says the trouble, and
-    // the catalogue's row says «НЕ ЗАПУСТИТЬСЯ · НЕМА ЗНАЧЕННЯ: …» where the server actually fails to start.
+    // The form does not refuse: «Підключити» is still given; the warned edge and the catalogue row («НЕ ЗАПУСТИТЬСЯ ·
+    // НЕМА ЗНАЧЕННЯ: …») say the trouble.
     form({
       env: ["BRAVE_API_KEY"],
     });
@@ -266,8 +265,7 @@ describe("ServerForm", () => {
   });
 
   it("takes a variable back off the list", async () => {
-    // A variable added by mistake has to be removable, and «ПРИБРАТИ» stands inside the narrow tab's own width:
-    // a way out that has to be scrolled sideways to is a way out nobody finds.
+    // A variable can be removed, and «ПРИБРАТИ» fits within the narrow tab's width.
     const { onChange } = form({
       env: ["BRAVE_API_KEY", "SECOND_KEY"],
     });
@@ -288,12 +286,12 @@ describe("ServerForm", () => {
       env: ["BRAVE_API_KEY"],
     });
 
-    // Each half of a variable wears its own name: the example belongs in the empty field, not over it.
+    // Each half of a variable has its own label; the example sits in the empty field, not over it.
     expect(screen.getByLabelText("назва")).toHaveValue("BRAVE_API_KEY");
     expect(screen.getByLabelText("значення")).toBeInTheDocument();
     expect(screen.queryByLabelText("ТОКЕН")).not.toBeInTheDocument();
 
-    // The whole of what a variable is — a pair that travels to two different places, said on the spot.
+    // A variable is a pair going to two places, stated on the spot.
     expect(screen.getByText("у файл проєкту")).toBeInTheDocument();
     expect(screen.getByText("лишається тут")).toBeInTheDocument();
   });

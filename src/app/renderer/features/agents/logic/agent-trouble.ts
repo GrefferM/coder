@@ -13,10 +13,8 @@ import { hasBrokenGrant } from "../../../logic";
 import type { Agent, AgentTrouble, McpLook, ProjectConfig, ProviderState } from "../../../interfaces";
 
 /**
- * An agent's trouble mark, read off the project alone; a break comes before a fact, and one word stands.
- *
- * What a server hands over is not in the project and cannot be read off it, so it is passed in. A project
- * with no servers has none of it, and that is the default.
+ * An agent's trouble mark, read off the project; a break outranks a fact, and one word stands. What a server offers is
+ * not in the project, so it is passed in.
  */
 export function agentTrouble(
   agent: Agent,
@@ -40,13 +38,13 @@ export function agentTrouble(
     return broken(TROUBLE_NO_KEY_LABEL);
   }
 
-  // A local provider falls back to its customary address, so only one asking for an address of its own breaks here.
+  // A local provider falls back to its customary address, so only one needing its own address breaks.
   if (provider.needs.includes("address") && provider.address === null && provider.customaryAddress === null) {
     return broken(TROUBLE_NO_ADDRESS_LABEL);
   }
 
-  // One word for every way a grant can point at nothing: a command undeclared, a function the server took
-  // away, the server itself gone, or an agent granted as a tool that the project has let go.
+  // One word for a grant pointing at nothing: undeclared command, removed server function, gone server, or agent no
+  // longer in the project.
   if (
     hasBrokenGrant(agent.tools, {
       commands: config.commands,
@@ -58,14 +56,14 @@ export function agentTrouble(
     return broken(TROUBLE_LOST_FUNCTION_LABEL);
   }
 
-  // A prompt the agent names and the project no longer holds is a break, not «no prompt at all».
+  // A named prompt the project no longer holds is a break, not «no prompt».
   if (agent.promptId !== null && !config.prompts.some((standing) => standing.id === agent.promptId)) {
     return broken(TROUBLE_LOST_PROMPT_LABEL);
   }
 
   const notFilled = notFilledLabel([...agentNumbers(agent), ...modelNumbers(model)]);
 
-  // A number missing from the agent or its model breaks it, and the mark names the field.
+  // A number missing from the agent or its model breaks it; the mark names the field.
   if (notFilled !== null) {
     return broken(notFilled);
   }

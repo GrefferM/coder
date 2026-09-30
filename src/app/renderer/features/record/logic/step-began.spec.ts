@@ -25,7 +25,7 @@ describe("stepBegan", () => {
   });
 
   it("counts words over the model's ceiling as a turn that never went", () => {
-    // The words did not fit, so nothing left the app — the step is a record of a refusal.
+    // The words did not fit, so nothing left the app: the step records a refusal.
     expect(stepBegan(RUN_STEP_TOO_LONG)).toBe(false);
   });
 

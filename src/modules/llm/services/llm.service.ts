@@ -46,7 +46,7 @@ import type {
   ToolRunner,
 } from "../interfaces";
 
-/** Runs one turn of an agent's chat, looping over calls up to the agent's maximum and streaming each piece. */
+/** Runs one turn of an agent's chat: loops over calls up to the agent's maximum, streaming each piece. */
 export class LlmService {
   /** In-flight turns by turnId; «ЗУПИНИТИ» aborts the call. */
   private readonly running = new Map<string, AbortController>();
@@ -73,7 +73,7 @@ export class LlmService {
     systemPrompt: string | null;
     messages: ChatTurn[];
     tools: AgentTool[];
-    /** The reach of every server whose functions are among the tools, looked up by the tool's id. */
+    /** The reach of every server whose functions are among the tools, by tool id. */
     servers: ProjectMcpServer[];
     /** Every agent reachable as a tool from this one, by id. */
     agents: ReachableAgent[];
@@ -109,9 +109,9 @@ export class LlmService {
   }
 
   /**
-   * One turn's loop — a round of the model, then every call it asked for, until it asks for none or a ceiling
-   * cuts it. A stop and a ceiling are ends too, each keeping what the turn had already said and done. A fault of
-   * the provider's own is answered nowhere: it is thrown as the one refusal the app knows for it.
+   * One turn's loop: a round of the model, then every call it asked for, until it asks for none or a ceiling cuts it. A
+   * stop and a ceiling end the turn, keeping what was said and done. A provider fault is thrown as the app's one refusal
+   * for it.
    */
   private async turn(turn: RunningTurn): Promise<AgentAnswer> {
     const ledger = new TurnLedger();
@@ -129,7 +129,7 @@ export class LlmService {
 
         const round = await this.round(turn, ledger);
 
-        // A round the ceiling cut ends the turn: nothing it began saying or calling is finished.
+        // A round cut by the ceiling ends the turn; nothing it began is finished.
         if (round.isCeilingHit) {
           return ledger.answer({
             isCeilingHit: true,
@@ -152,7 +152,7 @@ export class LlmService {
 
         await this.ranCalls(turn, asked, ledger);
 
-        // A stop that landed while a tool was running ends the turn here, before another round begins.
+        // A stop during a tool ends the turn before another round.
         if (turn.signal.aborted) {
           return ledger.answer({
             isStopped: true,
@@ -174,15 +174,14 @@ export class LlmService {
         });
       }
 
-      // A fault of the provider's own is an end this app knows: it is answered, not reported.
+      // A provider fault is thrown as a refusal the app knows, not reported.
       throw new Refusal(LLM_ASK_FAILED);
     }
   }
 
   /**
-   * One round of the model: the pieces as they arrive, each said onward, counted and gathered into the whole.
-   * The round says whether the ceiling cut it — by the provider's own word, or by its own count stopping
-   * exactly on the number it was given.
+   * One round of the model: pieces are said onward, counted and gathered. Reports a ceiling cut, by the provider's word
+   * or by its count landing exactly on the ceiling.
    */
   private async round(
     turn: RunningTurn,
@@ -217,7 +216,7 @@ export class LlmService {
     };
   }
 
-  /** Every call the round asked for, made in the order it asked; each is a call spent and a message back. */
+  /** Every call the round asked for, in order; each spends a call and returns a message. */
   private async ranCalls(
     turn: RunningTurn,
     asked: { id?: string; name: string; args: Record<string, unknown> }[],
@@ -259,7 +258,7 @@ export class LlmService {
   /** One tool as an OpenAI-style function schema. */
   private described(tool: AgentTool): Record<string, unknown> {
     if (isAgentTool(tool)) {
-      // An agent is called with one thing — a request in words — and the model reads its short description.
+      // An agent is called with one thing, a request in words; the model reads its short description.
       return {
         type: "function",
         function: {
@@ -280,7 +279,7 @@ export class LlmService {
     }
 
     if (!isCommandTool(tool)) {
-      // A server published this schema; it goes to the model as it came, and this app rewrites none of it.
+      // A server's published schema goes to the model as it came.
       return {
         type: "function",
         function: {
@@ -320,9 +319,8 @@ export class LlmService {
   }
 
   /**
-   * One call, whichever kind it is. The envelope is one: the row is minted, said the moment it goes out, said
-   * again when it is over, and handed to the model as a message. What differs is the middle, and that is the
-   * way's — a declared command's line, a server's function, or a whole turn of another agent.
+   * One call of any kind. The envelope is shared: the row is minted, said on going out and again when over, and handed to
+   * the model as a message; the middle belongs to the way (command line, server function or another agent's turn).
    */
   private async called(
     turn: RunningTurn,
@@ -356,12 +354,12 @@ export class LlmService {
     if (refusal !== null) {
       const refused = {
         ...standing,
-        // Nothing ran, so there is no line and no code — only what the check said.
+        // Nothing ran: no line or code, only what the check said.
         refusal,
         endedAt: Date.now(),
       };
 
-      // The person sees the refusal as a row of its own, the model as a note.
+      // The person sees the refusal as a row, the model as a note.
       this.sayCall(turn, refused, RUN_CALL_REFUSED);
 
       return {
@@ -370,7 +368,7 @@ export class LlmService {
       };
     }
 
-    // The call is said the moment it goes out, and said again when it is over.
+    // Said when it goes out and again when it is over.
     this.sayCall(turn, standing, RUN_CALL_RUNNING);
 
     const result = await way.make(standing.id, turn.directory, turn.signal);
@@ -388,7 +386,7 @@ export class LlmService {
     };
   }
 
-  /** Which way this call goes, or nothing where what it reaches did not travel with the ask. */
+  /** Which way this call goes, or `null` where its target did not travel with the ask. */
   private wayOf(turn: RunningTurn, tool: AgentTool, said: Record<string, unknown>): ToolWay | null {
     if (isCommandTool(tool)) {
       return new CommandWay(tool, said, this.tools, this.arguments_);
@@ -403,7 +401,7 @@ export class LlmService {
     return server === null ? null : new ServerWay(tool, server, said, this.servers);
   }
 
-  /** What the model is told of a tool whose server or agent did not travel with the ask. */
+  /** Told to the model about a tool whose server or agent did not travel with the ask. */
   private unreachedNote(tool: AgentTool): string {
     if (isAgentTool(tool)) {
       return AGENT_GONE_NOTE.replace(AGENT_NAME_SLOT, tool.name);
@@ -412,7 +410,7 @@ export class LlmService {
     return SERVER_NOT_THERE_NOTE.replace(SERVER_NAME_SLOT, tool.name);
   }
 
-  /** One agent called as a tool, or nothing where that agent did not travel with the ask. */
+  /** One agent called as a tool, or `null` where that agent did not travel with the ask. */
   private agentWay(turn: RunningTurn, tool: AgentAgentTool, said: Record<string, unknown>): ToolWay | null {
     const agent = turn.reachable.get(tool.agentId) ?? null;
 
@@ -436,7 +434,7 @@ export class LlmService {
     });
   }
 
-  /** What stops an agent's call before it runs: a ring it would close, or why it cannot run; nothing otherwise. */
+  /** What stops an agent's call before it runs: a ring it would close, or why it cannot run; `null` otherwise. */
   private agentRefusal(turn: RunningTurn, agent: ReachableAgent): string | null {
     if (turn.stack.has(agent.agentId)) {
       return AGENT_CYCLE_NOTE.replace(AGENT_NAME_SLOT, agent.name);
@@ -446,13 +444,13 @@ export class LlmService {
   }
 
   /**
-   * A sub-agent's whole turn, asked the one request: silent, under the caller's stop, with the sub-agent added to
-   * the ring being watched. A fault of its provider is the call's outcome, as a server's is, not the caller's fall.
+   * A sub-agent's whole turn for the one request: silent, under the caller's stop, added to the watched ring. A provider
+   * fault is the call's outcome, not the caller's fall.
    */
   private async subTurn(asked: SubTurn): Promise<AgentTurnOutcome> {
     const { turn, agent, request, signal } = asked;
 
-    // An agent that cannot run is refused before its call is made; this narrows it to one that can.
+    // Narrows to an agent that can run.
     if (agent.notReady !== null) {
       return this.fell(agent);
     }
@@ -489,7 +487,7 @@ export class LlmService {
         isFailed: false,
       };
     } catch {
-      // A stop is the caller's, not a fault of this agent's; the caller's loop ends on it next.
+      // A stop is the caller's, not this agent's fault; the caller's loop ends on it next.
       if (signal.aborted) {
         return {
           text: "",
@@ -509,7 +507,7 @@ export class LlmService {
     };
   }
 
-  /** The run's model opened on its provider, with its tools bound; the ceiling goes as it stands, in tokens. */
+  /** The run's model opened on its provider with its tools bound; the ceiling goes as it stands, in tokens. */
   private bound(
     client: AgentClient,
     held: { key: string | null; address: string | null },
@@ -526,7 +524,7 @@ export class LlmService {
     return this.answering(model, run.tools);
   }
 
-  /** A call that never happened: the model is told in a note, and nothing is written down. */
+  /** A call that never happened: the model gets a note, nothing is recorded. */
   private notCalled(
     call: { id?: string; name: string },
     note: string,
@@ -537,7 +535,7 @@ export class LlmService {
     };
   }
 
-  /** One call said to the person, out or over; the words are the answer's and never a call's. A sub-agent says none. */
+  /** Says one call to the person, out or over; a sub-agent says none. */
   private sayCall(turn: RunningTurn, made: TurnCall, state: string): void {
     if (turn.voicedAs === null) {
       return;
@@ -554,17 +552,16 @@ export class LlmService {
   }
 
   /**
-   * Whether the provider's own count of this round stopped exactly at the ceiling. Some providers end a stream
-   * with a chunk the client drops, and their word goes with it, leaving only the number. A count over the ceiling
-   * says that provider never held to it, so nothing was cut.
+   * Whether the provider's token count for this round stopped exactly at the ceiling. A count over the ceiling means the
+   * provider ignored it, so nothing was cut.
    */
   private reachedCeiling(roundTokens: number, answerCeiling: number): boolean {
     return roundTokens > 0 && answerCeiling > 0 && roundTokens === answerCeiling;
   }
 
   /**
-   * Whether this round stopped at the ceiling, by the provider's own reason and nothing else. Clients keep that word in
-   * either pocket — Anthropic in `additional_kwargs` alone — so both are read, and neither is guessed at.
+   * Whether this round stopped at the ceiling by the provider's own reason. The word sits in either place on the client
+   * (Anthropic in `additional_kwargs` alone), so both are read.
    */
   private hitCeiling(gathered: AIMessageChunk | undefined): boolean {
     const said = {
@@ -576,7 +573,7 @@ export class LlmService {
     return reason !== undefined && LLM_CEILING_REASONS.includes(reason.toLowerCase());
   }
 
-  /** Everything the provider asked for, or a refusal naming the first of them that is missing. */
+  /** Everything the provider asked for, or a refusal naming the first missing item. */
   private async opened(
     client: AgentClient,
     providerId: string,
@@ -598,7 +595,7 @@ export class LlmService {
     return key;
   }
 
-  /** The provider's address, or a refusal: no address at all, or a machine that did not answer. */
+  /** The provider's address, or a refusal: no address, or a machine that did not answer. */
   private async heldAddress(providerId: string): Promise<string> {
     const address = await this.keys.addressOf(providerId);
 
@@ -606,7 +603,7 @@ export class LlmService {
       throw new Refusal(LLM_NO_ADDRESS);
     }
 
-    // A local provider is pinged first: a silent one gets its own refusal. A remote one always reads as answering.
+    // A local provider is pinged first; a remote one always reads as answering.
     if (!(await this.keys.isAnswering(providerId))) {
       throw new Refusal(LLM_PROVIDER_SILENT);
     }
@@ -629,7 +626,7 @@ export class LlmService {
     return [...opening, ...turns];
   }
 
-  /** Text of a chunk; content arrives as one string or a list of parts. */
+  /** Text of a chunk; content is one string or a list of parts. */
   private words(content: unknown): string {
     if (typeof content === "string") {
       return content;

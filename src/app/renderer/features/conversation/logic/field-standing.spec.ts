@@ -12,7 +12,7 @@ describe("fieldStanding", () => {
   });
 
   it("stitches the field where the agent is switched off, walk or no walk", () => {
-    // The turn would not go either way, so the person is stopped before the press and by a word.
+    // The turn would not go either way, so the person is stopped by a word before the press.
     expect(fieldStanding("editor", false, false)).toBe("stitched");
     expect(fieldStanding("editor", false, true)).toBe("stitched");
   });
