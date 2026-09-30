@@ -20,6 +20,7 @@ export function useAgentWrites(project: OpenProject, write: ProjectWrite): Agent
       const agent: Agent = {
         id: crypto.randomUUID(),
         name,
+        purpose: null,
         modelId,
         promptId: null,
         tools: [],

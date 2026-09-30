@@ -24,6 +24,7 @@ const PROMPTS: ProjectPrompt[] = [
 const AGENTS: Agent[] = ["agent-1", "agent-2", "agent-3"].map((id, index) => ({
   id,
   name: id.toUpperCase(),
+  purpose: null,
   modelId: "model-1",
   // Two of the three stand on the first prompt, which is what both the field and its row count.
   promptId: index === 2 ? null : "prompt-1",

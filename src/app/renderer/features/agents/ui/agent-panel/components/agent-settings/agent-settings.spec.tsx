@@ -130,6 +130,7 @@ interface SettingsOverrides {
 function renderSettings(overrides: SettingsOverrides = {}) {
   return render(
     <Standing
+      agentId="agent-1"
       draft={overrides.draft ?? DRAFT}
       catalogue={{
         models: MODELS,

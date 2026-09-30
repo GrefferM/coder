@@ -129,6 +129,7 @@ export function MainPage({ project, setProject }: MainPageProps) {
             commands: project.config.commands,
             servers: project.config.servers,
             looks: parts.looks,
+            agents: project.config.agents,
           },
         }}
         living={{

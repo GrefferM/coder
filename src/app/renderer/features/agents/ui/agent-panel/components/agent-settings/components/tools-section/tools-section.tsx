@@ -58,7 +58,12 @@ export function ToolsSection({
   const held = grants.filter(isCommandGrant);
   const chosen = options.filter((option) => grantedOf(option, grants) !== null);
   // A grant can outlive the command under it, and a broken one is counted nowhere.
-  const broken = brokenGrants(held, commands, [], {});
+  const broken = brokenGrants(held, {
+    commands,
+    servers: [],
+    looks: {},
+    agents: [],
+  });
   const brokenIds = new Set(broken.flatMap((group) => group.rows.map((row) => row.id)));
 
   /** Tick: grants if not held, revokes if held. It writes the whole draft, so the servers' grants stand. */
@@ -73,7 +78,7 @@ export function ToolsSection({
   // A grant outlives its command, so the lost group stands even where there is nothing to give at all.
   if (options.length === 0) {
     return (
-      <FieldSlot label={<SourceGlyph isCommand />} wasValue={wasValue}>
+      <FieldSlot label={<SourceGlyph source="command" />} wasValue={wasValue}>
         <div
           className="d-flex flex-column"
           style={{
@@ -118,7 +123,7 @@ export function ToolsSection({
     <FieldSlot
       label={
         <>
-          <SourceGlyph isCommand />
+          <SourceGlyph source="command" />
           {`${TOOLS_SECTION_COMMANDS_LABEL}${TOOLS_SECTION_COUNT_SEPARATOR}${held.length - brokenIds.size}`}
         </>
       }

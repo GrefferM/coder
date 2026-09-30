@@ -45,11 +45,23 @@ const grant = (commandId: string, pinned: CommandToolGrant["pinned"] = []): Comm
 
 describe("grantedToolsLabel", () => {
   it("says having none in words rather than as a zero", () => {
-    expect(grantedToolsLabel([], COMMANDS, SERVERS)).toBe("без інструментів");
+    expect(
+      grantedToolsLabel([], {
+        commands: COMMANDS,
+        servers: SERVERS,
+        agents: [],
+      }),
+    ).toBe("без інструментів");
   });
 
   it("names the functions themselves, in the order they were granted", () => {
-    expect(grantedToolsLabel([grant("command-2"), grant("command-1")], COMMANDS, SERVERS)).toBe("deploy, run_tests");
+    expect(
+      grantedToolsLabel([grant("command-2"), grant("command-1")], {
+        commands: COMMANDS,
+        servers: SERVERS,
+        agents: [],
+      }),
+    ).toBe("deploy, run_tests");
   });
 
   it("says what a grant fixes beside the name, so a moved value counts as a change", () => {
@@ -76,26 +88,58 @@ describe("grantedToolsLabel", () => {
       },
     ];
 
-    expect(grantedToolsLabel([grant("command-1", pinned)], commands, SERVERS)).toBe(
-      "run_tests(pattern=auth/*.spec.ts)",
-    );
+    expect(
+      grantedToolsLabel([grant("command-1", pinned)], {
+        commands,
+        servers: SERVERS,
+        agents: [],
+      }),
+    ).toBe("run_tests(pattern=auth/*.spec.ts)");
   });
 
   it("falls back to the id when the command behind a grant is gone", () => {
-    expect(grantedToolsLabel([grant("command-9")], COMMANDS, SERVERS)).toBe("command-9");
+    expect(
+      grantedToolsLabel([grant("command-9")], {
+        commands: COMMANDS,
+        servers: SERVERS,
+        agents: [],
+      }),
+    ).toBe("command-9");
   });
 
   it("names a server's function by the server it belongs to, so two of one name do not read alike", () => {
-    expect(grantedToolsLabel([serverGrant("search")], COMMANDS, SERVERS)).toBe("GITHUB · search");
+    expect(
+      grantedToolsLabel([serverGrant("search")], {
+        commands: COMMANDS,
+        servers: SERVERS,
+        agents: [],
+      }),
+    ).toBe("GITHUB · search");
   });
 
   it("counts a server's function as granted at all — a grant left out of this line could never be seen to move", () => {
-    const withServer = grantedToolsLabel([grant("command-1"), serverGrant("search")], COMMANDS, SERVERS);
+    const withServer = grantedToolsLabel([grant("command-1"), serverGrant("search")], {
+      commands: COMMANDS,
+      servers: SERVERS,
+      agents: [],
+    });
 
-    expect(withServer).not.toBe(grantedToolsLabel([grant("command-1")], COMMANDS, SERVERS));
+    expect(withServer).not.toBe(
+      grantedToolsLabel([grant("command-1")], {
+        commands: COMMANDS,
+        servers: SERVERS,
+        agents: [],
+      }),
+    );
   });
 
   it("falls back to the id when the server behind a grant is gone", () => {
-    expect(grantedToolsLabel([serverGrant("search", "server-gone")], COMMANDS, SERVERS)).toBe("server-gone · search");
+    expect(
+      grantedToolsLabel([serverGrant("search", "server-gone")], {
+        commands: COMMANDS,
+        servers: SERVERS,
+        agents: [],
+      }),
+    ).toBe("server-gone · search");
   });
 });

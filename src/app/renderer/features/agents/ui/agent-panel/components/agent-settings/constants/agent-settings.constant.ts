@@ -2,6 +2,11 @@
 export const AGENT_SETTINGS_BODY_PADDING_PX = 18;
 export const AGENT_SETTINGS_BODY_GAP_PX = 18;
 export const AGENT_SETTINGS_NAME_LABEL = "НАЗВА";
+
+/** What the agent is for; another agent reads it when this one is its tool. */
+export const AGENT_SETTINGS_PURPOSE_LABEL = "КОРОТКИЙ ОПИС";
+export const AGENT_SETTINGS_PURPOSE_PLACEHOLDER =
+  "Що робить агент — це побачить той, хто підключить його як інструмент";
 export const AGENT_SETTINGS_MODEL_LABEL = "МОДЕЛЬ";
 export const AGENT_SETTINGS_COLOR_LABEL = "КОЛІР";
 

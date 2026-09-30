@@ -5,4 +5,4 @@ import type { AgentCatalogue } from "./agent-catalogue.interface";
  * name the person sees. Narrower than the whole catalogue on purpose — nothing here asks what a provider
  * answered or who the other agents are.
  */
-export type AgentNaming = Pick<AgentCatalogue, "models" | "prompts" | "commands" | "servers">;
+export type AgentNaming = Pick<AgentCatalogue, "models" | "prompts" | "commands" | "servers" | "agents">;

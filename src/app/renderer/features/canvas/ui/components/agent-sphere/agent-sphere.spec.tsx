@@ -60,6 +60,7 @@ function props(patch: SphereOverrides = {}): AgentSphereProps {
         commands: [],
         servers: [],
         looks: {},
+        agents: [],
       },
       isToolless: false,
       ...patch.wearing,
@@ -193,7 +194,7 @@ describe("AgentSphere", () => {
           doing: {
             calling: {
               name: "run_test",
-              isCommand: true,
+              source: "command",
             },
           },
         })}

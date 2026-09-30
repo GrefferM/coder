@@ -21,8 +21,9 @@ import { RunPodChat } from "./runpod-chat.service";
 import { ToolArguments } from "./tool-arguments.service";
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import type { BaseMessage } from "@langchain/core/messages";
-import { SERVER_NAME_SLOT, SERVER_NOT_THERE_NOTE } from "../constants";
+import { AGENT_CYCLE_NOTE, AGENT_NAME_SLOT, SERVER_NAME_SLOT, SERVER_NOT_THERE_NOTE } from "../constants";
 import type {
+  AgentAgentTool,
   AgentChunk,
   AgentClient,
   AgentCommandTool,
@@ -30,6 +31,7 @@ import type {
   AgentServerTool,
   AgentVoice,
   ProjectMcpServer,
+  ReadyAgent,
   ServerRunner,
   ToolRunner,
 } from "../interfaces";
@@ -44,6 +46,7 @@ function keyStore(key: string | null, address: string | null = null, isAnswering
 
 const TURN = {
   turnId: "turn-1",
+  agentId: "agent-1",
   model: "claude-sonnet-4-5",
   directory: "/tmp",
   maxCalls: 10,
@@ -51,6 +54,7 @@ const TURN = {
   answerCeiling: 4096,
   tools: [],
   servers: [],
+  agents: [],
   systemPrompt: null,
   messages: [
     {
@@ -981,5 +985,145 @@ describe("LlmService when a server's function is called", () => {
     );
     assert.deepEqual(answer.calls, []);
     assert.equal(answer.text, "Зрозумів.");
+  });
+});
+
+describe("LlmService and an agent called as a tool", () => {
+  const REVIEWER: AgentAgentTool = {
+    source: "agent",
+    name: "reviewer",
+    description: "Переглядає зміни",
+    agentId: "agent-2",
+  };
+
+  const REVIEWER_RUN: ReadyAgent = {
+    agentId: "agent-2",
+    name: "reviewer",
+    notReady: null,
+    providerId: TEST_PROVIDER_ID,
+    model: "claude-sonnet-4-5",
+    maxCalls: 5,
+    temperature: 0.3,
+    answerCeiling: 4096,
+    systemPrompt: "Ти рецензент.",
+    tools: [],
+  };
+
+  const asking = (agent: string) =>
+    new AIMessageChunk({
+      content: "",
+      tool_calls: [
+        {
+          name: agent,
+          args: {
+            request: "Переглянь зміни",
+          },
+          id: "call-1",
+        },
+      ],
+    });
+
+  it("runs the agent's own turn with its prompt and the request, and hands its answer back as the call's output", async () => {
+    const provider = speaking([
+      asking("reviewer"),
+      new AIMessageChunk({
+        content: "Зауважень немає.",
+      }),
+      new AIMessageChunk({
+        content: "Готово.",
+      }),
+    ]);
+    const heard: AgentChunk[] = [];
+    const llmService = new LlmService(
+      keyStore("sk-1"),
+      voice(heard),
+      runner(),
+      noServers(),
+      toolArguments,
+      provider.clients,
+    );
+
+    const answer = await llmService.ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: [REVIEWER],
+      agents: [REVIEWER_RUN],
+    });
+
+    assert.deepEqual(
+      provider.conversations[1].map((message) => message.content),
+      ["Ти рецензент.", "Переглянь зміни"],
+    );
+    assert.deepEqual(
+      answer.calls.map((call) => [call.source, call.name, call.output, call.isFailed]),
+      [["agent", "reviewer", "Зауважень немає.", false]],
+    );
+    // The agent asked says nothing onward: the person hears the caller's words and its call, never the sub-turn's.
+    assert.equal(
+      heard.some((chunk) => chunk.text === "Зауважень немає."),
+      false,
+    );
+    assert.equal(answer.text, "Готово.");
+  });
+
+  it("refuses a call that would close a ring, and asks nobody", async () => {
+    const provider = speaking([
+      asking("reviewer"),
+      new AIMessageChunk({
+        content: "Зрозумів.",
+      }),
+    ]);
+    const llmService = new LlmService(
+      keyStore("sk-1"),
+      voice([]),
+      runner(),
+      noServers(),
+      toolArguments,
+      provider.clients,
+    );
+
+    const answer = await llmService.ask({
+      ...TURN,
+      agentId: "agent-2",
+      providerId: TEST_PROVIDER_ID,
+      tools: [REVIEWER],
+      agents: [REVIEWER_RUN],
+    });
+
+    assert.equal(provider.conversations.length, 2);
+    assert.equal(answer.calls[0].refusal, AGENT_CYCLE_NOTE.replace(AGENT_NAME_SLOT, "reviewer"));
+  });
+
+  it("refuses an agent that cannot run with the words saying why", async () => {
+    const provider = speaking([
+      asking("reviewer"),
+      new AIMessageChunk({
+        content: "Зрозумів.",
+      }),
+    ]);
+    const llmService = new LlmService(
+      keyStore("sk-1"),
+      voice([]),
+      runner(),
+      noServers(),
+      toolArguments,
+      provider.clients,
+    );
+
+    const answer = await llmService.ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: [REVIEWER],
+      agents: [
+        {
+          agentId: "agent-2",
+          name: "reviewer",
+          notReady: "Агент «reviewer» не має моделі.",
+        },
+      ],
+    });
+
+    assert.equal(provider.conversations.length, 2);
+    assert.equal(answer.calls[0].refusal, "Агент «reviewer» не має моделі.");
   });
 });

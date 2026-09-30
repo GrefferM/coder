@@ -46,6 +46,7 @@ const NAMING: AgentNaming = {
   prompts: PROMPTS,
   commands: COMMANDS,
   servers: SERVERS,
+  agents: [],
 };
 
 describe("agentChanges", () => {

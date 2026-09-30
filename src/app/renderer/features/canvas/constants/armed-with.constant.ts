@@ -1,9 +1,10 @@
 import { BROKEN_COLOR } from "../../../constants";
+import type { ToolSource } from "../../../interfaces";
 /**
- * How many marks of one порода stand before the rest of them fold under its «+». Six places on
- * the arc, split evenly rather than by number: two commands and their «+», two servers and their «+». Twenty dots
- * around a sphere read as noise rather than as arming, and the question the canvas answers is «what does this
- * agent work with», not «which twenty».
+ * How many marks of one порода stand before the rest of them fold under its «+». Nine places on
+ * the arc, split evenly rather than by number: two commands and their «+», two servers and their «+», two agents
+ * and their «+». Twenty dots around a sphere read as noise rather than as arming, and the question the canvas
+ * answers is «what does this agent work with», not «which twenty».
  */
 export const ARMED_MARKS_EACH = 2;
 /**
@@ -21,6 +22,14 @@ export const ARMED_SOURCE_COLORS = ["#b7c4e8", "#ddd0a6", "#a8cfd2"];
 export const ARMED_COMMANDS_COLOR = ARMED_SOURCE_COLORS[0];
 /** Every MCP server shares the second colour: the arc says «this agent works with servers», not which one. */
 export const ARMED_SERVERS_COLOR = ARMED_SOURCE_COLORS[1];
+/** An agent granted as a tool wears a warm orange outside the pale family, so it reads as a sphere at a glance. */
+export const ARMED_AGENTS_COLOR = "#e8934a";
+/** Each kind of source's colour. */
+export const ARMED_SOURCE_COLOR: Record<ToolSource, string> = {
+  command: ARMED_COMMANDS_COLOR,
+  mcp: ARMED_SERVERS_COLOR,
+  agent: ARMED_AGENTS_COLOR,
+};
 /**
  * What got no place folds under its own порода's «+», and the number on it counts marks — a command
  * that did not fit is one, and a whole server that did not fit is one as well. There is no grey «+» any more: two

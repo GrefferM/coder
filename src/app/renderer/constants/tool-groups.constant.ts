@@ -8,10 +8,16 @@ import type { ToolGrant } from "../interfaces";
  */
 export const COMMANDS_GROUP_KEY = "commands";
 export const SERVER_GROUP_PREFIX = "server:";
+/** The head every agent granted as a tool stands under — its own, not a command's. */
+export const AGENTS_GROUP_KEY = "agents";
 
 /** The group one granted function belongs to; a server's is named by the server's id and by nothing else. */
 export function groupOfGrant(grant: ToolGrant): string {
   const source = sourceOf(grant);
 
-  return source.kind === "mcp" ? `${SERVER_GROUP_PREFIX}${source.id}` : COMMANDS_GROUP_KEY;
+  if (source.kind === "mcp") {
+    return `${SERVER_GROUP_PREFIX}${source.id}`;
+  }
+
+  return source.kind === "agent" ? AGENTS_GROUP_KEY : COMMANDS_GROUP_KEY;
 }

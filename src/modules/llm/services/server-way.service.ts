@@ -22,6 +22,7 @@ export class ServerWay implements ToolWay {
     }
 
     return {
+      source: this.tool.source,
       name: this.tool.name,
       arguments: given,
       pinned: [],

@@ -3,6 +3,8 @@ import type { ToolGrant } from "./tool-grant.type";
 
 /** One agent in the open project — a sphere on the canvas. */
 export interface Agent extends NamedAgent {
+  /** What this agent is for — the description another agent reads when this one is its tool; null where unwritten. */
+  purpose: string | null;
   modelId: string;
   promptId: string | null;
   tools: ToolGrant[];

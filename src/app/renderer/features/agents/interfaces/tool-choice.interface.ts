@@ -1,3 +1,5 @@
+import type { ToolSource } from "../../../interfaces";
+
 /**
  * One function an agent may be given, whatever it came from. Commands and a server's functions stand in
  * one list because they are one choice — mixing thirty-three of the server's with four commands is the mess the
@@ -10,9 +12,11 @@ export interface ToolChoice {
   group: string;
   name: string;
   description: string;
-  source: "command" | "mcp";
-  /** Set for a command, and nothing for a server's function. */
+  source: ToolSource;
+  /** Set for a command, and nothing for a server's function or an agent. */
   commandId: string | null;
-  /** Set for a server's function, and nothing for a command. */
+  /** Set for a server's function, and nothing for a command or an agent. */
   serverId: string | null;
+  /** Set for an agent granted as a tool, and nothing for a command or a server's function. */
+  agentId: string | null;
 }

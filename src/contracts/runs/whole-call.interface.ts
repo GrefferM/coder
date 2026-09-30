@@ -1,6 +1,10 @@
+import type { ToolSource } from "../project";
+
 /** One call of a step, read back from the record; a refused one has no output and no code. */
 export interface WholeCall {
   id: string;
+  /** What the call went to. */
+  source: ToolSource;
   place: number;
   name: string;
   arguments: Record<string, string>;

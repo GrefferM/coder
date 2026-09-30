@@ -13,7 +13,7 @@ import type { TurnAnswer, TurnToAsk } from "../interfaces";
  * the latest of a conversation rather than a question out of nowhere.
  */
 export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
-  const { turnId, asked, thread, catalogue, directory } = turn;
+  const { turnId, asked, thread, catalogue, agents, directory } = turn;
   const wall = turnWall(turn);
 
   if ("notStarted" in wall) {
@@ -25,6 +25,7 @@ export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
   try {
     const said = await window.electronApi.invoke(ASK_AGENT_CHANNEL, {
       turnId,
+      agentId: filled.id,
       providerId: held.provider,
       model: held.title,
       directory,
@@ -42,6 +43,7 @@ export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
         },
       ],
       tools,
+      agents,
     });
     const cut = cutEnd(said, filled.maxCalls, held.answerCeiling);
 

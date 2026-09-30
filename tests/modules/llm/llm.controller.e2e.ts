@@ -34,6 +34,7 @@ function controller(): LlmController {
 function turn(patch: Record<string, unknown> = {}): AskAgentDto {
   return Object.assign(new AskAgentDto(), {
     turnId: "turn-1",
+    agentId: "agent-1",
     providerId: "openrouter",
     model: "deepseek-v4-flash",
     directory: "/tmp/coder-project",
@@ -50,6 +51,8 @@ function turn(patch: Record<string, unknown> = {}): AskAgentDto {
     tools: [],
     // Frame 36a: the reach of every declared server rides with the ask; a project with none says so.
     servers: [],
+    // Every agent reachable as a tool from this one; a project with none to reach says so.
+    agents: [],
     ...patch,
   });
 }

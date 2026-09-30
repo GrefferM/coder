@@ -4,6 +4,7 @@ export * from "./armed-with";
 export * from "./dead-end";
 export * from "./dead-ends";
 export * from "./orb-hint";
+export * from "./source-of-group";
 export * from "./draft-target";
 export * from "./grid-step";
 export * from "./link-tally";

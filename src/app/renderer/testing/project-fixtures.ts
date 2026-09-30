@@ -9,6 +9,7 @@ export function anAgent(patch: Partial<Agent> = {}): Agent {
   return {
     id: "agent-1",
     name: "Шукач",
+    purpose: null,
     modelId: "model-1",
     promptId: null,
     tools: [],

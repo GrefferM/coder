@@ -5,6 +5,7 @@ import type { LiveCall } from "../../../interfaces";
 function call(id: string, state: string): LiveCall {
   return {
     id,
+    source: "command",
     name: "find_deep",
     arguments: {
       depth: "2",

@@ -84,6 +84,7 @@ export class ProjectFileWriter {
   private describedAgent(agent: ProjectAgentDto): Record<string, unknown> {
     return {
       name: agent.name,
+      purpose: agent.purpose,
       color: agent.color,
       isActive: agent.isActive,
       waitsForAll: agent.waitsForAll,

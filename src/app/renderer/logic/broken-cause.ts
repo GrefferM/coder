@@ -1,5 +1,5 @@
-import { isCommandGrant } from "../interfaces";
-import type { BrokenGrantCause, McpLook, ProjectCommand, ProjectMcpServer, ToolGrant } from "../interfaces";
+import { isAgentGrant, isCommandGrant } from "../interfaces";
+import type { BrokenGrantCause, GrantTargets, ToolGrant } from "../interfaces";
 
 /**
  * Why this grant points at nothing, or `null` where it still points at something. One rule
@@ -11,14 +11,15 @@ import type { BrokenGrantCause, McpLook, ProjectCommand, ProjectMcpServer, ToolG
  * A server that has not answered breaks nothing. Still starting, or fallen, its functions are unknown this
  * moment and not gone, and a grant called broken on it would stop a turn with nothing wrong with it.
  */
-export function brokenCause(
-  grant: ToolGrant,
-  commands: ProjectCommand[],
-  servers: ProjectMcpServer[],
-  looks: Record<string, McpLook>,
-): BrokenGrantCause | null {
+export function brokenCause(grant: ToolGrant, targets: GrantTargets): BrokenGrantCause | null {
+  const { commands, servers, looks, agents } = targets;
+
   if (isCommandGrant(grant)) {
     return commands.some((command) => command.id === grant.commandId) ? null : "command";
+  }
+
+  if (isAgentGrant(grant)) {
+    return agents.some((agent) => agent.id === grant.agentId) ? null : "goneAgent";
   }
 
   if (!servers.some((server) => server.id === grant.serverId)) {
@@ -35,11 +36,6 @@ export function brokenCause(
 }
 
 /** Whether anything this agent is armed with points at nothing — one broken grant is enough. */
-export function hasBrokenGrant(
-  grants: ToolGrant[],
-  commands: ProjectCommand[],
-  servers: ProjectMcpServer[],
-  looks: Record<string, McpLook>,
-): boolean {
-  return grants.some((grant) => brokenCause(grant, commands, servers, looks) !== null);
+export function hasBrokenGrant(grants: ToolGrant[], targets: GrantTargets): boolean {
+  return grants.some((grant) => brokenCause(grant, targets) !== null);
 }

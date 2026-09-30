@@ -21,6 +21,7 @@ export function AgentsSection({
 }: AgentsSectionProps) {
   return (
     <AgentPanel
+      agentId={agents.selectedAgentId}
       catalogue={{
         models: project.config.models,
         providers: providers,

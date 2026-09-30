@@ -11,12 +11,19 @@ import {
 import { RUN_CALL_TABLE_NAME } from "../constants";
 import { RunStepEntity } from "./run-step.entity";
 import type { RunCallRecord } from "../interfaces";
+import type { ToolSource } from "../../../contracts";
 
 /** The `run_calls` table row — one call inside a step, whichever end it came to. */
 @Entity(RUN_CALL_TABLE_NAME)
 export class RunCallEntity implements RunCallRecord {
   @PrimaryGeneratedColumn("uuid")
   declare id: string;
+
+  // What the call went to.
+  @Column({
+    type: "varchar",
+  })
+  declare source: ToolSource;
 
   @Column({
     type: "integer",

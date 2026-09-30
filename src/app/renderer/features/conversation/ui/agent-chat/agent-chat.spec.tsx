@@ -345,6 +345,7 @@ describe("AgentChat", () => {
     // The calls arrive at the turn itself, piece by piece, and the card of that turn reads them.
     sayPiece("turn-calls", "", {
       id: "call-1",
+      source: "command",
       name: "find_deep",
       arguments: {
         depth: "швидко",
@@ -363,6 +364,7 @@ describe("AgentChat", () => {
     });
     sayPiece("turn-calls", "", {
       id: "call-2",
+      source: "command",
       name: "find_deep",
       arguments: {
         depth: "2",
@@ -411,6 +413,7 @@ describe("AgentChat", () => {
   it("opens a call the person clicks, and says what it was refused with", async () => {
     sayPiece("turn-refused", "", {
       id: "call-1",
+      source: "command",
       name: "find_deep",
       arguments: {
         depth: "швидко",
@@ -470,6 +473,7 @@ describe("AgentChat", () => {
             calls: [
               {
                 id: "call-1",
+                source: "command",
                 name: "find_deep",
                 arguments: {
                   depth: "2",

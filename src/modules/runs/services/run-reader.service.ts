@@ -131,6 +131,7 @@ export class RunReader {
   private toCall(row: RunCallEntity): WholeCall {
     return {
       id: row.id,
+      source: row.source,
       place: row.place,
       name: row.name,
       arguments: <Record<string, string>>JSON.parse(row.arguments),

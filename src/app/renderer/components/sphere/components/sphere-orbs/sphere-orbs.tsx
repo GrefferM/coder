@@ -13,6 +13,7 @@ import {
   SPHERE_ORB_RADIUS_PX,
   SPHERE_ORB_SIZE_PX,
   SPHERE_ORB_COMMAND_MARK,
+  SPHERE_ORB_CORE_RADIUS,
   SPHERE_ORB_SQUARE_CORNER,
   SPHERE_ORB_SQUARE_CORNER_PART,
   SPHERE_ORB_SQUARE_INSET,
@@ -84,9 +85,10 @@ export function SphereOrbs<Orb extends SphereOrb>({
          * The shape says where the tool came from. A command's corner is a part of its size, so it holds
          * at every zoom, and never sharper than the least — this small, a hard corner reads as a speck.
          */
-        const corner = orb.isCommand
-          ? `${Math.max(SPHERE_ORB_SQUARE_LEAST_CORNER_PX, Math.round(size * SPHERE_ORB_SQUARE_CORNER_PART))}px`
-          : "50%";
+        const corner =
+          orb.source === "command"
+            ? `${Math.max(SPHERE_ORB_SQUARE_LEAST_CORNER_PX, Math.round(size * SPHERE_ORB_SQUARE_CORNER_PART))}px`
+            : "50%";
         const left = middle + SPHERE_ORB_RADIUS_PX * Math.cos(angle) - size / 2;
         const top = middle + SPHERE_ORB_RADIUS_PX * Math.sin(angle) - size / 2;
 
@@ -124,8 +126,11 @@ export function SphereOrbs<Orb extends SphereOrb>({
               }}
               aria-hidden
             >
-              {/* A command is a rounded square with a prompt in it; a server is the globe of the arc. */}
-              {orb.isCommand ? (
+              {/*
+               * A command is a rounded square with a prompt in it; a server is the tilted globe of the arc; an agent
+               * is an upright globe with a core.
+               */}
+              {orb.source === "command" ? (
                 <>
                   <rect
                     x={SPHERE_ORB_SQUARE_INSET}
@@ -172,7 +177,7 @@ export function SphereOrbs<Orb extends SphereOrb>({
                         stroke={wire}
                         strokeWidth={stroke}
                         opacity={SPHERE_ORB_ELLIPSE_OPACITY}
-                        transform={SPHERE_ORB_TILT}
+                        transform={orb.source === "mcp" ? SPHERE_ORB_TILT : undefined}
                       />
                       <ellipse
                         cx="12"
@@ -183,8 +188,12 @@ export function SphereOrbs<Orb extends SphereOrb>({
                         stroke={wire}
                         strokeWidth={stroke}
                         opacity={SPHERE_ORB_ELLIPSE_OPACITY}
-                        transform={SPHERE_ORB_TILT}
+                        transform={orb.source === "mcp" ? SPHERE_ORB_TILT : undefined}
                       />
+                      {/* The core, so an agent reads as a sphere of its own and not one more server. */}
+                      {orb.source === "agent" && (
+                        <circle cx="12" cy="12" r={SPHERE_ORB_CORE_RADIUS} fill={wire} stroke="none" />
+                      )}
                     </>
                   )}
                 </>

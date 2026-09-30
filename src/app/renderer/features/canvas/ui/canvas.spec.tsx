@@ -118,6 +118,7 @@ function stands(): CanvasSays {
       commands: [],
       servers: [],
       looks: {},
+      agents: [],
     },
     workingAgents: [],
     waitingAgents: [],

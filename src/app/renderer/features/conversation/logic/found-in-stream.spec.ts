@@ -6,6 +6,7 @@ import type { TurnCall } from "../../../interfaces";
 function call(patch: Partial<TurnCall> = {}): TurnCall {
   return {
     id: "call-1",
+    source: "command",
     name: "grep",
     arguments: {},
     pinned: [],

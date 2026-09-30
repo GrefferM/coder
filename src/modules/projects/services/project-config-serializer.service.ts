@@ -2,6 +2,7 @@ import { parse, stringify } from "yaml";
 import { validateOrReject } from "class-validator";
 import type { ValidationError } from "class-validator";
 import {
+  AgentToolGrantDto,
   CommandToolGrantDto,
   McpToolGrantDto,
   PinnedArgumentDto,
@@ -18,6 +19,7 @@ import type { ToolGrantDto } from "../dto";
 import {
   AGENT_MAX_CALLS_LEAST,
   AGENT_TEMPERATURE_LEAST,
+  AGENT_TOOL_SOURCE,
   COMMAND_TOOL_SOURCE,
   MCP_TOOL_SOURCE,
   MODEL_ANSWER_CEILING_LEAST,
@@ -192,6 +194,7 @@ export class ProjectConfigSerializer {
 
     agent.id = <string>source.id;
     agent.name = <string>source.name;
+    agent.purpose = <string | null>(source.purpose ?? null);
     agent.modelId = <string>source.modelId;
     agent.promptId = <string | null>(source.promptId ?? null);
     agent.tools = this.toList(source.tools, (item) => this.toToolGrant(item));
@@ -237,7 +240,21 @@ export class ProjectConfigSerializer {
       return this.toMcpToolGrant(source);
     }
 
+    if (grantSource === AGENT_TOOL_SOURCE) {
+      return this.toAgentToolGrant(source);
+    }
+
     throw new Error("Unknown tool source.");
+  }
+
+  private toAgentToolGrant(source: Record<string, unknown>): AgentToolGrantDto {
+    const grant = new AgentToolGrantDto();
+
+    grant.id = <string>source.id;
+    grant.source = AGENT_TOOL_SOURCE;
+    grant.agentId = <string>source.agentId;
+
+    return grant;
   }
 
   private toMcpToolGrant(source: Record<string, unknown>): McpToolGrantDto {

@@ -170,6 +170,7 @@ describe("the record on a real database of its own", () => {
           Object.assign(new AddCallDto(), {
             // The call comes to the record under the id it already wears; the record hands out no second one.
             id: crypto.randomUUID(),
+            source: "command",
             name: "find_deep",
             arguments: {
               mask: "*.md",

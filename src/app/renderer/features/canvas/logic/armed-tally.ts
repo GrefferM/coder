@@ -1,5 +1,5 @@
 import { brokenCause } from "../../../logic";
-import type { SourcesSaid } from "../interfaces";
+import type { GrantTargets } from "../../../interfaces";
 import type { ToolGrant } from "../../../interfaces";
 
 /**
@@ -11,6 +11,6 @@ import type { ToolGrant } from "../../../interfaces";
  * answer two different questions — the arc says which kinds an agent is armed with, and this says how much of it
  * there is, which is the only word left about arming once a порода folds into a «+».
  */
-export function armedTally(tools: ToolGrant[], said: SourcesSaid): number {
-  return tools.filter((grant) => brokenCause(grant, said.commands, said.servers, said.looks) === null).length;
+export function armedTally(tools: ToolGrant[], said: GrantTargets): number {
+  return tools.filter((grant) => brokenCause(grant, said) === null).length;
 }

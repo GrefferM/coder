@@ -1,3 +1,4 @@
+export * from "./agent-way.service";
 export * from "./command-way.service";
 export * from "./llm.service";
 export * from "./runpod-chat.service";

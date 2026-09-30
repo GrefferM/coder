@@ -1,3 +1,4 @@
+import { isAgentGrant } from "./agent-grant.guard";
 import { isCommandGrant } from "./command-grant.guard";
 import { GRANT_HANDLE_SEPARATOR } from "./grant-handle.constant";
 import type { ToolGrant } from "./tool-grant.type";
@@ -23,6 +24,15 @@ export function sourceOf(grant: ToolGrant): GrantSource {
     return {
       kind: grant.source,
       id: grant.commandId,
+      functionName: null,
+    };
+  }
+
+  // An agent is granted whole, so its handle is its id alone.
+  if (isAgentGrant(grant)) {
+    return {
+      kind: grant.source,
+      id: grant.agentId,
       functionName: null,
     };
   }

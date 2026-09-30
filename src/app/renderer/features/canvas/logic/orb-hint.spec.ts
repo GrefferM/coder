@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { foldHint, orbHint } from "./orb-hint";
-import type { SourcesSaid } from "../interfaces";
+import type { GrantTargets } from "../../../interfaces";
 import type { ToolGrant } from "../../../interfaces";
 
 const SERVER_ID = "99999999-9999-4999-8999-999999999999";
 const OTHER_ID = "88888888-8888-4888-8888-888888888888";
 
-function said(): SourcesSaid {
-  return <SourcesSaid>(<unknown>{
+function said(): GrantTargets {
+  return <GrantTargets>(<unknown>{
     commands: [
       {
         id: "command-1",

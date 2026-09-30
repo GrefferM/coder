@@ -3,7 +3,7 @@ import { AgentForm, AgentHeader, AgentSettings } from "./components";
 import type { AgentPanelProps } from "./interfaces";
 
 /** The create form when none is selected, else the agent's own settings; the chat stands apart. */
-export function AgentPanel({ catalogue, writing, standing, presses, acts }: AgentPanelProps) {
+export function AgentPanel({ agentId, catalogue, writing, standing, presses, acts }: AgentPanelProps) {
   const [openGrantId, setOpenGrantId] = useState<string | null>(null);
 
   const { draft } = writing;
@@ -21,6 +21,7 @@ export function AgentPanel({ catalogue, writing, standing, presses, acts }: Agen
 
   const settings = (
     <AgentSettings
+      agentId={agentId}
       draft={draft}
       catalogue={catalogue}
       writing={writing}

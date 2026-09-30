@@ -7,6 +7,7 @@ import type { LiveCall } from "../../../../interfaces";
 function call(id: string, state: LiveCall["state"]): LiveCall {
   return {
     id,
+    source: "command",
     name: "find_deep",
     arguments: {},
     pinned: [],

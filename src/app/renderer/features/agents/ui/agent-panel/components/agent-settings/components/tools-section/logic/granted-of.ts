@@ -7,19 +7,29 @@ export function grantedOf(option: ToolChoice, grants: ToolGrant[]): ToolGrant | 
   return grants.find((grant) => handleOf(sourceOf(grant)) === option.key) ?? null;
 }
 
-/** A grant for this row, made fresh. A command's carries its pinned arguments; a server's function pins nothing. */
+/** A grant for this row, made fresh. A command's carries its pinned arguments; a server's and an agent's pin nothing. */
 export function grantFor(option: ToolChoice): ToolGrant {
-  return option.source === "command"
-    ? {
-        id: crypto.randomUUID(),
-        source: "command",
-        commandId: <string>option.commandId,
-        pinned: [],
-      }
-    : {
-        id: crypto.randomUUID(),
-        source: "mcp",
-        serverId: <string>option.serverId,
-        functionName: option.name,
-      };
+  if (option.source === "command") {
+    return {
+      id: crypto.randomUUID(),
+      source: "command",
+      commandId: <string>option.commandId,
+      pinned: [],
+    };
+  }
+
+  if (option.source === "agent") {
+    return {
+      id: crypto.randomUUID(),
+      source: "agent",
+      agentId: <string>option.agentId,
+    };
+  }
+
+  return {
+    id: crypto.randomUUID(),
+    source: "mcp",
+    serverId: <string>option.serverId,
+    functionName: option.name,
+  };
 }

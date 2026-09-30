@@ -12,6 +12,8 @@ import type {
  * settled — a tab with none is the form that makes a sphere, and never these settings.
  */
 export interface AgentSettingsProps {
+  /** The id of the agent being edited, so it is not offered itself as a tool; nothing while a sphere is made. */
+  agentId: string | null;
   draft: AgentDraft;
   catalogue: AgentCatalogue;
   writing: AgentWriting;

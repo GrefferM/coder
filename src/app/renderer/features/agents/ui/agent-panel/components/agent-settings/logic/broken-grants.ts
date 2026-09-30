@@ -1,14 +1,8 @@
 import { brokenCause } from "../../../../../../../logic";
-import { isCommandGrant, isServerGrant, pointsAt } from "../../../../../../../interfaces";
-import { TOOLS_SECTION_LOST_NAME } from "../components/tools-section/constants";
-import { COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX } from "../../../../../../../constants";
-import type {
-  McpLook,
-  McpToolGrant,
-  ProjectCommand,
-  ProjectMcpServer,
-  ToolGrant,
-} from "../../../../../../../interfaces";
+import { isAgentGrant, isCommandGrant, isServerGrant, pointsAt } from "../../../../../../../interfaces";
+import { TOOLS_SECTION_LOST_AGENT_NAME, TOOLS_SECTION_LOST_NAME } from "../components/tools-section/constants";
+import { AGENTS_GROUP_KEY, COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX } from "../../../../../../../constants";
+import type { GrantTargets, McpToolGrant, ToolGrant } from "../../../../../../../interfaces";
 import type { BrokenGrantGroup } from "../components/tools-section/interfaces";
 
 /** A group whose server is gone has no name left to stand under — the project holds only its id. */
@@ -19,13 +13,9 @@ const GONE_SERVER_PREFIX = "gone:";
  * and the sentence under them does not. Why a grant is broken is `brokenCause`'s to say, and it says it for the
  * sphere's mark and for the turn's wall too; this is only the grouping the panel needs.
  */
-export function brokenGrants(
-  grants: ToolGrant[],
-  commands: ProjectCommand[],
-  servers: ProjectMcpServer[],
-  looks: Record<string, McpLook>,
-): BrokenGrantGroup[] {
-  const cause = (grant: ToolGrant) => brokenCause(grant, commands, servers, looks);
+export function brokenGrants(grants: ToolGrant[], targets: GrantTargets): BrokenGrantGroup[] {
+  const { servers } = targets;
+  const cause = (grant: ToolGrant) => brokenCause(grant, targets);
   const held = grants.filter(isServerGrant);
   const groups: BrokenGrantGroup[] = [];
 
@@ -69,6 +59,22 @@ export function brokenGrants(
         id: grant.id,
         name: TOOLS_SECTION_LOST_NAME,
         pinnedCount: grant.pinned.length,
+      })),
+    });
+  }
+
+  // The agent is gone from the project, and the grant carries its id and no name.
+  const lostAgents = grants.filter(isAgentGrant).filter((grant) => cause(grant) === "goneAgent");
+
+  if (lostAgents.length > 0) {
+    groups.push({
+      key: AGENTS_GROUP_KEY,
+      cause: "goneAgent",
+      serverName: null,
+      rows: lostAgents.map((grant) => ({
+        id: grant.id,
+        name: TOOLS_SECTION_LOST_AGENT_NAME,
+        pinnedCount: 0,
       })),
     });
   }

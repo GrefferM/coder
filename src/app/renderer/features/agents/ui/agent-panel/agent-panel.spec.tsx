@@ -44,6 +44,7 @@ interface PanelOverrides {
 
 function props(patch: PanelOverrides = {}): AgentPanelProps {
   return {
+    agentId: "agent-1",
     catalogue: {
       models: [aModel()],
       providers: [],

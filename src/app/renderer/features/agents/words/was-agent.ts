@@ -1,5 +1,5 @@
 import { grantedToolsLabel } from "./granted-tools-label";
-import { isCommandGrant, isServerGrant } from "../../../interfaces";
+import { isAgentGrant, isCommandGrant, isServerGrant } from "../../../interfaces";
 import { writtenNumber } from "./written-number";
 import {
   AGENT_ACTIVE_OFF_LABEL,
@@ -18,15 +18,17 @@ import type { AgentDraft, AgentNaming, WasAgent } from "../interfaces";
  * as it was saved says nothing, and nothing is said at all about an agent that has never been saved.
  */
 export function wasAgent(draft: AgentDraft, saved: AgentDraft | null, naming: AgentNaming): WasAgent {
-  const { models, prompts, commands, servers } = naming;
+  const { models, prompts } = naming;
 
   if (saved === null) {
     return {
       name: null,
+      purpose: null,
       model: null,
       prompt: null,
       commandTools: null,
       serverTools: null,
+      agentTools: null,
       color: null,
       maxCalls: null,
       temperature: null,
@@ -39,17 +41,20 @@ export function wasAgent(draft: AgentDraft, saved: AgentDraft | null, naming: Ag
   const promptTitle = (id: string | null) => prompts.find((prompt) => prompt.id === id)?.name ?? AGENT_NO_PROMPT_LABEL;
   /** Each field is compared with its own kind of grant alone, and says what stood in that field. */
   const saidOf = (grants: ToolGrant[], isOfKind: (grant: ToolGrant) => boolean) =>
-    grantedToolsLabel(grants.filter(isOfKind), commands, servers);
+    grantedToolsLabel(grants.filter(isOfKind), naming);
   const savedCommands = saidOf(saved.tools, isCommandGrant);
   const savedServers = saidOf(saved.tools, isServerGrant);
+  const savedAgents = saidOf(saved.tools, isAgentGrant);
 
   return {
     name: saved.name === draft.name ? null : saved.name,
+    purpose: saved.purpose === draft.purpose ? null : (saved.purpose ?? ""),
     model: saved.modelId === draft.modelId ? null : modelTitle(saved.modelId),
     prompt: saved.promptId === draft.promptId ? null : promptTitle(saved.promptId),
     // The tools are compared by what they are called: two grants of one function read the same and changed nothing.
     commandTools: savedCommands === saidOf(draft.tools, isCommandGrant) ? null : savedCommands,
     serverTools: savedServers === saidOf(draft.tools, isServerGrant) ? null : savedServers,
+    agentTools: savedAgents === saidOf(draft.tools, isAgentGrant) ? null : savedAgents,
     color: saved.color === draft.color ? null : saved.color,
     maxCalls: saved.maxCalls === draft.maxCalls ? null : writtenNumber(saved.maxCalls),
     temperature:

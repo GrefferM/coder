@@ -1,4 +1,6 @@
+import type { ToolSource } from "../../../../../../../../../interfaces";
+
 export interface SourceGlyphProps {
-  /** The project's own commands wear the terminal prompt; a server wears the plug it is connected by. */
-  isCommand: boolean;
+  /** Commands wear the terminal prompt, a server the plug it is connected by, an agent two linked nodes. */
+  source: ToolSource;
 }

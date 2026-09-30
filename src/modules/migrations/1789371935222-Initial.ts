@@ -51,7 +51,7 @@ export class Initial1789371935222 implements MigrationInterface {
     await queryRunner.query('CREATE INDEX "IDX_a7151a8ecac7a6aab97019ce51" ON "run_steps" ("runId") ');
     await queryRunner.query('CREATE INDEX "IDX_0d0c3758c0c7b7c5000c25e5d7" ON "run_steps" ("questionId") ');
     await queryRunner.query(
-      'CREATE TABLE "run_calls" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "name" varchar NOT NULL, "arguments" text NOT NULL, "pinned" text NOT NULL, "line" text NOT NULL, "output" text NOT NULL, "refusal" text NOT NULL, "exitCode" integer, "serverId" varchar, "serverName" varchar, "end" varchar NOT NULL, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar)',
+      'CREATE TABLE "run_calls" ("id" varchar PRIMARY KEY NOT NULL, "source" varchar NOT NULL, "place" integer NOT NULL, "name" varchar NOT NULL, "arguments" text NOT NULL, "pinned" text NOT NULL, "line" text NOT NULL, "output" text NOT NULL, "refusal" text NOT NULL, "exitCode" integer, "serverId" varchar, "serverName" varchar, "end" varchar NOT NULL, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar)',
     );
     await queryRunner.query('CREATE INDEX "IDX_a272800cd4cd6b0ea2262db21e" ON "run_calls" ("stepId") ');
     await queryRunner.query('DROP INDEX "IDX_503cb5169ad98f938167fbffb1"');
@@ -130,10 +130,10 @@ export class Initial1789371935222 implements MigrationInterface {
     await queryRunner.query('CREATE INDEX "IDX_0d0c3758c0c7b7c5000c25e5d7" ON "run_steps" ("questionId") ');
     await queryRunner.query('DROP INDEX "IDX_a272800cd4cd6b0ea2262db21e"');
     await queryRunner.query(
-      'CREATE TABLE "temporary_run_calls" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "name" varchar NOT NULL, "arguments" text NOT NULL, "pinned" text NOT NULL, "line" text NOT NULL, "output" text NOT NULL, "refusal" text NOT NULL, "exitCode" integer, "serverId" varchar, "serverName" varchar, "end" varchar NOT NULL, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "FK_a272800cd4cd6b0ea2262db21e3" FOREIGN KEY ("stepId") REFERENCES "run_steps" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
+      'CREATE TABLE "temporary_run_calls" ("id" varchar PRIMARY KEY NOT NULL, "source" varchar NOT NULL, "place" integer NOT NULL, "name" varchar NOT NULL, "arguments" text NOT NULL, "pinned" text NOT NULL, "line" text NOT NULL, "output" text NOT NULL, "refusal" text NOT NULL, "exitCode" integer, "serverId" varchar, "serverName" varchar, "end" varchar NOT NULL, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "FK_a272800cd4cd6b0ea2262db21e3" FOREIGN KEY ("stepId") REFERENCES "run_steps" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
     );
     await queryRunner.query(
-      'INSERT INTO "temporary_run_calls"("id", "place", "name", "arguments", "pinned", "line", "output", "refusal", "exitCode", "serverId", "serverName", "end", "startedAt", "endedAt", "createdAt", "updatedAt", "stepId") SELECT "id", "place", "name", "arguments", "pinned", "line", "output", "refusal", "exitCode", "serverId", "serverName", "end", "startedAt", "endedAt", "createdAt", "updatedAt", "stepId" FROM "run_calls"',
+      'INSERT INTO "temporary_run_calls"("id", "source", "place", "name", "arguments", "pinned", "line", "output", "refusal", "exitCode", "serverId", "serverName", "end", "startedAt", "endedAt", "createdAt", "updatedAt", "stepId") SELECT "id", "source", "place", "name", "arguments", "pinned", "line", "output", "refusal", "exitCode", "serverId", "serverName", "end", "startedAt", "endedAt", "createdAt", "updatedAt", "stepId" FROM "run_calls"',
     );
     await queryRunner.query('DROP TABLE "run_calls"');
     await queryRunner.query('ALTER TABLE "temporary_run_calls" RENAME TO "run_calls"');
@@ -144,10 +144,10 @@ export class Initial1789371935222 implements MigrationInterface {
     await queryRunner.query('DROP INDEX "IDX_a272800cd4cd6b0ea2262db21e"');
     await queryRunner.query('ALTER TABLE "run_calls" RENAME TO "temporary_run_calls"');
     await queryRunner.query(
-      'CREATE TABLE "run_calls" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "name" varchar NOT NULL, "arguments" text NOT NULL, "pinned" text NOT NULL, "line" text NOT NULL, "output" text NOT NULL, "refusal" text NOT NULL, "exitCode" integer, "serverId" varchar, "serverName" varchar, "end" varchar NOT NULL, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar)',
+      'CREATE TABLE "run_calls" ("id" varchar PRIMARY KEY NOT NULL, "source" varchar NOT NULL, "place" integer NOT NULL, "name" varchar NOT NULL, "arguments" text NOT NULL, "pinned" text NOT NULL, "line" text NOT NULL, "output" text NOT NULL, "refusal" text NOT NULL, "exitCode" integer, "serverId" varchar, "serverName" varchar, "end" varchar NOT NULL, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar)',
     );
     await queryRunner.query(
-      'INSERT INTO "run_calls"("id", "place", "name", "arguments", "pinned", "line", "output", "refusal", "exitCode", "serverId", "serverName", "end", "startedAt", "endedAt", "createdAt", "updatedAt", "stepId") SELECT "id", "place", "name", "arguments", "pinned", "line", "output", "refusal", "exitCode", "serverId", "serverName", "end", "startedAt", "endedAt", "createdAt", "updatedAt", "stepId" FROM "temporary_run_calls"',
+      'INSERT INTO "run_calls"("id", "source", "place", "name", "arguments", "pinned", "line", "output", "refusal", "exitCode", "serverId", "serverName", "end", "startedAt", "endedAt", "createdAt", "updatedAt", "stepId") SELECT "id", "source", "place", "name", "arguments", "pinned", "line", "output", "refusal", "exitCode", "serverId", "serverName", "end", "startedAt", "endedAt", "createdAt", "updatedAt", "stepId" FROM "temporary_run_calls"',
     );
     await queryRunner.query('DROP TABLE "temporary_run_calls"');
     await queryRunner.query('CREATE INDEX "IDX_a272800cd4cd6b0ea2262db21e" ON "run_calls" ("stepId") ');

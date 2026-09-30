@@ -289,12 +289,12 @@ describe("ProjectConfigSerializer", () => {
     assert.equal(config.agents[0].promptId, PROMPT_ID);
   });
 
-  it("ignores a purpose key an older file carries, so an old file needs no migration", async () => {
+  it("keeps a short description an agent carries", async () => {
     const config = await serializer.parse(
       VALID_YAML.replace("maxCalls: 8", "purpose: Правлю код за описом зміни\n    maxCalls: 8"),
     );
 
-    assert.equal("purpose" in config.agents[0], false);
+    assert.equal(config.agents[0].purpose, "Правлю код за описом зміни");
   });
 
   it("refuses a prompt id that is not a uuid", async () => {

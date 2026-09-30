@@ -2,6 +2,9 @@ import { CopyAction, Mark } from "../../../../../../components";
 import { useElapsed } from "../../../../../../hooks";
 import { RUN_CALL_REFUSED, RUN_CALL_RUNNING, RUN_CALL_SAID_NO } from "../../../../../record";
 import {
+  CALL_ROW_AGENT_FAILED_LABEL,
+  CALL_ROW_AGENT_KIND,
+  CALL_ROW_AGENT_SAID_LABEL,
   CALL_ROW_ANSWERED_LABEL,
   CALL_ROW_ARGUMENT_SEPARATOR,
   CALL_ROW_BACKGROUND_COLOR,
@@ -59,8 +62,8 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
   const isOpen = openCalls.isOpen(call.id);
   const elapsed = useElapsed(call.startedAt);
   const saidNo = call.state === RUN_CALL_SAID_NO;
-  // The mark is the source's own shape — a server round, a declared command square, as on the arc.
-  const isRound = call.serverId !== null;
+  const isCommand = call.source === "command";
+  const isAgent = call.source === "agent";
 
   /** The one number a server has in place of a code — how long it took to answer. */
   function answeredIn(): string {
@@ -80,16 +83,14 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
 
     // «відмова — це відповідь, вона прийшла»; the time it took is as much a fact as any other answer's.
     if (saidNo) {
-      return `${CALL_ROW_SAID_NO_LABEL}${CALL_ROW_SEPARATOR}${answeredIn()}`;
+      return `${isAgent ? CALL_ROW_AGENT_FAILED_LABEL : CALL_ROW_SAID_NO_LABEL}${CALL_ROW_SEPARATOR}${answeredIn()}`;
     }
 
     /**
      * «коду виходу немає · процесу не було». A server's call is named by the time it took to answer, and
      * a command's by the code its process came back with — and neither ever stands in the other's place.
      */
-    return call.serverId === null
-      ? `${CALL_ROW_CODE_LABEL}${call.exitCode}`
-      : `${CALL_ROW_ANSWERED_LABEL}${answeredIn()}`;
+    return isCommand ? `${CALL_ROW_CODE_LABEL}${call.exitCode}` : `${CALL_ROW_ANSWERED_LABEL}${answeredIn()}`;
   }
 
   return (
@@ -118,7 +119,8 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
           style={{
             width: CALL_ROW_MARK_SIZE_PX,
             height: CALL_ROW_MARK_SIZE_PX,
-            borderRadius: isRound ? "50%" : CALL_ROW_MARK_STILL_RADIUS_PX,
+            // The mark is the source's own shape — a declared command square, a server or an agent round, as on the arc.
+            borderRadius: isCommand ? CALL_ROW_MARK_STILL_RADIUS_PX : "50%",
             background: isRunning ? agentColor : CALL_ROW_MARK_STILL_COLOR,
             boxShadow: isRunning ? `0 0 7px ${agentColor}` : "none",
             animationDuration: isRunning ? `${CALL_ROW_BREATH_MS}ms` : undefined,
@@ -175,7 +177,7 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
           }}
         >
           {/* On the place of the line a command would carry stands where the call went. */}
-          {call.serverId !== null && (
+          {!isCommand && (
             <div>
               <span
                 style={{
@@ -184,7 +186,9 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
               >
                 {CALL_ROW_SOURCE_LABEL}
               </span>
-              {`${CALL_ROW_ARGUMENT_SEPARATOR}${CALL_ROW_SOURCE_KIND}${CALL_ROW_SEPARATOR}${call.serverName}`}
+              {isAgent
+                ? `${CALL_ROW_ARGUMENT_SEPARATOR}${CALL_ROW_AGENT_KIND}`
+                : `${CALL_ROW_ARGUMENT_SEPARATOR}${CALL_ROW_SOURCE_KIND}${CALL_ROW_SEPARATOR}${call.serverName}`}
             </div>
           )}
           {Object.entries(call.arguments).map(([name, value]) => (
@@ -216,8 +220,8 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
               {CALL_ROW_NO_OUTPUT_YET_LABEL}
             </div>
           )}
-          {/* A server's answer is named, and «СКОПІЮВАТИ» takes it away whole — never a part of it. */}
-          {call.output !== "" && call.serverId !== null && (
+          {/* A server's or an agent's answer is named, and «СКОПІЮВАТИ» takes it away whole — never a part of it. */}
+          {call.output !== "" && !isCommand && (
             <div
               className="d-flex align-items-center"
               style={{
@@ -229,7 +233,7 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
                   color: CALL_ROW_BODY_QUIET_COLOR,
                 }}
               >
-                {CALL_ROW_SAID_LABEL}
+                {isAgent ? CALL_ROW_AGENT_SAID_LABEL : CALL_ROW_SAID_LABEL}
               </span>
               <span className="flex-fill" />
               <CopyAction text={call.output} />

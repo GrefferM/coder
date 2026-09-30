@@ -1,5 +1,5 @@
 import { grantedToolsLabel } from "../words";
-import { isCommandGrant, isServerGrant } from "../../../interfaces";
+import { isAgentGrant, isCommandGrant, isServerGrant } from "../../../interfaces";
 import { writtenNumber } from "../words";
 import {
   AGENT_ACTIVE_CHANGE_LABEL,
@@ -21,6 +21,8 @@ import {
   AGENT_MODEL_DROPPED_LABEL,
   AGENT_NAME_CHANGE_LABEL,
   AGENT_NAME_DROPPED_LABEL,
+  AGENT_PURPOSE_CHANGE_LABEL,
+  AGENT_PURPOSE_DROPPED_LABEL,
   AGENT_NO_PROMPT_LABEL,
   AGENT_PROMPT_CHANGE_LABEL,
   AGENT_PROMPT_DROPPED_LABEL,
@@ -28,6 +30,8 @@ import {
   AGENT_COMMANDS_DROPPED_LABEL,
   AGENT_MCP_CHANGE_LABEL,
   AGENT_MCP_DROPPED_LABEL,
+  AGENT_AGENTS_CHANGE_LABEL,
+  AGENT_AGENTS_DROPPED_LABEL,
 } from "../constants";
 import type { FieldChange, ProjectModel, ProjectPrompt, ToolGrant } from "../../../interfaces";
 import type { AgentDraft, AgentNaming } from "../interfaces";
@@ -44,11 +48,11 @@ function promptTitle(prompts: ProjectPrompt[], promptId: string | null): string 
 
 /** Moved fields, written as the question shows them. */
 export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: AgentNaming): FieldChange[] {
-  const { models, prompts, commands, servers } = naming;
+  const { models, prompts } = naming;
 
   /** Each field is asked about its own kind of grant alone, in the words that field shows. */
   const saidOf = (grants: ToolGrant[], isOfKind: (grant: ToolGrant) => boolean) =>
-    grantedToolsLabel(grants.filter(isOfKind), commands, servers);
+    grantedToolsLabel(grants.filter(isOfKind), naming);
 
   const written: FieldChange[] = [
     {
@@ -56,6 +60,12 @@ export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: Agent
       droppedLabel: AGENT_NAME_DROPPED_LABEL,
       was: saved.name,
       now: draft.name,
+    },
+    {
+      label: AGENT_PURPOSE_CHANGE_LABEL,
+      droppedLabel: AGENT_PURPOSE_DROPPED_LABEL,
+      was: saved.purpose ?? "",
+      now: draft.purpose ?? "",
     },
     {
       label: AGENT_MODEL_CHANGE_LABEL,
@@ -81,6 +91,12 @@ export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: Agent
       droppedLabel: AGENT_MCP_DROPPED_LABEL,
       was: saidOf(saved.tools, isServerGrant),
       now: saidOf(draft.tools, isServerGrant),
+    },
+    {
+      label: AGENT_AGENTS_CHANGE_LABEL,
+      droppedLabel: AGENT_AGENTS_DROPPED_LABEL,
+      was: saidOf(saved.tools, isAgentGrant),
+      now: saidOf(draft.tools, isAgentGrant),
     },
     {
       label: AGENT_COLOR_CHANGE_LABEL,

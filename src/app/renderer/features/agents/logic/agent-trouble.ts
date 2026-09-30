@@ -46,8 +46,15 @@ export function agentTrouble(
   }
 
   // One word for every way a grant can point at nothing: a command undeclared, a function the server took
-  // away, or the server itself gone.
-  if (hasBrokenGrant(agent.tools, config.commands, config.servers, looks)) {
+  // away, the server itself gone, or an agent granted as a tool that the project has let go.
+  if (
+    hasBrokenGrant(agent.tools, {
+      commands: config.commands,
+      servers: config.servers,
+      looks,
+      agents: config.agents,
+    })
+  ) {
     return broken(TROUBLE_LOST_FUNCTION_LABEL);
   }
 

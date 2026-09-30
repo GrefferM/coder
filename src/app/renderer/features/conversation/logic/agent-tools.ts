@@ -1,29 +1,39 @@
-import { isCommandGrant } from "../../../interfaces";
-import type { AgentTool, McpLook, ProjectCommand, ToolGrant } from "../../../interfaces";
-import type { CommandToolGrant, McpToolGrant } from "../../../interfaces";
+import { isAgentGrant, isCommandGrant } from "../../../interfaces";
+import type { Agent, AgentTool, GrantTargets, McpLook, ProjectCommand, ToolGrant } from "../../../interfaces";
+import type { AgentToolGrant, CommandToolGrant, McpToolGrant } from "../../../interfaces";
 
 /**
- * Tools an agent may call. A grant is left out where its command is gone, where its server did not answer, or
- * where its function left the server's list: the grant stands, but a turn has nothing to hand the model.
+ * Tools an agent may call. A grant is left out where its command is gone, where its server did not answer, where
+ * its function left the server's list, or where the agent it named has been let go: the grant stands, but a turn
+ * has nothing to hand the model.
  */
-export function agentTools(
-  grants: ToolGrant[],
-  commands: ProjectCommand[],
-  looks: Record<string, McpLook>,
-): AgentTool[] {
+export function agentTools(grants: ToolGrant[], targets: GrantTargets): AgentTool[] {
   const tools: AgentTool[] = [];
 
   for (const grant of grants) {
-    const tool = isCommandGrant(grant) ? commandTool(grant, commands) : serverTool(grant, looks);
+    const tool = toolOf(grant, targets);
 
-    // One name is one tool to a model. The person's own declaration keeps the name, and a server's function of
-    // the same name is left out rather than quietly taking its place.
+    // One name is one tool to a model. The person's own declaration keeps the name, and a server's function or
+    // an agent of the same name is left out rather than quietly taking its place.
     if (tool !== null && !tools.some((standing) => standing.name === tool.name)) {
       tools.push(tool);
     }
   }
 
   return tools;
+}
+
+/** The tool one grant hands the model, whichever kind it is, or nothing where it points at nothing. */
+function toolOf(grant: ToolGrant, targets: GrantTargets): AgentTool | null {
+  if (isCommandGrant(grant)) {
+    return commandTool(grant, targets.commands);
+  }
+
+  if (isAgentGrant(grant)) {
+    return agentTool(grant, targets.agents);
+  }
+
+  return serverTool(grant, targets.looks);
 }
 
 /** A declared command, with the open parameters handed over and the fixed ones kept back. */
@@ -52,6 +62,22 @@ function commandTool(grant: CommandToolGrant, commands: ProjectCommand[]): Agent
     run: command.run,
     parameters: command.parameters.filter((parameter) => !fixedIds.has(parameter.id)),
     pinned,
+  };
+}
+
+/** Another agent as one tool: its name, and its short description as what the model reads of it. */
+function agentTool(grant: AgentToolGrant, agents: Agent[]): AgentTool | null {
+  const agent = agents.find((held) => held.id === grant.agentId) ?? null;
+
+  if (agent === null) {
+    return null;
+  }
+
+  return {
+    source: "agent",
+    name: agent.name,
+    description: agent.purpose ?? "",
+    agentId: agent.id,
   };
 }
 

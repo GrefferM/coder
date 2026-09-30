@@ -27,6 +27,7 @@ const MODELS: ProjectModel[] = [
 const AGENTS: Agent[] = ["a", "b", "c"].map((id) => ({
   id,
   name: id,
+  purpose: null,
   modelId: "sonnet",
   promptId: null,
   color: "#38a3ff",

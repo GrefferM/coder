@@ -3,12 +3,22 @@ import {
   GRANTED_TOOLS_PINNED_OPEN,
   GRANTED_TOOLS_PINNED_SEPARATOR,
   GRANTED_TOOLS_PINNED_SIGN,
+  GRANTED_TOOLS_AGENT_SIGN,
   GRANTED_TOOLS_SEPARATOR,
   GRANTED_TOOLS_SERVER_SIGN,
   NO_TOOLS_LABEL,
 } from "../constants";
-import { isCommandGrant } from "../../../interfaces";
-import type { CommandToolGrant, McpToolGrant, ProjectCommand, ProjectMcpServer, ToolGrant } from "../../../interfaces";
+import { isAgentGrant, isCommandGrant } from "../../../interfaces";
+import type {
+  Agent,
+  AgentToolGrant,
+  CommandToolGrant,
+  GrantTargets,
+  McpToolGrant,
+  ProjectCommand,
+  ProjectMcpServer,
+  ToolGrant,
+} from "../../../interfaces";
 
 /**
  * An agent's grants as one line, each name with what is fixed on it; none said in words.
@@ -18,16 +28,26 @@ import type { CommandToolGrant, McpToolGrant, ProjectCommand, ProjectMcpServer, 
  */
 export function grantedToolsLabel(
   grants: ToolGrant[],
-  commands: ProjectCommand[],
-  servers: ProjectMcpServer[],
+  naming: Pick<GrantTargets, "commands" | "servers" | "agents">,
 ): string {
   if (grants.length === 0) {
     return NO_TOOLS_LABEL;
   }
 
-  return grants
-    .map((grant) => (isCommandGrant(grant) ? commandSaid(grant, commands) : serverSaid(grant, servers)))
-    .join(GRANTED_TOOLS_SEPARATOR);
+  return grants.map((grant) => grantSaid(grant, naming)).join(GRANTED_TOOLS_SEPARATOR);
+}
+
+/** One grant as the line says it, whichever kind it is. */
+function grantSaid(grant: ToolGrant, naming: Pick<GrantTargets, "commands" | "servers" | "agents">): string {
+  if (isCommandGrant(grant)) {
+    return commandSaid(grant, naming.commands);
+  }
+
+  if (isAgentGrant(grant)) {
+    return agentSaid(grant, naming.agents);
+  }
+
+  return serverSaid(grant, naming.servers);
 }
 
 /** A command by its name, with every value fixed on it in brackets after it. */
@@ -48,6 +68,13 @@ function commandSaid(grant: CommandToolGrant, commands: ProjectCommand[]): strin
     .join(GRANTED_TOOLS_PINNED_SEPARATOR);
 
   return `${name}${GRANTED_TOOLS_PINNED_OPEN}${pinned}${GRANTED_TOOLS_PINNED_CLOSE}`;
+}
+
+/** An agent given as a tool, by its name; one the project no longer holds stands as its id. */
+function agentSaid(grant: AgentToolGrant, agents: Agent[]): string {
+  const agent = agents.find((item) => item.id === grant.agentId) ?? null;
+
+  return `${GRANTED_TOOLS_AGENT_SIGN}${agent?.name ?? grant.agentId}`;
 }
 
 /**

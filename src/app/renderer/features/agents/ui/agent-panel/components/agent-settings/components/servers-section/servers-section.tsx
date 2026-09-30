@@ -43,14 +43,19 @@ export function ServersSection({
   // The grants of the servers alone: what the commands' field holds is neither counted here nor mended here.
   const mine = grants.filter(isServerGrant);
   // A grant can outlive its function or its whole server; a broken one is counted nowhere.
-  const broken = brokenGrants(mine, [], servers, looks);
+  const broken = brokenGrants(mine, {
+    commands: [],
+    servers,
+    looks,
+    agents: [],
+  });
   const brokenIds = new Set(broken.flatMap((group) => group.rows.map((row) => row.id)));
 
   return (
     <FieldSlot
       label={
         <>
-          <SourceGlyph isCommand={false} />
+          <SourceGlyph source="mcp" />
           {`${SERVERS_SECTION_LABEL}${SERVERS_SECTION_COUNT_SEPARATOR}${connected.length}`}
         </>
       }

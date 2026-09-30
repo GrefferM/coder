@@ -1,7 +1,9 @@
 export * from "./attached-file.interface";
 // What the machine says back is the boundary's: written once in `src/contracts`, taken from there.
 export * from "../../../../../contracts/llm";
+export * from "./agent-ready.interface";
 export * from "./agent-stands.interface";
+export * from "./agent-wall.interface";
 export * from "./answered-turn.interface";
 export * from "./asked-said.interface";
 export * from "./chat-cost.interface";
@@ -25,7 +27,6 @@ export * from "./run-ledger.interface";
 export * from "./settled-supplier.interface";
 export * from "./turn-answer.interface";
 export * from "./turn-asked.interface";
-export * from "./turn-catalogue.interface";
 export * from "./turn-length.interface";
 export * from "./turn-out.interface";
 export * from "./turn-to-ask.interface";

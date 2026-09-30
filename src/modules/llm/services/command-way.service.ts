@@ -26,6 +26,7 @@ export class CommandWay implements ToolWay {
 
   standing(): CallStanding {
     return {
+      source: this.tool.source,
       name: this.tool.name,
       arguments: this.given,
       pinned: Object.keys(this.tool.pinned),

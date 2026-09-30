@@ -1,3 +1,4 @@
+import type { ToolSource } from "../../../contracts";
 import type {
   RunCallEntity,
   RunEntity,
@@ -80,6 +81,8 @@ export interface NewGiven {
 export interface NewCall {
   /** The id the call already has: the record keeps it, it does not hand out a second one. */
   id: string;
+  /** What the call went to. */
+  source: ToolSource;
   place: number;
   name: string;
   arguments: string;

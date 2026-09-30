@@ -1,6 +1,6 @@
-import { COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX } from "../../../constants";
+import { AGENTS_GROUP_KEY, COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX } from "../../../constants";
 import { handleOf } from "../../../interfaces";
-import type { McpLook, ProjectCommand, ProjectMcpServer } from "../../../interfaces";
+import type { Agent, McpLook, ProjectCommand, ProjectMcpServer } from "../../../interfaces";
 import type { ToolChoice } from "../interfaces";
 
 /**
@@ -30,6 +30,7 @@ export function toolChoices(
       source: "command" as const,
       commandId: command.id,
       serverId: null,
+      agentId: null,
     }));
 
   for (const server of servers) {
@@ -46,9 +47,31 @@ export function toolChoices(
         source: "mcp",
         commandId: null,
         serverId: server.id,
+        agentId: null,
       });
     }
   }
 
   return options;
+}
+
+/** Every other agent of the project as a tool to choose, by name; an agent is never offered itself. */
+export function agentChoices(agents: Agent[], selfId: string | null): ToolChoice[] {
+  return [...agents]
+    .filter((agent) => agent.id !== selfId)
+    .sort((first, second) => first.name.localeCompare(second.name))
+    .map((agent) => ({
+      key: handleOf({
+        kind: "agent",
+        id: agent.id,
+        functionName: null,
+      }),
+      group: AGENTS_GROUP_KEY,
+      name: agent.name,
+      description: agent.purpose ?? "",
+      source: "agent" as const,
+      commandId: null,
+      serverId: null,
+      agentId: agent.id,
+    }));
 }

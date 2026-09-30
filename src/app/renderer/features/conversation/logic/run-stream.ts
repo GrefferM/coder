@@ -18,6 +18,7 @@ import type { TurnCall } from "../../../interfaces";
 function turnCall(step: WholeStep): TurnCall[] {
   return step.calls.map((call) => ({
     id: call.id,
+    source: call.source,
     name: call.name,
     arguments: call.arguments,
     pinned: call.pinned,

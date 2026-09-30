@@ -27,6 +27,7 @@ function ran(patch: Partial<AddCallDto> = {}): AddCallDto {
   return {
     // THE FIRST RULE: a call comes to the record under the id it already wears, and keeps it.
     id: crypto.randomUUID(),
+    source: "command",
     name: "find_deep",
     arguments: {
       depth: "2",

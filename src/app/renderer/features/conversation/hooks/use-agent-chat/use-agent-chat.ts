@@ -7,6 +7,7 @@ import { answerTurn, pickAttachment, stopTurn } from "../../api";
 import { usePackedSend } from "../use-packed-send";
 import { AGENT_CHUNK_CHANNEL } from "../../../../../../contracts";
 import {
+  agentRegistry,
   agentStands,
   agentThread,
   answeredCard,
@@ -404,22 +405,26 @@ export function useAgentChat(
       const row = ledger?.runId ?? record.standing();
 
       void threadOf(row, agent.id)
-        .then((thread) =>
-          answerTurn({
+        .then((thread) => {
+          const catalogue = {
+            commands: config.commands,
+            servers: config.servers,
+            // What a server hands over is live: it is read now, and never from what the turn was set up with.
+            looks: said.current,
+            agents: config.agents,
+          };
+
+          return answerTurn({
             turnId,
             agent,
             stands,
             asked,
             thread,
-            catalogue: {
-              commands: config.commands,
-              servers: config.servers,
-              // What a server hands over is live: it is read now, and never from what the turn was set up with.
-              looks: said.current,
-            },
+            catalogue,
+            agents: agentRegistry(agent, config, machine.current, catalogue),
             directory: held.current.directory,
-          }),
-        )
+          });
+        })
         .then((answered) => {
           // The turn came back, so nothing arrives for it any more — its words are a card of their own now.
           forgetLive(turnId);

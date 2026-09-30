@@ -1,5 +1,6 @@
 import { IsArray, IsIn, IsInt, IsNotEmpty, IsObject, IsOptional, IsString, Min } from "class-validator";
-import { RUN_CALL_ENDS } from "../../../contracts";
+import { RUN_CALL_ENDS, TOOL_SOURCES } from "../../../contracts";
+import type { ToolSource } from "../../../contracts";
 
 /** One call as it happened; a refused one carries `refusal` and no code, a call that ran carries both. */
 export class AddCallDto {
@@ -10,6 +11,10 @@ export class AddCallDto {
   @IsString()
   @IsNotEmpty()
   declare id: string;
+
+  /** What the call went to. */
+  @IsIn(TOOL_SOURCES)
+  declare source: ToolSource;
 
   @IsString()
   @IsNotEmpty()

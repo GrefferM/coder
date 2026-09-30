@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { answerTurn, stopTurn } from "./answer-turn";
-import type { TurnCatalogue, TurnToAsk } from "../interfaces";
+import type { TurnToAsk } from "../interfaces";
+import type { GrantTargets } from "../../../interfaces";
 import { ASK_AGENT_CHANNEL, STOP_AGENT_CHANNEL } from "../../../../../contracts";
 import { LLM_NO_KEY } from "../constants";
 import { RUN_STEP_DONE, RUN_STEP_FAILED } from "../../record";
@@ -74,10 +75,11 @@ function refusingMachine(failure: string) {
 
 /** One turn as it is asked, with what the case is about patched into it. */
 /** A project that declares nothing: neither a command nor a server. */
-const NOTHING_DECLARED: TurnCatalogue = {
+const NOTHING_DECLARED: GrantTargets = {
   commands: [],
   servers: [],
   looks: {},
+  agents: [],
 };
 
 function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
@@ -92,6 +94,7 @@ function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
     asked: "Розбий текст на тези",
     thread: [],
     catalogue: NOTHING_DECLARED,
+    agents: [],
     directory: "/tmp/coder",
     ...patch,
   };
@@ -140,6 +143,7 @@ describe("answerTurn · before the model is troubled", () => {
 
     expect(invoke).toHaveBeenCalledWith(ASK_AGENT_CHANNEL, {
       turnId: "turn-1",
+      agentId: "agent-1",
       providerId: "openrouter",
       model: "deepseek-v4-flash",
       directory: "/tmp/coder",
@@ -157,6 +161,7 @@ describe("answerTurn · before the model is troubled", () => {
       tools: [],
       // The reach of every declared server rides along, so a granted function finds its own by id.
       servers: [],
+      agents: [],
     });
   });
 });

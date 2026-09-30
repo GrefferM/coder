@@ -50,7 +50,14 @@ function granted(functionName: string, serverId: string = SERVER_ID): ToolGrant 
 
 describe("brokenGrants · nothing is broken", () => {
   it("says nothing where every grant still has what it points at", () => {
-    expect(brokenGrants([granted("pulls.create")], [], [SERVER], look())).toEqual([]);
+    expect(
+      brokenGrants([granted("pulls.create")], {
+        commands: [],
+        servers: [SERVER],
+        looks: look(),
+        agents: [],
+      }),
+    ).toEqual([]);
   });
 
   it("breaks nothing while the server has not answered yet", () => {
@@ -61,7 +68,14 @@ describe("brokenGrants · nothing is broken", () => {
       answeredAt: null,
     });
 
-    expect(brokenGrants([granted("pulls.merge")], [], [SERVER], asked)).toEqual([]);
+    expect(
+      brokenGrants([granted("pulls.merge")], {
+        commands: [],
+        servers: [SERVER],
+        looks: asked,
+        agents: [],
+      }),
+    ).toEqual([]);
   });
 
   it("breaks nothing when the server fell", () => {
@@ -72,14 +86,26 @@ describe("brokenGrants · nothing is broken", () => {
       failure: "ПРОЦЕС УПАВ",
     });
 
-    expect(brokenGrants([granted("pulls.merge")], [], [SERVER], fallen)).toEqual([]);
+    expect(
+      brokenGrants([granted("pulls.merge")], {
+        commands: [],
+        servers: [SERVER],
+        looks: fallen,
+        agents: [],
+      }),
+    ).toEqual([]);
   });
 });
 
 describe("brokenGrants · the three reasons", () => {
   it("breaks a function the standing server no longer gives", () => {
     // It answered, and this name is not in what it answered with.
-    const groups = brokenGrants([granted("pulls.merge")], [], [SERVER], look());
+    const groups = brokenGrants([granted("pulls.merge")], {
+      commands: [],
+      servers: [SERVER],
+      looks: look(),
+      agents: [],
+    });
 
     expect(groups).toHaveLength(1);
     expect(groups[0].cause).toBe("goneFunction");
@@ -89,12 +115,12 @@ describe("brokenGrants · the three reasons", () => {
 
   it("breaks every grant of a server the project no longer names, and says no name for it", () => {
     // The name lived in the server's own file and went with it; only the id is left.
-    const groups = brokenGrants(
-      [granted("fs.read_file", "server-gone"), granted("fs.write_file", "server-gone")],
-      [],
-      [],
-      {},
-    );
+    const groups = brokenGrants([granted("fs.read_file", "server-gone"), granted("fs.write_file", "server-gone")], {
+      commands: [],
+      servers: [],
+      looks: {},
+      agents: [],
+    });
 
     expect(groups).toHaveLength(1);
     expect(groups[0].cause).toBe("goneServer");
@@ -103,12 +129,12 @@ describe("brokenGrants · the three reasons", () => {
   });
 
   it("keeps a gone server's functions in one group, so one act takes them away", () => {
-    const groups = brokenGrants(
-      [granted("fs.read_file", "server-gone"), granted("fs.write_file", "server-gone")],
-      [],
-      [],
-      {},
-    );
+    const groups = brokenGrants([granted("fs.read_file", "server-gone"), granted("fs.write_file", "server-gone")], {
+      commands: [],
+      servers: [],
+      looks: {},
+      agents: [],
+    });
 
     expect(groups).toHaveLength(1);
   });
@@ -130,9 +156,12 @@ describe("brokenGrants · the three reasons", () => {
           ],
         },
       ],
-      [aCommand()],
-      [],
-      {},
+      {
+        commands: [aCommand()],
+        servers: [],
+        looks: {},
+        agents: [],
+      },
     );
 
     expect(groups).toHaveLength(1);
@@ -160,9 +189,12 @@ describe("brokenGrants · several reasons at once", () => {
           pinned: [],
         },
       ],
-      [],
-      [SERVER],
-      look(),
+      {
+        commands: [],
+        servers: [SERVER],
+        looks: look(),
+        agents: [],
+      },
     );
 
     expect(groups.map((group) => group.cause)).toEqual(["goneFunction", "goneServer", "command"]);

@@ -1355,6 +1355,7 @@ interface AgentPiece {
 function standing(state: string, patch: Partial<LiveCall> = {}): LiveCall {
   return {
     id: "call-1",
+    source: "command",
     name: "find_deep",
     arguments: {
       depth: "швидко",
@@ -1416,6 +1417,7 @@ describe("useAgentChat while a turn is making calls", () => {
         text: "",
         call: standing("refused", {
           id: "call-2",
+          source: "command",
           refusal: "[find_deep не запустилась: depth — має бути числом, прийшло «швидко»]",
         }),
       }),
@@ -1861,6 +1863,7 @@ describe("useAgentChat writing the record of a run", () => {
       calls: [
         {
           id: "call-1",
+          source: "command",
           name: "find_deep",
           pinned: [],
           arguments: {
@@ -1878,6 +1881,7 @@ describe("useAgentChat writing the record of a run", () => {
         },
         {
           id: "call-2",
+          source: "command",
           name: "find_deep",
           pinned: [],
           arguments: {

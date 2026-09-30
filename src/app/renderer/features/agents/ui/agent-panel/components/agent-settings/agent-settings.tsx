@@ -6,6 +6,7 @@ import { isModelLost, isPromptLost, lostProvider, mendedNumber, takesNoTools, wi
 import { NAME_TAKEN_AGENT_NOTE } from "../../../../../../constants";
 
 import {
+  AgentToolsSection,
   GrantView,
   ServerView,
   ServersSection,
@@ -22,6 +23,8 @@ import {
   AGENT_SETTINGS_DELETE_LABEL,
   AGENT_SETTINGS_FOOTER_BORDER_COLOR,
   AGENT_SETTINGS_NAME_LABEL,
+  AGENT_SETTINGS_PURPOSE_LABEL,
+  AGENT_SETTINGS_PURPOSE_PLACEHOLDER,
   AGENT_SETTINGS_REVERT_LABEL,
   AGENT_SETTINGS_SAVE_LABEL,
 } from "./constants";
@@ -32,6 +35,7 @@ import { isCommandGrant } from "../../../../../../interfaces";
 
 /** Selected agent's settings — changes show on the canvas at once, only «Зберегти» writes. */
 export function AgentSettings({
+  agentId,
   draft,
   catalogue,
   writing,
@@ -178,6 +182,20 @@ export function AgentSettings({
           }
         />
 
+        <Field
+          label={AGENT_SETTINGS_PURPOSE_LABEL}
+          value={draft.purpose ?? ""}
+          wasValue={was.purpose}
+          placeholder={AGENT_SETTINGS_PURPOSE_PLACEHOLDER}
+          isProse
+          onChange={(purpose) =>
+            onDraftChange({
+              // An emptied field is an unwritten one.
+              purpose: purpose === "" ? null : purpose,
+            })
+          }
+        />
+
         <SettingsTies
           draft={draft}
           was={was}
@@ -221,6 +239,19 @@ export function AgentSettings({
             })
           }
           onOpenServer={openServer}
+        />
+
+        <AgentToolsSection
+          isLocked={isToolless}
+          agents={agents}
+          selfId={agentId}
+          grants={draft.tools}
+          wasValue={was.agentTools}
+          onGrantsChange={(tools) =>
+            onDraftChange({
+              tools,
+            })
+          }
         />
 
         {standing.suppliers.length > 0 && <SuppliersList suppliers={standing.suppliers} />}

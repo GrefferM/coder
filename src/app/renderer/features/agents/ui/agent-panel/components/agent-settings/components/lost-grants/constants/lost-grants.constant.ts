@@ -9,6 +9,7 @@ export const LOST_GRANTS_NOTES: Record<BrokenGrantCause, string> = {
   command: "Команди більше немає у проєкті. Видача лишилась — агент кличе те, чого немає.",
   goneFunction: "Сервер оновився й забрав цю функцію. Видача лишилась — агент кличе те, чого немає.",
   goneServer: "Сервера більше немає у проєкті. Видача лишилась — агент кличе те, чого немає.",
+  goneAgent: "Агента більше немає у проєкті. Видача лишилась — агент кличе те, чого немає.",
 };
 
 /** One act for the whole group, and it says how much it takes away where that is more than one. */

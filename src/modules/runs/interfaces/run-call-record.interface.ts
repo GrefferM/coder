@@ -1,6 +1,9 @@
+import type { ToolSource } from "../../../contracts";
+
 /** The columns the `run_calls` table holds; the entity implements it. */
 export interface RunCallRecord {
   id: string;
+  source: ToolSource;
   place: number;
   name: string;
   arguments: string;

@@ -14,7 +14,7 @@ function rgb(hex: string): string {
 
 describe("CallPill", () => {
   it("says what is being called, and says it once", () => {
-    render(<CallPill name="run_test" isCommand />);
+    render(<CallPill name="run_test" source="command" />);
 
     expect(screen.getByText("run_test")).toBeInTheDocument();
   });
@@ -22,7 +22,7 @@ describe("CallPill", () => {
   it("says a server by the server's name, in the servers' own colour", () => {
     // «пілюля збоку — тільки сервер: "notion-mcp", без функції» — which of its functions is out is the
     // page's to say, and the colour is that source's, so the pill and its mark on the arc agree.
-    const { container } = render(<CallPill name="notion-mcp" isCommand={false} />);
+    const { container } = render(<CallPill name="notion-mcp" source="mcp" />);
     const pill = container.firstElementChild as HTMLElement;
 
     expect(screen.getByText("notion-mcp")).toBeInTheDocument();
@@ -30,7 +30,7 @@ describe("CallPill", () => {
   });
 
   it("says a command in the commands' colour, and the two never wear one another's", () => {
-    const { container } = render(<CallPill name="run_test" isCommand />);
+    const { container } = render(<CallPill name="run_test" source="command" />);
     const pill = container.firstElementChild as HTMLElement;
 
     expect(pill.style.color).toBe(rgb(ARMED_COMMANDS_COLOR));
@@ -39,7 +39,7 @@ describe("CallPill", () => {
   it("stands beside the sphere and level with the top of the arc, catching no pointer", () => {
     // Nothing on the arc marks the call, so the pill stands by the sphere itself — and at the
     // arc's highest point, where it covers no mini-sphere however many of them there are.
-    const { container } = render(<CallPill name="run_test" isCommand />);
+    const { container } = render(<CallPill name="run_test" source="command" />);
     const pill = container.firstElementChild as HTMLElement;
 
     expect(pill.style.left).toBe(`${SPHERE_SIZE_PX + CALL_PILL_GAP_PX}px`);

@@ -26,6 +26,11 @@ export class ProjectAgentDto {
   @IsNotEmpty()
   declare name: string;
 
+  // What the agent is for; null where unwritten.
+  @IsOptional()
+  @IsString()
+  declare purpose: string | null;
+
   @IsUUID()
   declare modelId: string;
 

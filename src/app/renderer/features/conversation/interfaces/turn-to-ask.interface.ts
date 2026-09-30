@@ -1,6 +1,5 @@
 import type { AgentStands } from "./agent-stands.interface";
-import type { TurnCatalogue } from "./turn-catalogue.interface";
-import type { Agent, ChatTurn } from "../../../interfaces";
+import type { Agent, ChatTurn, GrantTargets, ReachableAgent } from "../../../interfaces";
 
 /**
  * Everything one turn is asked with, in one named thing: which turn it is, whose it is and what that agent
@@ -18,7 +17,9 @@ export interface TurnToAsk {
   /** The agent's own pairs of this conversation; they go to the model ahead of what arrived. */
   thread: ChatTurn[];
   /** What the turn may reach into — the project's commands and servers, and what each server hands over. */
-  catalogue: TurnCatalogue;
+  catalogue: GrantTargets;
+  /** Every agent reachable as a tool from this one, by id. */
+  agents: ReachableAgent[];
   /** The project's folder, which is where a command runs. */
   directory: string;
 }

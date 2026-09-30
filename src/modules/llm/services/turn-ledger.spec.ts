@@ -6,6 +6,7 @@ import type { TurnCall } from "../interfaces";
 function aCall(id: string): TurnCall {
   return {
     id,
+    source: "command",
     name: "run_tests",
     arguments: {},
     pinned: [],

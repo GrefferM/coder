@@ -1,5 +1,5 @@
 import { Dot } from "../../../../../components";
-import { ARMED_COMMANDS_COLOR, ARMED_SERVERS_COLOR } from "../../../constants";
+import { ARMED_SOURCE_COLOR } from "../../../constants";
 import { SPHERE_ORB_RADIUS_PX, SPHERE_SIZE_PX } from "../../../../../components/sphere/constants";
 import {
   CALL_PILL_BACKGROUND_COLOR,
@@ -24,8 +24,8 @@ import type { CallPillProps } from "./interfaces";
  * A call to a server is said by the **server's** name and never by the function's — which function it was is the
  * page's to say. The colour is that source's own, so the pill and the mark the call came from agree.
  */
-export function CallPill({ name, isCommand }: CallPillProps) {
-  const color = isCommand ? ARMED_COMMANDS_COLOR : ARMED_SERVERS_COLOR;
+export function CallPill({ name, source }: CallPillProps) {
+  const color = ARMED_SOURCE_COLOR[source];
 
   return (
     <span

@@ -1,7 +1,11 @@
+import type { ToolSource } from "../project";
+
 /** One call of a turn while it is live. */
 export interface TurnCall {
   /** The same call is said when it goes out and again when it is over, under this id. */
   id: string;
+  /** What the call went to. */
+  source: ToolSource;
   name: string;
   arguments: Record<string, string>;
   /** Which of the arguments the person pinned; the rest the model decided. */

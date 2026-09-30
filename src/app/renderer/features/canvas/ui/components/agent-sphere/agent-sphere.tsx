@@ -67,7 +67,7 @@ export function AgentSphere({ agent, place, wearing, doing, acts }: AgentSphereP
         onPointAway={acts.onPointAwayFromOrb}
       />
       {/* The call is said by this one pill, and the arc under it does not move at all. */}
-      {doing.calling !== null && <CallPill name={doing.calling.name} isCommand={doing.calling.isCommand} />}
+      {doing.calling !== null && <CallPill name={doing.calling.name} source={doing.calling.source} />}
     </div>
   );
 }

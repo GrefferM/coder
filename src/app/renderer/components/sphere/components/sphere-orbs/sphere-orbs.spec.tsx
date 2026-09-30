@@ -3,10 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { SphereOrbs } from "./sphere-orbs";
 import { SPHERE_ORB_RADIUS_PX, SPHERE_ORB_SIZE_PX, SPHERE_SIZE_PX } from "../../constants";
+import type { SphereOrb } from "./interfaces";
 
 const COLOR = "#e8c46a";
 
-function orb(more: string | null = null, group: string | null = "commands") {
+function orb(more: string | null = null, group: string | null = "commands"): SphereOrb {
   return {
     color: COLOR,
     group,
@@ -14,7 +15,7 @@ function orb(more: string | null = null, group: string | null = "commands") {
     grantId: null,
     more,
     // A globe unless a test says otherwise — the shape is the source's kind, and most of these are servers.
-    isCommand: false,
+    source: "mcp",
   };
 }
 
@@ -32,7 +33,7 @@ describe("SphereOrbs", () => {
         orbs={[
           {
             ...orb(),
-            isCommand: true,
+            source: "command",
           },
           orb(),
         ]}
@@ -101,7 +102,7 @@ describe("SphereOrbs", () => {
         orbs={[
           {
             ...orb("+5"),
-            isCommand: true,
+            source: "command",
           },
           orb("+3"),
         ]}

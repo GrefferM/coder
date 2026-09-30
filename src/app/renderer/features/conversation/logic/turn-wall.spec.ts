@@ -36,6 +36,7 @@ const COMMAND: ProjectCommand = aCommand({
 /** A project that declares this one command and no server at all. */
 const ONLY_COMMANDS = {
   commands: [COMMAND],
+  agents: [],
   servers: [],
   looks: {},
 };
@@ -52,6 +53,7 @@ function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
     asked: "Прогони тести",
     thread: [],
     catalogue: ONLY_COMMANDS,
+    agents: [],
     directory: "/tmp/coder",
     ...patch,
   };
@@ -79,6 +81,7 @@ const SERVER_ID = "99999999-9999-4999-8999-999999999999";
 /** A project that declares one server, and what that server said when it was asked. */
 const WITH_SERVER = {
   commands: [COMMAND],
+  agents: [],
   servers: [
     {
       id: SERVER_ID,

@@ -7,6 +7,7 @@ export * from "./canvas-handle.interface";
 export * from "./field-change.interface";
 export * from "./filled-agent.interface";
 export * from "./filled-model.interface";
+export * from "./grant-targets.interface";
 export * from "./link-life.type";
 export * from "./open-project.interface";
 export * from "./pasted-agent.interface";

@@ -50,6 +50,7 @@ function message(patch: Partial<ChatMessage> = {}): ChatMessage {
 function call(patch: Partial<TurnCall> = {}): TurnCall {
   return {
     id: "c1",
+    source: "mcp",
     name: "fetch",
     arguments: {},
     pinned: [],

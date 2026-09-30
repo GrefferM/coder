@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { brokenCause, hasBrokenGrant } from "./broken-cause";
-import { aCommand } from "../testing";
+import { aCommand, anAgent } from "../testing";
 import type { McpLook, ProjectMcpServer, ToolGrant } from "../interfaces";
 import { NO_MCP_CALLS } from "../interfaces";
 
@@ -58,24 +58,59 @@ const ON_COMMAND: ToolGrant = {
 
 describe("brokenCause", () => {
   it("says nothing of a grant on a declared command", () => {
-    expect(brokenCause(ON_COMMAND, [COMMAND], [], {})).toBeNull();
+    expect(
+      brokenCause(ON_COMMAND, {
+        commands: [COMMAND],
+        servers: [],
+        looks: {},
+        agents: [],
+      }),
+    ).toBeNull();
   });
 
   it("names the command that is no longer declared", () => {
-    expect(brokenCause(ON_COMMAND, [], [], {})).toBe("command");
+    expect(
+      brokenCause(ON_COMMAND, {
+        commands: [],
+        servers: [],
+        looks: {},
+        agents: [],
+      }),
+    ).toBe("command");
   });
 
   it("says nothing of a function the server still offers", () => {
-    expect(brokenCause(onServer("pulls.create"), [], [SERVER], look())).toBeNull();
+    expect(
+      brokenCause(onServer("pulls.create"), {
+        commands: [],
+        servers: [SERVER],
+        looks: look(),
+        agents: [],
+      }),
+    ).toBeNull();
   });
 
   it("names the function the server took away when it updated", () => {
     // It answered, and this name is not in what it answered with.
-    expect(brokenCause(onServer("pulls.merge"), [], [SERVER], look())).toBe("goneFunction");
+    expect(
+      brokenCause(onServer("pulls.merge"), {
+        commands: [],
+        servers: [SERVER],
+        looks: look(),
+        agents: [],
+      }),
+    ).toBe("goneFunction");
   });
 
   it("names the server the project no longer holds", () => {
-    expect(brokenCause(onServer("fs.read_file", "server-gone"), [], [SERVER], look())).toBe("goneServer");
+    expect(
+      brokenCause(onServer("fs.read_file", "server-gone"), {
+        commands: [],
+        servers: [SERVER],
+        looks: look(),
+        agents: [],
+      }),
+    ).toBe("goneServer");
   });
 
   it("breaks nothing while the server has not answered", () => {
@@ -86,7 +121,14 @@ describe("brokenCause", () => {
       answeredAt: null,
     });
 
-    expect(brokenCause(onServer("pulls.merge"), [], [SERVER], asked)).toBeNull();
+    expect(
+      brokenCause(onServer("pulls.merge"), {
+        commands: [],
+        servers: [SERVER],
+        looks: asked,
+        agents: [],
+      }),
+    ).toBeNull();
   });
 
   it("breaks nothing when the server fell", () => {
@@ -97,24 +139,93 @@ describe("brokenCause", () => {
       failure: "ПРОЦЕС УПАВ",
     });
 
-    expect(brokenCause(onServer("pulls.merge"), [], [SERVER], fallen)).toBeNull();
+    expect(
+      brokenCause(onServer("pulls.merge"), {
+        commands: [],
+        servers: [SERVER],
+        looks: fallen,
+        agents: [],
+      }),
+    ).toBeNull();
   });
 
   it("breaks nothing where nobody has asked the server at all", () => {
-    expect(brokenCause(onServer("pulls.merge"), [], [SERVER], {})).toBeNull();
+    expect(
+      brokenCause(onServer("pulls.merge"), {
+        commands: [],
+        servers: [SERVER],
+        looks: {},
+        agents: [],
+      }),
+    ).toBeNull();
+  });
+});
+
+describe("brokenCause · an agent granted as a tool", () => {
+  const ON_AGENT: ToolGrant = {
+    id: "grant-agent",
+    source: "agent",
+    agentId: "agent-2",
+  };
+
+  it("says nothing of an agent the project still holds", () => {
+    expect(
+      brokenCause(ON_AGENT, {
+        commands: [],
+        servers: [],
+        looks: {},
+        agents: [
+          anAgent({
+            id: "agent-2",
+          }),
+        ],
+      }),
+    ).toBeNull();
+  });
+
+  it("names the agent the project has let go", () => {
+    expect(
+      brokenCause(ON_AGENT, {
+        commands: [],
+        servers: [],
+        looks: {},
+        agents: [],
+      }),
+    ).toBe("goneAgent");
   });
 });
 
 describe("hasBrokenGrant", () => {
   it("is true where one of many grants points at nothing", () => {
-    expect(hasBrokenGrant([onServer("pulls.create"), onServer("pulls.merge")], [], [SERVER], look())).toBe(true);
+    expect(
+      hasBrokenGrant([onServer("pulls.create"), onServer("pulls.merge")], {
+        commands: [],
+        servers: [SERVER],
+        looks: look(),
+        agents: [],
+      }),
+    ).toBe(true);
   });
 
   it("is false where every grant still points at something", () => {
-    expect(hasBrokenGrant([ON_COMMAND, onServer("pulls.create")], [COMMAND], [SERVER], look())).toBe(false);
+    expect(
+      hasBrokenGrant([ON_COMMAND, onServer("pulls.create")], {
+        commands: [COMMAND],
+        servers: [SERVER],
+        looks: look(),
+        agents: [],
+      }),
+    ).toBe(false);
   });
 
   it("is false for an agent armed with nothing", () => {
-    expect(hasBrokenGrant([], [], [SERVER], look())).toBe(false);
+    expect(
+      hasBrokenGrant([], {
+        commands: [],
+        servers: [SERVER],
+        looks: look(),
+        agents: [],
+      }),
+    ).toBe(false);
   });
 });

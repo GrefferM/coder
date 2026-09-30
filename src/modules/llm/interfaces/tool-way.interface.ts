@@ -1,8 +1,11 @@
+import type { ToolSource } from "../../../contracts/project";
+
 /**
  * What one call says of itself the moment it is minted, before anything is said or run: where it went, what it
  * was given, and which of that the person pinned rather than the model choosing.
  */
 export interface CallStanding {
+  source: ToolSource;
   name: string;
   arguments: Record<string, string>;
   pinned: string[];

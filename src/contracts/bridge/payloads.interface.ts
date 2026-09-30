@@ -1,5 +1,5 @@
 import type { ProjectConfig, TakenThings } from "../project";
-import type { AgentTool, ChatTurn } from "../llm";
+import type { AgentTool, ChatTurn, ReachableAgent } from "../llm";
 import type { ProjectMcpServer } from "../project";
 import type { WrittenStep } from "../runs";
 
@@ -53,6 +53,8 @@ export interface SaveProviderValue {
 /** One turn asked of the machine. The provider's key is looked up on the far side and never sent. */
 export interface AskAgent {
   turnId: string;
+  /** Whose turn this is; an agent-tool calling it back would close a ring. */
+  agentId: string;
   providerId: string;
   model: string;
   directory: string;
@@ -64,6 +66,8 @@ export interface AskAgent {
   tools: AgentTool[];
   /** The reach of every server whose function stands among the tools. */
   servers: ProjectMcpServer[];
+  /** Every agent reachable as a tool from this one, by id. */
+  agents: ReachableAgent[];
 }
 
 export interface StopAgent {

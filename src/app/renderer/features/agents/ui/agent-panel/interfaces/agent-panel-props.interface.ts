@@ -5,6 +5,8 @@ import type { AgentCatalogue, AgentPanelActs, AgentPresses, AgentStanding, Agent
  * written, how the agent stands, what sent the tab here, and what can be done.
  */
 export interface AgentPanelProps {
+  /** The id of the selected agent, passed through so its tab never offers it itself as a tool. */
+  agentId: string | null;
   catalogue: AgentCatalogue;
   writing: AgentWriting;
   standing: AgentStanding;

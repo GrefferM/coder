@@ -42,6 +42,8 @@ export const CALL_ROW_SEPARATOR = " · ";
 export const CALL_ROW_ANSWERED_LABEL = "ВІДПОВІВ ЗА ";
 /** The server was asked and said «ні» — the function is there, so this is neither a break nor a refusal. */
 export const CALL_ROW_SAID_NO_LABEL = "СЕРВЕР ВІДМОВИВ";
+/** The agent was asked and could not run to an answer — it is there, so this is neither a break nor a refusal. */
+export const CALL_ROW_AGENT_FAILED_LABEL = "АГЕНТ НЕ ВІДПОВІВ";
 export const CALL_ROW_SECONDS_LABEL = " С";
 export const CALL_ROW_SECONDS_DIGITS = 2;
 /** Where the call went, said in the opened block above the arguments. */
@@ -51,8 +53,12 @@ export const CALL_ROW_SOURCE_LABEL = "ДЖЕРЕЛО";
  * offered about it: taking it away whole. A command's output keeps no such head.
  */
 export const CALL_ROW_SAID_LABEL = "ВІДПОВІДЬ СЕРВЕРА";
+/** The agent's answer is a block of its own too, and «СКОПІЮВАТИ» takes it away whole. */
+export const CALL_ROW_AGENT_SAID_LABEL = "ВІДПОВІДЬ АГЕНТА";
 export const CALL_ROW_SAID_GAP_PX = 9;
 export const CALL_ROW_SOURCE_KIND = "сервер";
+/** On the source line of a call that went to an agent, said where a server's name would stand. */
+export const CALL_ROW_AGENT_KIND = "агент";
 
 export const CALL_ROW_BODY_BACKGROUND_COLOR = "#0d0f16";
 export const CALL_ROW_BODY_BORDER_RADIUS_PX = 6;

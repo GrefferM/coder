@@ -15,6 +15,5 @@ export * from "./canvas-write-acts.interface";
 export * from "./link-end.interface";
 export * from "./link-tally.interface";
 export * from "./orb-hint.interface";
-export * from "./sources-said.interface";
 export * from "./sphere-scene.interface";
 export * from "./sphere-standing.interface";

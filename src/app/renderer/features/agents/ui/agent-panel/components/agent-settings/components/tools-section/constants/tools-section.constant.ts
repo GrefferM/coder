@@ -29,6 +29,8 @@ export const TOOLS_SECTION_EMPTY_ICON_COLOR = "#3a4258";
 
 /** Row name when the source command is gone. */
 export const TOOLS_SECTION_LOST_NAME = "функції немає";
+/** The same for an agent the project has let go. */
+export const TOOLS_SECTION_LOST_AGENT_NAME = "агента немає";
 
 /** The head over one source's functions in the picker — its glyph, its name, and the count on the right. */
 export const TOOLS_GROUP_ICON_SIZE_PX = 10;

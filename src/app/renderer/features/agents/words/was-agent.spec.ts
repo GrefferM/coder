@@ -41,6 +41,7 @@ const NAMING: AgentNaming = {
   prompts: PROMPTS,
   commands: [],
   servers: [],
+  agents: [],
 };
 
 describe("wasAgent", () => {
@@ -55,10 +56,12 @@ describe("wasAgent", () => {
 
     expect(wasAgent(draft(), saved, NAMING)).toEqual({
       name: null,
+      purpose: null,
       model: null,
       prompt: null,
       commandTools: null,
       serverTools: null,
+      agentTools: null,
       color: null,
       maxCalls: null,
       temperature: null,

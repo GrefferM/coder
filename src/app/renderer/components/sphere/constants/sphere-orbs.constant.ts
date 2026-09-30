@@ -15,6 +15,8 @@ export const SPHERE_ORB_ELLIPSE_OPACITY = 0.62;
 export const SPHERE_ORB_TILT = "rotate(-35 12 12)";
 export const SPHERE_ORB_RADIUS = 11;
 export const SPHERE_ORB_ELLIPSE_THIN = 4.2;
+/** The filled core that makes an agent's mark a sphere of its own. */
+export const SPHERE_ORB_CORE_RADIUS = 3;
 export const SPHERE_ORB_FILL = "#0d0f16";
 /** The порода's «+» says the count, and it is the only mini-sphere with a word in it. */
 export const SPHERE_ORB_MORE_COLOR = "#dde1ee";

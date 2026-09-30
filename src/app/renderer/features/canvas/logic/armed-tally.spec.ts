@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { armedTally } from "./armed-tally";
-import type { SourcesSaid } from "../interfaces";
+import type { GrantTargets } from "../../../interfaces";
 import type { ToolGrant } from "../../../interfaces";
 
 const SERVER_ID = "server-1";
 
-function said(commandIds: string[], serverIds: string[]): SourcesSaid {
-  return <SourcesSaid>(<unknown>{
+function said(commandIds: string[], serverIds: string[]): GrantTargets {
+  return <GrantTargets>(<unknown>{
     commands: commandIds.map((id) => ({
       id,
       name: id,

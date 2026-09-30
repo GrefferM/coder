@@ -4,6 +4,7 @@
  */
 export interface WasAgent {
   name: string | null;
+  purpose: string | null;
   model: string | null;
   prompt: string | null;
   /**
@@ -12,6 +13,8 @@ export interface WasAgent {
    */
   commandTools: string | null;
   serverTools: string | null;
+  /** The agents granted as tools are a third field of their own, said apart from commands and servers. */
+  agentTools: string | null;
   color: string | null;
   maxCalls: string | null;
   temperature: string | null;

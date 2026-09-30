@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { armedWith } from "./armed-with";
-import { ARMED_BROKEN_COLOR, ARMED_COMMANDS_COLOR, ARMED_MARKS_EACH, ARMED_SERVERS_COLOR } from "../constants";
-import type { SourcesSaid } from "../interfaces";
+import {
+  ARMED_AGENTS_COLOR,
+  ARMED_BROKEN_COLOR,
+  ARMED_COMMANDS_COLOR,
+  ARMED_MARKS_EACH,
+  ARMED_SERVERS_COLOR,
+} from "../constants";
+import type { GrantTargets } from "../../../interfaces";
 import type { ToolGrant } from "../../../interfaces";
 
 function granted(count: number): ToolGrant[] {
@@ -33,9 +39,23 @@ function fromServers(count: number): ToolGrant[] {
   );
 }
 
+/** Grants of `count` other agents as tools — each agent is a mark of its own. */
+function ofAgents(count: number): ToolGrant[] {
+  return Array.from(
+    {
+      length: count,
+    },
+    (_, at) => ({
+      id: `grant-agent-${at}`,
+      source: "agent" as const,
+      agentId: `agent-${at}`,
+    }),
+  );
+}
+
 /** The project file's own order, which is what decides who stands and who folds. */
-function saidOf(commandIds: string[], serverIds: string[]): SourcesSaid {
-  return <SourcesSaid>(<unknown>{
+function saidOf(commandIds: string[], serverIds: string[], agentIds: string[] = []): GrantTargets {
+  return <GrantTargets>(<unknown>{
     commands: commandIds.map((id) => ({
       id,
       name: id,
@@ -45,6 +65,10 @@ function saidOf(commandIds: string[], serverIds: string[]): SourcesSaid {
       name: id,
     })),
     looks: {},
+    agents: agentIds.map((id) => ({
+      id,
+      name: id,
+    })),
   });
 }
 
@@ -66,6 +90,12 @@ const SAID = saidOf(
     },
     (_, at) => `server-${at}`,
   ),
+  Array.from(
+    {
+      length: 32,
+    },
+    (_, at) => `agent-${at}`,
+  ),
 );
 
 describe("armedWith", () => {
@@ -73,8 +103,8 @@ describe("armedWith", () => {
     // The shape says the порода — a rounded square for a command, the globe for a server.
     const orbs = armedWith([...granted(1), ...fromServers(1)], SAID);
 
-    expect(orbs.find((orb) => orb.group === "commands")?.isCommand).toBe(true);
-    expect(orbs.find((orb) => orb.group !== "commands")?.isCommand).toBe(false);
+    expect(orbs.find((orb) => orb.group === "commands")?.source).toBe("command");
+    expect(orbs.find((orb) => orb.group !== "commands")?.source).toBe("mcp");
   });
 
   it("names the grant behind a command's mark, and none behind a server's", () => {
@@ -127,13 +157,13 @@ describe("armedWith", () => {
     // Six places, and not one of them shared by number — «дві команди ліворуч, два сервери праворуч».
     const arc = armedWith([...granted(7), ...fromServers(5)], SAID);
 
-    expect(arc.map((orb) => [orb.isCommand, orb.more])).toEqual([
-      [true, null],
-      [true, null],
-      [true, "+5"],
-      [false, null],
-      [false, null],
-      [false, "+3"],
+    expect(arc.map((orb) => [orb.source, orb.more])).toEqual([
+      ["command", null],
+      ["command", null],
+      ["command", "+5"],
+      ["mcp", null],
+      ["mcp", null],
+      ["mcp", "+3"],
     ]);
   });
 
@@ -141,7 +171,7 @@ describe("armedWith", () => {
     // A порода's place on the arc is not its size: commands stand left and servers right, whichever there are more of.
     const arc = armedWith([...fromServers(3), ...granted(1)], SAID);
 
-    expect(arc.map((orb) => orb.isCommand)).toEqual([true, false, false, false]);
+    expect(arc.map((orb) => orb.source)).toEqual(["command", "mcp", "mcp", "mcp"]);
   });
 
   it("gives a порода no third place while there is nothing to fold", () => {
@@ -177,8 +207,12 @@ describe("armedWith", () => {
       saidOf(["command-2", "command-0", "command-1"], ["server-2", "server-1", "server-0"]),
     );
 
-    expect(arc.filter((orb) => orb.isCommand).map((orb) => orb.grantId)).toEqual(["grant-2", "grant-0", null]);
-    expect(arc.filter((orb) => !orb.isCommand).map((orb) => orb.group)).toEqual([
+    expect(arc.filter((orb) => orb.source === "command").map((orb) => orb.grantId)).toEqual([
+      "grant-2",
+      "grant-0",
+      null,
+    ]);
+    expect(arc.filter((orb) => orb.source !== "command").map((orb) => orb.group)).toEqual([
       "server:server-2",
       "server:server-1",
       null,
@@ -213,7 +247,7 @@ describe("armedWith", () => {
           functionName: "gone",
         })),
       ],
-      <SourcesSaid>(<unknown>{
+      <GrantTargets>(<unknown>{
         commands: [],
         servers: [
           {
@@ -279,5 +313,29 @@ describe("armedWith", () => {
 
     expect(orbs).toHaveLength(2);
     expect(orbs.map((orb) => orb.group)).toEqual(["server:server-0", "server:server-1"]);
+  });
+
+  it("stands the agents third, each a mark of its own in the agents' colour, and folds the rest under their «+»", () => {
+    const arc = armedWith([...ofAgents(3), ...granted(1), ...fromServers(1)], SAID);
+
+    expect(arc.map((orb) => [orb.source, orb.more])).toEqual([
+      ["command", null],
+      ["mcp", null],
+      ["agent", null],
+      ["agent", null],
+      ["agent", "+1"],
+    ]);
+    expect(arc.filter((orb) => orb.source === "agent").map((orb) => orb.color)).toEqual([
+      ARMED_AGENTS_COLOR,
+      ARMED_AGENTS_COLOR,
+      ARMED_AGENTS_COLOR,
+    ]);
+  });
+
+  it("keeps the mark of an agent the project has let go, in the trouble tone", () => {
+    const [orb] = armedWith(ofAgents(1), saidOf([], [], []));
+
+    expect(orb.source).toBe("agent");
+    expect(orb.color).toBe(ARMED_BROKEN_COLOR);
   });
 });

@@ -32,9 +32,15 @@ export const AGENT_COMMANDS_CHANGE_LABEL = "команди";
 export const AGENT_COMMANDS_DROPPED_LABEL = "команди";
 export const AGENT_MCP_CHANGE_LABEL = "MCP";
 export const AGENT_MCP_DROPPED_LABEL = "MCP";
+export const AGENT_AGENTS_CHANGE_LABEL = "агенти";
+export const AGENT_AGENTS_DROPPED_LABEL = "агенти";
 
 /** The converging-wait mode, as a moved field says it. */
 export const AGENT_WAIT_CHANGE_LABEL = "очікування";
 export const AGENT_WAIT_DROPPED_LABEL = "очікування";
 export const AGENT_WAIT_ON_LABEL = "чекає всіх";
 export const AGENT_WAIT_OFF_LABEL = "на кожному окремо";
+
+/** The purpose line, as a moved field says it. */
+export const AGENT_PURPOSE_CHANGE_LABEL = "опис";
+export const AGENT_PURPOSE_DROPPED_LABEL = "опис";

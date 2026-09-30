@@ -139,6 +139,7 @@ export class RunWriter {
   private async saveCall(stepId: string, place: number, call: AddCallDto): Promise<void> {
     await this.store.addCall({
       id: call.id,
+      source: call.source,
       place,
       name: call.name,
       arguments: JSON.stringify(call.arguments),

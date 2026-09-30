@@ -75,6 +75,7 @@ function run(walk: WholeStep[]): WholeRun {
 function made(id: string, place: number) {
   return {
     id,
+    source: "command" as const,
     place,
     name: "tests",
     arguments: {},
@@ -389,6 +390,7 @@ describe("runStream", () => {
           calls: [
             {
               id: "call-1",
+              source: "command",
               place: 1,
               name: "tests",
               arguments: {

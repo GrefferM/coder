@@ -12,6 +12,7 @@ export const AGENT_SKELETON_STEP_PX = 240;
 
 export const AGENT_SKELETON = {
   name: UNKNOWN_VALUE,
+  purpose: null,
   // A colour cannot say «unknown»; a lost one becomes this grey.
   color: "#6b7490",
   isActive: true,

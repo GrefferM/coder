@@ -137,6 +137,7 @@ describe("the search over the record", () => {
         calls: [
           {
             id: crypto.randomUUID(),
+            source: "command",
             name: "find_deep",
             arguments: {},
             pinned: [],
@@ -187,6 +188,7 @@ describe("the search over the record", () => {
         calls: [
           {
             id: crypto.randomUUID(),
+            source: "command",
             name: "grep",
             arguments: {},
             pinned: [],
@@ -404,6 +406,7 @@ describe("the search over the record", () => {
         calls: [
           {
             id: crypto.randomUUID(),
+            source: "command",
             name: "grep",
             arguments: {},
             pinned: [],

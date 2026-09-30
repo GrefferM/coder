@@ -68,19 +68,19 @@ let watching = new Set<() => void>();
 function markCallOut(turnId: string, call: LiveCall | null): void {
   const was = callsOut[turnId] ?? null;
   /**
-   * A call to a server is said by the **server's** name; a command has no server and is its own name. The call
-   * carries both, so nothing is looked up here.
+   * A call to a server is said by the **server's** name; a command and an agent have no server and are said by
+   * their own. The call carries both, so nothing is looked up here.
    */
   const now =
     call === null
       ? null
       : {
           name: call.serverId === null ? call.name : call.serverName,
-          isCommand: call.serverId === null,
+          source: call.source,
         };
 
   // The whole point of this store is that a token never redraws the canvas, so an equal call is no news.
-  if (was?.name === now?.name && was?.isCommand === now?.isCommand) {
+  if (was?.name === now?.name && was?.source === now?.source) {
     return;
   }
 

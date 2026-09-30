@@ -16,10 +16,12 @@ const draft: AgentDraft = aDraft({
 
 const nothingMoved: WasAgent = {
   name: null,
+  purpose: null,
   model: null,
   prompt: null,
   commandTools: null,
   serverTools: null,
+  agentTools: null,
   color: null,
   maxCalls: null,
   temperature: null,

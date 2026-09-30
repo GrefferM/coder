@@ -1,20 +1,23 @@
 import { ukrainianPlural } from "../../../utils/text";
-import { pointsAt } from "../../../interfaces";
+import { isAgentGrant, pointsAt } from "../../../interfaces";
 import {
+  ORB_HINT_AGENT_KIND,
   ORB_HINT_BROKEN_FORMS,
-  ORB_HINT_COMMAND_FORMS,
   ORB_HINT_COMMAND_KIND,
   ORB_HINT_FUNCTION_FORMS,
+  ORB_HINT_GONE_AGENT,
   ORB_HINT_GONE_COMMAND,
   ORB_HINT_GONE_NAME,
   ORB_HINT_OF,
   ORB_HINT_REST_KIND,
   ORB_HINT_SEPARATOR,
-  ORB_HINT_SERVER_FORMS,
   ORB_HINT_SERVER_KIND,
+  ORB_HINT_SOURCE_FORMS,
 } from "../constants";
-import { COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX } from "../../../constants";
-import type { ArmedFold, OrbHint, SourcesSaid } from "../interfaces";
+import { AGENTS_GROUP_KEY, COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX } from "../../../constants";
+import { sourceOfGroup } from "./source-of-group";
+import type { ArmedFold, OrbHint } from "../interfaces";
+import type { GrantTargets } from "../../../interfaces";
 import type { ToolGrant } from "../../../interfaces";
 
 /**
@@ -24,12 +27,22 @@ import type { ToolGrant } from "../../../interfaces";
  *
  * What a server does not do is name its functions — «24 імені в підказку не влазять і не для того вона».
  */
-export function orbHint(group: string, granted: ToolGrant[], said: SourcesSaid): OrbHint {
+export function orbHint(group: string, granted: ToolGrant[], said: GrantTargets): OrbHint {
   if (group === COMMANDS_GROUP_KEY) {
     return {
       kind: ORB_HINT_COMMAND_KIND,
       // The name is the whole of what a command is here: it is one line in the project's own file.
       name: nameOfCommand(granted[0] ?? null, said) ?? ORB_HINT_GONE_COMMAND,
+      count: "",
+      lines: [],
+    };
+  }
+
+  if (group === AGENTS_GROUP_KEY) {
+    return {
+      kind: ORB_HINT_AGENT_KIND,
+      // An agent is one mark, named by its own name.
+      name: nameOfAgent(granted[0] ?? null, said) ?? ORB_HINT_GONE_AGENT,
       count: "",
       lines: [],
     };
@@ -57,9 +70,9 @@ export function orbHint(group: string, granted: ToolGrant[], said: SourcesSaid):
  * carries two things now, its number and its state, and the number alone would have hidden the state that the
  * hard two places pushed under it.
  */
-export function foldHint(folded: ArmedFold[], broken: number, said: SourcesSaid): OrbHint {
-  const isCommand = folded[0]?.group === COMMANDS_GROUP_KEY;
-  const [one, few, many] = isCommand ? ORB_HINT_COMMAND_FORMS : ORB_HINT_SERVER_FORMS;
+export function foldHint(folded: ArmedFold[], broken: number, said: GrantTargets): OrbHint {
+  const source = sourceOfGroup(folded[0].group);
+  const [one, few, many] = ORB_HINT_SOURCE_FORMS[source];
   const [oneBroken, fewBroken, manyBroken] = ORB_HINT_BROKEN_FORMS;
   const says = `${ORB_HINT_REST_KIND} ${folded.length} ${ukrainianPlural(folded.length, one, few, many)}`;
   const alarm =
@@ -72,18 +85,30 @@ export function foldHint(folded: ArmedFold[], broken: number, said: SourcesSaid)
     lines: folded.flatMap((mark) => {
       const hint = orbHint(mark.group, mark.granted, said);
 
-      return isCommand ? [hint.name] : [[hint.name, hint.count].filter((part) => part !== "").join(ORB_HINT_SEPARATOR)];
+      // A server is named with its count; a command and an agent by name alone.
+      return source === "mcp"
+        ? [[hint.name, hint.count].filter((part) => part !== "").join(ORB_HINT_SEPARATOR)]
+        : [hint.name];
     }),
   };
 }
 
 /** «run_test» — a granted command is named by the name the project gave it, and by nothing else. */
-function nameOfCommand(grant: ToolGrant | null, said: SourcesSaid): string | null {
+function nameOfCommand(grant: ToolGrant | null, said: GrantTargets): string | null {
   if (grant === null) {
     return null;
   }
 
   return said.commands.find((one) => pointsAt(grant, one.id))?.name ?? null;
+}
+
+/** An agent granted as a tool is named by its own name. */
+function nameOfAgent(grant: ToolGrant | null, said: GrantTargets): string | null {
+  if (grant === null || !isAgentGrant(grant)) {
+    return null;
+  }
+
+  return said.agents.find((one) => one.id === grant.agentId)?.name ?? null;
 }
 
 /** «2 з 33 функцій» — what is granted against what the server said it hands over, in the forms a number takes. */

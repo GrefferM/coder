@@ -1,3 +1,5 @@
+import type { ToolSource } from "../../../../../interfaces";
+
 /** One mini-sphere of the arc — one source, or its порода's «+» that folds the rest. */
 export interface SphereOrb {
   /** The source this mark stands for; nothing on a «+», which stands for no one source. */
@@ -12,9 +14,10 @@ export interface SphereOrb {
   /** Set only on a «+», and it counts marks of one порода — «+5», «+3». */
   more: string | null;
   /**
-   * What kind of source this is, said by the shape and not by a word. A server is a globe, because that
+   * What kind of source this is, said by the shape and not by a word. A server is a tilted globe, because that
    * is what a sphere is here; a declared command is a rounded square with a prompt in it, because a command is a
-   * line somebody runs. A «+» wears the shape of the порода it folds, dashed and dimmed.
+   * line somebody runs; an agent is an upright globe with a core, a small sphere of its own. A «+» wears the shape
+   * of the порода it folds, dashed and dimmed.
    */
-  isCommand: boolean;
+  source: ToolSource;
 }

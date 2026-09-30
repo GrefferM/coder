@@ -139,6 +139,7 @@ describe("SaidTurn", () => {
             output: "",
             refusal: "",
             exitCode: null,
+            source: "mcp",
             serverId: "server-1",
             serverName: "playwright-mcp",
             isFailed: false,

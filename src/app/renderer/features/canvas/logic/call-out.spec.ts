@@ -15,7 +15,7 @@ function held(turnId: string, agentId: string): WorkingAgent {
 function command(name: string): CallOut {
   return {
     name,
-    isCommand: true,
+    source: "command",
   };
 }
 
