@@ -6,6 +6,10 @@ import {
   AGENT_ACTIVE_DROPPED_LABEL,
   AGENT_ACTIVE_OFF_LABEL,
   AGENT_ACTIVE_ON_LABEL,
+  AGENT_WAIT_CHANGE_LABEL,
+  AGENT_WAIT_DROPPED_LABEL,
+  AGENT_WAIT_ON_LABEL,
+  AGENT_WAIT_OFF_LABEL,
   AGENT_COLOR_CHANGE_LABEL,
   AGENT_COLOR_DROPPED_LABEL,
   AGENT_MAX_CALLS_CHANGE_LABEL,
@@ -101,6 +105,12 @@ export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: Agent
       droppedLabel: AGENT_ACTIVE_DROPPED_LABEL,
       was: saved.isActive ? AGENT_ACTIVE_ON_LABEL : AGENT_ACTIVE_OFF_LABEL,
       now: draft.isActive ? AGENT_ACTIVE_ON_LABEL : AGENT_ACTIVE_OFF_LABEL,
+    },
+    {
+      label: AGENT_WAIT_CHANGE_LABEL,
+      droppedLabel: AGENT_WAIT_DROPPED_LABEL,
+      was: saved.waitsForAll ? AGENT_WAIT_ON_LABEL : AGENT_WAIT_OFF_LABEL,
+      now: draft.waitsForAll ? AGENT_WAIT_ON_LABEL : AGENT_WAIT_OFF_LABEL,
     },
   ];
 

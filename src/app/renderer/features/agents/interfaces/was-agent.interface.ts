@@ -16,4 +16,5 @@ export interface WasAgent {
   maxCalls: string | null;
   temperature: string | null;
   isActive: string | null;
+  waitsForAll: string | null;
 }

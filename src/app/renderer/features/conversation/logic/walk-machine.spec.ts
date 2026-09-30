@@ -151,6 +151,7 @@ function wait(): WaitedWork {
     arrived: [],
     viaLinkIds: [],
     isAwaitingRepeat: false,
+    isSilent: false,
   };
 }
 
@@ -461,6 +462,7 @@ describe("walkMachine · a supplier of a converging point settled", () => {
       arrived: [work("thesaurus")],
       viaLinkIds: ["link-1"],
       isAwaitingRepeat: false,
+      isSilent: false,
     };
     const { state, effects } = walkMachine(
       walk({
@@ -553,6 +555,120 @@ describe("walkMachine · a supplier of a converging point settled", () => {
   });
 });
 
+describe("walkMachine · a converging point that does not wait", () => {
+  const point = {
+    ...agent("titler"),
+    waitsForAll: false,
+  };
+  const awaited = ["thesaurus", "shortener"];
+
+  it("sends the arrival on the moment it comes, while another supplier is still to come", () => {
+    const { state, effects } = walkMachine(
+      walk(),
+      {
+        kind: "settled",
+        to: point,
+        awaited,
+        fromId: "thesaurus",
+        work: work("thesaurus"),
+        startAgentId: "thesaurus",
+        via: "link-1",
+        runKey: "walk-1",
+      },
+      NO_LINES,
+    );
+
+    // The work went at once, as its own turn — not gathered, not held for the other supplier.
+    expect(effects).toEqual([
+      {
+        kind: "askAgent",
+        agent: point,
+        incoming: [work("thesaurus")],
+        startAgentId: "thesaurus",
+        viaLinkIds: ["link-1"],
+        runKey: "walk-1",
+        isAgain: false,
+      },
+    ]);
+    // The tally is kept only to spot an all-silent run; the other supplier is still awaited.
+    expect(state.walks["walk-1"]?.waiting.titler?.settledIds).toEqual(["thesaurus"]);
+  });
+
+  it("sends the last supplier's work too, and forgets the tally without gathering", () => {
+    const stood: WaitedWork = {
+      startAgentId: "thesaurus",
+      awaitedIds: awaited,
+      settledIds: ["thesaurus"],
+      arrived: [work("thesaurus")],
+      viaLinkIds: ["link-1"],
+      isAwaitingRepeat: false,
+      isSilent: true,
+    };
+    const { state, effects } = walkMachine(
+      walk({
+        walks: {
+          "walk-1": held({
+            waiting: {
+              titler: stood,
+            },
+          }),
+        },
+      }),
+      {
+        kind: "settled",
+        to: point,
+        awaited,
+        fromId: "shortener",
+        work: work("shortener"),
+        startAgentId: "thesaurus",
+        via: "link-2",
+        runKey: "walk-1",
+      },
+      NO_LINES,
+    );
+
+    // Only this arrival goes — the earlier one already went on its own; nothing is combined.
+    expect(effects).toEqual([
+      {
+        kind: "askAgent",
+        agent: point,
+        incoming: [work("shortener")],
+        startAgentId: "thesaurus",
+        viaLinkIds: ["link-2"],
+        runKey: "walk-1",
+        isAgain: false,
+      },
+    ]);
+    expect(state.walks["walk-1"]?.waiting.titler).toBeUndefined();
+  });
+
+  it("lets down whoever waits behind it only when every supplier settled with nothing", () => {
+    const { effects } = walkMachine(
+      walk(),
+      {
+        kind: "settled",
+        to: point,
+        awaited: ["thesaurus"],
+        fromId: "thesaurus",
+        work: null,
+        startAgentId: "thesaurus",
+        via: null,
+        runKey: "walk-1",
+      },
+      NO_LINES,
+    );
+
+    expect(effects).toEqual([
+      {
+        kind: "letDown",
+        fromId: "titler",
+        startAgentId: "thesaurus",
+        runKey: "walk-1",
+      },
+    ]);
+  });
+});
+
 describe("walkMachine · a point that will not answer", () => {
   const thesaurus = agent("thesaurus");
   const shortener = agent("shortener");
@@ -604,6 +720,7 @@ describe("walkMachine · a point that will not answer", () => {
                 arrived: [],
                 viaLinkIds: [],
                 isAwaitingRepeat: false,
+                isSilent: false,
               },
             },
           }),
@@ -879,6 +996,7 @@ describe("walkMachine · the answer takes its lines out", () => {
               arrived: [work("thesaurus")],
               viaLinkIds: ["link-1"],
               isAwaitingRepeat: false,
+              isSilent: false,
             },
           },
         }),

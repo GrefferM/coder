@@ -7,6 +7,11 @@ export interface Agent extends NamedAgent {
   promptId: string | null;
   tools: ToolGrant[];
   isActive: boolean;
+  /**
+   * At a point where lines converge: whether it waits for every live supplier before running once with all
+   * they brought, or runs on each input on its own the moment it arrives. True is the wait.
+   */
+  waitsForAll: boolean;
   x: number;
   y: number;
   /** Nothing where the file never carried the number; the agent says so instead of standing on one. */

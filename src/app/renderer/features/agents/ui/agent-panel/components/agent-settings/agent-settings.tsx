@@ -230,6 +230,7 @@ export function AgentSettings({
           was={was}
           mendedStepper={mendedStepper}
           mendedRow={mendedRow}
+          isConverging={standing.suppliers.length > 1}
           onDraftChange={onDraftChange}
         />
       </div>

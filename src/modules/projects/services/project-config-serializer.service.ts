@@ -197,6 +197,8 @@ export class ProjectConfigSerializer {
     agent.tools = this.toList(source.tools, (item) => this.toToolGrant(item));
     agent.color = <string>source.color;
     agent.isActive = <boolean>source.isActive;
+    // An older file that never carried the mode waits for all, as every converging point did before the mode.
+    agent.waitsForAll = typeof source.waitsForAll === "boolean" ? source.waitsForAll : true;
     agent.x = <number>source.x;
     agent.y = <number>source.y;
     agent.maxCalls = written(source.maxCalls, AGENT_MAX_CALLS_LEAST);

@@ -28,6 +28,7 @@ const nothingMoved: WasAgent = {
   maxCalls: null,
   temperature: null,
   isActive: null,
+  waitsForAll: null,
 };
 
 describe("SettingsNumbers", () => {
@@ -38,6 +39,7 @@ describe("SettingsNumbers", () => {
         was={nothingMoved}
         mendedStepper={createRef<HTMLButtonElement>()}
         mendedRow={null}
+        isConverging
         onDraftChange={() => {}}
       />,
     );
@@ -58,6 +60,7 @@ describe("SettingsNumbers", () => {
         was={nothingMoved}
         mendedStepper={createRef<HTMLButtonElement>()}
         mendedRow={null}
+        isConverging
         onDraftChange={onDraftChange}
       />,
     );
@@ -91,6 +94,7 @@ describe("SettingsNumbers", () => {
         was={nothingMoved}
         mendedStepper={createRef<HTMLButtonElement>()}
         mendedRow={null}
+        isConverging
         onDraftChange={onDraftChange}
       />,
     );
@@ -116,6 +120,7 @@ describe("SettingsNumbers", () => {
         }}
         mendedStepper={createRef<HTMLButtonElement>()}
         mendedRow={null}
+        isConverging
         onDraftChange={() => {}}
       />,
     );

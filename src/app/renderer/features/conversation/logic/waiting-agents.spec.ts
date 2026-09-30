@@ -23,6 +23,7 @@ function wait(patch: Partial<WaitedWork> = {}): WaitedWork {
     arrived: [],
     viaLinkIds: [],
     isAwaitingRepeat: false,
+    isSilent: false,
     ...patch,
   };
 }
@@ -127,5 +128,19 @@ describe("waitingAgents", () => {
     });
 
     expect(point.suppliers.map((one) => one.state)).toEqual(["silent", "silent", "working"]);
+  });
+  it("shows no wait for a point that does not wait — a silent tally is no pill", () => {
+    // The reviewer runs on each input on its own; the tally it keeps to spot an all-silent run shows nothing.
+    const shown = waitingAgents(
+      walk({
+        reviewer: wait({
+          settledIds: ["editor"],
+          arrived: [work("editor", 3)],
+          isSilent: true,
+        }),
+      }),
+    );
+
+    expect(shown).toEqual([]);
   });
 });

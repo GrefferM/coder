@@ -4,6 +4,8 @@ import { writtenNumber } from "./written-number";
 import {
   AGENT_ACTIVE_OFF_LABEL,
   AGENT_ACTIVE_ON_LABEL,
+  AGENT_WAIT_OFF_LABEL,
+  AGENT_WAIT_ON_LABEL,
   AGENT_NO_PROMPT_LABEL,
   AGENT_TEMPERATURE_PLACES,
 } from "../constants";
@@ -29,6 +31,7 @@ export function wasAgent(draft: AgentDraft, saved: AgentDraft | null, naming: Ag
       maxCalls: null,
       temperature: null,
       isActive: null,
+      waitsForAll: null,
     };
   }
 
@@ -53,5 +56,7 @@ export function wasAgent(draft: AgentDraft, saved: AgentDraft | null, naming: Ag
       saved.temperature === draft.temperature ? null : writtenNumber(saved.temperature, AGENT_TEMPERATURE_PLACES),
     isActive:
       saved.isActive === draft.isActive ? null : saved.isActive ? AGENT_ACTIVE_ON_LABEL : AGENT_ACTIVE_OFF_LABEL,
+    waitsForAll:
+      saved.waitsForAll === draft.waitsForAll ? null : saved.waitsForAll ? AGENT_WAIT_ON_LABEL : AGENT_WAIT_OFF_LABEL,
   };
 }

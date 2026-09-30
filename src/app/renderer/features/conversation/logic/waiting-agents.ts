@@ -16,6 +16,11 @@ export function waitingAgents(walk: WalkState): WaitingAgent[] {
     }
 
     for (const [agentId, stood] of Object.entries(held.waiting)) {
+      // A point that does not wait holds a tally, not a wait, and shows no pill.
+      if (stood.isSilent) {
+        continue;
+      }
+
       const standing = shown[agentId];
 
       if (standing !== undefined && standing.askedAt > held.askedAt) {

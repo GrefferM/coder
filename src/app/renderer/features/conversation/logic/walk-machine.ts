@@ -179,6 +179,8 @@ function settled(state: WalkState, event: WalkFact<"settled">): WalkNext {
     arrived: [],
     viaLinkIds: [],
     isAwaitingRepeat: false,
+    // A point that does not wait keeps a tally, not a wait; the screen reads this and draws it no pill.
+    isSilent: !event.to.waitsForAll,
   };
   const stood = settledWait(standing, {
     fromId: event.fromId,
@@ -186,6 +188,63 @@ function settled(state: WalkState, event: WalkFact<"settled">): WalkNext {
     via: event.via,
     isBroken: walk.isStopped,
   });
+
+  // A point that does not wait sends each arrival on the moment it comes; it keeps the tally only to know,
+  // once every supplier has settled, whether anything came at all — and if nothing did, lets down whoever waits.
+  if (!event.to.waitsForAll) {
+    const sent: WalkEffect[] =
+      event.work === null
+        ? []
+        : [
+            {
+              kind: "askAgent",
+              agent: event.to,
+              incoming: [event.work],
+              startAgentId: event.startAgentId,
+              viaLinkIds: event.via === null ? [] : [event.via],
+              runKey: event.runKey,
+              isAgain: false,
+            },
+          ];
+
+    if (!isWaitOver(stood)) {
+      return {
+        state: withWalk(state, event.runKey, {
+          ...walk,
+          waiting: {
+            ...walk.waiting,
+            [event.to.id]: stood,
+          },
+        }),
+        effects: sent,
+      };
+    }
+
+    const cleared = withWalk(state, event.runKey, {
+      ...walk,
+      waiting: forgotten(walk.waiting, event.to.id),
+    });
+
+    // Nothing ever arrived: there is no work here and none behind this agent — whoever waited is let down.
+    if (stood.arrived.length === 0) {
+      return {
+        state: cleared,
+        effects: [
+          {
+            kind: "letDown",
+            fromId: event.to.id,
+            startAgentId: event.startAgentId,
+            runKey: event.runKey,
+          },
+        ],
+      };
+    }
+
+    return {
+      state: cleared,
+      effects: sent,
+    };
+  }
 
   if (!isWaitOver(stood)) {
     return {

@@ -48,6 +48,10 @@ export class ProjectAgentDto {
   @IsBoolean()
   declare isActive: boolean;
 
+  // A converging point waits for every supplier where this holds, or runs on each input on its own where it does not.
+  @IsBoolean()
+  declare waitsForAll: boolean;
+
   @IsNumber()
   declare x: number;
 

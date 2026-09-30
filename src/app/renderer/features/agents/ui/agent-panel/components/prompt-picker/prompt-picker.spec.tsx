@@ -29,6 +29,7 @@ const AGENTS: Agent[] = ["agent-1", "agent-2", "agent-3"].map((id, index) => ({
   promptId: index === 2 ? null : "prompt-1",
   color: "#38a3ff",
   isActive: true,
+  waitsForAll: true,
   x: 0,
   y: 0,
   maxCalls: 10,

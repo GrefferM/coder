@@ -212,6 +212,18 @@ describe("ProjectConfigSerializer", () => {
     assert.equal(config.agents[0].temperature, 0.9);
   });
 
+  it("reads an agent without the wait key as waiting for all, so an old file needs no migration", async () => {
+    const config = await serializer.parse(VALID_YAML);
+
+    assert.equal(config.agents[0].waitsForAll, true);
+  });
+
+  it("keeps an agent set not to wait", async () => {
+    const config = await serializer.parse(VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    waitsForAll: false"));
+
+    assert.equal(config.agents[0].waitsForAll, false);
+  });
+
   it("refuses a temperature outside the bounds every provider takes", async () => {
     await assert.rejects(() =>
       serializer.parse(VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    temperature: 1.4")),

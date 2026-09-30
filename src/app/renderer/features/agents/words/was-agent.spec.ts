@@ -63,6 +63,7 @@ describe("wasAgent", () => {
       maxCalls: null,
       temperature: null,
       isActive: null,
+      waitsForAll: null,
     });
   });
 

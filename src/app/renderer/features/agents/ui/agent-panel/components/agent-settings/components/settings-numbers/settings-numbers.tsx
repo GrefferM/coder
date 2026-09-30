@@ -10,13 +10,22 @@ import {
   AGENT_SETTINGS_MAX_CALLS_LABEL,
   AGENT_SETTINGS_MAX_CALLS_UNLIMITED,
   AGENT_SETTINGS_SWITCH_LABEL,
+  AGENT_SETTINGS_WAIT_HINT,
+  AGENT_SETTINGS_WAIT_LABEL,
   AGENT_SETTINGS_TEMPERATURE_HINT,
   AGENT_SETTINGS_TEMPERATURE_LABEL,
 } from "../../constants";
 import type { SettingsNumbersProps } from "./interfaces";
 
 /** The agent's own numbers and its switch — each row saying what it was, if it changed. */
-export function SettingsNumbers({ draft, was, mendedStepper, mendedRow, onDraftChange }: SettingsNumbersProps) {
+export function SettingsNumbers({
+  draft,
+  was,
+  mendedStepper,
+  mendedRow,
+  isConverging,
+  onDraftChange,
+}: SettingsNumbersProps) {
   return (
     <>
       <SettingRow label={AGENT_SETTINGS_MAX_CALLS_LABEL} wasValue={was.maxCalls} hint={AGENT_SETTINGS_MAX_CALLS_HINT}>
@@ -54,6 +63,21 @@ export function SettingsNumbers({ draft, was, mendedStepper, mendedRow, onDraftC
           }
         />
       </SettingRow>
+
+      {/* The wait is a converging point's own: with one line coming in there is nothing to wait for. */}
+      {isConverging && (
+        <SettingRow label={AGENT_SETTINGS_WAIT_LABEL} wasValue={was.waitsForAll} hint={AGENT_SETTINGS_WAIT_HINT}>
+          <Toggle
+            label={AGENT_SETTINGS_WAIT_LABEL}
+            isOn={draft.waitsForAll}
+            onChange={(waitsForAll) =>
+              onDraftChange({
+                waitsForAll,
+              })
+            }
+          />
+        </SettingRow>
+      )}
 
       <SettingRow label={AGENT_SETTINGS_SWITCH_LABEL} wasValue={was.isActive}>
         <Toggle

@@ -47,6 +47,7 @@ function wait(patch: Partial<WaitedWork> = {}): WaitedWork {
     arrived: [],
     viaLinkIds: [],
     isAwaitingRepeat: false,
+    isSilent: false,
     ...patch,
   };
 }

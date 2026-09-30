@@ -14,4 +14,9 @@ export interface WaitedWork {
   viaLinkIds: string[];
   /** The walk broke under this point, so it stands until a hand runs the broken step again. */
   isAwaitingRepeat: boolean;
+  /**
+   * The point does not wait: it holds this tally only to know, once every supplier has settled, whether
+   * anything came at all. It is no wait the person should see, so the screen draws it no pill.
+   */
+  isSilent: boolean;
 }

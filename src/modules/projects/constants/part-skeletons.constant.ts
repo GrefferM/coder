@@ -15,6 +15,8 @@ export const AGENT_SKELETON = {
   // A colour cannot say «unknown»; a lost one becomes this grey.
   color: "#6b7490",
   isActive: true,
+  // A restored agent waits for all, the safe default a lost file no longer says otherwise.
+  waitsForAll: true,
   x: 0,
   y: 0,
   // A number nobody wrote is not a number; the agent says «НЕ ЗАПОВНЕНО» instead of standing on a fill-in.
