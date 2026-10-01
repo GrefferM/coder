@@ -41,6 +41,12 @@ export const AGENT_WAIT_DROPPED_LABEL = "очікування";
 export const AGENT_WAIT_ON_LABEL = "чекає всіх";
 export const AGENT_WAIT_OFF_LABEL = "на кожному окремо";
 
+/** The conversation memory, as a moved field says it. */
+export const AGENT_THREAD_CHANGE_LABEL = "пам'ять";
+export const AGENT_THREAD_DROPPED_LABEL = "пам'ять";
+export const AGENT_THREAD_ON_LABEL = "пам'ятає розмову";
+export const AGENT_THREAD_OFF_LABEL = "з нуля";
+
 /** The purpose line, as a moved field says it. */
 export const AGENT_PURPOSE_CHANGE_LABEL = "опис";
 export const AGENT_PURPOSE_DROPPED_LABEL = "опис";

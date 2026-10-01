@@ -127,6 +127,41 @@ describe("turnWall", () => {
     expect("systemPrompt" in way && way.systemPrompt).toBe("Ти тезар.");
   });
 
+  it("carries only the newest pairs of the thread that fit beside the prompt and the question", () => {
+    // A ceiling of 20: the question «Прогони тести» takes 13, so 7 are left for the thread.
+    const way = turnWall(
+      turn({
+        stands: {
+          model: aModel({
+            contextCeiling: 20,
+          }),
+          provider: null,
+          prompt: null,
+        },
+        thread: [
+          {
+            from: "person",
+            text: "старе питання",
+          },
+          {
+            from: "agent",
+            text: "стара відповідь",
+          },
+          {
+            from: "person",
+            text: "нове",
+          },
+          {
+            from: "agent",
+            text: "так",
+          },
+        ],
+      }),
+    );
+
+    expect("thread" in way && way.thread.map((said) => said.text)).toEqual(["нове", "так"]);
+  });
+
   it("stops a turn whose granted function the project has lost", () => {
     // The model would be handed a tool that is not there.
     const stood = wall({

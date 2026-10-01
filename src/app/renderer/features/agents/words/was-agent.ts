@@ -6,6 +6,8 @@ import {
   AGENT_ACTIVE_ON_LABEL,
   AGENT_WAIT_OFF_LABEL,
   AGENT_WAIT_ON_LABEL,
+  AGENT_THREAD_OFF_LABEL,
+  AGENT_THREAD_ON_LABEL,
   AGENT_NO_PROMPT_LABEL,
   AGENT_TEMPERATURE_PLACES,
 } from "../constants";
@@ -33,6 +35,7 @@ export function wasAgent(draft: AgentDraft, saved: AgentDraft | null, naming: Ag
       temperature: null,
       isActive: null,
       waitsForAll: null,
+      keepsThread: null,
     };
   }
 
@@ -62,5 +65,11 @@ export function wasAgent(draft: AgentDraft, saved: AgentDraft | null, naming: Ag
       saved.isActive === draft.isActive ? null : saved.isActive ? AGENT_ACTIVE_ON_LABEL : AGENT_ACTIVE_OFF_LABEL,
     waitsForAll:
       saved.waitsForAll === draft.waitsForAll ? null : saved.waitsForAll ? AGENT_WAIT_ON_LABEL : AGENT_WAIT_OFF_LABEL,
+    keepsThread:
+      saved.keepsThread === draft.keepsThread
+        ? null
+        : saved.keepsThread
+          ? AGENT_THREAD_ON_LABEL
+          : AGENT_THREAD_OFF_LABEL,
   };
 }

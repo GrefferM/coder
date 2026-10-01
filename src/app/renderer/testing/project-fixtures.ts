@@ -13,6 +13,7 @@ export function anAgent(patch: Partial<Agent> = {}): Agent {
     color: "#6fd3d8",
     isActive: true,
     waitsForAll: true,
+    keepsThread: true,
     x: 100,
     y: 100,
     maxCalls: 8,

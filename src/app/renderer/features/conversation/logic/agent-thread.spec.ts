@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { agentThread } from "./agent-thread";
 import { RUN_STEP_CEILING, RUN_STEP_FAILED } from "../../record";
-import { aStep } from "../../../testing";
+import { aStep, anAgent } from "../../../testing";
 
 describe("agentThread", () => {
   it("makes a pair of a step that answered, and none of a step that did not", () => {
@@ -29,7 +29,7 @@ describe("agentThread", () => {
           said: "",
         }),
       ],
-      "agent-1",
+      anAgent(),
     );
 
     expect(thread).toEqual([
@@ -69,10 +69,26 @@ describe("agentThread", () => {
           said: "не моє",
         }),
       ],
-      "agent-1",
+      anAgent(),
     );
 
     expect(thread.map((turn) => turn.text)).toEqual(["перше", "один", "друге", "два"]);
+  });
+
+  it("gives an agent that does not keep its thread nothing behind it, however much it answered", () => {
+    expect(
+      agentThread(
+        [
+          aStep({
+            asked: "Розбий текст на тези",
+            said: "- Починай з малого",
+          }),
+        ],
+        anAgent({
+          keepsThread: false,
+        }),
+      ),
+    ).toEqual([]);
   });
 
   it("gives an agent asked here for the first time nothing behind it", () => {
@@ -83,7 +99,7 @@ describe("agentThread", () => {
             agentId: "agent-2",
           }),
         ],
-        "agent-1",
+        anAgent(),
       ),
     ).toEqual([]);
   });

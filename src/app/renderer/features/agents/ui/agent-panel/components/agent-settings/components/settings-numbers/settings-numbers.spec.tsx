@@ -8,6 +8,8 @@ import {
   AGENT_SETTINGS_SWITCH_LABEL,
   AGENT_SETTINGS_TEMPERATURE_HINT,
   AGENT_SETTINGS_TEMPERATURE_LABEL,
+  AGENT_SETTINGS_THREAD_HINT,
+  AGENT_SETTINGS_THREAD_LABEL,
 } from "../../constants";
 import { STEPPER_MORE_LABEL } from "../../../../../../../../components/stepper/constants";
 import { FIELD_SLOT_WAS_PREFIX } from "../../../../../../../../components/field-slot/constants";
@@ -31,6 +33,7 @@ const nothingMoved: WasAgent = {
   temperature: null,
   isActive: null,
   waitsForAll: null,
+  keepsThread: null,
 };
 
 describe("SettingsNumbers", () => {
@@ -108,6 +111,33 @@ describe("SettingsNumbers", () => {
 
     expect(onDraftChange).toHaveBeenCalledWith({
       isActive: false,
+    });
+  });
+
+  it("lets the agent forget the conversation, and says what each side means", async () => {
+    const onDraftChange = vi.fn();
+
+    render(
+      <SettingsNumbers
+        draft={draft}
+        was={nothingMoved}
+        mendedStepper={createRef<HTMLButtonElement>()}
+        mendedRow={null}
+        isConverging={false}
+        onDraftChange={onDraftChange}
+      />,
+    );
+
+    expect(screen.getByText(AGENT_SETTINGS_THREAD_HINT)).toBeInTheDocument();
+
+    await userEvent.click(
+      screen.getByRole("switch", {
+        name: AGENT_SETTINGS_THREAD_LABEL,
+      }),
+    );
+
+    expect(onDraftChange).toHaveBeenCalledWith({
+      keepsThread: false,
     });
   });
 

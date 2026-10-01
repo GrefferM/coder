@@ -10,6 +10,8 @@ import {
   AGENT_SETTINGS_MAX_CALLS_LABEL,
   AGENT_SETTINGS_MAX_CALLS_UNLIMITED,
   AGENT_SETTINGS_SWITCH_LABEL,
+  AGENT_SETTINGS_THREAD_HINT,
+  AGENT_SETTINGS_THREAD_LABEL,
   AGENT_SETTINGS_WAIT_HINT,
   AGENT_SETTINGS_WAIT_LABEL,
   AGENT_SETTINGS_TEMPERATURE_HINT,
@@ -17,7 +19,7 @@ import {
 } from "../../constants";
 import type { SettingsNumbersProps } from "./interfaces";
 
-/** The agent's numbers and its switch, each showing its previous value when changed. */
+/** The agent's numbers, its toggles and its switch, each showing its previous value when changed. */
 export function SettingsNumbers({
   draft,
   was,
@@ -78,6 +80,18 @@ export function SettingsNumbers({
           />
         </SettingRow>
       )}
+
+      <SettingRow label={AGENT_SETTINGS_THREAD_LABEL} wasValue={was.keepsThread} hint={AGENT_SETTINGS_THREAD_HINT}>
+        <Toggle
+          label={AGENT_SETTINGS_THREAD_LABEL}
+          isOn={draft.keepsThread}
+          onChange={(keepsThread) =>
+            onDraftChange({
+              keepsThread,
+            })
+          }
+        />
+      </SettingRow>
 
       <SettingRow label={AGENT_SETTINGS_SWITCH_LABEL} wasValue={was.isActive}>
         <Toggle

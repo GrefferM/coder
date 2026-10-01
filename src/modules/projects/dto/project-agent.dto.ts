@@ -56,6 +56,10 @@ export class ProjectAgentDto {
   @IsBoolean()
   declare waitsForAll: boolean;
 
+  // Where true, the agent's earlier turns of the conversation go ahead of its input.
+  @IsBoolean()
+  declare keepsThread: boolean;
+
   @IsNumber()
   declare x: number;
 

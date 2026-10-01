@@ -14,6 +14,8 @@ export interface Agent extends NamedAgent {
    * input as it arrives.
    */
   waitsForAll: boolean;
+  /** True: the agent's own earlier turns of this conversation go ahead of its input; false: each input stands alone. */
+  keepsThread: boolean;
   x: number;
   y: number;
   /** Null when the file carries no number. */

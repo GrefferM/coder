@@ -224,6 +224,18 @@ describe("ProjectConfigSerializer", () => {
     assert.equal(config.agents[0].waitsForAll, false);
   });
 
+  it("reads an agent without the memory key as keeping its thread", async () => {
+    const config = await serializer.parse(VALID_YAML);
+
+    assert.equal(config.agents[0].keepsThread, true);
+  });
+
+  it("keeps an agent set to forget the conversation", async () => {
+    const config = await serializer.parse(VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    keepsThread: false"));
+
+    assert.equal(config.agents[0].keepsThread, false);
+  });
+
   it("refuses a temperature outside the bounds every provider takes", async () => {
     await assert.rejects(() =>
       serializer.parse(VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    temperature: 1.4")),

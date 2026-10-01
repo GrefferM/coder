@@ -12,6 +12,7 @@ export const AGENT_SKELETON = {
   isActive: true,
   // Safe default when the lost file says nothing.
   waitsForAll: true,
+  keepsThread: true,
   x: 0,
   y: 0,
   // Unset; the agent shows «НЕ ЗАПОВНЕНО».

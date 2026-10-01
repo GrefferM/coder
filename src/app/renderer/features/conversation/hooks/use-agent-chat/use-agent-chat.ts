@@ -355,7 +355,7 @@ export function useAgentChat(
    * without a row or on a first ask.
    */
   const threadOf = useCallback(
-    async (runId: string | null, agentId: string) => {
+    async (runId: string | null, agent: Agent) => {
       if (runId === null) {
         return [];
       }
@@ -364,7 +364,7 @@ export function useAgentChat(
 
       const run = await readRun(runId);
 
-      return run === null ? [] : agentThread(run.walk, agentId);
+      return run === null ? [] : agentThread(run.walk, agent);
     },
     [writer],
   );
@@ -385,7 +385,7 @@ export function useAgentChat(
       // A put-away walk keeps writing into the row it began in; every other walk uses the stream's row.
       const row = ledger?.runId ?? record.standing();
 
-      void threadOf(row, agent.id)
+      void threadOf(row, agent)
         .then((thread) => {
           const catalogue = {
             commands: config.commands,

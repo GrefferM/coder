@@ -7,17 +7,17 @@ import type { TurnAnswer, TurnToAsk } from "../interfaces";
 
 /**
  * One turn asked of the machine. Walls are checked first, so the model is never asked past one; an answer, a refusal or
- * a fall all return as words with their cost. The agent's thread of this conversation goes ahead of the question.
+ * a fall all return as words with their cost. The agent's thread, cut to the ceiling, goes ahead of the question.
  */
 export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
-  const { turnId, asked, thread, catalogue, agents, directory } = turn;
+  const { turnId, asked, catalogue, agents, directory } = turn;
   const wall = turnWall(turn);
 
   if ("notStarted" in wall) {
     return wall;
   }
 
-  const { agent: filled, model: held, systemPrompt, tools } = wall;
+  const { agent: filled, model: held, systemPrompt, thread, tools } = wall;
 
   try {
     const said = await window.electronApi.invoke(ASK_AGENT_CHANNEL, {

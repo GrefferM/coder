@@ -27,6 +27,7 @@ export function useAgentWrites(project: OpenProject, write: ProjectWrite): Agent
         color: NEW_AGENT_COLOR,
         isActive: true,
         waitsForAll: true,
+        keepsThread: true,
         x: at.x,
         y: at.y,
         maxCalls: NEW_AGENT_MAX_CALLS,

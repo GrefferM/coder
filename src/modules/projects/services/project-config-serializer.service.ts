@@ -202,6 +202,8 @@ export class ProjectConfigSerializer {
     agent.isActive = <boolean>source.isActive;
     // An absent mode defaults to waiting for all.
     agent.waitsForAll = typeof source.waitsForAll === "boolean" ? source.waitsForAll : true;
+    // An absent memory defaults to keeping the thread.
+    agent.keepsThread = typeof source.keepsThread === "boolean" ? source.keepsThread : true;
     agent.x = <number>source.x;
     agent.y = <number>source.y;
     agent.maxCalls = written(source.maxCalls, AGENT_MAX_CALLS_LEAST);
