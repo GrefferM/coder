@@ -8,7 +8,7 @@
   "main": "src/app/bootstrap.js",
   "scripts": {
     "dev:app": "node scripts/dev-app.js",
-    "dev:app:watch": "nodemon --watch src/app --ext ts,tsx,mts,js,scss,html --ignore src/app/renderer --exec \"node scripts/dev-app.js\"",
+    "dev:app:watch": "nodemon --watch src/app --watch src/modules --watch src/contracts --watch src/utils --ext ts,tsx,mts,js,scss,html --ignore src/app/renderer --ignore \"**/*.spec.ts\" --exec \"node scripts/dev-app.js\"",
     "typecheck": "tsc --noEmit && tsc --noEmit -p src/app/renderer && tsc --noEmit -p tests",
     "test:back": "ELECTRON_RUN_AS_NODE=1 ./node_modules/.bin/electron --require reflect-metadata --require ts-node/register --test \"src/{!(app),app/!(renderer)}/**/*.spec.ts\" \"tests/**/*.e2e.ts\"",
     "test:front": "vitest run --config src/app/renderer/vite.config.mts",
