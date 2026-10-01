@@ -88,7 +88,7 @@ export class ProjectFileWriter {
       color: agent.color,
       isActive: agent.isActive,
       waitsForAll: agent.waitsForAll,
-      keepsThread: agent.keepsThread,
+      memory: agent.memory,
       x: agent.x,
       y: agent.y,
       maxCalls: agent.maxCalls,

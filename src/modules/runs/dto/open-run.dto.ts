@@ -1,4 +1,5 @@
-import { IsInt, IsNotEmpty, IsString, IsUUID, Min } from "class-validator";
+import { IsArray, IsInt, IsNotEmpty, IsString, IsUUID, Min, ValidateNested } from "class-validator";
+import { AttachedDto } from "./attached.dto";
 
 /** A run beginning: its project, whom the person asked, and what. */
 export class OpenRunDto {
@@ -22,6 +23,13 @@ export class OpenRunDto {
 
   @IsString()
   declare asked: string;
+
+  /** The files and folders sent with the question, in the order they were glued in. */
+  @IsArray()
+  @ValidateNested({
+    each: true,
+  })
+  declare attached: AttachedDto[];
 
   /** When the person asked, not when the first step landed. */
   @IsInt()

@@ -24,6 +24,8 @@ export interface StepFacts {
   prompt: string;
   temperature: number | null;
   maxCalls: number | null;
+  /** Characters of memory the turn carried ahead of what it was asked. */
+  memoryLength: number;
   asked: string;
   said: string;
   state: string;

@@ -6,6 +6,8 @@ export const ASK_AGAIN_CHANNEL = "runs:ask-again";
 export const CLOSE_RUN_CHANNEL = "runs:close";
 export const LIST_RUNS_CHANNEL = "runs:list";
 export const READ_RUN_CHANNEL = "runs:one";
+/** What has happened to one question so far, as an agent with the shared memory is given it. */
+export const SHARED_MEMORY_CHANNEL = "runs:shared-memory";
 /** Where one call stands, by id; what «ПОКАЗАТИ ВИКЛИК» needs. */
 export const CALL_PLACE_CHANNEL = "runs:call-place";
 /** One word searched through the whole record: questions, step texts and calls. */

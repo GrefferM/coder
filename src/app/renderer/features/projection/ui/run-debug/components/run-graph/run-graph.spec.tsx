@@ -44,6 +44,7 @@ function run(walk: WholeStep[]): WholeRun {
         asked: "Додай кешування у fetchUser і онови тести",
         askedAt: new Date("2026-08-31T15:41:00"),
         askedAgentId: "agent-1",
+        attached: [],
       },
     ],
     steps: walk.length,

@@ -51,6 +51,7 @@ const RUN: WholeRun = {
       asked: "Перше питання",
       askedAt: new Date("2026-09-02T15:41:00"),
       askedAgentId: "agent-1",
+      attached: [],
     },
     {
       id: "question-2",
@@ -58,6 +59,7 @@ const RUN: WholeRun = {
       asked: "Друге питання",
       askedAt: new Date("2026-09-02T15:50:00"),
       askedAgentId: "agent-1",
+      attached: [],
     },
   ],
   walk: [

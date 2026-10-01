@@ -43,6 +43,7 @@ function run(walk: WholeStep[]): WholeRun {
         asked: "Тепер коротше",
         askedAt: SECOND_ASKED,
         askedAgentId: "agent-1",
+        attached: [],
       },
       {
         id: "question-1",
@@ -50,6 +51,7 @@ function run(walk: WholeStep[]): WholeRun {
         asked: "Розбий текст на тези",
         askedAt: FIRST_ASKED,
         askedAgentId: "agent-1",
+        attached: [],
       },
       {
         id: "question-3",
@@ -57,6 +59,7 @@ function run(walk: WholeStep[]): WholeRun {
         asked: "І для fetchInvoice теж",
         askedAt: THIRD_ASKED,
         askedAgentId: "agent-1",
+        attached: [],
       },
     ],
     steps: walk.length,

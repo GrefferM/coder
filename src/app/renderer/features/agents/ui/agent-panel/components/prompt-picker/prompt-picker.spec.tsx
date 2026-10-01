@@ -31,7 +31,7 @@ const AGENTS: Agent[] = ["agent-1", "agent-2", "agent-3"].map((id, index) => ({
   color: "#38a3ff",
   isActive: true,
   waitsForAll: true,
-  keepsThread: true,
+  memory: "own",
   x: 0,
   y: 0,
   maxCalls: 10,

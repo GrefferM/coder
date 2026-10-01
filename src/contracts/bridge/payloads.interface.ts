@@ -2,6 +2,7 @@ import type { ProjectConfig, TakenThings } from "../project";
 import type { AgentTool, ChatTurn, ReachableAgent } from "../llm";
 import type { ProjectMcpServer } from "../project";
 import type { WrittenStep } from "../runs";
+import type { PackedAttachment } from "../attachments";
 
 /** Every channel naming a folder names it by the project's directory. */
 export interface OfProject {
@@ -68,6 +69,9 @@ export interface AskAgent {
   servers: ProjectMcpServer[];
   /** Every agent reachable as a tool from this one, by id. */
   agents: ReachableAgent[];
+  /** The row and the question the turn works under; an agent it calls with the shared memory reads that question. */
+  runId: string | null;
+  questionId: string;
 }
 
 export interface StopAgent {
@@ -81,6 +85,8 @@ export interface OpenRun extends OfProject {
   startedByAgentName: string;
   startedByAgentColor: string;
   asked: string;
+  /** The files and folders sent with the question, packed as they went. */
+  attached: PackedAttachment[];
   startedAt: number;
 }
 
@@ -92,7 +98,15 @@ export interface AskAgain {
   /** The agent asked and its current name, stored with the question. */
   askedAgentId: string;
   askedAgentName: string;
+  /** The files and folders sent with the question, packed as they went. */
+  attached: PackedAttachment[];
   askedAt: number;
+}
+
+/** One question of a flow, by the run it stands in and its own id. */
+export interface SharedMemoryAsk {
+  runId: string;
+  questionId: string;
 }
 
 export interface CloseRun {

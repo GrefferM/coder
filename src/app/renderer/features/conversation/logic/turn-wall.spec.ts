@@ -51,10 +51,15 @@ function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
       prompt: null,
     },
     asked: "Прогони тести",
-    thread: [],
+    memory: {
+      thread: [],
+      shared: "",
+    },
     catalogue: ONLY_COMMANDS,
     agents: [],
     directory: "/tmp/coder",
+    runId: "run-1",
+    questionId: "question-1",
     ...patch,
   };
 }
@@ -127,8 +132,8 @@ describe("turnWall", () => {
     expect("systemPrompt" in way && way.systemPrompt).toBe("Ти тезар.");
   });
 
-  it("carries only the newest pairs of the thread that fit beside the prompt and the question", () => {
-    // A ceiling of 20: the question «Прогони тести» takes 13, so 7 are left for the thread.
+  it("counts the thread against the ceiling and lets nothing go when it is over, cutting nothing", () => {
+    // A ceiling of 20: the question «Прогони тести» takes 13 and the thread 16 more.
     const way = turnWall(
       turn({
         stands: {
@@ -138,28 +143,57 @@ describe("turnWall", () => {
           provider: null,
           prompt: null,
         },
-        thread: [
-          {
-            from: "person",
-            text: "старе питання",
-          },
-          {
-            from: "agent",
-            text: "стара відповідь",
-          },
-          {
-            from: "person",
-            text: "нове",
-          },
-          {
-            from: "agent",
-            text: "так",
-          },
-        ],
+        memory: {
+          thread: [
+            {
+              from: "person",
+              text: "старе питання",
+            },
+            {
+              from: "agent",
+              text: "так",
+            },
+          ],
+          shared: "",
+        },
       }),
     );
 
-    expect("thread" in way && way.thread.map((said) => said.text)).toEqual(["нове", "так"]);
+    expect("notStarted" in way && way.notStarted).toBe("tooLong");
+    expect("wouldGo" in way && way.wouldGo).toEqual({
+      prompt: 0,
+      asked: 13,
+      memory: 16,
+      total: 29,
+      ceiling: 20,
+    });
+  });
+
+  it("counts the shared memory against the ceiling the same way, and lets nothing go when it is over", () => {
+    // A ceiling of 20: the question takes 13 and the shared memory 11 more.
+    const way = turnWall(
+      turn({
+        stands: {
+          model: aModel({
+            contextCeiling: 20,
+          }),
+          provider: null,
+          prompt: null,
+        },
+        memory: {
+          thread: [],
+          shared: "ПАМ'ЯТЬ:\nА\n",
+        },
+      }),
+    );
+
+    expect("wouldGo" in way && way.wouldGo).toEqual({
+      prompt: 0,
+      asked: 13,
+      memory: 11,
+      total: 24,
+      ceiling: 20,
+    });
   });
 
   it("stops a turn whose granted function the project has lost", () => {

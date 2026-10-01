@@ -5,6 +5,7 @@ import {
   NOT_STARTED_TITLE,
   OVER_CEILING_ASKED_LABEL,
   OVER_CEILING_CEILING_LABEL,
+  OVER_CEILING_MEMORY_LABEL,
   OVER_CEILING_NO_RETRY_NOTE,
   OVER_CEILING_PROMPT_LABEL,
   OVER_CEILING_TOTAL_LABEL,
@@ -57,6 +58,10 @@ export function NotStartedCard({ reason, note, wouldGo, isAsked, onAct, isFound 
           {
             label: OVER_CEILING_ASKED_LABEL,
             count: wouldGo.asked,
+          },
+          {
+            label: OVER_CEILING_MEMORY_LABEL,
+            count: wouldGo.memory,
           },
         ];
 

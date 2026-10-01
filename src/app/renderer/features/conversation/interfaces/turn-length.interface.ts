@@ -4,7 +4,9 @@ export interface TurnLength {
   prompt: number;
   /** The question this turn carries: the person's words, or work that came down a line. */
   asked: number;
-  /** The two of them together: what would have gone. */
+  /** The memory ahead of the question: the agent's own thread, or the run it shares. */
+  memory: number;
+  /** All of them together: what would have gone. */
   total: number;
   /** The number written on the model. */
   ceiling: number;

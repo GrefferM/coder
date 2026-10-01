@@ -11,6 +11,7 @@ import {
   OpenRunDto,
   ReadRunDto,
   SearchRunsDto,
+  SharedMemoryDto,
 } from "../dto";
 import type { CallPlace, Run, RunHit, RunOpened, RunWhole } from "../interfaces";
 
@@ -51,6 +52,12 @@ export class RunController {
   @Validate()
   async one(payload: ReadRunDto): Promise<RunWhole | null> {
     return this.reader.one(payload.id);
+  }
+
+  /** One question's shared memory, read from the record at the moment it is asked. */
+  @Validate()
+  async sharedMemory(payload: SharedMemoryDto): Promise<string | null> {
+    return this.reader.sharedMemory(payload.runId, payload.questionId);
   }
 
   /** Where one call stands, so «ПОКАЗАТИ ВИКЛИК» can lead the chat to it. */

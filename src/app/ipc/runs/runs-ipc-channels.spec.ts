@@ -4,12 +4,20 @@ import {
   AddCallDto,
   AddHandoffDto,
   AddStepDto,
+  AttachedDto,
   CallPlaceDto,
   ForgetRunDto,
   OpenRunDto,
   RunController,
+  SharedMemoryDto,
 } from "../../../modules/runs";
-import { ADD_RUN_STEP_CHANNEL, CALL_PLACE_CHANNEL, FORGET_RUN_CHANNEL, OPEN_RUN_CHANNEL } from "../../../contracts";
+import {
+  ADD_RUN_STEP_CHANNEL,
+  CALL_PLACE_CHANNEL,
+  FORGET_RUN_CHANNEL,
+  OPEN_RUN_CHANNEL,
+  SHARED_MEMORY_CHANNEL,
+} from "../../../contracts";
 import { RUNS_IPC_CHANNELS } from "./runs-ipc-channels";
 
 function controllerRecording(received: unknown[]): RunController {
@@ -32,6 +40,11 @@ function controllerRecording(received: unknown[]): RunController {
 
       return null;
     },
+    sharedMemory: async (payload: unknown) => {
+      received.push(payload);
+
+      return "";
+    },
   });
 }
 
@@ -47,6 +60,18 @@ describe("RUNS_IPC_CHANNELS", () => {
     assert.equal((<CallPlaceDto>received[0]).callId, "11111111-1111-4111-8111-111111111111");
   });
 
+  it("rebuilds the ask for a question's shared memory, so its ids are checked", async () => {
+    const received: unknown[] = [];
+
+    await RUNS_IPC_CHANNELS[SHARED_MEMORY_CHANNEL](controllerRecording(received), {
+      runId: "11111111-1111-4111-8111-111111111111",
+      questionId: "44444444-4444-4444-8444-444444444444",
+    });
+
+    assert.ok(received[0] instanceof SharedMemoryDto);
+    assert.equal((<SharedMemoryDto>received[0]).questionId, "44444444-4444-4444-8444-444444444444");
+  });
+
   it("rebuilds an opened run into a real DTO, so its decorators are readable", async () => {
     const received: unknown[] = [];
 
@@ -58,6 +83,39 @@ describe("RUNS_IPC_CHANNELS", () => {
 
     assert.ok(received[0] instanceof OpenRunDto);
     assert.equal((<OpenRunDto>received[0]).asked, "Знайди md-файли");
+  });
+
+  it("rebuilds the attachments of an opened run too, so each one is checked", async () => {
+    const received: unknown[] = [];
+
+    await RUNS_IPC_CHANNELS[OPEN_RUN_CHANNEL](controllerRecording(received), {
+      directory: "/tmp/project",
+      startedByAgentId: "22222222-2222-4222-8222-222222222222",
+      asked: "Знайди md-файли",
+      attached: [
+        {
+          path: "/tmp/project/notes.md",
+          name: "notes.md",
+          kind: "file",
+          text: "=== notes.md ===",
+          binaries: [],
+        },
+      ],
+    });
+
+    assert.ok((<OpenRunDto>received[0]).attached[0] instanceof AttachedDto);
+  });
+
+  it("leaves a missing list of attachments missing, for the check to refuse", async () => {
+    const received: unknown[] = [];
+
+    await RUNS_IPC_CHANNELS[OPEN_RUN_CHANNEL](controllerRecording(received), {
+      directory: "/tmp/project",
+      startedByAgentId: "22222222-2222-4222-8222-222222222222",
+      asked: "Знайди md-файли",
+    });
+
+    assert.equal((<OpenRunDto>received[0]).attached, undefined);
   });
 
   it("rebuilds the calls and the links inside a step as well, since a plain object carries no decorators", async () => {

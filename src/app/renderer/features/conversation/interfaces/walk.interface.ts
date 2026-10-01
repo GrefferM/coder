@@ -1,5 +1,7 @@
 import type { ChatMessage } from "./chat-message.interface";
 import type { WaitedWork } from "./waited-work.interface";
+import type { WalkClosing } from "./walk-closing.interface";
+import type { WalkFact } from "./walk-rules.interface";
 
 /**
  * One walk of the line as the machine holds it, found by its own id; two walks converging on one sphere hold two
@@ -20,4 +22,12 @@ export interface Walk {
   isStopped: boolean;
   /** Put away with the stream: still writes its record, draws nothing. */
   isPutAway: boolean;
+  /** The first turn, held until the question is in the record. */
+  heldAsk: WalkFact<"asked"> | null;
+  /** The first turn of a question the record refused; «Спитати ще раз» puts it again. */
+  unsavedAsk: WalkFact<"asked"> | null;
+  /** Turns back but not yet in the record, by card id; their lines go out once written. */
+  heldTurns: Record<string, WalkFact<"answered">>;
+  /** The end the record refused to stamp; «Спитати ще раз» stamps it again. */
+  unclosed: WalkClosing | null;
 }

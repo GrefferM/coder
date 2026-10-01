@@ -4,6 +4,8 @@ import { createRunModule } from "../../src/modules/runs";
 import {
   AddCallDto,
   AddStepDto,
+  AskAgainDto,
+  AttachedDto,
   CloseRunDto,
   ForgetRunDto,
   ForgetRunsDto,
@@ -11,7 +13,13 @@ import {
   OpenRunDto,
   ReadRunDto,
 } from "../../src/modules/runs/dto";
-import { RunCallEntity, RunQuestionEntity, RunStepEntity } from "../../src/modules/runs/entities";
+import {
+  RunCallEntity,
+  RunEntity,
+  RunQuestionAttachmentEntity,
+  RunQuestionEntity,
+  RunStepEntity,
+} from "../../src/modules/runs/entities";
 import { openTestDatabase } from "../../src/utils/testing";
 import type { DataSource } from "typeorm";
 import type { TestDatabase } from "../../src/utils/testing";
@@ -41,7 +49,20 @@ function opening(patch: Record<string, unknown> = {}): OpenRunDto {
     startedByAgentColor: "#6fd3d8",
     questionId: QUESTION,
     asked: "Знайди md-файли",
+    attached: [],
     startedAt: ASKED_AT,
+    ...patch,
+  });
+}
+
+/** One file or folder sent with a question, as the bridge rebuilds it. */
+function attachment(patch: Record<string, unknown> = {}): AttachedDto {
+  return Object.assign(new AttachedDto(), {
+    path: "/tmp/coder-project/notes.md",
+    name: "notes.md",
+    kind: "file",
+    text: "=== notes.md ===\n# Нотатки",
+    binaries: [],
     ...patch,
   });
 }
@@ -65,6 +86,7 @@ function step(runId: string, patch: Record<string, unknown> = {}): AddStepDto {
     prompt: "Ти шукаєш файли.",
     temperature: 0,
     maxCalls: 8,
+    memoryLength: 0,
     asked: "Знайди md-файли",
     said: "ЗНАЙДЕНО\n- report.md",
     state: "done",
@@ -160,9 +182,13 @@ describe("the record on a real database of its own", () => {
     );
   });
 
-  it("takes a run's steps, calls and questions with it when the run goes", async () => {
+  it("takes a run's steps, calls, questions and attachments with it when the run goes", async () => {
     // Deleting a run removes it and everything of it in other tables.
-    const opened = await door.open(opening());
+    const opened = await door.open(
+      opening({
+        attached: [attachment()],
+      }),
+    );
 
     await door.step(
       step(opened.runId, {
@@ -217,6 +243,114 @@ describe("the record on a real database of its own", () => {
     assert.equal(await dataSource.getRepository(RunStepEntity).count(), 0);
     assert.equal(await dataSource.getRepository(RunCallEntity).count(), 0);
     assert.equal(await dataSource.getRepository(RunQuestionEntity).count(), 0);
+    assert.equal(await dataSource.getRepository(RunQuestionAttachmentEntity).count(), 0);
+  });
+
+  it("keeps the files sent with each question whole and in the order they were glued in", async () => {
+    // A repeat glues the question again from these, so nothing of them may come back changed.
+    const opened = await door.open(
+      opening({
+        attached: [
+          attachment(),
+          attachment({
+            path: "/tmp/coder-project/assets",
+            name: "assets",
+            kind: "folder",
+            text: "=== assets/logo.png ===\niVBORw0KGgo=",
+            binaries: ["logo.png"],
+          }),
+        ],
+      }),
+    );
+
+    await door.close(
+      Object.assign(new CloseRunDto(), {
+        runId: opened.runId,
+        endedAt: ASKED_AT + 3_000,
+      }),
+    );
+    await door.askAgain(
+      Object.assign(new AskAgainDto(), {
+        runId: opened.runId,
+        questionId: "99999999-9999-4999-8999-999999999999",
+        asked: "А тепер це",
+        askedAgentId: SEEKER,
+        askedAgentName: "Шукач",
+        attached: [
+          attachment({
+            path: "/tmp/coder-project/todo.md",
+            name: "todo.md",
+            text: "=== todo.md ===\n- тести",
+          }),
+        ],
+        askedAt: ASKED_AT + 5_000,
+      }),
+    );
+
+    const whole = await door.one(
+      Object.assign(new ReadRunDto(), {
+        id: opened.runId,
+      }),
+    );
+
+    assert.deepEqual(
+      whole?.questions.map((question) => question.attached),
+      [
+        [
+          {
+            path: "/tmp/coder-project/notes.md",
+            name: "notes.md",
+            kind: "file",
+            text: "=== notes.md ===\n# Нотатки",
+            binaries: [],
+          },
+          {
+            path: "/tmp/coder-project/assets",
+            name: "assets",
+            kind: "folder",
+            text: "=== assets/logo.png ===\niVBORw0KGgo=",
+            binaries: ["logo.png"],
+          },
+        ],
+        [
+          {
+            path: "/tmp/coder-project/todo.md",
+            name: "todo.md",
+            kind: "file",
+            text: "=== todo.md ===\n- тести",
+            binaries: [],
+          },
+        ],
+      ],
+    );
+  });
+
+  it("refuses a question whose attachment is of a kind it does not know, and writes nothing of it", async () => {
+    await assert.rejects(
+      door.open(
+        opening({
+          attached: [
+            attachment({
+              kind: "link",
+            }),
+          ],
+        }),
+      ),
+    );
+
+    assert.equal(await dataSource.getRepository(RunEntity).count(), 0);
+  });
+
+  it("refuses a question sent without its list of attachments, rather than taking it for none", async () => {
+    await assert.rejects(
+      door.open(
+        opening({
+          attached: undefined,
+        }),
+      ),
+    );
+
+    assert.equal(await dataSource.getRepository(RunEntity).count(), 0);
   });
 
   it("sweeps only the runs that ended, leaving a walk still going where it is", async () => {

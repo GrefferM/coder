@@ -3,6 +3,7 @@ import type {
   RunCallEntity,
   RunEntity,
   RunHandoffEntity,
+  RunQuestionAttachmentEntity,
   RunQuestionEntity,
   RunStepAgentEntity,
   RunStepEntity,
@@ -30,6 +31,18 @@ export interface NewQuestion {
   askedAgentId: string;
   askedAgentName: string;
   runId: string;
+}
+
+/** One file or folder sent with a question, in the place it was glued in. */
+export interface NewAttachment {
+  place: number;
+  path: string;
+  name: string;
+  kind: string;
+  text: string;
+  /** The paths that went in as base64, as JSON. */
+  binaries: string;
+  questionId: string;
 }
 
 /** One finished step of a walk; what stands beside it is written separately. */
@@ -74,6 +87,7 @@ export interface NewGiven {
   prompt: string;
   temperature: number | null;
   maxCalls: number | null;
+  memoryLength: number;
   stepId: string;
 }
 
@@ -117,6 +131,8 @@ export interface NewHandoff {
 
 /** Every question the record asks of the database, in the record's words; services use this, not TypeORM. */
 export interface RunStore {
+  /** The writes in `work` as one: all of them land, or none. */
+  inOne<T>(work: (store: RunStore) => Promise<T>): Promise<T>;
   /** Opens a run and returns the row whose id everything under it points at. */
   openRun(run: NewRun): Promise<RunEntity>;
   runById(id: string): Promise<RunEntity | null>;
@@ -135,6 +151,12 @@ export interface RunStore {
   /** Every question of one flow, in the order they were asked. */
   askedIn(runId: string): Promise<RunQuestionEntity[]>;
   dropQuestionsOf(runId: string): Promise<void>;
+
+  attachTo(attachment: NewAttachment): Promise<void>;
+  /** The attachments of many questions at once, each with its question. */
+  attachedTo(questionIds: string[]): Promise<RunQuestionAttachmentEntity[]>;
+  /** Every attachment of one flow's questions. */
+  dropAttachedOf(runId: string): Promise<void>;
 
   stepsOf(runId: string): Promise<RunStepEntity[]>;
   /** The steps with the question each grew from. */

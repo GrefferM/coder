@@ -17,5 +17,5 @@ export interface WasAgent {
   temperature: string | null;
   isActive: string | null;
   waitsForAll: string | null;
-  keepsThread: string | null;
+  memory: string | null;
 }

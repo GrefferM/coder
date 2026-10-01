@@ -24,6 +24,7 @@ export function aStep(patch: Partial<WholeStep> = {}): WholeStep {
     prompt: "",
     temperature: 0,
     maxCalls: 8,
+    memoryLength: 0,
     asked: "Розбий текст на тези",
     said: "- Починай з малого",
     state: RUN_STEP_DONE,

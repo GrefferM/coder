@@ -53,6 +53,9 @@ function turn(patch: Record<string, unknown> = {}): AskAgentDto {
     servers: [],
     // Every agent reachable as a tool from this one; empty when none.
     agents: [],
+    // The row and question the turn works under.
+    runId: "77777777-7777-4777-8777-777777777777",
+    questionId: "44444444-4444-4444-8444-444444444444",
     ...patch,
   });
 }
@@ -101,6 +104,32 @@ describe("LlmController", () => {
       ),
     );
     assert.deepEqual(asked, []);
+  });
+
+  it("takes a turn with no row yet, but not one that leaves the row out or names it by anything but its id", async () => {
+    await controller().ask(
+      turn({
+        runId: null,
+      }),
+    );
+
+    assert.equal(asked.length, 1);
+
+    await assert.rejects(() =>
+      controller().ask(
+        turn({
+          runId: undefined,
+        }),
+      ),
+    );
+    await assert.rejects(() =>
+      controller().ask(
+        turn({
+          questionId: "питання",
+        }),
+      ),
+    );
+    assert.equal(asked.length, 1);
   });
 
   it("refuses a turn with nothing said in it", async () => {

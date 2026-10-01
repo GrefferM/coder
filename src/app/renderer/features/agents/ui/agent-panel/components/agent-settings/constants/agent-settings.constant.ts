@@ -17,11 +17,6 @@ export const AGENT_SETTINGS_SWITCH_LABEL = "Увімкнено";
 export const AGENT_SETTINGS_WAIT_LABEL = "Очікувати всіх";
 export const AGENT_SETTINGS_WAIT_HINT = "УВІМК — ЧЕКАЄ ВСІХ, ХТО СХОДИТЬСЯ · ВИМК — НА КОЖНОМУ ВХОДІ ОКРЕМО";
 
-/** The conversation-memory toggle and the line under it. */
-export const AGENT_SETTINGS_THREAD_LABEL = "Пам'ять розмови";
-export const AGENT_SETTINGS_THREAD_HINT =
-  "УВІМК — БАЧИТЬ СВОЇ МИНУЛІ КРОКИ В ЦІЙ РОЗМОВІ · ВИМК — КОЖНЕ ЗАВДАННЯ З НУЛЯ";
-
 /** Footer actions; the first is «Видалити» until the draft changes, then «Скасувати». */
 export const AGENT_SETTINGS_FOOTER_BORDER_COLOR = "#1c202c";
 export const AGENT_SETTINGS_ACTION_GAP_PX = 10;

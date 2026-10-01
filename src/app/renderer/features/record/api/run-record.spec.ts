@@ -12,6 +12,15 @@ import {
 } from "../../../../../contracts";
 import { anAgent, standInBridge } from "../../../testing";
 import type { WrittenStep } from "../interfaces";
+import type { PackedAttachment } from "../../../interfaces";
+
+const NOTES: PackedAttachment = {
+  path: "/tmp/coder/notes.md",
+  name: "notes.md",
+  kind: "file",
+  text: "=== notes.md ===\n# Нотатки",
+  binaries: [],
+};
 
 const AGENT = anAgent({
   id: "agent-1",
@@ -55,6 +64,8 @@ describe("run-record · what is sent to the machine", () => {
       questionId: "question-1",
       agent: AGENT,
       asked: "Розбий текст",
+      // The files go with the question, packed as they went into the turn.
+      attached: [NOTES],
       askedAt: 1_000,
     });
 
@@ -65,6 +76,7 @@ describe("run-record · what is sent to the machine", () => {
       startedByAgentName: "ТЕЗАР",
       startedByAgentColor: "#b18aff",
       asked: "Розбий текст",
+      attached: [NOTES],
       startedAt: 1_000,
     });
   });
@@ -76,6 +88,7 @@ describe("run-record · what is sent to the machine", () => {
       questionId: "question-2",
       agent: AGENT,
       asked: "Друге",
+      attached: [NOTES],
       askedAt: 2_000,
     });
 
@@ -85,6 +98,7 @@ describe("run-record · what is sent to the machine", () => {
       asked: "Друге",
       askedAgentId: "agent-1",
       askedAgentName: "ТЕЗАР",
+      attached: [NOTES],
       askedAt: 2_000,
     });
   });
@@ -137,74 +151,44 @@ describe("run-record · what is sent to the machine", () => {
 });
 
 describe("run-record · what comes back when the machine cannot answer", () => {
-  it("says «не прочиталось» about a list and about one run, which is not the same as «порожньо»", async () => {
-    // An unread record and an empty one are different.
+  it("rejects every read and every write with what the record said, so nothing is mistaken for an empty answer", async () => {
     brokenMachine();
 
-    expect(await listRuns("/tmp/coder")).toBeNull();
-    expect(await readRun("run-1")).toBeNull();
-  });
-
-  it("says a run was not opened rather than throwing at the conversation", async () => {
-    brokenMachine();
-
-    expect(
-      await openRun("/tmp/coder", {
+    await expect(listRuns("/tmp/coder")).rejects.toThrow("no record");
+    await expect(readRun("run-1")).rejects.toThrow("no record");
+    await expect(
+      openRun("/tmp/coder", {
         questionId: "question-1",
         agent: AGENT,
         asked: "Розбий текст",
+        attached: [],
         askedAt: 1_000,
       }),
-    ).toBeNull();
-  });
-
-  it("says the row did not take the question", async () => {
-    brokenMachine();
-
-    expect(
-      await askAgain("run-1", {
+    ).rejects.toThrow("no record");
+    await expect(
+      askAgain("run-1", {
         questionId: "question-2",
         agent: AGENT,
         asked: "Друге",
+        attached: [],
         askedAt: 2_000,
       }),
-    ).toBe(false);
+    ).rejects.toThrow("no record");
+    await expect(writeStep(<WrittenStep>(<unknown>{}))).rejects.toThrow("no record");
+    await expect(closeRun("run-1", 3_000)).rejects.toThrow("no record");
+    await expect(forgetRun("run-1")).rejects.toThrow("no record");
+    await expect(forgetRuns("/tmp/coder")).rejects.toThrow("no record");
   });
 
-  it("says a step was not written, and closing a run stays quiet", async () => {
-    brokenMachine();
+  it("says a row that is gone did not take the question, which is not a refusal", async () => {
+    machine(null);
 
-    expect(await writeStep(<WrittenStep>(<unknown>{}))).toBeNull();
-    expect(await closeRun("run-1", 3_000)).toBeUndefined();
-  });
-
-  it("says nothing was deleted, each deletion in its own words", async () => {
-    // «false» means the row is gone; «null» means the record refused, and the list is not emptied.
-    brokenMachine();
-
-    expect(await forgetRun("run-1")).toBe(false);
-    expect(await forgetRuns("/tmp/coder")).toBeNull();
-  });
-
-  it("turns a machine that answers nothing into the same «нічого», not into undefined", async () => {
-    // The bridge answers `undefined` for an unregistered channel.
-    machine(undefined);
-
-    expect(
-      await openRun("/tmp/coder", {
-        questionId: "question-1",
-        agent: AGENT,
-        asked: "Розбий текст",
-        askedAt: 1_000,
-      }),
-    ).toBeNull();
-    expect(await readRun("run-1")).toBeNull();
-    expect(await writeStep(<WrittenStep>(<unknown>{}))).toBeNull();
     expect(
       await askAgain("run-1", {
         questionId: "question-2",
         agent: AGENT,
         asked: "Друге",
+        attached: [],
         askedAt: 2_000,
       }),
     ).toBe(false);

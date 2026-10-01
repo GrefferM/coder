@@ -21,6 +21,10 @@ function walk(isPutAway: boolean, runId: string | null = null): Walk {
     waiting: {},
     isStopped: false,
     isPutAway,
+    heldAsk: null,
+    unsavedAsk: null,
+    heldTurns: {},
+    unclosed: null,
   };
 }
 

@@ -17,14 +17,20 @@ export function useOpenedRun(runId: string | null, written: number): OpenedRunSt
 
     let stands = true;
 
-    void readRun(runId).then((opened) => {
-      if (!stands) {
-        return;
-      }
-
-      setIsFailed(opened === null);
-      setRun(opened);
-    });
+    void readRun(runId).then(
+      (opened) => {
+        if (stands) {
+          setIsFailed(opened === null);
+          setRun(opened);
+        }
+      },
+      () => {
+        if (stands) {
+          setIsFailed(true);
+          setRun(null);
+        }
+      },
+    );
 
     return () => {
       stands = false;

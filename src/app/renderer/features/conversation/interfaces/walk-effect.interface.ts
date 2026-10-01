@@ -1,6 +1,7 @@
-import type { Agent, ChatStopReason } from "../../../interfaces";
+import type { Agent, ChatStopReason, PackedAttachment } from "../../../interfaces";
 import type { AnsweredTurn } from "./answered-turn.interface";
 import type { IncomingWork } from "./incoming-work.interface";
+import type { WalkClosing } from "./walk-closing.interface";
 import type { WrittenTurn } from "./written-turn.interface";
 
 /**
@@ -12,6 +13,7 @@ export type WalkEffect =
       kind: "askMachine";
       agent: Agent;
       turnId: string;
+      questionId: string;
       incoming: IncomingWork[];
       startAgentId: string;
       viaLinkIds: string[];
@@ -66,6 +68,8 @@ export type WalkEffect =
       runId: string | null;
       agent: Agent;
       asked: string;
+      /** The files and folders sent with the question; the record keeps them beside it. */
+      attached: PackedAttachment[];
     }
   /** The card one turn became, put in the stream of its walk. */
   | { kind: "sayAnswer"; runKey: string; turn: AnsweredTurn }
@@ -85,6 +89,12 @@ export type WalkEffect =
       walkId: string | null;
       /** The agent a never-sent question was aimed at; the record holds no step for it. */
       notSentTo: string | null;
+      /** The card the repeat was pressed under; an unread record is said there. */
+      saidId: string;
     }
   /** A walk resumed from the record: the writer takes it and it writes on into its existing row. */
-  | { kind: "takeWalk"; runKey: string; askedAt: number; runId: string; questionId: string };
+  | { kind: "takeWalk"; runKey: string; askedAt: number; runId: string; questionId: string }
+  /** The writer lets the walk go without closing its row: the record refused part of it. */
+  | { kind: "dropWalk"; runKey: string }
+  /** Stamps the walk's end again, after the record refused it. */
+  | { kind: "closeAgain"; runKey: string; closing: WalkClosing };

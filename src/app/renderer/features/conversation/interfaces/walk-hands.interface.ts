@@ -17,4 +17,6 @@ export interface WalkHands {
   openWalk: (act: WalkAct<"openWalk">) => void;
   takeWalk: (act: WalkAct<"takeWalk">) => void;
   askAgain: (act: WalkAct<"askAgain">) => void;
+  dropWalk: (act: WalkAct<"dropWalk">) => void;
+  closeAgain: (act: WalkAct<"closeAgain">) => void;
 }

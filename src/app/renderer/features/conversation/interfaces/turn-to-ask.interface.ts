@@ -1,5 +1,6 @@
 import type { AgentStands } from "./agent-stands.interface";
-import type { Agent, ChatTurn, GrantTargets, ReachableAgent } from "../../../interfaces";
+import type { TurnMemory } from "./turn-memory.interface";
+import type { Agent, GrantTargets, ReachableAgent } from "../../../interfaces";
 
 /**
  * Everything one turn is asked with, named rather than positional: which turn, whose and what the agent stands on, what
@@ -13,12 +14,15 @@ export interface TurnToAsk {
   stands: AgentStands;
   /** What arrived: the person's words, or work a neighbour handed down a line. */
   asked: string;
-  /** The agent's own pairs in this conversation; they go to the model ahead of what arrived. */
-  thread: ChatTurn[];
+  /** What goes to the model ahead of what arrived: the agent's own thread, or the question's shared memory. */
+  memory: TurnMemory;
   /** What the turn may reach: the project's commands and servers, and what each server hands over. */
   catalogue: GrantTargets;
   /** Every agent reachable as a tool from this one, by id. */
   agents: ReachableAgent[];
   /** The project's folder, which is where a command runs. */
   directory: string;
+  /** The row and the question the turn works under; an agent it calls with the shared memory reads that question. */
+  runId: string | null;
+  questionId: string;
 }

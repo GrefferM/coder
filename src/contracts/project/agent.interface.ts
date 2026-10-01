@@ -1,3 +1,4 @@
+import type { AgentMemory } from "./agent-memory.type";
 import type { NamedAgent } from "./named-agent.interface";
 import type { ToolGrant } from "./tool-grant.type";
 
@@ -14,8 +15,7 @@ export interface Agent extends NamedAgent {
    * input as it arrives.
    */
   waitsForAll: boolean;
-  /** True: the agent's own earlier turns of this conversation go ahead of its input; false: each input stands alone. */
-  keepsThread: boolean;
+  memory: AgentMemory;
   x: number;
   y: number;
   /** Null when the file carries no number. */

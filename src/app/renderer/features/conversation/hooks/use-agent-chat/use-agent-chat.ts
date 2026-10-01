@@ -10,6 +10,8 @@ import {
   agentRegistry,
   agentStands,
   agentThread,
+  memoryLength,
+  unreadTurn,
   answeredCard,
   askedCards,
   chatStream,
@@ -27,7 +29,9 @@ import {
   workingTurns,
 } from "../../logic";
 import { refusedPickNote } from "../../words";
-import { readRun } from "../../../record";
+import { NO_MEMORY } from "../../constants";
+import { thrownWords } from "../../../../utils/errors";
+import { RECORD_GONE_NOTE, closeRun, readRun, sharedMemory } from "../../../record";
 import type {
   Agent,
   McpLook,
@@ -43,6 +47,7 @@ import type {
   WalkEffect,
   WalkEvent,
   PutTurn,
+  TurnMemory,
   WalkHands,
   WalkState,
 } from "../../interfaces";
@@ -166,6 +171,8 @@ export function useAgentChat(
     openWalk: () => undefined,
     takeWalk: () => undefined,
     askAgain: () => undefined,
+    dropWalk: () => undefined,
+    closeAgain: () => undefined,
   });
   /** Carries out the effects the machine asked for; an effect's kind names the hand that answers it. */
   const carryOut = useCallback((effects: WalkEffect[]) => {
@@ -251,7 +258,7 @@ export function useAgentChat(
 
   /** Begins a walk: the writer takes it and its question is written when asked. */
   const openWalk = useCallback(
-    ({ runKey, questionId, askedAt, runId, agent, asked }: WalkAct<"openWalk">) => {
+    ({ runKey, questionId, askedAt, runId, agent, asked, attached }: WalkAct<"openWalk">) => {
       const ledger: RunLedger = {
         walkId: runKey,
         askedAt,
@@ -263,11 +270,22 @@ export function useAgentChat(
       };
 
       writer.hold(runKey, ledger);
-      // Written when asked, so a flow reaching nobody still stands in the record; two questions in one breath share a
-      // row.
-      writer.askQuestion(ledger, held.current.directory, agent, asked, runKey);
+      // Written before the first turn goes, so a flow reaching nobody still stands in the record.
+      void writer.askQuestion(ledger, held.current.directory, agent, asked, attached, runKey).then(
+        () =>
+          dispatch({
+            kind: "questionWritten",
+            runKey,
+          }),
+        (failure: unknown) =>
+          dispatch({
+            kind: "questionUnsaved",
+            runKey,
+            failure: thrownWords(failure),
+          }),
+      );
     },
-    [writer],
+    [dispatch, writer],
   );
 
   /** A walk picked up from the record: the writer takes it, no question is written. */
@@ -297,29 +315,50 @@ export function useAgentChat(
     [sayIn],
   );
 
-  /** Writes one finished turn as a step; the card takes the step's id. */
+  /** Writes one finished turn as a step; the card takes the step's id and the walk goes on from it. */
   const writeTurn = useCallback(
     ({ runKey, saidId, turn }: WalkAct<"writeTurn">) => {
       const ledger = writer.walks()[runKey] ?? null;
 
       if (ledger === null) {
+        dispatch({
+          kind: "stepUnsaved",
+          runKey,
+          saidId,
+          failure: RECORD_GONE_NOTE,
+        });
+
         return;
       }
 
-      writer.writeTurn(ledger, runKey, turn, (stepId: string) =>
-        sayIn(runKey, (standing) =>
-          standing.map((said) =>
-            said.id === saidId
-              ? {
-                  ...said,
-                  stepId,
-                }
-              : said,
-          ),
-        ),
+      void writer.writeTurn(ledger, runKey, turn).then(
+        (stepId) => {
+          sayIn(runKey, (standing) =>
+            standing.map((said) =>
+              said.id === saidId
+                ? {
+                    ...said,
+                    stepId,
+                  }
+                : said,
+            ),
+          );
+          dispatch({
+            kind: "stepWritten",
+            runKey,
+            saidId,
+          });
+        },
+        (failure: unknown) =>
+          dispatch({
+            kind: "stepUnsaved",
+            runKey,
+            saidId,
+            failure: thrownWords(failure),
+          }),
       );
     },
-    [sayIn, writer],
+    [dispatch, sayIn, writer],
   );
 
   /**
@@ -345,33 +384,95 @@ export function useAgentChat(
 
       // The writer drops this walk; the walk stays as the on-screen stream until «+ НОВИЙ ЧАТ» empties it.
       writer.drop(runKey);
-      writer.closeWalk(ledger, runKey, endedAt);
+      void writer.closeWalk(ledger, runKey, endedAt).catch((failure: unknown) => {
+        if (ledger.runId !== null) {
+          dispatch({
+            kind: "closeUnsaved",
+            runKey,
+            closing: {
+              runId: ledger.runId,
+              endedAt,
+            },
+            failure: thrownWords(failure),
+          });
+        }
+      });
     },
     [dispatch, writer],
   );
 
+  /** The writer lets a walk go without closing its row. */
+  const dropWalk = useCallback(
+    ({ runKey }: WalkAct<"dropWalk">) => {
+      writer.drop(runKey);
+    },
+    [writer],
+  );
+
+  /** Stamps a walk's end again, after the record refused it. */
+  const closeAgain = useCallback(
+    ({ runKey, closing }: WalkAct<"closeAgain">) => {
+      void closeRun(closing.runId, closing.endedAt).then(
+        () =>
+          dispatch({
+            kind: "walkClosed",
+            runKey,
+          }),
+        (failure: unknown) =>
+          dispatch({
+            kind: "closeUnsaved",
+            runKey,
+            closing,
+            failure: thrownWords(failure),
+          }),
+      );
+    },
+    [dispatch],
+  );
+
   /**
-   * What this agent has answered in this conversation, read from the record after every walk's writes settle; empty
-   * without a row or on a first ask.
+   * The memory this agent goes with, read from the record after every walk's writes settle: its own thread, or what has
+   * happened to the question so far; nothing without a row or with the memory switched off. Rejects when the record
+   * cannot be read.
    */
-  const threadOf = useCallback(
-    async (runId: string | null, agent: Agent) => {
-      if (runId === null) {
-        return [];
+  const memoryOf = useCallback(
+    async (runId: string | null, questionId: string, agent: Agent): Promise<TurnMemory> => {
+      if (runId === null || agent.memory === "none") {
+        return NO_MEMORY;
       }
 
       await writer.settled();
 
+      if (agent.memory === "shared") {
+        const shared = await sharedMemory(runId, questionId);
+
+        if (shared === null) {
+          throw new Error(RECORD_GONE_NOTE);
+        }
+
+        return {
+          thread: [],
+          shared,
+        };
+      }
+
       const run = await readRun(runId);
 
-      return run === null ? [] : agentThread(run.walk, agent);
+      if (run === null) {
+        throw new Error(RECORD_GONE_NOTE);
+      }
+
+      return {
+        thread: agentThread(run.walk, agent),
+        shared: "",
+      };
     },
     [writer],
   );
 
   /** Sends the turn the machine named: the run counts it and the provider is asked. */
   const askMachine = useCallback(
-    ({ agent, turnId, incoming, startAgentId, runKey, startedAt, asked }: PutTurn) => {
+    ({ agent, turnId, questionId, incoming, startAgentId, runKey, startedAt, asked }: PutTurn) => {
       const ledger = writer.walks()[runKey] ?? null;
 
       // One more turn of this run is out; the run ends when the last comes back.
@@ -385,8 +486,8 @@ export function useAgentChat(
       // A put-away walk keeps writing into the row it began in; every other walk uses the stream's row.
       const row = ledger?.runId ?? record.standing();
 
-      void threadOf(row, agent)
-        .then((thread) => {
+      void memoryOf(row, questionId, agent)
+        .then((memory) => {
           const catalogue = {
             commands: config.commands,
             servers: config.servers,
@@ -400,19 +501,30 @@ export function useAgentChat(
             agent,
             stands,
             asked,
-            thread,
+            memory,
             catalogue,
             agents: agentRegistry(agent, config, machine.current, catalogue),
             directory: held.current.directory,
-          });
+            runId: row,
+            questionId,
+          }).then((answered) => ({
+            answered,
+            carried: memoryLength(memory),
+            isAsked: true,
+          }));
         })
-        .then((answered) => {
+        .catch((failure: unknown) => ({
+          answered: unreadTurn(thrownWords(failure)),
+          carried: 0,
+          isAsked: false,
+        }))
+        .then(({ answered, carried, isAsked }) => {
           // The turn is back, so nothing arrives for it; its words are a card of their own.
           forgetLive(turnId);
 
           // A turn that reached the address, or was refused by silence there, updates the dot at once; other refusals
           // never got that far.
-          if (model !== null && (answered.notStarted === null || answered.notStarted === "silent")) {
+          if (isAsked && model !== null && (answered.notStarted === null || answered.notStarted === "silent")) {
             heard(model.provider, answered.notStarted === null);
           }
 
@@ -424,6 +536,7 @@ export function useAgentChat(
             incoming,
             startAgentId,
             asked,
+            memoryLength: carried,
             answer: answered,
             saidId: crypto.randomUUID(),
             startedAt,
@@ -431,7 +544,7 @@ export function useAgentChat(
           });
         });
     },
-    [dispatch, record, threadOf, writer],
+    [dispatch, memoryOf, record, writer],
   );
 
   /** Work put to an agent: the machine decides whether the turn goes out or the row says why not. */
@@ -470,15 +583,27 @@ export function useAgentChat(
    * untaken work goes to the waiting point.
    */
   const askAgain = useCallback(
-    async ({ runId, questionId, walkId, notSentTo }: WalkAct<"askAgain">) => {
+    async ({ runId, questionId, walkId, notSentTo, saidId }: WalkAct<"askAgain">) => {
       // The record must hold what broke a moment ago.
       await writer.settled(walkId ?? "");
 
-      const run = await readRun(runId);
-      const repeat = run === null ? null : repeatOf(run, questionId, notSentTo, crypto.randomUUID());
+      try {
+        const run = await readRun(runId);
+        const repeat = run === null ? null : repeatOf(run, questionId, notSentTo, crypto.randomUUID());
 
-      if (repeat !== null) {
-        dispatch(repeat);
+        dispatch(
+          repeat ?? {
+            kind: "recordUnread",
+            saidId,
+            failure: RECORD_GONE_NOTE,
+          },
+        );
+      } catch (failure) {
+        dispatch({
+          kind: "recordUnread",
+          saidId,
+          failure: thrownWords(failure),
+        });
       }
     },
     [dispatch, writer],
@@ -501,6 +626,8 @@ export function useAgentChat(
     askAgain: (act) => {
       void askAgain(act);
     },
+    dropWalk,
+    closeAgain,
   };
 
   /**

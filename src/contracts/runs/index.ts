@@ -1,4 +1,5 @@
 export * from "./opened-record.interface";
+export * from "./record-gone.constant";
 export * from "./call-place.interface";
 export * from "./run-hit.interface";
 export * from "./run-hits-limit.constant";

@@ -27,7 +27,7 @@ const nothingMoved: WasAgent = {
   temperature: null,
   isActive: null,
   waitsForAll: null,
-  keepsThread: null,
+  memory: null,
 };
 
 function props(patch: Partial<SettingsTiesProps> = {}): SettingsTiesProps {

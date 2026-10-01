@@ -2,6 +2,8 @@
 export const RUN_TABLE_NAME = "runs";
 // One row per question; a flow is asked more than once.
 export const RUN_QUESTION_TABLE_NAME = "run_questions";
+// The files and folders sent with a question, one row each, packed as they went.
+export const RUN_QUESTION_ATTACHMENT_TABLE_NAME = "run_question_attachments";
 export const RUN_STEP_TABLE_NAME = "run_steps";
 // Who ran a step, on what model and with what words, beside the step.
 export const RUN_STEP_AGENT_TABLE_NAME = "run_step_agents";

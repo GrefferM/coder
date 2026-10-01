@@ -1,6 +1,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useRunSearch } from "./use-run-search";
+import { RECORD_UNREAD_NOTE } from "../../constants";
 import { SEARCH_RUNS_CHANNEL } from "../../../../../../contracts";
 import { standInBridge } from "../../../../testing";
 import type { RunHit } from "../../interfaces";
@@ -42,6 +43,21 @@ describe("useRunSearch", () => {
       query: "кеш",
     });
     expect(result.current.found).toBe("кеш");
+  });
+
+  it("says what the record answered when the search could not read it, rather than finding nothing", async () => {
+    standInBridge({
+      invoke: vi.fn(async () => {
+        throw new Error("SQLITE_CANTOPEN: unable to open database file");
+      }),
+    });
+
+    const { result } = renderHook(() => useRunSearch(DIRECTORY, "кеш", 0));
+
+    await waitFor(() =>
+      expect(result.current.refusal).toBe(`${RECORD_UNREAD_NOTE} · SQLITE_CANTOPEN: unable to open database file`),
+    );
+    expect(result.current.hits).toEqual([]);
   });
 
   it("asks nothing at all while the field is empty, an empty field being no search", async () => {

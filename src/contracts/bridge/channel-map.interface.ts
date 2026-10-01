@@ -29,6 +29,7 @@ import type {
   OPEN_RUN_CHANNEL,
   PROJECT_VIEW_CHANNEL,
   CALL_PLACE_CHANNEL,
+  SHARED_MEMORY_CHANNEL,
   READ_RUN_CHANNEL,
   SEARCH_RUNS_CHANNEL,
   REMEMBER_DELETION_CHANNEL,
@@ -52,6 +53,7 @@ import type { SaveTextAsk } from "../shell";
 import type {
   AddRunStep,
   AskAgain,
+  SharedMemoryAsk,
   AskAgent,
   AskProvider,
   CloseRun,
@@ -116,6 +118,8 @@ export interface ChannelMap {
   [CLOSE_RUN_CHANNEL]: { payload: CloseRun; answer: void };
   [LIST_RUNS_CHANNEL]: { payload: OfProject; answer: RunRow[] };
   [READ_RUN_CHANNEL]: { payload: OfOne; answer: WholeRun | null };
+  /** The shared memory of one question as the model reads it; null when the record holds no such question. */
+  [SHARED_MEMORY_CHANNEL]: { payload: SharedMemoryAsk; answer: string | null };
   /** Where one call stands, by id; null when the record no longer holds it. */
   [CALL_PLACE_CHANNEL]: { payload: { callId: string }; answer: CallPlace | null };
   /** One hit per run containing the word: the found words and where a press lands. */

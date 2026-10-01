@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { useRunHistory } from "./use-run-history";
 import { FORGET_RUN_CHANNEL, FORGET_RUNS_CHANNEL, LIST_RUNS_CHANNEL } from "../../../../../../contracts";
-import { RUN_DONE } from "../../constants";
+import { RECORD_UNFORGOTTEN_NOTE, RECORD_UNREAD_NOTE, RUN_DONE } from "../../constants";
 import { standInBridge } from "../../../../testing";
 import type { RunRow } from "../../interfaces";
 
@@ -66,7 +66,7 @@ describe("useRunHistory", () => {
     const { result } = renderHook(() => useRunHistory("/tmp/coder", true, 0));
 
     await waitFor(() => expect(result.current.runs).toHaveLength(1));
-    expect(result.current.isFailed).toBe(false);
+    expect(result.current.refusal).toBeNull();
   });
 
   it("reads it again on every write, since a walk going writes into it", async () => {
@@ -110,15 +110,47 @@ describe("useRunHistory", () => {
     await waitFor(() => expect(listCalls()).toBe(2));
   });
 
-  it("says a record it could not read is not an empty one", async () => {
-    machine({
-      [LIST_RUNS_CHANNEL]: null,
+  it("says what the record answered when it could not be read, rather than calling it empty", async () => {
+    standInBridge({
+      invoke: vi.fn(async () => {
+        throw new Error("SQLITE_CANTOPEN: unable to open database file");
+      }),
     });
 
     const { result } = renderHook(() => useRunHistory("/tmp/coder", true, 0));
 
-    await waitFor(() => expect(result.current.isFailed).toBe(true));
+    await waitFor(() =>
+      expect(result.current.refusal).toBe(`${RECORD_UNREAD_NOTE} · SQLITE_CANTOPEN: unable to open database file`),
+    );
     expect(result.current.runs).toEqual([]);
+  });
+
+  it("keeps a run the record refused to remove, and says what it answered", async () => {
+    const invoke = vi.fn(async (channel: string) => {
+      if (channel === FORGET_RUN_CHANNEL) {
+        throw new Error("database is locked");
+      }
+
+      return channel === LIST_RUNS_CHANNEL ? [row("run-1")] : undefined;
+    });
+
+    standInBridge({
+      invoke,
+    });
+
+    const { result } = renderHook(() => useRunHistory("/tmp/coder", true, 0));
+
+    await waitFor(() => expect(result.current.runs).toHaveLength(1));
+
+    let isGone = true;
+
+    await act(async () => {
+      isGone = await result.current.forget("run-1");
+    });
+
+    expect(isGone).toBe(false);
+    expect(result.current.runs).toHaveLength(1);
+    expect(result.current.refusal).toBe(`${RECORD_UNFORGOTTEN_NOTE} · database is locked`);
   });
 
   it("lets a read it has left behind come back to nothing", async () => {
@@ -197,10 +229,15 @@ describe("useRunHistory", () => {
   });
 
   it("empties the list when every ended run went, and leaves it standing when the record refused", async () => {
-    // «× ЗАБРАТИ N» answers with how many went; a refusal answers with nothing.
-    machine({
-      [LIST_RUNS_CHANNEL]: [row("run-1")],
-      [FORGET_RUNS_CHANNEL]: null,
+    // «× ЗАБРАТИ N» answers with how many went; a refusal rejects with the record's own words.
+    standInBridge({
+      invoke: vi.fn(async (channel: string) => {
+        if (channel === FORGET_RUNS_CHANNEL) {
+          throw new Error("database is locked");
+        }
+
+        return channel === LIST_RUNS_CHANNEL ? [row("run-1")] : undefined;
+      }),
     });
 
     const { result } = renderHook(() => useRunHistory("/tmp/coder", true, 0));

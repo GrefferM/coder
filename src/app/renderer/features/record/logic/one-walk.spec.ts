@@ -50,6 +50,7 @@ function run(walk: WholeStep[], state = RUN_DONE): WholeRun {
         asked: "Розбий текст на тези",
         askedAt: FIRST_ASKED,
         askedAgentId: "agent-1",
+        attached: [],
       },
       {
         id: "question-2",
@@ -57,6 +58,7 @@ function run(walk: WholeStep[], state = RUN_DONE): WholeRun {
         asked: "Тепер коротше",
         askedAt: SECOND_ASKED,
         askedAgentId: "agent-1",
+        attached: [],
       },
     ],
     steps: walk.length,

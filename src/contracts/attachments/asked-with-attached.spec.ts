@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { askedWithAttached } from "./asked-with-attached";
-import type { PackedAttachment } from "../../../interfaces";
+import type { PackedAttachment } from "./packed-attachment.interface";
 
 function packed(patch: Partial<PackedAttachment> = {}): PackedAttachment {
   return {
@@ -15,7 +16,7 @@ function packed(patch: Partial<PackedAttachment> = {}): PackedAttachment {
 
 describe("askedWithAttached", () => {
   it("leaves the words alone where nothing is attached", () => {
-    expect(askedWithAttached("питання", [])).toBe("питання");
+    assert.equal(askedWithAttached("питання", []), "питання");
   });
 
   it("puts the question first and each attachment's packed block after it", () => {
@@ -28,17 +29,18 @@ describe("askedWithAttached", () => {
       }),
     ]);
 
-    expect(said).toBe("питання\n\nONE\n\nTWO");
+    assert.equal(said, "питання\n\nONE\n\nTWO");
   });
 
   it("sends the packed blocks alone where the question is empty", () => {
     // An empty question must not make the pack begin with blank lines.
-    expect(
+    assert.equal(
       askedWithAttached("", [
         packed({
           text: "ONE",
         }),
       ]),
-    ).toBe("ONE");
+      "ONE",
+    );
   });
 });

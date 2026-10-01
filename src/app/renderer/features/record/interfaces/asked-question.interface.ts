@@ -1,4 +1,4 @@
-import type { Agent } from "../../../interfaces";
+import type { Agent, PackedAttachment } from "../../../interfaces";
 
 /** One question of a conversation as the record takes it: its id, whom it went to, and when. */
 export interface AskedQuestion {
@@ -7,5 +7,7 @@ export interface AskedQuestion {
   /** The agent it went to; name and colour are kept as they were then. */
   agent: Agent;
   asked: string;
+  /** The files and folders sent with it, packed as they went into the turn. */
+  attached: PackedAttachment[];
   askedAt: number;
 }

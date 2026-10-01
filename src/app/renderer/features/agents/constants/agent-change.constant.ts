@@ -1,3 +1,5 @@
+import type { AgentMemory } from "../../../interfaces";
+
 /** How the ask names each moved field. */
 export const AGENT_NAME_CHANGE_LABEL = "назва";
 export const AGENT_MODEL_CHANGE_LABEL = "модель";
@@ -41,11 +43,14 @@ export const AGENT_WAIT_DROPPED_LABEL = "очікування";
 export const AGENT_WAIT_ON_LABEL = "чекає всіх";
 export const AGENT_WAIT_OFF_LABEL = "на кожному окремо";
 
-/** The conversation memory, as a moved field says it. */
-export const AGENT_THREAD_CHANGE_LABEL = "пам'ять";
-export const AGENT_THREAD_DROPPED_LABEL = "пам'ять";
-export const AGENT_THREAD_ON_LABEL = "пам'ятає розмову";
-export const AGENT_THREAD_OFF_LABEL = "з нуля";
+/** The memory, as a moved field says it. */
+export const AGENT_MEMORY_CHANGE_LABEL = "пам'ять";
+export const AGENT_MEMORY_DROPPED_LABEL = "пам'ять";
+export const AGENT_MEMORY_WORDS: Record<AgentMemory, string> = {
+  own: "своя",
+  none: "вимкнена",
+  shared: "загальна",
+};
 
 /** The purpose line, as a moved field says it. */
 export const AGENT_PURPOSE_CHANGE_LABEL = "опис";

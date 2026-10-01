@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { RUN_QUESTION_TABLE_NAME } from "../constants";
 import { RunEntity } from "./run.entity";
+import { RunQuestionAttachmentEntity } from "./run-question-attachment.entity";
 import { RunStepEntity } from "./run-step.entity";
 import type { RunQuestionRecord } from "../interfaces";
 
@@ -66,4 +67,8 @@ export class RunQuestionEntity implements RunQuestionRecord {
   /** The turns this question started; none if it reached nobody. */
   @OneToMany(() => RunStepEntity, (step) => step.question)
   declare steps: RunStepEntity[];
+
+  /** The files and folders sent with it; none for words alone. */
+  @OneToMany(() => RunQuestionAttachmentEntity, (attachment) => attachment.question)
+  declare attachments: RunQuestionAttachmentEntity[];
 }

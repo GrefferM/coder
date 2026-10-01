@@ -37,7 +37,7 @@ export class Initial1789371935222 implements MigrationInterface {
     );
     await queryRunner.query('CREATE INDEX "IDX_fc7b06d0a8855678193a348747" ON "run_step_models" ("stepId") ');
     await queryRunner.query(
-      'CREATE TABLE "run_step_settings" ("id" varchar PRIMARY KEY NOT NULL, "promptId" varchar, "prompt" text NOT NULL, "temperature" float, "maxCalls" integer, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "REL_f078fa3ee6872cc45392ebf230" UNIQUE ("stepId"))',
+      'CREATE TABLE "run_step_settings" ("id" varchar PRIMARY KEY NOT NULL, "promptId" varchar, "prompt" text NOT NULL, "temperature" float, "maxCalls" integer, "memoryLength" integer NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "REL_f078fa3ee6872cc45392ebf230" UNIQUE ("stepId"))',
     );
     await queryRunner.query('CREATE INDEX "IDX_f078fa3ee6872cc45392ebf230" ON "run_step_settings" ("stepId") ');
     await queryRunner.query(
@@ -96,10 +96,10 @@ export class Initial1789371935222 implements MigrationInterface {
     await queryRunner.query('CREATE INDEX "IDX_fc7b06d0a8855678193a348747" ON "run_step_models" ("stepId") ');
     await queryRunner.query('DROP INDEX "IDX_f078fa3ee6872cc45392ebf230"');
     await queryRunner.query(
-      'CREATE TABLE "temporary_run_step_settings" ("id" varchar PRIMARY KEY NOT NULL, "promptId" varchar, "prompt" text NOT NULL, "temperature" float, "maxCalls" integer, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "REL_f078fa3ee6872cc45392ebf230" UNIQUE ("stepId"), CONSTRAINT "FK_f078fa3ee6872cc45392ebf2302" FOREIGN KEY ("stepId") REFERENCES "run_steps" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
+      'CREATE TABLE "temporary_run_step_settings" ("id" varchar PRIMARY KEY NOT NULL, "promptId" varchar, "prompt" text NOT NULL, "temperature" float, "maxCalls" integer, "memoryLength" integer NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "REL_f078fa3ee6872cc45392ebf230" UNIQUE ("stepId"), CONSTRAINT "FK_f078fa3ee6872cc45392ebf2302" FOREIGN KEY ("stepId") REFERENCES "run_steps" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
     );
     await queryRunner.query(
-      'INSERT INTO "temporary_run_step_settings"("id", "promptId", "prompt", "temperature", "maxCalls", "createdAt", "updatedAt", "stepId") SELECT "id", "promptId", "prompt", "temperature", "maxCalls", "createdAt", "updatedAt", "stepId" FROM "run_step_settings"',
+      'INSERT INTO "temporary_run_step_settings"("id", "promptId", "prompt", "temperature", "maxCalls", "memoryLength", "createdAt", "updatedAt", "stepId") SELECT "id", "promptId", "prompt", "temperature", "maxCalls", "memoryLength", "createdAt", "updatedAt", "stepId" FROM "run_step_settings"',
     );
     await queryRunner.query('DROP TABLE "run_step_settings"');
     await queryRunner.query('ALTER TABLE "temporary_run_step_settings" RENAME TO "run_step_settings"');
@@ -138,9 +138,17 @@ export class Initial1789371935222 implements MigrationInterface {
     await queryRunner.query('DROP TABLE "run_calls"');
     await queryRunner.query('ALTER TABLE "temporary_run_calls" RENAME TO "run_calls"');
     await queryRunner.query('CREATE INDEX "IDX_a272800cd4cd6b0ea2262db21e" ON "run_calls" ("stepId") ');
+    await queryRunner.query(
+      'CREATE TABLE "run_question_attachments" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "path" text NOT NULL, "name" varchar NOT NULL, "kind" varchar NOT NULL, "text" text NOT NULL, "binaries" text NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "questionId" varchar, CONSTRAINT "FK_27e55be18041d68addb473e5345" FOREIGN KEY ("questionId") REFERENCES "run_questions" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
+    );
+    await queryRunner.query(
+      'CREATE INDEX "IDX_27e55be18041d68addb473e534" ON "run_question_attachments" ("questionId") ',
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query('DROP INDEX "IDX_27e55be18041d68addb473e534"');
+    await queryRunner.query('DROP TABLE "run_question_attachments"');
     await queryRunner.query('DROP INDEX "IDX_a272800cd4cd6b0ea2262db21e"');
     await queryRunner.query('ALTER TABLE "run_calls" RENAME TO "temporary_run_calls"');
     await queryRunner.query(
@@ -178,10 +186,10 @@ export class Initial1789371935222 implements MigrationInterface {
     await queryRunner.query('DROP INDEX "IDX_f078fa3ee6872cc45392ebf230"');
     await queryRunner.query('ALTER TABLE "run_step_settings" RENAME TO "temporary_run_step_settings"');
     await queryRunner.query(
-      'CREATE TABLE "run_step_settings" ("id" varchar PRIMARY KEY NOT NULL, "promptId" varchar, "prompt" text NOT NULL, "temperature" float, "maxCalls" integer, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "REL_f078fa3ee6872cc45392ebf230" UNIQUE ("stepId"))',
+      'CREATE TABLE "run_step_settings" ("id" varchar PRIMARY KEY NOT NULL, "promptId" varchar, "prompt" text NOT NULL, "temperature" float, "maxCalls" integer, "memoryLength" integer NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "REL_f078fa3ee6872cc45392ebf230" UNIQUE ("stepId"))',
     );
     await queryRunner.query(
-      'INSERT INTO "run_step_settings"("id", "promptId", "prompt", "temperature", "maxCalls", "createdAt", "updatedAt", "stepId") SELECT "id", "promptId", "prompt", "temperature", "maxCalls", "createdAt", "updatedAt", "stepId" FROM "temporary_run_step_settings"',
+      'INSERT INTO "run_step_settings"("id", "promptId", "prompt", "temperature", "maxCalls", "memoryLength", "createdAt", "updatedAt", "stepId") SELECT "id", "promptId", "prompt", "temperature", "maxCalls", "memoryLength", "createdAt", "updatedAt", "stepId" FROM "temporary_run_step_settings"',
     );
     await queryRunner.query('DROP TABLE "temporary_run_step_settings"');
     await queryRunner.query('CREATE INDEX "IDX_f078fa3ee6872cc45392ebf230" ON "run_step_settings" ("stepId") ');

@@ -8,6 +8,7 @@ import {
   NOT_STARTED_FREE_LABEL,
   NOT_STARTED_TITLE,
   OVER_CEILING_CEILING_LABEL,
+  OVER_CEILING_MEMORY_LABEL,
   OVER_CEILING_NO_RETRY_NOTE,
   OVER_CEILING_TOTAL_LABEL,
 } from "../../../../constants";
@@ -15,7 +16,8 @@ import {
 const wouldGo = {
   prompt: 1900,
   asked: 210500,
-  total: 212400,
+  memory: 4000,
+  total: 216400,
   ceiling: 200000,
 };
 
@@ -89,7 +91,7 @@ describe("NotStartedCard", () => {
     render(
       <NotStartedCard
         reason="tooLong"
-        note="У модель пішло б 212 400 символів."
+        note="У модель пішло б 216 400 символів."
         wouldGo={wouldGo}
         isAsked={false}
         onAct={vi.fn()}
@@ -99,8 +101,10 @@ describe("NotStartedCard", () => {
     // The parts that would have gone, their sum and the ceiling.
     expect(screen.getByText("1 900")).toBeInTheDocument();
     expect(screen.getByText("210 500")).toBeInTheDocument();
+    expect(screen.getByText(OVER_CEILING_MEMORY_LABEL)).toBeInTheDocument();
+    expect(screen.getByText("4 000")).toBeInTheDocument();
     expect(screen.getByText(OVER_CEILING_TOTAL_LABEL)).toBeInTheDocument();
-    expect(screen.getByText("212 400")).toBeInTheDocument();
+    expect(screen.getByText("216 400")).toBeInTheDocument();
     expect(screen.getByText(OVER_CEILING_CEILING_LABEL)).toBeInTheDocument();
     // What we counted is grouped, the person's own number is not.
     expect(screen.getByText("200000")).toBeInTheDocument();

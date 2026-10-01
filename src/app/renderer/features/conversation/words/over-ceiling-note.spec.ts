@@ -5,6 +5,7 @@ import type { TurnLength } from "../interfaces";
 const length = (total: number, ceiling: number): TurnLength => ({
   prompt: 0,
   asked: total,
+  memory: 0,
   total,
   ceiling,
 });

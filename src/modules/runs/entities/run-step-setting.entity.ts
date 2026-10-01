@@ -43,6 +43,12 @@ export class RunStepSettingEntity implements RunStepSettingRecord {
   })
   declare maxCalls: number | null;
 
+  /** Characters of memory the turn carried ahead of what it was asked. */
+  @Column({
+    type: "integer",
+  })
+  declare memoryLength: number;
+
   @CreateDateColumn()
   declare createdAt: Date;
 

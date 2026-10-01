@@ -9,9 +9,10 @@ export const OVER_CEILING_NOTE_DASH = " — ";
 export const OVER_CEILING_NOTE_SUFFIX = ". Хід не почався: нічого не обрізали й нічого не викинули.";
 export const OVER_CEILING_CHARACTER_FORMS = ["символ", "символи", "символів"];
 
-/** Breakdown lines: the two parts that would have gone, their sum, and the ceiling. */
+/** Breakdown lines: the parts that would have gone, their sum, and the ceiling. */
 export const OVER_CEILING_PROMPT_LABEL = "промпт";
 export const OVER_CEILING_ASKED_LABEL = "питання";
+export const OVER_CEILING_MEMORY_LABEL = "пам'ять";
 export const OVER_CEILING_TOTAL_LABEL = "пішло б";
 export const OVER_CEILING_CEILING_LABEL = "стеля моделі";
 

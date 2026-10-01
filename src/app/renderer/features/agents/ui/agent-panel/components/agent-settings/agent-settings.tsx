@@ -8,6 +8,7 @@ import { NAME_TAKEN_AGENT_NOTE } from "../../../../../../constants";
 import {
   AgentToolsSection,
   GrantView,
+  MemorySection,
   ServerView,
   ServersSection,
   SettingsNumbers,
@@ -244,6 +245,16 @@ export function AgentSettings({
           onGrantsChange={(tools) =>
             onDraftChange({
               tools,
+            })
+          }
+        />
+
+        <MemorySection
+          memory={draft.memory}
+          wasValue={was.memory}
+          onMemoryChange={(memory) =>
+            onDraftChange({
+              memory,
             })
           }
         />

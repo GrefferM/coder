@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { wasAgent } from "./was-agent";
-import { AGENT_ACTIVE_ON_LABEL, AGENT_NO_PROMPT_LABEL, AGENT_THREAD_ON_LABEL } from "../constants";
+import { AGENT_ACTIVE_ON_LABEL, AGENT_MEMORY_WORDS, AGENT_NO_PROMPT_LABEL } from "../constants";
 import type { AgentDraft, AgentNaming } from "../interfaces";
 import type { ProjectModel, ProjectPrompt } from "../../../interfaces";
 import { aDraft, aModel, aPrompt } from "../../../testing";
@@ -67,7 +67,7 @@ describe("wasAgent", () => {
       temperature: null,
       isActive: null,
       waitsForAll: null,
-      keepsThread: null,
+      memory: null,
     });
   });
 
@@ -91,16 +91,16 @@ describe("wasAgent", () => {
     expect(was.isActive).toBe(AGENT_ACTIVE_ON_LABEL);
   });
 
-  it("says the agent remembered the conversation, where the draft made it forget", () => {
+  it("says the agent's memory was its own, where the draft made it shared", () => {
     const was = wasAgent(
       draft({
-        keepsThread: false,
+        memory: "shared",
       }),
       draft(),
       NAMING,
     );
 
-    expect(was.keepsThread).toBe(AGENT_THREAD_ON_LABEL);
+    expect(was.memory).toBe(AGENT_MEMORY_WORDS.own);
   });
 
   it("names a prompt the project no longer has by the word for none at all", () => {

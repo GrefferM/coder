@@ -10,6 +10,7 @@ import {
   OpenRunDto,
   ReadRunDto,
   SearchRunsDto,
+  SharedMemoryDto,
 } from "../../../src/modules/runs/dto";
 import type { RunKeeper, RunReader, RunSearch, RunWriter } from "../../../src/modules/runs/services";
 
@@ -45,6 +46,15 @@ function controller(): RunController {
   const reader = <RunReader>(<unknown>{
     list: took("list", []),
     one: took("one", null),
+    // Keeps both ids of the two-argument read.
+    sharedMemory: async (runId: string, questionId: string) => {
+      asked.push({
+        name: "sharedMemory",
+        with: [runId, questionId],
+      });
+
+      return "";
+    },
   });
   const search = <RunSearch>(<unknown>{
     // Keeps both arguments of the two-argument search.
@@ -78,6 +88,7 @@ function opening(patch: Record<string, unknown> = {}): OpenRunDto {
     startedByAgentColor: "#b18aff",
     questionId: QUESTION,
     asked: "Розбий текст на тези",
+    attached: [],
     startedAt: 1_700_000_000_000,
     ...patch,
   });
@@ -86,6 +97,22 @@ function opening(patch: Record<string, unknown> = {}): OpenRunDto {
 describe("RunController · what it hands on", () => {
   beforeEach(() => {
     asked = [];
+  });
+
+  it("asks the reader for a question's shared memory by the run and the question, in that order", async () => {
+    await controller().sharedMemory(
+      dto(SharedMemoryDto, {
+        runId: RUN,
+        questionId: QUESTION,
+      }),
+    );
+
+    assert.deepEqual(asked, [
+      {
+        name: "sharedMemory",
+        with: [RUN, QUESTION],
+      },
+    ]);
   });
 
   it("gives the opening to the writer whole, and answers with the row it opened", async () => {
@@ -171,6 +198,7 @@ describe("RunController · what it hands on", () => {
         asked: "Друге",
         askedAgentId: AGENT,
         askedAgentName: "Шукач",
+        attached: [],
         askedAt: 1_700_000_000_001,
       }),
     );
@@ -191,6 +219,18 @@ describe("RunController · what it hands on", () => {
 describe("RunController · what it refuses at the door", () => {
   beforeEach(() => {
     asked = [];
+  });
+
+  it("refuses to read a shared memory named by anything but the run's and the question's ids", async () => {
+    await assert.rejects(() =>
+      controller().sharedMemory(
+        dto(SharedMemoryDto, {
+          runId: RUN,
+          questionId: "питання",
+        }),
+      ),
+    );
+    assert.deepEqual(asked, []);
   });
 
   it("refuses an agent id that is no id at all, and writes nothing", async () => {

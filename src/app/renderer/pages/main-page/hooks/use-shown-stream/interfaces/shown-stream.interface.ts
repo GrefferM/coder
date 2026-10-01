@@ -17,7 +17,8 @@ export interface ShownStream {
   /** The run the stream stands on: the opened one, or the row the live conversation writes into. */
   shownRunId: string | null;
   runs: RunRow[];
-  isFailed: boolean;
+  /** The record's own words when the history, its search or a removal failed; null while it answers. */
+  refusal: string | null;
   /** Only ended runs can be deleted, so only they are counted and offered. */
   endedRuns: RunRow[];
   doomedRun: RunRow | null;

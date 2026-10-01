@@ -75,7 +75,7 @@ describe("agentThread", () => {
     expect(thread.map((turn) => turn.text)).toEqual(["перше", "один", "друге", "два"]);
   });
 
-  it("gives an agent that does not keep its thread nothing behind it, however much it answered", () => {
+  it("gives an agent whose memory is not its own nothing behind it, however much it answered", () => {
     expect(
       agentThread(
         [
@@ -85,7 +85,7 @@ describe("agentThread", () => {
           }),
         ],
         anAgent({
-          keepsThread: false,
+          memory: "none",
         }),
       ),
     ).toEqual([]);

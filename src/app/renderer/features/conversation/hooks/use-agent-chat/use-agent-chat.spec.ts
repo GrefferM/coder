@@ -4,12 +4,14 @@ import type { Mock } from "vitest";
 import { useAgentChat } from "./use-agent-chat";
 import { useLiveAnswer } from "../use-live-answer";
 import { ASK_AGENT_CHANNEL, STOP_AGENT_CHANNEL } from "../../../../../../contracts";
+import type { AskAgain, OpenRun } from "../../../../../../contracts";
 import {
   ADD_RUN_STEP_CHANNEL,
   ASK_AGAIN_CHANNEL,
   CLOSE_RUN_CHANNEL,
   OPEN_RUN_CHANNEL,
   READ_RUN_CHANNEL,
+  SHARED_MEMORY_CHANNEL,
 } from "../../../../../../contracts";
 import { CHAT_SAID_NOTHING_NOTE, NOT_STARTED_ENDS } from "../../constants";
 import { answerCeilingNote } from "../../words";
@@ -17,7 +19,7 @@ import { answerCeilingNote } from "../../words";
 import type { Agent, OpenProject, ProviderState, LiveCall } from "../../../../interfaces";
 import type { ChatMessage, SaidTurn } from "../../interfaces";
 import type { WholeRun, WholeStep, WrittenStep } from "../../../record";
-import { aConfig, aLink, aModel, anAgent, standInBridge } from "../../../../testing";
+import { aConfig, aLink, aModel, anAgent, recordStandIn, standInBridge } from "../../../../testing";
 
 function agent(id: string, name: string, x: number): Agent {
   return anAgent({
@@ -115,7 +117,8 @@ function fallsOnce(invoke: Mock, error: Error): void {
 
 /** Every turn answers with the same words; every ask is kept for assertions. */
 function held(answer = "Готово, тест зелений.") {
-  const invoke = vi.fn(async (channel: string, _payload?: unknown) =>
+  const record = recordStandIn();
+  const invoke = vi.fn(async (channel: string, payload?: unknown) =>
     channel === ASK_AGENT_CHANNEL
       ? {
           text: answer,
@@ -124,7 +127,7 @@ function held(answer = "Готово, тест зелений.") {
           inputTokens: 10,
           outputTokens: 20,
         }
-      : undefined,
+      : record.answer(channel, payload),
   );
 
   standInBridge({
@@ -150,7 +153,8 @@ function asked(invoke: ReturnType<typeof held>, nth: number) {
 
 /** A turn that came back unfinished: the fields say how, `text` is what got through. */
 function ending(said: { text?: string; isStopped?: boolean; isCallsExhausted?: boolean; isCeilingHit?: boolean }) {
-  const invoke = vi.fn(async (channel: string, _payload?: unknown) =>
+  const record = recordStandIn();
+  const invoke = vi.fn(async (channel: string, payload?: unknown) =>
     channel === ASK_AGENT_CHANNEL
       ? {
           text: "",
@@ -161,7 +165,7 @@ function ending(said: { text?: string; isStopped?: boolean; isCallsExhausted?: b
           outputTokens: 20,
           ...said,
         }
-      : undefined,
+      : record.answer(channel, payload),
   );
 
   standInBridge({
@@ -249,6 +253,7 @@ describe("useAgentChat", () => {
     };
     const sent: Record<string, unknown[]> = {};
     let answer: (said: SaidTurn) => void = () => undefined;
+    const record = recordStandIn();
     const invoke = vi.fn(async (channel: string, payload?: unknown) => {
       sent[channel] = [...(sent[channel] ?? []), payload];
 
@@ -269,7 +274,7 @@ describe("useAgentChat", () => {
         return "step-1";
       }
 
-      return undefined;
+      return record.answer(channel, payload);
     });
 
     standInBridge({
@@ -659,9 +664,10 @@ const POINT_OFF: OpenProject = {
 
 /** Every agent answers in its own words; models in `falls` never answer. */
 function voices(falls: string[] = []) {
+  const record = recordStandIn();
   const invoke = vi.fn(async (channel: string, payload?: unknown) => {
     if (channel !== ASK_AGENT_CHANNEL) {
-      return undefined;
+      return record.answer(channel, payload);
     }
 
     const asking = <{ model: string }>payload;
@@ -795,9 +801,10 @@ function voicesHolding(...models: string[]) {
     });
   }
 
+  const record = recordStandIn();
   const invoke = vi.fn(async (channel: string, payload?: unknown) => {
     if (channel !== ASK_AGENT_CHANNEL) {
-      return undefined;
+      return record.answer(channel, payload);
     }
 
     const asking = <{ model: string }>payload;
@@ -971,6 +978,7 @@ describe("useAgentChat while a converging point waits", () => {
 describe("useAgentChat when a step breaks", () => {
   it("ends every turn still out, since a step is what breaks and not one turn of it", async () => {
     const stopped: string[] = [];
+    const record = recordStandIn();
     const invoke = vi.fn(async (channel: string, payload?: unknown) => {
       if (channel === STOP_AGENT_CHANNEL) {
         stopped.push((<{ turnId: string }>payload).turnId);
@@ -979,7 +987,7 @@ describe("useAgentChat when a step breaks", () => {
       }
 
       if (channel !== ASK_AGENT_CHANNEL) {
-        return undefined;
+        return record.answer(channel, payload);
       }
 
       const asking = <{ model: string }>payload;
@@ -1178,6 +1186,7 @@ describe("useAgentChat against the model's ceiling", () => {
     expect(result.current.messages.at(-1)?.wouldGo).toEqual({
       prompt: 0,
       asked: 22,
+      memory: 0,
       total: 22,
       ceiling: 10,
     });
@@ -1304,9 +1313,10 @@ function heldWithVoice() {
     release = resolve;
   });
   let heard: ((piece: AgentPiece) => void) | null = null;
-  const invoke = vi.fn(async (channel: string, _payload?: unknown) => {
+  const record = recordStandIn();
+  const invoke = vi.fn(async (channel: string, payload?: unknown) => {
     if (channel !== ASK_AGENT_CHANNEL) {
-      return undefined;
+      return record.answer(channel, payload);
     }
 
     await out;
@@ -1456,17 +1466,19 @@ function recorded(sent: Record<string, unknown[]>): WholeRun {
     endedAt: new Date(),
     // Questions as asked, each with the id it came with.
     questions: [
-      ...(<{ questionId: string; asked: string; startedAt: number }[]>(sent[OPEN_RUN_CHANNEL] ?? [])).map((one) => ({
+      ...(<OpenRun[]>(sent[OPEN_RUN_CHANNEL] ?? [])).map((one) => ({
         id: one.questionId,
         asked: one.asked,
         askedAt: new Date(one.startedAt),
         askedAgentId: "agent-1",
+        attached: one.attached,
       })),
-      ...(<{ questionId: string; asked: string; askedAt: number }[]>(sent[ASK_AGAIN_CHANNEL] ?? [])).map((one) => ({
+      ...(<AskAgain[]>(sent[ASK_AGAIN_CHANNEL] ?? [])).map((one) => ({
         id: one.questionId,
         asked: one.asked,
         askedAt: new Date(one.askedAt),
         askedAgentId: "agent-1",
+        attached: one.attached,
       })),
     ].map((question, index) => ({
       ...question,
@@ -1478,6 +1490,9 @@ function recorded(sent: Record<string, unknown[]>): WholeRun {
     walk,
   };
 }
+
+/** What the record says of a question to an agent with the shared memory. */
+const SHARED_WORDS = "ЗАГАЛЬНА ПАМ'ЯТЬ\n\nПИТАННЯ ЛЮДИНИ → EDITOR:\nПрогони тести\n\nТВОЄ ЗАВДАННЯ:\n";
 
 /** Every channel's payloads in send order, to read the record back. */
 function recording(answer: Partial<SaidTurn> = {}, fallsOnce: string[] = [], holds: string[] = []) {
@@ -1539,6 +1554,10 @@ function recording(answer: Partial<SaidTurn> = {}, fallsOnce: string[] = [], hol
       return recorded(sent);
     }
 
+    if (channel === SHARED_MEMORY_CHANNEL) {
+      return SHARED_WORDS;
+    }
+
     return undefined;
   });
 
@@ -1580,6 +1599,116 @@ const REVIEWER_APART: OpenProject = {
     ],
   },
 };
+
+describe("useAgentChat · the memory a turn goes with", () => {
+  /** The same line with the reviewer given the shared memory, or none at all. */
+  function reviewerWith(memory: "shared" | "none"): OpenProject {
+    return {
+      ...PROJECT,
+      config: {
+        ...PROJECT.config,
+        agents: PROJECT.config.agents.map((one) =>
+          one.id === "agent-2"
+            ? {
+                ...one,
+                memory,
+              }
+            : one,
+        ),
+      },
+    };
+  }
+
+  it("opens the words of an agent with the shared memory with what the record says of the question", async () => {
+    const { sent } = recording();
+    const { result } = renderHook(() =>
+      useAgentChat(reviewerWith("shared"), "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
+    );
+
+    act(() => result.current.changeDraft("Прогони тести"));
+    act(() => result.current.send());
+
+    await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
+
+    const [opened] = <{ questionId: string }[]>sent[OPEN_RUN_CHANNEL];
+    const asks = <{ messages: { from: string; text: string }[] }[]>sent[ASK_AGENT_CHANNEL];
+    const steps = <{ memoryLength: number }[]>sent[ADD_RUN_STEP_CHANNEL];
+
+    // Read by the question the turn works under, from the row the walk writes into.
+    expect(sent[SHARED_MEMORY_CHANNEL]).toEqual([
+      {
+        runId: "run-1",
+        questionId: opened.questionId,
+      },
+    ]);
+    // The turn names its row and question, for an agent it calls with the shared memory.
+    expect(asks[1]).toMatchObject({
+      runId: "run-1",
+      questionId: opened.questionId,
+    });
+    // One input: the memory, then the work that came down the line.
+    expect(asks[1].messages).toEqual([
+      {
+        from: "person",
+        text: `${SHARED_WORDS}Готово, тест зелений.`,
+      },
+    ]);
+    // The record keeps how much memory went, counted as the ceiling counts it.
+    expect(steps.map((step) => step.memoryLength)).toEqual([0, [...SHARED_WORDS].length]);
+  });
+
+  it("reads nothing for an agent whose memory is switched off, and sends it the work alone", async () => {
+    const { sent } = recording();
+    const { result } = renderHook(() =>
+      useAgentChat(reviewerWith("none"), "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
+    );
+
+    act(() => result.current.changeDraft("Прогони тести"));
+    act(() => result.current.send());
+
+    await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
+
+    const asks = <{ messages: { from: string; text: string }[] }[]>sent[ASK_AGENT_CHANNEL];
+
+    // Only the editor, whose memory is its own, read the record.
+    expect(sent[READ_RUN_CHANNEL]).toHaveLength(1);
+    expect(sent[SHARED_MEMORY_CHANNEL]).toBeUndefined();
+    expect(asks[1].messages).toEqual([
+      {
+        from: "person",
+        text: "Готово, тест зелений.",
+      },
+    ]);
+  });
+
+  it("lets the turn fall with the record's words where the shared memory cannot be read", async () => {
+    const { sent, invoke } = recording();
+    const answering = <(channel: string, payload?: unknown) => Promise<unknown>>invoke.getMockImplementation();
+
+    (<Mock>invoke).mockImplementation(async (channel: string, payload?: unknown) => {
+      if (channel === SHARED_MEMORY_CHANNEL) {
+        throw new Error("SQLITE_IOERR: disk I/O error");
+      }
+
+      return answering(channel, payload);
+    });
+
+    const { result } = renderHook(() =>
+      useAgentChat(reviewerWith("shared"), "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS),
+    );
+
+    act(() => result.current.changeDraft("Прогони тести"));
+    act(() => result.current.send());
+
+    await waitFor(() => expect(sent[CLOSE_RUN_CHANNEL]?.length).toBe(1));
+
+    // The reviewer was never asked: no memory stood in for the one that could not be read.
+    expect(sent[ASK_AGENT_CHANNEL]).toHaveLength(1);
+    expect(
+      result.current.messages.find((message) => message.from === "agent" && message.agentId === "agent-2")?.note,
+    ).toContain("SQLITE_IOERR: disk I/O error");
+  });
+});
 
 describe("useAgentChat writing the record of a run", () => {
   it("closes the row with the walk that was in it, and not before that walk is back", async () => {
@@ -2009,6 +2138,7 @@ describe("useAgentChat as one stream", () => {
   it("sets no turn going after the walk was stopped, whoever would have started it", async () => {
     const sent: Record<string, unknown[]> = {};
     let answer: (said: SaidTurn) => void = () => undefined;
+    const record = recordStandIn();
     const invoke = vi.fn(async (channel: string, payload?: unknown) => {
       sent[channel] = [...(sent[channel] ?? []), payload];
 
@@ -2025,7 +2155,7 @@ describe("useAgentChat as one stream", () => {
         };
       }
 
-      return channel === ADD_RUN_STEP_CHANNEL ? "step-1" : undefined;
+      return channel === ADD_RUN_STEP_CHANNEL ? "step-1" : record.answer(channel, payload);
     });
 
     standInBridge({

@@ -15,7 +15,14 @@ import {
   RUNPOD_CLIENT_NAME,
   RUNPOD_PROVIDER_ID,
 } from "../constants";
-import { LLM_NO_ADDRESS, LLM_NO_KEY, LLM_PROVIDER_NOT_BUILT, LLM_PROVIDER_SILENT } from "../../../contracts";
+import {
+  LLM_NO_ADDRESS,
+  LLM_NO_KEY,
+  LLM_PROVIDER_NOT_BUILT,
+  LLM_PROVIDER_SILENT,
+  RECORD_GONE_NOTE,
+  REFUSAL_SAID_SEPARATOR,
+} from "../../../contracts";
 import { LlmService } from "./llm.service";
 import { RunPodChat } from "./runpod-chat.service";
 import { ToolArguments } from "./tool-arguments.service";
@@ -32,6 +39,7 @@ import type {
   AgentVoice,
   ProjectMcpServer,
   ReadyAgent,
+  RunMemory,
   ServerRunner,
   ToolRunner,
 } from "../interfaces";
@@ -62,12 +70,41 @@ const TURN = {
       text: "Привіт",
     },
   ],
+  runId: "77777777-7777-4777-8777-777777777777",
+  questionId: "44444444-4444-4444-8444-444444444444",
 };
 
 function voice(heard: AgentChunk[]): AgentVoice {
   return {
     say: (chunk) => {
       heard.push(chunk);
+    },
+  };
+}
+
+/** A record that holds no question; only an agent called with the shared memory reads it. */
+function noMemory(): RunMemory {
+  return {
+    sharedMemory: async () => null,
+  };
+}
+
+/** A record that tells this memory of every question, and keeps what it was asked. */
+function remembering(memory: string | null, asked: unknown[] = []): RunMemory {
+  return {
+    sharedMemory: async (runId, questionId) => {
+      asked.push([runId, questionId]);
+
+      return memory;
+    },
+  };
+}
+
+/** A record that cannot be read. */
+function unreadable(failure: Error): RunMemory {
+  return {
+    sharedMemory: async () => {
+      throw failure;
     },
   };
 }
@@ -105,6 +142,7 @@ describe("LlmService", () => {
       voice([]),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       AGENT_CLIENTS,
     );
@@ -119,7 +157,15 @@ describe("LlmService", () => {
   });
 
   it("takes back a turn nobody is holding without making a fuss about it", () => {
-    const llmService = new LlmService(keyStore(null), voice([]), runner(), noServers(), toolArguments, AGENT_CLIENTS);
+    const llmService = new LlmService(
+      keyStore(null),
+      voice([]),
+      runner(),
+      noServers(),
+      noMemory(),
+      toolArguments,
+      AGENT_CLIENTS,
+    );
 
     assert.doesNotThrow(() =>
       llmService.stop({
@@ -134,6 +180,7 @@ describe("LlmService", () => {
       voice([]),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       AGENT_CLIENTS,
     );
@@ -148,7 +195,15 @@ describe("LlmService", () => {
   });
 
   it("has a client for OpenRouter too, so what stops it there is the key and not the provider", async () => {
-    const llmService = new LlmService(keyStore(null), voice([]), runner(), noServers(), toolArguments, AGENT_CLIENTS);
+    const llmService = new LlmService(
+      keyStore(null),
+      voice([]),
+      runner(),
+      noServers(),
+      noMemory(),
+      toolArguments,
+      AGENT_CLIENTS,
+    );
 
     await assert.rejects(
       llmService.ask({
@@ -160,7 +215,15 @@ describe("LlmService", () => {
   });
 
   it("does not call out at all when this machine holds no key for the provider", async () => {
-    const llmService = new LlmService(keyStore(null), voice([]), runner(), noServers(), toolArguments, AGENT_CLIENTS);
+    const llmService = new LlmService(
+      keyStore(null),
+      voice([]),
+      runner(),
+      noServers(),
+      noMemory(),
+      toolArguments,
+      AGENT_CLIENTS,
+    );
 
     await assert.rejects(
       llmService.ask({
@@ -172,7 +235,15 @@ describe("LlmService", () => {
   });
 
   it("counts an emptied key as no key, rather than calling out with nothing", async () => {
-    const llmService = new LlmService(keyStore(""), voice([]), runner(), noServers(), toolArguments, AGENT_CLIENTS);
+    const llmService = new LlmService(
+      keyStore(""),
+      voice([]),
+      runner(),
+      noServers(),
+      noMemory(),
+      toolArguments,
+      AGENT_CLIENTS,
+    );
 
     await assert.rejects(
       llmService.ask({
@@ -189,6 +260,7 @@ describe("LlmService", () => {
       voice([]),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       AGENT_CLIENTS,
     );
@@ -483,6 +555,7 @@ describe("LlmService and the answer's ceiling", () => {
       voice([]),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -513,6 +586,7 @@ describe("LlmService and the answer's ceiling", () => {
       voice([]),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -543,6 +617,7 @@ describe("LlmService and the answer's ceiling", () => {
       voice([]),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -573,7 +648,7 @@ describe("LlmService and the answer's ceiling", () => {
       }),
     ]);
     const ask = async (clients: Record<string, AgentClient>) =>
-      new LlmService(keyStore("sk-1"), voice([]), runner(), noServers(), toolArguments, clients).ask({
+      new LlmService(keyStore("sk-1"), voice([]), runner(), noServers(), noMemory(), toolArguments, clients).ask({
         ...TURN,
         providerId: TEST_PROVIDER_ID,
         answerCeiling: 8,
@@ -613,6 +688,7 @@ describe("LlmService when the check refuses a call", () => {
       voice(heard),
       watchfulRunner(ran),
       noServers(),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -666,6 +742,7 @@ describe("LlmService when the check refuses a call", () => {
       voice([]),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -696,6 +773,7 @@ describe("LlmService when the check refuses a call", () => {
       voice([]),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -728,6 +806,7 @@ describe("LlmService when the check refuses a call", () => {
       voice(heard),
       watchfulRunner(ran),
       noServers(),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -767,6 +846,7 @@ describe("LlmService when the check refuses a call", () => {
       voice([]),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       faulting(
         Object.assign(new Error("User not found."), {
@@ -777,13 +857,17 @@ describe("LlmService when the check refuses a call", () => {
       ),
     );
 
-    /** A refusal crosses as an answer; the library's error object carries headers and cookies. */
+    /**
+     * A refusal crosses as an answer; the library's error object carries headers and cookies, so only the provider's own
+     * sentence rides after the code.
+     */
     await assert.rejects(
       llmService.ask({
         ...TURN,
         providerId: TEST_PROVIDER_ID,
       }),
-      new RegExp(LLM_ASK_FAILED),
+      (thrown: unknown) =>
+        thrown instanceof Error && thrown.message === `${LLM_ASK_FAILED}${REFUSAL_SAID_SEPARATOR}User not found.`,
     );
   });
 });
@@ -818,6 +902,7 @@ describe("LlmService when a server's function is called", () => {
       voice(heard),
       watchfulRunner(ran),
       watchfulServers(asked),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -862,6 +947,7 @@ describe("LlmService when a server's function is called", () => {
       voice(heard),
       runner(),
       watchfulServers([]),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -904,6 +990,7 @@ describe("LlmService when a server's function is called", () => {
       voice(heard),
       runner(),
       watchfulServers([], "browser_click: ref=e17 not found on page", true),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -934,7 +1021,15 @@ describe("LlmService when a server's function is called", () => {
         content: "Нічого не кличу.",
       }),
     ]);
-    await new LlmService(keyStore("sk-1"), voice([]), runner(), noServers(), toolArguments, provider.clients).ask({
+    await new LlmService(
+      keyStore("sk-1"),
+      voice([]),
+      runner(),
+      noServers(),
+      noMemory(),
+      toolArguments,
+      provider.clients,
+    ).ask({
       ...TURN,
       providerId: TEST_PROVIDER_ID,
       tools: [LIST_ROOTS],
@@ -966,6 +1061,7 @@ describe("LlmService when a server's function is called", () => {
       voice([]),
       runner(),
       watchfulServers(asked),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -1007,6 +1103,8 @@ describe("LlmService and an agent called as a tool", () => {
     answerCeiling: 4096,
     systemPrompt: "Ти рецензент.",
     tools: [],
+    memory: "own",
+    contextCeiling: 200_000,
   };
 
   const asking = (agent: string) =>
@@ -1039,6 +1137,7 @@ describe("LlmService and an agent called as a tool", () => {
       voice(heard),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -1066,6 +1165,222 @@ describe("LlmService and an agent called as a tool", () => {
     assert.equal(answer.text, "Готово.");
   });
 
+  /** The caller asks the reviewer, then answers on whatever came back. */
+  const callerAndBack = () =>
+    speaking([
+      asking("reviewer"),
+      new AIMessageChunk({
+        content: "Готово.",
+      }),
+    ]);
+
+  it("opens the request of an agent with the shared memory with the caller's question's memory, read at the call", async () => {
+    const provider = speaking([
+      asking("reviewer"),
+      new AIMessageChunk({
+        content: "Зауважень немає.",
+      }),
+      new AIMessageChunk({
+        content: "Готово.",
+      }),
+    ]);
+    const read: unknown[] = [];
+    const llmService = new LlmService(
+      keyStore("sk-1"),
+      voice([]),
+      runner(),
+      noServers(),
+      remembering("ЗАГАЛЬНА ПАМ'ЯТЬ\n\nТВОЄ ЗАВДАННЯ:\n", read),
+      toolArguments,
+      provider.clients,
+    );
+
+    await llmService.ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: [REVIEWER],
+      agents: [
+        {
+          ...REVIEWER_RUN,
+          memory: "shared",
+        },
+      ],
+    });
+
+    assert.deepEqual(read, [[TURN.runId, TURN.questionId]]);
+    // One input: the memory, then the request.
+    assert.deepEqual(
+      provider.conversations[1].map((message) => message.content),
+      ["Ти рецензент.", "ЗАГАЛЬНА ПАМ'ЯТЬ\n\nТВОЄ ЗАВДАННЯ:\nПереглянь зміни"],
+    );
+  });
+
+  it("reads nothing for an agent whose memory is its own or off: as a tool it has no steps, only the request", async () => {
+    const provider = speaking([
+      asking("reviewer"),
+      new AIMessageChunk({
+        content: "Зауважень немає.",
+      }),
+    ]);
+    const read: unknown[] = [];
+    const llmService = new LlmService(
+      keyStore("sk-1"),
+      voice([]),
+      runner(),
+      noServers(),
+      remembering("ЗАГАЛЬНА ПАМ'ЯТЬ", read),
+      toolArguments,
+      provider.clients,
+    );
+
+    await llmService.ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: [REVIEWER],
+      agents: [
+        {
+          ...REVIEWER_RUN,
+          memory: "none",
+        },
+      ],
+    });
+
+    assert.deepEqual(read, []);
+    assert.deepEqual(
+      provider.conversations[1].map((message) => message.content),
+      ["Ти рецензент.", "Переглянь зміни"],
+    );
+  });
+
+  it("fails the call with the record's own words where the memory cannot be read, and the caller goes on", async () => {
+    const provider = callerAndBack();
+    const llmService = new LlmService(
+      keyStore("sk-1"),
+      voice([]),
+      runner(),
+      noServers(),
+      unreadable(new Error("SQLITE_IOERR: disk I/O error")),
+      toolArguments,
+      provider.clients,
+    );
+
+    const answer = await llmService.ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: [REVIEWER],
+      agents: [
+        {
+          ...REVIEWER_RUN,
+          memory: "shared",
+        },
+      ],
+    });
+
+    // The reviewer was never asked; no empty memory stood in for the one that could not be read.
+    assert.equal(provider.conversations.length, 2);
+    assert.deepEqual(
+      answer.calls.map((call) => [call.output, call.isFailed]),
+      [["SQLITE_IOERR: disk I/O error", true]],
+    );
+    assert.equal(answer.text, "Готово.");
+  });
+
+  it("fails the call where the record no longer holds the question, rather than calling with no memory", async () => {
+    const provider = callerAndBack();
+    const llmService = new LlmService(
+      keyStore("sk-1"),
+      voice([]),
+      runner(),
+      noServers(),
+      remembering(null),
+      toolArguments,
+      provider.clients,
+    );
+
+    const answer = await llmService.ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: [REVIEWER],
+      agents: [
+        {
+          ...REVIEWER_RUN,
+          memory: "shared",
+        },
+      ],
+    });
+
+    assert.equal(provider.conversations.length, 2);
+    assert.deepEqual(
+      answer.calls.map((call) => [call.output, call.isFailed]),
+      [[RECORD_GONE_NOTE, true]],
+    );
+  });
+
+  it("fails the call over its model's ceiling with what would have gone, part by part, and cuts nothing", async () => {
+    // A ceiling of 20: the prompt takes 13, the memory 4 and the request 15.
+    const provider = callerAndBack();
+    const llmService = new LlmService(
+      keyStore("sk-1"),
+      voice([]),
+      runner(),
+      noServers(),
+      remembering("ЩОСЬ"),
+      toolArguments,
+      provider.clients,
+    );
+
+    const answer = await llmService.ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: [REVIEWER],
+      agents: [
+        {
+          ...REVIEWER_RUN,
+          memory: "shared",
+          contextCeiling: 20,
+        },
+      ],
+    });
+
+    assert.equal(provider.conversations.length, 2);
+    assert.deepEqual(
+      answer.calls.map((call) => [call.output, call.isFailed]),
+      [
+        [
+          "[агент «reviewer» не почав: у модель claude-sonnet-4-5 пішло б символів: 32 (промпт 13, пам'ять 4, запит 15), а стеля — 20. Нічого не обрізали.]",
+          true,
+        ],
+      ],
+    );
+    assert.equal(answer.text, "Готово.");
+  });
+
+  it("fails the call with the provider's own words where the agent's model falls, and the caller goes on", async () => {
+    const provider = callerAndBack();
+    const llmService = new LlmService(keyStore("sk-1"), voice([]), runner(), noServers(), noMemory(), toolArguments, {
+      ...provider.clients,
+      "a provider that falls": faulting(new Error("User not found."))[TEST_PROVIDER_ID],
+    });
+
+    const answer = await llmService.ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: [REVIEWER],
+      agents: [
+        {
+          ...REVIEWER_RUN,
+          providerId: "a provider that falls",
+        },
+      ],
+    });
+
+    assert.deepEqual(
+      answer.calls.map((call) => [call.output, call.isFailed]),
+      [[`${LLM_ASK_FAILED}${REFUSAL_SAID_SEPARATOR}User not found.`, true]],
+    );
+    assert.equal(answer.text, "Готово.");
+  });
+
   it("refuses a call that would close a ring, and asks nobody", async () => {
     const provider = speaking([
       asking("reviewer"),
@@ -1078,6 +1393,7 @@ describe("LlmService and an agent called as a tool", () => {
       voice([]),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       provider.clients,
     );
@@ -1106,6 +1422,7 @@ describe("LlmService and an agent called as a tool", () => {
       voice([]),
       runner(),
       noServers(),
+      noMemory(),
       toolArguments,
       provider.clients,
     );

@@ -8,6 +8,8 @@ export interface WrittenTurn {
   model: ProjectModel | null;
   prompt: string;
   asked: string;
+  /** Characters of memory the turn carried ahead of what it was asked. */
+  memoryLength: number;
   said: string;
   state: string;
   cost: ChatCost | null;

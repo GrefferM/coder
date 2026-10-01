@@ -2,6 +2,7 @@ import {
   RunCallEntity,
   RunEntity,
   RunHandoffEntity,
+  RunQuestionAttachmentEntity,
   RunQuestionEntity,
   RunStepAgentEntity,
   RunStepEntity,
@@ -9,11 +10,11 @@ import {
   RunStepModelEntity,
   RunStepSettingEntity,
 } from "../entities";
-import type { DataSource } from "typeorm";
+import type { DataSource, EntityManager } from "typeorm";
 import type { RunTables } from "../interfaces";
 
-/** Every table the record writes to, from one connection; shared by the module and tests. */
-export function runTablesOf(dataSource: DataSource): RunTables {
+/** Every table the record writes to, from one connection or one transaction; shared by the module and tests. */
+export function runTablesOf(dataSource: DataSource | EntityManager): RunTables {
   return {
     runs: dataSource.getRepository(RunEntity),
     steps: dataSource.getRepository(RunStepEntity),
@@ -21,6 +22,7 @@ export function runTablesOf(dataSource: DataSource): RunTables {
     feeds: dataSource.getRepository(RunStepFeedEntity),
     handoffs: dataSource.getRepository(RunHandoffEntity),
     questions: dataSource.getRepository(RunQuestionEntity),
+    attachments: dataSource.getRepository(RunQuestionAttachmentEntity),
     who: dataSource.getRepository(RunStepAgentEntity),
     ran: dataSource.getRepository(RunStepModelEntity),
     given: dataSource.getRepository(RunStepSettingEntity),

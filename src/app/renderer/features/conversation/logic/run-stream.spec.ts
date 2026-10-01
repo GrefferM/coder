@@ -62,6 +62,7 @@ function run(walk: WholeStep[]): WholeRun {
         asked: aimed.asked,
         askedAt: aimed.startedAt,
         askedAgentId: aimed.agentId,
+        attached: [],
       };
     }),
     steps: walk.length,
@@ -94,6 +95,45 @@ function made(id: string, place: number) {
 }
 
 describe("runStream", () => {
+  it("names the files the question was sent with under it, as the live stream did, without their content", () => {
+    const whole = run([step()]);
+    const [first] = runStream({
+      ...whole,
+      questions: whole.questions.map((question) => ({
+        ...question,
+        attached: [
+          {
+            path: "/tmp/notes.md",
+            name: "notes.md",
+            kind: "file",
+            text: "=== notes.md ===\n# Нотатки",
+            binaries: [],
+          },
+          {
+            path: "/tmp/assets",
+            name: "assets",
+            kind: "folder",
+            text: "=== assets/logo.png ===",
+            binaries: ["logo.png"],
+          },
+        ],
+      })),
+    });
+
+    expect(first.attached).toEqual([
+      {
+        name: "notes.md",
+        kind: "file",
+      },
+      {
+        name: "assets",
+        kind: "folder",
+      },
+    ]);
+    // The card says the typed question; the packed text stays out of the stream.
+    expect(first.text).toBe("Розбий текст на тези");
+  });
+
   it("begins with the question the person asked, at the hour they asked it", () => {
     const [first] = runStream(run([step()]));
 
@@ -462,11 +502,12 @@ describe("runStream", () => {
     );
     const turn = said.find((message) => message.from === "agent")!;
 
-    // The numbers are not kept; the prompt, the question and the model's ceiling are.
+    // The parts are recounted from what the record kept: the prompt, the question, the memory's length and the ceiling.
     expect(turn.notStarted).toBe("tooLong");
     expect(turn.wouldGo).toEqual({
       prompt: 8,
       asked: 6,
+      memory: 0,
       total: 14,
       ceiling: 10,
     });

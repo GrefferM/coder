@@ -45,6 +45,7 @@ function run(walk: WholeStep[]): WholeRun {
       askedAt: new Date("2026-08-22T19:26:56"),
       // The agent this question stood before, which a repeat goes back to.
       askedAgentId: walk.find((one) => one.questionId === id)?.agentId ?? "agent-1",
+      attached: [],
     })),
     steps: walk.length,
     money: 0.0001,
@@ -54,6 +55,35 @@ function run(walk: WholeStep[]): WholeRun {
 }
 
 describe("repeatOf", () => {
+  it("carries the files the question was sent with, so a question that never went goes again with them", () => {
+    const whole = run([
+      step({
+        state: RUN_STEP_FAILED,
+      }),
+    ]);
+    const notes = {
+      path: "/tmp/notes.md",
+      name: "notes.md",
+      kind: "file" as const,
+      text: "=== notes.md ===\n# Нотатки",
+      binaries: [],
+    };
+    const repeat = repeatOf(
+      {
+        ...whole,
+        questions: whole.questions.map((question) => ({
+          ...question,
+          attached: [notes],
+        })),
+      },
+      "question-1",
+      null,
+      "walk-new",
+    );
+
+    expect(repeat?.attached).toEqual([notes]);
+  });
+
   it("picks the walk up by the question's own id, with the hour that question was asked", () => {
     const repeat = repeatOf(
       run([

@@ -1,4 +1,5 @@
-import { cutEnd, notStartedReason, notStartedTurn, providerWords, turnCost, turnWall } from "../logic";
+import { cutEnd, notStartedReason, notStartedTurn, turnCost, turnMessages, turnWall } from "../logic";
+import { providerWords } from "../../../utils/errors";
 import { notStartedNote } from "../words";
 import { ASK_AGENT_CHANNEL, STOP_AGENT_CHANNEL } from "../../../../../contracts";
 import { RUN_STEP_DONE, RUN_STEP_FAILED } from "../../record";
@@ -7,17 +8,17 @@ import type { TurnAnswer, TurnToAsk } from "../interfaces";
 
 /**
  * One turn asked of the machine. Walls are checked first, so the model is never asked past one; an answer, a refusal or
- * a fall all return as words with their cost. The agent's thread, cut to the ceiling, goes ahead of the question.
+ * a fall all return as words with their cost. The agent's memory goes ahead of the question.
  */
 export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
-  const { turnId, asked, catalogue, agents, directory } = turn;
+  const { turnId, asked, memory, catalogue, agents, directory, runId, questionId } = turn;
   const wall = turnWall(turn);
 
   if ("notStarted" in wall) {
     return wall;
   }
 
-  const { agent: filled, model: held, systemPrompt, thread, tools } = wall;
+  const { agent: filled, model: held, systemPrompt, tools } = wall;
 
   try {
     const said = await window.electronApi.invoke(ASK_AGENT_CHANNEL, {
@@ -32,15 +33,11 @@ export async function answerTurn(turn: TurnToAsk): Promise<TurnAnswer> {
       // A granted function names its server by id; this answers that id.
       servers: catalogue.servers,
       systemPrompt,
-      messages: [
-        ...thread,
-        {
-          from: "person",
-          text: asked,
-        },
-      ],
+      messages: turnMessages(memory, asked),
       tools,
       agents,
+      runId,
+      questionId,
     });
     const cut = cutEnd(said, filled.maxCalls, held.answerCeiling);
 

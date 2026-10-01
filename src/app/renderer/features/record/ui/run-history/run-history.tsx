@@ -5,7 +5,6 @@ import {
   RUN_HISTORY_EMPTY_FONT_SIZE_PX,
   RUN_HISTORY_EMPTY_NOTE,
   RUN_HISTORY_EMPTY_PADDING,
-  RUN_HISTORY_FAILED_NOTE,
   RUN_HISTORY_GAP_PX,
   RUN_HISTORY_PADDING,
   RUN_HISTORY_QUIET_COLOR,
@@ -23,7 +22,7 @@ import type { RunHistoryProps } from "./interfaces";
  * One row per run, newest first, grouped by start day, with one search over all. With a word typed the list is flat:
  * places ordered by message hour, with a rule naming the run wherever the record changes runs.
  */
-export function RunHistory({ runs, agents, isFailed, onOpen, onForget, query, hits, onQuery }: RunHistoryProps) {
+export function RunHistory({ runs, agents, refusal, onOpen, onForget, query, hits, onQuery }: RunHistoryProps) {
   const now = new Date();
   const looked = query.trim();
   /**
@@ -61,7 +60,7 @@ export function RunHistory({ runs, agents, isFailed, onOpen, onForget, query, hi
             fontSize: RUN_HISTORY_EMPTY_FONT_SIZE_PX,
           }}
         >
-          {isFailed ? RUN_HISTORY_FAILED_NOTE : RUN_HISTORY_EMPTY_NOTE}
+          {refusal ?? RUN_HISTORY_EMPTY_NOTE}
         </span>
       </div>
     );
@@ -85,8 +84,25 @@ export function RunHistory({ runs, agents, isFailed, onOpen, onForget, query, hi
         runs={new Set(found.map(({ run }) => run.id)).size}
         onQuery={onQuery}
       />
+      {refusal !== null && (
+        <div
+          style={{
+            padding: RUN_SEARCH_NOTHING_PADDING,
+          }}
+        >
+          <span
+            style={{
+              color: RUN_HISTORY_EMPTY_COLOR,
+              fontSize: RUN_HISTORY_EMPTY_FONT_SIZE_PX,
+              lineHeight: RUN_SEARCH_NOTHING_LINE_HEIGHT,
+            }}
+          >
+            {refusal}
+          </span>
+        </div>
+      )}
       {/* No «Історія порожня» here: the record exists, only the word is in none of it. */}
-      {looked !== "" && found.length === 0 && (
+      {refusal === null && looked !== "" && found.length === 0 && (
         <div
           style={{
             padding: RUN_SEARCH_NOTHING_PADDING,

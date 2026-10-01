@@ -6,10 +6,9 @@ import {
   AGENT_NO_PROMPT_LABEL,
   AGENT_PROMPT_CHANGE_LABEL,
   AGENT_PROMPT_DROPPED_LABEL,
-  AGENT_THREAD_CHANGE_LABEL,
-  AGENT_THREAD_DROPPED_LABEL,
-  AGENT_THREAD_OFF_LABEL,
-  AGENT_THREAD_ON_LABEL,
+  AGENT_MEMORY_CHANGE_LABEL,
+  AGENT_MEMORY_DROPPED_LABEL,
+  AGENT_MEMORY_WORDS,
 } from "../constants";
 import type { ProjectCommand, ProjectModel, ProjectPrompt } from "../../../interfaces";
 import type { AgentDraft, AgentNaming } from "../interfaces";
@@ -78,22 +77,22 @@ describe("agentChanges", () => {
     ]);
   });
 
-  it("names the conversation memory turned off by both its words", () => {
+  it("names the memory turned off by both its words", () => {
     expect(
       agentChanges(
         SAVED,
         {
           ...SAVED,
-          keepsThread: false,
+          memory: "none",
         },
         NAMING,
       ),
     ).toEqual([
       {
-        label: AGENT_THREAD_CHANGE_LABEL,
-        droppedLabel: AGENT_THREAD_DROPPED_LABEL,
-        was: AGENT_THREAD_ON_LABEL,
-        now: AGENT_THREAD_OFF_LABEL,
+        label: AGENT_MEMORY_CHANGE_LABEL,
+        droppedLabel: AGENT_MEMORY_DROPPED_LABEL,
+        was: AGENT_MEMORY_WORDS.own,
+        now: AGENT_MEMORY_WORDS.none,
       },
     ]);
   });

@@ -10,5 +10,9 @@ export function begunWalk(questionId: string, askedAt: number, runId: string | n
     waiting: {},
     isStopped: false,
     isPutAway: false,
+    heldAsk: null,
+    unsavedAsk: null,
+    heldTurns: {},
+    unclosed: null,
   };
 }

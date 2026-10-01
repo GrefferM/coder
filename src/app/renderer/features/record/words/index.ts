@@ -1,6 +1,7 @@
 export * from "./found-address";
 export * from "./found-count";
 export * from "./nothing-found-note";
+export * from "./record-note";
 export * from "./run-state-label";
 export * from "./runs-span-label";
 export * from "./started-label";

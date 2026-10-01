@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { begunWalk } from "./begun-walk";
 import { emptyWalk } from "./empty-walk";
 import { walkMachine } from "./walk-machine";
-import type { Agent, Link, ProjectConfig } from "../../../interfaces";
+import { isWalking } from "./is-walking";
+import { RECORD_UNCLOSED_NOTE, RECORD_UNREAD_NOTE, RECORD_UNSAVED_NOTE } from "../../record";
+import type { Agent, Link, PackedAttachment, ProjectConfig } from "../../../interfaces";
 import type { RunUnfinished } from "../../record";
 import { RUN_STEP_DONE, RUN_STEP_FAILED } from "../../record";
 import type {
@@ -17,6 +19,15 @@ import type {
   WalkState,
 } from "../interfaces";
 import { aConfig, anAgent } from "../../../testing";
+
+/** A file sent with a question, packed as it went into the turn. */
+const NOTES: PackedAttachment = {
+  path: "/tmp/notes.md",
+  name: "notes.md",
+  kind: "file",
+  text: "=== notes.md ===\n# Нотатки",
+  binaries: [],
+};
 
 function agent(id: string): Agent {
   return anAgent({
@@ -108,6 +119,7 @@ function back(agentId: string, patch: Partial<TurnAnswer> = {}): Extract<WalkEve
     incoming: [question()],
     startAgentId: agentId,
     asked: "Прогони тести",
+    memoryLength: 0,
     answer: answer(patch),
     saidId: "said-1",
     startedAt: 100,
@@ -1278,7 +1290,13 @@ describe("walkMachine · a walk picked up where it broke", () => {
     ],
   );
 
-  function whole(left: RunUnfinished, state = walk(), notSentTo: string | null = null, drawn = lines) {
+  function whole(
+    left: RunUnfinished,
+    state = walk(),
+    notSentTo: string | null = null,
+    drawn = lines,
+    attached: PackedAttachment[] = [],
+  ) {
     return walkMachine(
       state,
       {
@@ -1292,6 +1310,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
         askedAt: 100,
         notSentTo,
         asked: "Прогони тести",
+        attached,
       },
       drawn,
     );
@@ -1331,6 +1350,40 @@ describe("walkMachine · a walk picked up where it broke", () => {
       runId: "run-1",
       questionId: "question-1",
     });
+  });
+
+  it("puts a question that never went again with the files it was sent with, for them to be glued in as before", () => {
+    const { effects } = whole(
+      {
+        again: [],
+        arrivals: [],
+      },
+      walk(),
+      "shortener",
+      lines,
+      [NOTES],
+    );
+
+    expect(effects.filter((effect) => effect.kind === "askAgent")).toEqual([
+      {
+        kind: "askAgent",
+        agent: shortener,
+        incoming: [
+          {
+            text: "Прогони тести",
+            cost: null,
+            fromAgentId: null,
+            fromStepIds: [],
+            seconds: null,
+            attached: [NOTES],
+          },
+        ],
+        startAgentId: "shortener",
+        viaLinkIds: [],
+        runKey: "walk-2",
+        isAgain: true,
+      },
+    ]);
   });
 
   it("runs a turn that ended in anything but an answer again, word for word", () => {
@@ -1503,6 +1556,7 @@ describe("walkMachine · the words of a walk picked up", () => {
         askedAt: 100,
         notSentTo: null,
         asked: "Прогони тести",
+        attached: [],
       },
       config([agent("editor")]),
     );
@@ -1602,7 +1656,7 @@ describe("walkMachine · the turn that came back", () => {
       config([agent("editor")]),
     );
 
-    expect(effects.map((effect) => effect.kind)).toEqual(["sayAnswer", "writeTurn", "turnBack"]);
+    expect(effects.map((effect) => effect.kind)).toEqual(["sayAnswer", "writeTurn"]);
   });
 
   it("writes the provider's sentence down for a turn that fell, and makes no card of it", () => {
@@ -1641,7 +1695,7 @@ describe("walkMachine · the person put a question", () => {
         kind: "put",
         agent: agent("editor"),
         text: "Прогони тести",
-        attached: [],
+        attached: [NOTES],
         fedFrom: [],
         isAgain: false,
         questionId: "question-1",
@@ -1652,7 +1706,8 @@ describe("walkMachine · the person put a question", () => {
       config([agent("editor")]),
     );
 
-    expect(effects.map((effect) => effect.kind)).toEqual(["openWalk", "sayAsked", "askMachine"]);
+    // The turn waits for the record: nothing goes to the provider before the question is written.
+    expect(effects.map((effect) => effect.kind)).toEqual(["openWalk", "sayAsked"]);
     expect(effects[0]).toEqual({
       kind: "openWalk",
       runKey: "walk-1",
@@ -1663,6 +1718,8 @@ describe("walkMachine · the person put a question", () => {
       // The row is named by the agent it began with, so the whole agent goes, not its id.
       agent: agent("editor"),
       asked: "Прогони тести",
+      // The files go into the record beside the question, as they went into the turn.
+      attached: [NOTES],
     });
   });
 
@@ -1745,7 +1802,8 @@ describe("walkMachine · the person put a question", () => {
       config([agent("editor")]),
     );
 
-    expect(effects.some((effect) => effect.kind === "askMachine")).toBe(true);
+    // The question goes to the record; its turn follows once it is written.
+    expect(effects.some((effect) => effect.kind === "openWalk")).toBe(true);
   });
 
   it("lets down a point left waiting by a walk that is over: it held its pill only until a new walk began", () => {
@@ -1846,6 +1904,7 @@ describe("walkMachine · «СПИТАТИ ЩЕ РАЗ» pressed", () => {
         questionId: "question-1",
         walkId: "walk-1",
         notSentTo: null,
+        saidId: "said-1",
       },
     ]);
   });
@@ -1881,5 +1940,350 @@ describe("walkMachine · «СПИТАТИ ЩЕ РАЗ» pressed", () => {
     );
 
     expect(effects).toEqual([]);
+  });
+});
+
+/** The person's question to the editor, as the walk holds it while the record writes it. */
+function putToEditor(): WalkState {
+  return walkMachine(
+    walk({
+      walks: {},
+    }),
+    {
+      kind: "put",
+      agent: agent("editor"),
+      text: "Прогони тести",
+      attached: [NOTES],
+      fedFrom: [],
+      isAgain: false,
+      questionId: "question-1",
+      runKey: "walk-1",
+      askedAt: 100,
+      turnId: "turn-1",
+    },
+    config([agent("editor")]),
+  ).state;
+}
+
+/** The person's card as the stream holds it under the walk. */
+function withPersonCard(state: WalkState): WalkState {
+  return {
+    ...state,
+    walks: {
+      "walk-1": {
+        ...state.walks["walk-1"],
+        said: [
+          {
+            ...broken("asked-1", "walk-1"),
+            from: "person",
+            isFailure: false,
+          },
+        ],
+      },
+    },
+  };
+}
+
+describe("walkMachine · the record writes the question first", () => {
+  it("counts the walk as going while the question is being written, so no second question enters", () => {
+    expect(isWalking(putToEditor())).toBe(true);
+  });
+
+  it("puts the first turn out once the question is in the record", () => {
+    const { state, effects } = walkMachine(
+      putToEditor(),
+      {
+        kind: "questionWritten",
+        runKey: "walk-1",
+      },
+      config([agent("editor")]),
+    );
+
+    expect(effects.map((effect) => effect.kind)).toEqual(["askMachine"]);
+    // The turn names the question it works under, whose shared memory it may be given.
+    expect(effects[0]).toMatchObject({
+      questionId: "question-1",
+    });
+    expect(Object.keys(state.out)).toEqual(["turn-1"]);
+  });
+
+  it("puts nothing out of a walk stopped while its question was being written, and lets it end", () => {
+    const stopped = walkMachine(
+      putToEditor(),
+      {
+        kind: "stopped",
+        runKey: null,
+      },
+      config([agent("editor")]),
+    ).state;
+    const { effects } = walkMachine(
+      stopped,
+      {
+        kind: "questionWritten",
+        runKey: "walk-1",
+      },
+      config([agent("editor")]),
+    );
+
+    expect(effects.map((effect) => effect.kind)).toEqual(["turnBack"]);
+  });
+
+  it("says on the question's card what the record answered, keeps the turn for the repeat, and lets the walk go", () => {
+    const { state, effects } = walkMachine(
+      withPersonCard(putToEditor()),
+      {
+        kind: "questionUnsaved",
+        runKey: "walk-1",
+        failure: "SQLITE_FULL: database or disk is full",
+      },
+      config([agent("editor")]),
+    );
+
+    expect(state.walks["walk-1"].said[0].note).toBe(`${RECORD_UNSAVED_NOTE} · SQLITE_FULL: database or disk is full`);
+    expect(state.walks["walk-1"].unsavedAsk?.turnId).toBe("turn-1");
+    expect(isWalking(state)).toBe(false);
+    expect(effects.map((effect) => effect.kind)).toEqual(["dropWalk"]);
+  });
+
+  it("puts the same question to the record again from its card, holding the turn as before", () => {
+    const refused = walkMachine(
+      withPersonCard(putToEditor()),
+      {
+        kind: "questionUnsaved",
+        runKey: "walk-1",
+        failure: "SQLITE_FULL: database or disk is full",
+      },
+      config([agent("editor")]),
+    ).state;
+    const { state, effects } = walkMachine(
+      refused,
+      {
+        kind: "sayAgain",
+        said: refused.walks["walk-1"].said[0],
+      },
+      config([agent("editor")]),
+    );
+
+    expect(effects.map((effect) => effect.kind)).toEqual(["openWalk"]);
+    // The files it was sent with go to the record again with it.
+    expect(effects[0]).toMatchObject({
+      attached: [NOTES],
+    });
+    expect(state.walks["walk-1"].heldAsk?.turnId).toBe("turn-1");
+    expect(state.walks["walk-1"].said[0].note).toBeNull();
+  });
+});
+
+describe("walkMachine · the record writes a step before its lines go out", () => {
+  const lines = config([agent("editor"), agent("shortener")], [["editor", "shortener"]]);
+
+  /** The editor's turn back in a walk the writer holds, its card said in the stream. */
+  function answeredEditor(): WalkState {
+    const { state } = walkMachine(
+      walk({
+        out: working(turn("turn-1", "editor", "walk-1")),
+        ledgers: {
+          "walk-1": ledger(),
+        },
+      }),
+      back("editor"),
+      lines,
+    );
+
+    return {
+      ...state,
+      walks: {
+        "walk-1": {
+          ...state.walks["walk-1"],
+          said: [broken("said-1", "walk-1")],
+        },
+      },
+    };
+  }
+
+  it("holds the lines while the step is being written, and the walk counts as going", () => {
+    const state = answeredEditor();
+
+    expect(Object.keys(state.walks["walk-1"].heldTurns)).toEqual(["said-1"]);
+    expect(isWalking(state)).toBe(true);
+  });
+
+  it("takes the lines out once the step is in the record, and counts the turn back", () => {
+    const { state, effects } = walkMachine(
+      answeredEditor(),
+      {
+        kind: "stepWritten",
+        runKey: "walk-1",
+        saidId: "said-1",
+      },
+      lines,
+    );
+
+    expect(effects.map((effect) => effect.kind)).toEqual(["sayHandoff", "askAgent", "turnBack"]);
+    expect(state.walks["walk-1"].heldTurns).toEqual({});
+  });
+
+  it("stops the walk at a step the record refused: its card says why, and the writer lets the walk go", () => {
+    const { state, effects } = walkMachine(
+      answeredEditor(),
+      {
+        kind: "stepUnsaved",
+        runKey: "walk-1",
+        saidId: "said-1",
+        failure: "NOT NULL constraint failed: run_calls.source",
+      },
+      lines,
+    );
+
+    expect(state.walks["walk-1"].said[0].note).toBe(
+      `${RECORD_UNSAVED_NOTE} · NOT NULL constraint failed: run_calls.source`,
+    );
+    expect(stoppedWalks(state)).toEqual(["walk-1"]);
+    expect(effects.map((effect) => effect.kind)).toEqual(["dropWalk"]);
+  });
+});
+
+describe("walkMachine · the record's word beside the card's own", () => {
+  it("keeps what the card said of itself and puts the record's word after it, once", () => {
+    const stopped: WalkState = walk({
+      walks: {
+        "walk-1": held({
+          said: [
+            {
+              ...broken("said-1", "walk-1"),
+              note: "Зупинено",
+            },
+          ],
+          heldTurns: {
+            "said-1": back("editor"),
+          },
+        }),
+      },
+    });
+    const refused = walkMachine(
+      stopped,
+      {
+        kind: "stepUnsaved",
+        runKey: "walk-1",
+        saidId: "said-1",
+        failure: "database is locked",
+      },
+      NO_LINES,
+    ).state;
+    const { state } = walkMachine(
+      refused,
+      {
+        kind: "recordUnread",
+        saidId: "said-1",
+        failure: "database is locked",
+      },
+      NO_LINES,
+    );
+
+    expect(refused.walks["walk-1"].said[0].note).toBe(`Зупинено · ${RECORD_UNSAVED_NOTE} · database is locked`);
+    expect(state.walks["walk-1"].said[0].note).toBe(`Зупинено · ${RECORD_UNREAD_NOTE} · database is locked`);
+  });
+});
+
+describe("walkMachine · the record refuses to stamp a walk's end", () => {
+  /** A walk whose last word is the editor's card. */
+  function closing(): WalkState {
+    return walk({
+      walks: {
+        "walk-1": held({
+          said: [broken("said-1", "walk-1")],
+        }),
+      },
+    });
+  }
+
+  it("says so under the walk's last word, and the repeat stamps the end again", () => {
+    const refused = walkMachine(
+      closing(),
+      {
+        kind: "closeUnsaved",
+        runKey: "walk-1",
+        closing: {
+          runId: "run-1",
+          endedAt: 900,
+        },
+        failure: "database is locked",
+      },
+      NO_LINES,
+    ).state;
+    const { effects } = walkMachine(
+      refused,
+      {
+        kind: "sayAgain",
+        said: refused.walks["walk-1"].said[0],
+      },
+      NO_LINES,
+    );
+
+    expect(refused.walks["walk-1"].said[0].note).toBe(`${RECORD_UNCLOSED_NOTE} · database is locked`);
+    expect(effects).toEqual([
+      {
+        kind: "closeAgain",
+        runKey: "walk-1",
+        closing: {
+          runId: "run-1",
+          endedAt: 900,
+        },
+      },
+    ]);
+  });
+
+  it("takes the word back once the end is stamped", () => {
+    const refused = walkMachine(
+      closing(),
+      {
+        kind: "closeUnsaved",
+        runKey: "walk-1",
+        closing: {
+          runId: "run-1",
+          endedAt: 900,
+        },
+        failure: "database is locked",
+      },
+      NO_LINES,
+    ).state;
+    const { state } = walkMachine(
+      refused,
+      {
+        kind: "walkClosed",
+        runKey: "walk-1",
+      },
+      NO_LINES,
+    );
+
+    expect(state.walks["walk-1"].said[0].note).toBeNull();
+    expect(state.walks["walk-1"].unclosed).toBeNull();
+  });
+});
+
+describe("walkMachine · the record unread for a repeat", () => {
+  it("says so under the pressed card and stands the repeat there again", () => {
+    const pressed = walk({
+      walks: {
+        "walk-1": held({
+          said: [broken("said-1", "walk-1")],
+        }),
+      },
+      saidAgain: ["said-1"],
+    });
+    const { state } = walkMachine(
+      pressed,
+      {
+        kind: "recordUnread",
+        saidId: "said-1",
+        failure: "SQLITE_CANTOPEN: unable to open database file",
+      },
+      NO_LINES,
+    );
+
+    expect(state.walks["walk-1"].said[0].note).toBe(
+      `${RECORD_UNREAD_NOTE} · SQLITE_CANTOPEN: unable to open database file`,
+    );
+    expect(state.saidAgain).toEqual([]);
   });
 });

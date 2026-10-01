@@ -51,7 +51,7 @@ async function initializeIpc(): Promise<void> {
     secretService,
     app.getPath("userData"),
   );
-  const { controller: runController, keeper: runKeeper } = createRunModule(dataSource);
+  const { controller: runController, keeper: runKeeper, reader: runReader } = createRunModule(dataSource);
 
   // Closes a run left open by a closing app.
   await runKeeper.settleOpen();
@@ -65,7 +65,13 @@ async function initializeIpc(): Promise<void> {
 
   mcpClient = client;
 
-  const { controller: llmController } = createLlmModule(providerService, new WindowVoice(), commandRunner, client);
+  const { controller: llmController } = createLlmModule(
+    providerService,
+    new WindowVoice(),
+    commandRunner,
+    client,
+    runReader,
+  );
   const systemShell = new SystemShell();
 
   registerIpcChannels(projectController, PROJECTS_IPC_CHANNELS);

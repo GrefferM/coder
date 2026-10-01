@@ -2,11 +2,18 @@ import { awaitedSuppliers } from "./awaited-suppliers";
 import { begunWalk } from "./begun-walk";
 import { fedStepIds } from "./fed-step-ids";
 import { cannotTake, linkOuts } from "./link-outs";
-import { askedWithAttached } from "./asked-with-attached";
 import { handedWork } from "./handed-work";
 import { isOnScreen } from "./is-on-screen";
 import { isWalking } from "./is-walking";
 import { isWaitOver, settledWait } from "./settled-wait";
+import {
+  RECORD_FAILURE_SEPARATOR,
+  RECORD_UNCLOSED_NOTE,
+  RECORD_UNREAD_NOTE,
+  RECORD_UNSAVED_NOTE,
+  recordNote,
+} from "../../record";
+import { askedWithAttached } from "../../../../../contracts";
 import { forgotten } from "../../../utils/records";
 import { tidyAnswer } from "../../../utils/text";
 import { MS_IN_SECOND } from "../../../utils/dates/constants";
@@ -14,19 +21,29 @@ import type { ProjectConfig } from "../../../interfaces";
 import type { IncomingWork, LineNotTaken, LinkOut, RunLedger, Walk } from "../interfaces";
 import type { WalkEffect, WalkEvent, WalkFact, WalkNext, WalkRule, WalkRules, WalkState } from "../interfaces";
 
+/** The record's own words on a card, which a newer one of them replaces. */
+const RECORD_WORDS = [RECORD_UNSAVED_NOTE, RECORD_UNREAD_NOTE, RECORD_UNCLOSED_NOTE];
+
 /** Each fact kind names its rule; every kind appears exactly once, so an unanswered fact does not compile. */
 const WALK_RULES: WalkRules = {
   answered,
   asked,
+  closeUnsaved,
   handedOn,
   put,
   putAway,
+  questionUnsaved,
+  questionWritten,
+  recordUnread,
   released,
   repeated,
   rowOpened,
   sayAgain,
   settled,
+  stepUnsaved,
+  stepWritten,
   stopped: (state, event) => cutWalks(state, event.runKey),
+  walkClosed,
 };
 
 /**
@@ -496,7 +513,7 @@ function put(state: WalkState, event: WalkFact<"put">): WalkNext {
       [event.runKey]: begunWalk(event.questionId, event.askedAt, state.flowRunId),
     },
   };
-  const asking = asked(standing, {
+  const ask: WalkFact<"asked"> = {
     kind: "asked",
     agent: event.agent,
     incoming: [
@@ -516,10 +533,15 @@ function put(state: WalkState, event: WalkFact<"put">): WalkNext {
     isAgain: event.isAgain,
     turnId: event.turnId,
     startedAt: event.askedAt,
-  });
+  };
+  const walk: Walk = {
+    ...begunWalk(event.questionId, event.askedAt, state.flowRunId),
+    // The first turn goes once the question is in the record.
+    heldAsk: ask,
+  };
 
   return {
-    state: asking.state,
+    state: withWalk(standing, event.runKey, walk),
     effects: [
       {
         kind: "openWalk",
@@ -531,8 +553,9 @@ function put(state: WalkState, event: WalkFact<"put">): WalkNext {
         // The row is named by the agent it began with, as it stands now.
         agent: event.agent,
         asked: event.text,
+        attached: event.attached,
       },
-      ...asking.effects,
+      wordsGiven(ask, walk),
     ],
   };
 }
@@ -560,8 +583,16 @@ function asked(state: WalkState, event: WalkFact<"asked">): WalkNext {
     };
   }
 
-  const saying = wordsGiven(event, walk);
+  const going = goes(state, event, walk, first);
 
+  return {
+    state: going.state,
+    effects: [wordsGiven(event, walk), ...going.effects],
+  };
+}
+
+/** The turn goes to the provider, with its words already said in the stream. */
+function goes(state: WalkState, event: WalkFact<"asked">, walk: Walk, first: IncomingWork): WalkNext {
   /**
    * Only the person's question reaches a switched-off agent; work down a line stops at the link. The words stand in the
    * stream with the row saying why they stayed, and the walk ends before it began.
@@ -570,7 +601,6 @@ function asked(state: WalkState, event: WalkFact<"asked">): WalkNext {
     return {
       state,
       effects: [
-        saying,
         {
           kind: "sayHandoff",
           runKey: event.runKey,
@@ -602,7 +632,7 @@ function asked(state: WalkState, event: WalkFact<"asked">): WalkNext {
         },
       },
     },
-    effects: [saying, turnPut(event, first)],
+    effects: [turnPut(event, first, walk)],
   };
 }
 
@@ -621,11 +651,13 @@ function wordsGiven(event: WalkFact<"asked">, walk: Walk): WalkEffect {
 }
 
 /** The turn itself, put to the provider with the words it works on. */
-function turnPut(event: WalkFact<"asked">, first: IncomingWork): WalkEffect {
+function turnPut(event: WalkFact<"asked">, first: IncomingWork, walk: Walk): WalkEffect {
   return {
     kind: "askMachine",
     agent: event.agent,
     turnId: event.turnId,
+    // The question the turn works under; the shared memory is that question's.
+    questionId: walk.questionId,
     incoming: event.incoming,
     startAgentId: event.startAgentId,
     viaLinkIds: event.viaLinkIds,
@@ -653,11 +685,9 @@ function answered(state: WalkState, event: WalkFact<"answered">, config: Project
   // Every word of the walk stands in the block of the question that began it.
   const walk = state.walks[event.runKey];
   const said = tidyAnswer(event.answer.text);
-  // The walk goes on through the agent's own words alone; a fall, a cut turn or one that never began takes no line out.
-  const goesOn = !event.answer.isFailure && !event.answer.isCut && event.answer.notStarted === null && said !== "";
   // A question that never went is not given back to the field; it already stands in the stream and record, and the
   // field is free for the next one.
-  let standing: WalkState = {
+  const standing: WalkState = {
     ...state,
     // The returned turn is forgotten by its own id; another turn of the same agent is not this one.
     out: forgotten(state.out, event.turnId),
@@ -671,34 +701,301 @@ function answered(state: WalkState, event: WalkFact<"answered">, config: Project
     };
   }
 
-  // The lines out of this turn, worked out once from the lines drawn out of the agent.
-  const out = goesOn ? linkOuts(config, event.agent) : [];
-  const effects: WalkEffect[] = [answerCard(event, walk, ledger, said)];
+  const card = answerCard(event, walk, ledger, said);
+
+  // A walk the writer no longer holds writes nothing, so its lines go out at once.
+  if (ledger === null) {
+    const next = proceeded(standing, event, config);
+
+    return {
+      state: next.state,
+      effects: [card, ...next.effects],
+    };
+  }
+
   // A fallen turn said nothing itself; the provider's sentence is recorded so a later-opened run says why it fell.
   const written = said === "" ? (event.answer.fell ?? "") : said;
 
-  // A turn that never began is a step too, so a walk broken that way survives closing.
-  if (ledger !== null) {
-    effects.push(writtenStep(event, config, written, out));
-  }
+  // A turn that never began is a step too; its lines wait until the step is in the record.
+  return {
+    state: withWalk(standing, event.runKey, {
+      ...walk,
+      heldTurns: {
+        ...walk.heldTurns,
+        [event.saidId]: event,
+      },
+    }),
+    effects: [card, writtenStep(event, config, written, outOf(event, config))],
+  };
+}
 
-  const next = goesOn ? handedOn(standing, handOut(event, said, out), config) : brokeOff(standing, event, config);
+/** The lines out of a turn that answered; none for a fall, a cut turn or one that never began. */
+function outOf(event: WalkFact<"answered">, config: ProjectConfig): LinkOut[] {
+  return goesOn(event) ? linkOuts(config, event.agent) : [];
+}
 
-  standing = next.state;
-  effects.push(...next.effects);
+/** Whether the walk goes on through this turn: only through the agent's own words. */
+function goesOn(event: WalkFact<"answered">): boolean {
+  const said = tidyAnswer(event.answer.text);
+
+  return !event.answer.isFailure && !event.answer.isCut && event.answer.notStarted === null && said !== "";
+}
+
+/**
+ * What a turn back sets going: its lines out, or the break; then, with the writer still holding the walk, the turn
+ * counts as back.
+ */
+function proceeded(state: WalkState, event: WalkFact<"answered">, config: ProjectConfig): WalkNext {
+  const next = goesOn(event)
+    ? handedOn(state, handOut(event, tidyAnswer(event.answer.text), outOf(event, config)), config)
+    : brokeOff(state, event, config);
 
   // Everything this turn set going is going now; if nothing else is out, the walk is over.
-  if (ledger !== null) {
-    effects.push({
-      kind: "turnBack",
-      runKey: event.runKey,
-    });
+  if (state.ledgers[event.runKey] === undefined) {
+    return next;
   }
 
   return {
-    state: standing,
-    effects,
+    state: next.state,
+    effects: [
+      ...next.effects,
+      {
+        kind: "turnBack",
+        runKey: event.runKey,
+      },
+    ],
   };
+}
+
+/** The turn's step is in the record: its lines go out now. */
+function stepWritten(state: WalkState, event: WalkFact<"stepWritten">, config: ProjectConfig): WalkNext {
+  const walk = state.walks[event.runKey];
+  const back = walk?.heldTurns[event.saidId];
+
+  if (walk === undefined || back === undefined) {
+    return {
+      state,
+      effects: [],
+    };
+  }
+
+  return proceeded(
+    withWalk(state, event.runKey, {
+      ...walk,
+      heldTurns: forgotten(walk.heldTurns, event.saidId),
+    }),
+    back,
+    config,
+  );
+}
+
+/**
+ * The record refused a turn's step: its card says so and offers the repeat, the walk stops there, and the writer lets
+ * the walk go without closing its row, so the repeat finds it open.
+ */
+function stepUnsaved(state: WalkState, event: WalkFact<"stepUnsaved">): WalkNext {
+  const walk = state.walks[event.runKey];
+
+  if (walk === undefined) {
+    return {
+      state,
+      effects: [],
+    };
+  }
+
+  const said = withRecordNote(
+    withWalk(state, event.runKey, {
+      ...walk,
+      heldTurns: forgotten(walk.heldTurns, event.saidId),
+    }),
+    event.saidId,
+    recordNote(RECORD_UNSAVED_NOTE, event.failure),
+  );
+  const cut = cutWalks(said, event.runKey);
+
+  return {
+    state: cut.state,
+    effects: [
+      ...cut.effects,
+      {
+        kind: "dropWalk",
+        runKey: event.runKey,
+      },
+    ],
+  };
+}
+
+/** The walk's question is in the record: the first turn goes, unless the walk was stopped meanwhile. */
+function questionWritten(state: WalkState, event: WalkFact<"questionWritten">): WalkNext {
+  const walk = state.walks[event.runKey];
+  const ask = walk?.heldAsk ?? null;
+  const [first] = ask?.incoming ?? [];
+
+  if (walk === undefined || ask === null || first === undefined) {
+    return {
+      state,
+      effects: [],
+    };
+  }
+
+  const standing = withWalk(state, event.runKey, {
+    ...walk,
+    heldAsk: null,
+  });
+
+  if (walk.isStopped) {
+    return {
+      state: standing,
+      effects: [
+        {
+          kind: "turnBack",
+          runKey: event.runKey,
+        },
+      ],
+    };
+  }
+
+  return goes(standing, ask, walk, first);
+}
+
+/**
+ * The record refused the walk's question: nothing of the walk went, the question's card says why and offers the repeat,
+ * which puts the same question again.
+ */
+function questionUnsaved(state: WalkState, event: WalkFact<"questionUnsaved">): WalkNext {
+  const walk = state.walks[event.runKey];
+
+  if (walk === undefined || walk.heldAsk === null) {
+    return {
+      state,
+      effects: [],
+    };
+  }
+
+  const asked = walk.said.find((message) => message.from === "person") ?? null;
+  const standing = withWalk(state, event.runKey, {
+    ...walk,
+    heldAsk: null,
+    unsavedAsk: walk.heldAsk,
+  });
+
+  return {
+    state:
+      asked === null ? standing : withRecordNote(standing, asked.id, recordNote(RECORD_UNSAVED_NOTE, event.failure)),
+    effects: [
+      {
+        kind: "dropWalk",
+        runKey: event.runKey,
+      },
+    ],
+  };
+}
+
+/** The record refused to stamp the walk's end: its last word says so and offers the repeat, which stamps it again. */
+function closeUnsaved(state: WalkState, event: WalkFact<"closeUnsaved">): WalkNext {
+  const walk = state.walks[event.runKey];
+  const last = walk?.said.at(-1) ?? null;
+
+  if (walk === undefined || last === null) {
+    return {
+      state,
+      effects: [],
+    };
+  }
+
+  return {
+    state: withRecordNote(
+      withWalk(state, event.runKey, {
+        ...walk,
+        unclosed: event.closing,
+      }),
+      last.id,
+      recordNote(RECORD_UNCLOSED_NOTE, event.failure),
+    ),
+    effects: [],
+  };
+}
+
+/** The walk's end is stamped after all: its last word stops saying otherwise. */
+function walkClosed(state: WalkState, event: WalkFact<"walkClosed">): WalkNext {
+  const walk = state.walks[event.runKey];
+  const last = walk?.said.at(-1) ?? null;
+
+  if (walk === undefined || last === null) {
+    return {
+      state,
+      effects: [],
+    };
+  }
+
+  return {
+    state: withRecordNote(
+      withWalk(state, event.runKey, {
+        ...walk,
+        unclosed: null,
+      }),
+      last.id,
+      null,
+    ),
+    effects: [],
+  };
+}
+
+/** The record could not be read for a repeat: the pressed card says so and offers the repeat again. */
+function recordUnread(state: WalkState, event: WalkFact<"recordUnread">): WalkNext {
+  return {
+    state: withRecordNote(state, event.saidId, recordNote(RECORD_UNREAD_NOTE, event.failure)),
+    effects: [],
+  };
+}
+
+/**
+ * The record's word on one card, found in whichever walk holds it: what the card already said stays, an earlier word
+ * of the record's goes, and the given one follows (none takes it back). The card's repeat stands again.
+ */
+function withRecordNote(state: WalkState, saidId: string, recorded: string | null): WalkState {
+  return {
+    ...state,
+    saidAgain: state.saidAgain.filter((id) => id !== saidId),
+    walks: Object.fromEntries(
+      Object.entries(state.walks).map(([runKey, walk]) => [
+        runKey,
+        {
+          ...walk,
+          said: walk.said.map((message) =>
+            message.id === saidId
+              ? {
+                  ...message,
+                  note: joinedNote(ownNote(message.note), recorded),
+                }
+              : message,
+          ),
+        },
+      ]),
+    ),
+  };
+}
+
+/** What a card says of itself, without any word of the record's after it. */
+function ownNote(note: string | null): string | null {
+  if (note === null || RECORD_WORDS.some((word) => note.startsWith(word))) {
+    return null;
+  }
+
+  const cut = Math.min(
+    ...RECORD_WORDS.map((word) => note.indexOf(`${RECORD_FAILURE_SEPARATOR}${word}`)).filter((at) => at >= 0),
+  );
+
+  return Number.isFinite(cut) ? note.slice(0, cut) : note;
+}
+
+/** Two words on one rule, either of them possibly absent. */
+function joinedNote(own: string | null, recorded: string | null): string | null {
+  if (own === null || recorded === null) {
+    return own ?? recorded;
+  }
+
+  return `${own}${RECORD_FAILURE_SEPARATOR}${recorded}`;
 }
 
 /** The card one turn became: what it was asked, what it said, and the steps that fed it. */
@@ -734,6 +1031,7 @@ function writtenStep(event: WalkFact<"answered">, config: ProjectConfig, said: s
       model: config.models.find((one) => one.id === event.agent.modelId) ?? null,
       prompt: config.prompts.find((one) => one.id === event.agent.promptId)?.text ?? "",
       asked: event.asked,
+      memoryLength: event.memoryLength,
       said,
       state: event.answer.state,
       cost: event.answer.cost,
@@ -788,14 +1086,33 @@ function brokeOff(state: WalkState, event: WalkFact<"answered">, config: Project
 }
 
 /**
- * «СПИТАТИ ЩЕ РАЗ» pressed under one turn: the act is used up at once and the record is asked for the walk to pick up;
- * a stream without a row has nothing to read.
+ * «СПИТАТИ ЩЕ РАЗ» pressed under one turn: the act is used up at once. A question the record refused is put again, an
+ * end it refused is stamped again; anything else is read back from the record and picked up there.
  */
 function sayAgain(state: WalkState, event: WalkFact<"sayAgain">): WalkNext {
   const standing: WalkState = {
     ...state,
     saidAgain: [...state.saidAgain, event.said.id],
   };
+  const walkId = event.said.walkId;
+  const walk = walkId === null ? undefined : state.walks[walkId];
+
+  if (walkId !== null && walk !== undefined && walk.unsavedAsk !== null && event.said.from === "person") {
+    return putAgain(standing, walkId, walk, walk.unsavedAsk);
+  }
+
+  if (walkId !== null && walk !== undefined && walk.unclosed !== null) {
+    return {
+      state: standing,
+      effects: [
+        {
+          kind: "closeAgain",
+          runKey: walkId,
+          closing: walk.unclosed,
+        },
+      ],
+    };
+  }
 
   if (state.flowRunId === null) {
     return {
@@ -815,10 +1132,40 @@ function sayAgain(state: WalkState, event: WalkFact<"sayAgain">): WalkNext {
         // wrong words is worse than none.
         walkId: event.said.walkId,
         notSentTo: event.said.from === "notSent" ? event.said.otherAgentId : null,
+        saidId: event.said.id,
       },
     ],
   };
 }
+
+/** The refused question goes to the record again, its first turn held as before; its card stops saying it failed. */
+function putAgain(state: WalkState, runKey: string, walk: Walk, ask: WalkFact<"asked">): WalkNext {
+  const [first] = ask.incoming;
+  const asked = walk.said.find((message) => message.from === "person") ?? null;
+  const standing = withWalk(state, runKey, {
+    ...walk,
+    heldAsk: ask,
+    unsavedAsk: null,
+    isStopped: false,
+  });
+
+  return {
+    state: asked === null ? standing : withRecordNote(standing, asked.id, null),
+    effects: [
+      {
+        kind: "openWalk",
+        runKey,
+        questionId: walk.questionId,
+        askedAt: walk.askedAt,
+        runId: state.flowRunId,
+        agent: ask.agent,
+        asked: first?.text ?? "",
+        attached: first?.attached ?? [],
+      },
+    ],
+  };
+}
+
 /**
  * A question's walk picked up where it broke: the walk begins again, unconsumed arrivals go in, a question that never
  * went is put, and every turn that did not answer runs again word for word.
@@ -980,7 +1327,8 @@ function questionNeverPut(event: WalkFact<"repeated">, config: ProjectConfig): W
           fromAgentId: null,
           fromStepIds: [],
           seconds: null,
-          attached: [],
+          // The files go in again as they went the first time, glued by the same hand.
+          attached: event.attached,
         },
       ],
       startAgentId: aimed.id,

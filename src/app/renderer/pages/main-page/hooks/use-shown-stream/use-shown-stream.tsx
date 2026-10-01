@@ -106,7 +106,11 @@ export function useShownStream(
       return;
     }
 
-    await history.forget(doomed.id);
+    // A refused removal is said in the history and takes nothing with it.
+    if (!(await history.forget(doomed.id))) {
+      return;
+    }
+
     // The conversation goes with its record, whether the stream wrote into it or read it.
     chat.letGo(doomed.id);
 
@@ -121,7 +125,10 @@ export function useShownStream(
   async function forgetAllRuns() {
     setIsForgettingAll(false);
 
-    await history.forgetAll();
+    if (!(await history.forgetAll())) {
+      return;
+    }
+
     // The stream is left fresh for when the person returns from history.
     setOpenedRunId(null);
     chat.fresh();
@@ -164,7 +171,7 @@ export function useShownStream(
     exportChat,
     shownRunId: openedRunId ?? chat.runId,
     runs: history.runs,
-    isFailed: history.isFailed,
+    refusal: history.refusal ?? search.refusal,
     endedRuns,
     doomedRun,
     armForget: setDoomedRun,

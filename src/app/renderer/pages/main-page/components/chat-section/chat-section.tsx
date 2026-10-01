@@ -97,7 +97,7 @@ export function ChatSection({
           query={stream.query}
           hits={stream.hits}
           onQuery={stream.search}
-          isFailed={stream.isFailed}
+          refusal={stream.refusal}
           onOpen={stream.openRun}
           onForget={stream.armForget}
         />

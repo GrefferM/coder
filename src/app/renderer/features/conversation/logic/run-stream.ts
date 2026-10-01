@@ -109,6 +109,11 @@ export function runStream(run: WholeRun): ChatMessage[] {
         questionId: question.id,
         askedAt,
         text: question.asked,
+        // The files sent with it, for the «ПРИКРІПЛЕНО:» row; their content went into the turn.
+        attached: question.attached.map((file) => ({
+          name: file.name,
+          kind: file.kind,
+        })),
         // The walk this question started, which opens the projection instead of the hour.
         walkId: aimed?.walkId ?? null,
       }),
@@ -154,7 +159,12 @@ export function runStream(run: WholeRun): ChatMessage[] {
           // Recounted from the words and the ceiling the model had then.
           wouldGo:
             step.state === RUN_STEP_TOO_LONG && step.contextCeiling !== null
-              ? turnLength(step.prompt, step.asked, step.contextCeiling)
+              ? turnLength({
+                  systemPrompt: step.prompt,
+                  asked: step.asked,
+                  memoryLength: step.memoryLength,
+                  ceiling: step.contextCeiling,
+                })
               : null,
           answerCeiling: step.answerCeiling,
           cost:

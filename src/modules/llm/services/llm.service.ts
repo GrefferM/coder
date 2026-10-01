@@ -1,9 +1,15 @@
 import { AIMessage, HumanMessage, SystemMessage, ToolMessage } from "@langchain/core/messages";
 import {
+  AGENT_ASKED_SLOT,
+  AGENT_CEILING_SLOT,
   AGENT_CYCLE_NOTE,
-  AGENT_FELL_NOTE,
   AGENT_GONE_NOTE,
+  AGENT_MEMORY_SLOT,
+  AGENT_MODEL_SLOT,
   AGENT_NAME_SLOT,
+  AGENT_PROMPT_SLOT,
+  AGENT_TOO_LONG_NOTE,
+  AGENT_TOTAL_SLOT,
   AGENT_TOOL_INPUT_DESCRIPTION,
   AGENT_TOOL_INPUT_NAME,
   LLM_ASK_FAILED,
@@ -14,7 +20,13 @@ import {
   TOOL_SCHEMA_OBJECT,
   TOOL_SCHEMA_TYPES,
 } from "../constants";
-import { LLM_NO_ADDRESS, LLM_NO_KEY, LLM_PROVIDER_NOT_BUILT, LLM_PROVIDER_SILENT } from "../../../contracts";
+import {
+  LLM_NO_ADDRESS,
+  LLM_NO_KEY,
+  LLM_PROVIDER_NOT_BUILT,
+  LLM_PROVIDER_SILENT,
+  RECORD_GONE_NOTE,
+} from "../../../contracts";
 import { RUN_CALL_RAN, RUN_CALL_REFUSED, RUN_CALL_RUNNING, RUN_CALL_SAID_NO } from "../../../contracts";
 import { Refusal } from "../../../utils/refusals";
 import { AgentWay } from "./agent-way.service";
@@ -41,9 +53,12 @@ import type {
   ServerRunner,
   TurnCall,
   ReachableAgent,
+  ReadyAgent,
+  RunMemory,
   RunningTurn,
   SubTurn,
   ToolRunner,
+  TurnQuestion,
 } from "../interfaces";
 
 /** Runs one turn of an agent's chat: loops over calls up to the agent's maximum, streaming each piece. */
@@ -56,6 +71,8 @@ export class LlmService {
     private readonly voice: AgentVoice,
     private readonly tools: ToolRunner,
     private readonly servers: ServerRunner,
+    // The record, read for the shared memory of an agent called as a tool.
+    private readonly memory: RunMemory,
     private readonly arguments_: ToolArguments,
     // Every provider the app knows, by id.
     private readonly clients: Record<string, AgentClient>,
@@ -77,6 +94,8 @@ export class LlmService {
     servers: ProjectMcpServer[];
     /** Every agent reachable as a tool from this one, by id. */
     agents: ReachableAgent[];
+    runId: string | null;
+    questionId: string;
   }): Promise<AgentAnswer> {
     const client = this.clients[payload.providerId] ?? null;
 
@@ -102,6 +121,10 @@ export class LlmService {
         signal: stopping.signal,
         reachable: new Map(payload.agents.map((agent) => [agent.agentId, agent])),
         stack: new Set([payload.agentId]),
+        question: {
+          runId: payload.runId,
+          questionId: payload.questionId,
+        },
       });
     } finally {
       this.running.delete(payload.turnId);
@@ -167,15 +190,16 @@ export class LlmService {
           });
         }
       }
-    } catch {
+    } catch (failure) {
       if (turn.signal.aborted) {
         return ledger.answer({
           isStopped: true,
         });
       }
 
-      // A provider fault is thrown as a refusal the app knows, not reported.
-      throw new Refusal(LLM_ASK_FAILED);
+      // A provider fault is thrown as a refusal the app knows, not reported; the provider's own sentence rides after the
+      // code, and nothing else of the library's error object (its headers and cookies) leaves.
+      throw new Refusal(LLM_ASK_FAILED, messageOf(failure));
     }
   }
 
@@ -444,24 +468,37 @@ export class LlmService {
   }
 
   /**
-   * A sub-agent's whole turn for the one request: silent, under the caller's stop, added to the watched ring. A provider
-   * fault is the call's outcome, not the caller's fall.
+   * A sub-agent's whole turn for the one request: silent, under the caller's stop, added to the watched ring. With the
+   * shared memory it reads the caller's question; otherwise it gets the request alone. Whatever stops it — the record,
+   * the ceiling, the provider — is the call's outcome in its own words, not the caller's fall.
    */
   private async subTurn(asked: SubTurn): Promise<AgentTurnOutcome> {
     const { turn, agent, request, signal } = asked;
 
-    // Narrows to an agent that can run.
+    // Narrows to an agent that can run; one that cannot was refused before the call was made.
     if (agent.notReady !== null) {
-      return this.fell(agent);
+      return this.failed(agent.notReady);
     }
 
     const client = this.clients[agent.providerId] ?? null;
 
     if (client === null) {
-      return this.fell(agent);
+      return this.failed(LLM_PROVIDER_NOT_BUILT);
     }
 
     try {
+      const memory = await this.sharedFor(agent, turn.question);
+
+      if (memory === null) {
+        return this.failed(RECORD_GONE_NOTE);
+      }
+
+      const tooLong = this.tooLong(agent, memory, request);
+
+      if (tooLong !== null) {
+        return this.failed(tooLong);
+      }
+
       const held = await this.opened(client, agent.providerId);
       const answer = await this.turn({
         voicedAs: null,
@@ -469,7 +506,8 @@ export class LlmService {
         conversation: this.said(agent.systemPrompt, [
           {
             from: "person",
-            text: request,
+            // One input: the memory opens the request.
+            text: `${memory}${request}`,
           },
         ]),
         directory: turn.directory,
@@ -480,13 +518,14 @@ export class LlmService {
         signal,
         reachable: turn.reachable,
         stack: new Set([...turn.stack, agent.agentId]),
+        question: turn.question,
       });
 
       return {
         text: answer.text,
         isFailed: false,
       };
-    } catch {
+    } catch (failure) {
       // A stop is the caller's, not this agent's fault; the caller's loop ends on it next.
       if (signal.aborted) {
         return {
@@ -495,14 +534,43 @@ export class LlmService {
         };
       }
 
-      return this.fell(agent);
+      return this.failed(messageOf(failure));
     }
   }
 
-  /** A sub-agent that could not run to an answer. */
-  private fell(agent: ReachableAgent): AgentTurnOutcome {
+  /** The question's shared memory, read now, for an agent that has it; nothing otherwise. Null where the record lost it. */
+  private async sharedFor(agent: ReadyAgent, question: TurnQuestion): Promise<string | null> {
+    if (agent.memory !== "shared" || question.runId === null) {
+      return "";
+    }
+
+    return this.memory.sharedMemory(question.runId, question.questionId);
+  }
+
+  /** What would have gone, against the agent's model's ceiling, in characters; `null` where it fits. */
+  private tooLong(agent: ReadyAgent, memory: string, request: string): string | null {
+    const prompt = characters(agent.systemPrompt ?? "");
+    const remembered = characters(memory);
+    const asked = characters(request);
+    const total = prompt + remembered + asked;
+
+    if (total <= agent.contextCeiling) {
+      return null;
+    }
+
+    return AGENT_TOO_LONG_NOTE.replace(AGENT_NAME_SLOT, agent.name)
+      .replace(AGENT_MODEL_SLOT, agent.model)
+      .replace(AGENT_TOTAL_SLOT, String(total))
+      .replace(AGENT_PROMPT_SLOT, String(prompt))
+      .replace(AGENT_MEMORY_SLOT, String(remembered))
+      .replace(AGENT_ASKED_SLOT, String(asked))
+      .replace(AGENT_CEILING_SLOT, String(agent.contextCeiling));
+  }
+
+  /** A sub-agent's call that came to nothing, with the words of whatever stopped it. */
+  private failed(said: string): AgentTurnOutcome {
     return {
-      text: AGENT_FELL_NOTE.replace(AGENT_NAME_SLOT, agent.name),
+      text: said,
       isFailed: true,
     };
   }
@@ -640,4 +708,14 @@ export class LlmService {
       .map((part) => (typeof part === "object" && part !== null && "text" in part ? String(part.text) : ""))
       .join("");
   }
+}
+
+/** A text's length in code points, as the ceiling is counted on the screen. */
+function characters(text: string): number {
+  return [...text].length;
+}
+
+/** What a caught failure says: an error's message alone, never the object behind it. */
+function messageOf(failure: unknown): string {
+  return failure instanceof Error ? failure.message : String(failure);
 }

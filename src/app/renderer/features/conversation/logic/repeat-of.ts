@@ -29,7 +29,9 @@ export function repeatOf(
     runId: run.id,
     questionId,
     askedAt: stood.askedAt.getTime(),
-    notSentTo,
+    // A question with no step in the record went nowhere, so it goes again to whom it was put.
+    notSentTo: notSentTo ?? (run.walk.some((step) => step.questionId === questionId) ? null : stood.askedAgentId),
     asked: stood.asked,
+    attached: stood.attached,
   };
 }

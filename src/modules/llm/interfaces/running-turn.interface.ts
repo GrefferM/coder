@@ -3,6 +3,7 @@ import type { AIMessageChunk, BaseMessage } from "@langchain/core/messages";
 import type { Runnable } from "@langchain/core/runnables";
 import type { AgentTool, ReachableAgent } from "../../../contracts/llm";
 import type { ProjectMcpServer } from "../../../contracts/project/mcp-server.interface";
+import type { TurnQuestion } from "./turn-question.interface";
 
 /** One turn as it runs: the model with its tools bound, the conversation so far, and what its calls reach. */
 export interface RunningTurn {
@@ -20,4 +21,6 @@ export interface RunningTurn {
   reachable: Map<string, ReachableAgent>;
   /** The agents already running above this turn; calling one again would close a ring. */
   stack: ReadonlySet<string>;
+  /** The question the turn works under, whose shared memory an agent it calls may be given. */
+  question: TurnQuestion;
 }

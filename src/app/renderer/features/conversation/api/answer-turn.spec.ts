@@ -92,10 +92,15 @@ function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
       prompt: null,
     },
     asked: "Розбий текст на тези",
-    thread: [],
+    memory: {
+      thread: [],
+      shared: "",
+    },
     catalogue: NOTHING_DECLARED,
     agents: [],
     directory: "/tmp/coder",
+    runId: "run-1",
+    questionId: "question-1",
     ...patch,
   };
 }
@@ -162,7 +167,81 @@ describe("answerTurn · before the model is troubled", () => {
       // Every declared server's reach rides along, so a granted function finds its server by id.
       servers: [],
       agents: [],
+      // The row and question the turn works under, for an agent it calls with the shared memory.
+      runId: "run-1",
+      questionId: "question-1",
     });
+  });
+});
+
+describe("answerTurn · the memory it goes with", () => {
+  it("puts the agent's own thread ahead of the words, as pairs of its own", async () => {
+    const invoke = machine(said());
+
+    await answerTurn(
+      turn({
+        asked: "Розбий текст",
+        memory: {
+          thread: [
+            {
+              from: "person",
+              text: "Старе",
+            },
+            {
+              from: "agent",
+              text: "Відповів",
+            },
+          ],
+          shared: "",
+        },
+      }),
+    );
+
+    expect(invoke).toHaveBeenCalledWith(
+      ASK_AGENT_CHANNEL,
+      expect.objectContaining({
+        messages: [
+          {
+            from: "person",
+            text: "Старе",
+          },
+          {
+            from: "agent",
+            text: "Відповів",
+          },
+          {
+            from: "person",
+            text: "Розбий текст",
+          },
+        ],
+      }),
+    );
+  });
+
+  it("opens the turn's own words with the shared memory, in one input and not a message of its own", async () => {
+    const invoke = machine(said());
+
+    await answerTurn(
+      turn({
+        asked: "Розбий текст",
+        memory: {
+          thread: [],
+          shared: "ЗАГАЛЬНА ПАМ'ЯТЬ\n\nТВОЄ ЗАВДАННЯ:\n",
+        },
+      }),
+    );
+
+    expect(invoke).toHaveBeenCalledWith(
+      ASK_AGENT_CHANNEL,
+      expect.objectContaining({
+        messages: [
+          {
+            from: "person",
+            text: "ЗАГАЛЬНА ПАМ'ЯТЬ\n\nТВОЄ ЗАВДАННЯ:\nРозбий текст",
+          },
+        ],
+      }),
+    );
   });
 });
 

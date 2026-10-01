@@ -75,6 +75,27 @@ describe("agentRegistry", () => {
           agentId: "root",
         },
       ],
+      memory: "own",
+      contextCeiling: 700_000,
+    });
+  });
+
+  it("hands on how an agent remembers, since called as a tool it reads the shared memory only where that is its own", () => {
+    const config = aConfig({
+      models: [aModel()],
+      agents: [
+        granting("root", ["leaf"]),
+        granting("leaf", [], {
+          memory: "shared",
+        }),
+      ],
+    });
+    const [root] = config.agents;
+
+    const [, leaf] = agentRegistry(root, config, [], targetsOf(config));
+
+    expect(leaf).toMatchObject({
+      memory: "shared",
     });
   });
 

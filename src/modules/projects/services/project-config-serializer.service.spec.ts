@@ -224,16 +224,20 @@ describe("ProjectConfigSerializer", () => {
     assert.equal(config.agents[0].waitsForAll, false);
   });
 
-  it("reads an agent without the memory key as keeping its thread", async () => {
+  it("reads an agent without the memory key as keeping its own", async () => {
     const config = await serializer.parse(VALID_YAML);
 
-    assert.equal(config.agents[0].keepsThread, true);
+    assert.equal(config.agents[0].memory, "own");
   });
 
-  it("keeps an agent set to forget the conversation", async () => {
-    const config = await serializer.parse(VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    keepsThread: false"));
+  it("keeps an agent set to the run's shared memory", async () => {
+    const config = await serializer.parse(VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    memory: shared"));
 
-    assert.equal(config.agents[0].keepsThread, false);
+    assert.equal(config.agents[0].memory, "shared");
+  });
+
+  it("refuses a memory the app does not know", async () => {
+    await assert.rejects(() => serializer.parse(VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    memory: all")));
   });
 
   it("refuses a temperature outside the bounds every provider takes", async () => {

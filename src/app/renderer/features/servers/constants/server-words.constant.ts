@@ -35,6 +35,8 @@ export const SERVER_SHOW_CALL_LABEL = "ПОКАЗАТИ ВИКЛИК";
  * no id of its own.
  */
 export const SERVER_CALL_LOST_LABEL = "ЗАПИС ДО ЦЬОГО ВИКЛИКУ НЕ ВЕДЕ";
+/** The record could not be asked where the call stands; what it said follows. */
+export const SERVER_CALL_UNREAD_LABEL = "ЗАПИС НЕ ПРОЧИТАВСЯ";
 /** The handshake ceiling shown while waiting; the minutes are read off `MCP_CONNECT_TIMEOUT_MS`. */
 export const SERVER_STARTING_CEILING_HEAD = "СПИНИМО ЧЕРЕЗ ";
 export const SERVER_STARTING_CEILING_TAIL = " ХВ";

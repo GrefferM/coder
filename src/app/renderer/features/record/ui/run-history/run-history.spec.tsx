@@ -5,7 +5,6 @@ import { RunHistory } from "./run-history";
 import {
   RUN_HISTORY_EMPTY_NOTE,
   RUN_HISTORY_SWEEP_NOTE,
-  RUN_HISTORY_FAILED_NOTE,
   RUN_HISTORY_FORGET_BACKGROUND_COLOR,
   RUN_HISTORY_FORGET_LABEL,
   RUN_HISTORY_OPEN_HINT,
@@ -81,7 +80,7 @@ describe("the search over the history", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -104,7 +103,7 @@ describe("the search over the history", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -124,7 +123,7 @@ describe("the search over the history", () => {
         query="кеш"
         hits={[hit()]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -149,7 +148,7 @@ describe("the search over the history", () => {
         query="кеш"
         hits={[hit()]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -176,7 +175,7 @@ describe("the search over the history", () => {
           }),
         ]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -198,7 +197,7 @@ describe("the search over the history", () => {
         query="кеш"
         hits={[found]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={onOpen}
         onForget={() => {}}
       />,
@@ -223,7 +222,7 @@ describe("the search over the history", () => {
         query="кеш"
         hits={[hit()]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -243,7 +242,7 @@ describe("the search over the history", () => {
         query="кеш"
         hits={[hit()]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -260,7 +259,7 @@ describe("the search over the history", () => {
         query="кеш"
         hits={[hit()]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -287,7 +286,7 @@ describe("the search over the history", () => {
           }),
         ]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -321,7 +320,7 @@ describe("the search over the history", () => {
           }),
         ]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -345,7 +344,7 @@ describe("the search over the history", () => {
         query=""
         hits={[]}
         onQuery={onQuery}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -364,7 +363,7 @@ describe("the search over the history", () => {
         query="ялина"
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -393,7 +392,7 @@ describe("the search over the history", () => {
         query="кеш"
         hits={many}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -421,7 +420,7 @@ describe("the search over the history", () => {
           }),
         ]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -456,7 +455,7 @@ describe("the search over the history", () => {
           }),
         ]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -475,7 +474,7 @@ describe("the search over the history", () => {
         query="кеш"
         hits={[hit()]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -495,7 +494,7 @@ describe("the search over the history", () => {
         query="кеш"
         hits={[hit()]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -515,7 +514,7 @@ describe("the search over the history", () => {
         query="мігра"
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -536,7 +535,7 @@ describe("the search over the history", () => {
         query=""
         hits={[]}
         onQuery={onQuery}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -552,7 +551,7 @@ describe("the search over the history", () => {
         query="кеш"
         hits={[hit()]}
         onQuery={onQuery}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -572,7 +571,7 @@ describe("the search over the history", () => {
         query="мігра"
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -585,7 +584,7 @@ describe("the search over the history", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -604,7 +603,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -621,7 +620,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -638,7 +637,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -656,7 +655,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -681,7 +680,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={onOpen}
         onForget={() => {}}
       />,
@@ -706,7 +705,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -730,7 +729,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -760,7 +759,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -785,7 +784,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={onOpen}
         onForget={onForget}
       />,
@@ -811,7 +810,7 @@ describe("RunHistory", () => {
       <RunHistory
         onOpen={() => {}}
         onForget={() => {}}
-        isFailed={false}
+        refusal={null}
         agents={AGENTS}
         query=""
         hits={[]}
@@ -835,7 +834,7 @@ describe("RunHistory", () => {
       <RunHistory
         onOpen={() => {}}
         onForget={() => {}}
-        isFailed={false}
+        refusal={null}
         agents={AGENTS}
         query=""
         hits={[]}
@@ -856,7 +855,7 @@ describe("RunHistory", () => {
       <RunHistory
         onOpen={() => {}}
         onForget={() => {}}
-        isFailed={false}
+        refusal={null}
         agents={AGENTS}
         query=""
         hits={[]}
@@ -894,7 +893,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -913,7 +912,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -936,7 +935,7 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed={false}
+        refusal={null}
         onOpen={() => {}}
         onForget={() => {}}
       />,
@@ -949,7 +948,7 @@ describe("RunHistory", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("says a record it could not read is not an empty one", () => {
+  it("says what the record answered when it could not be read, rather than calling it empty", () => {
     render(
       <RunHistory
         runs={[]}
@@ -957,13 +956,13 @@ describe("RunHistory", () => {
         query=""
         hits={[]}
         onQuery={() => {}}
-        isFailed
+        refusal="Запис не прочитався · SQLITE_CANTOPEN: unable to open database file"
         onOpen={() => {}}
         onForget={() => {}}
       />,
     );
 
-    expect(screen.getByText(RUN_HISTORY_FAILED_NOTE)).toBeInTheDocument();
+    expect(screen.getByText("Запис не прочитався · SQLITE_CANTOPEN: unable to open database file")).toBeInTheDocument();
     expect(screen.queryByText(RUN_HISTORY_EMPTY_NOTE)).not.toBeInTheDocument();
   });
 });

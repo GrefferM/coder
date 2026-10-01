@@ -3,6 +3,7 @@ import type {
   RunCallEntity,
   RunEntity,
   RunHandoffEntity,
+  RunQuestionAttachmentEntity,
   RunQuestionEntity,
   RunStepAgentEntity,
   RunStepEntity,
@@ -11,6 +12,7 @@ import type {
   RunStepSettingEntity,
 } from "../entities";
 import type {
+  NewAttachment,
   NewCall,
   NewFeed,
   NewGiven,
@@ -23,10 +25,15 @@ import type {
   RunStore,
   RunTables,
 } from "../interfaces";
+import { runTablesOf } from "./run-tables";
 
 /** The record's questions answered over TypeORM; the only file in the module that knows of the ORM. */
 export class TypeormRunStore implements RunStore {
   constructor(private readonly tables: RunTables) {}
+
+  async inOne<T>(work: (store: RunStore) => Promise<T>): Promise<T> {
+    return this.tables.runs.manager.transaction((manager) => work(new TypeormRunStore(runTablesOf(manager))));
+  }
 
   async openRun(run: NewRun): Promise<RunEntity> {
     return this.tables.runs.save({
@@ -121,6 +128,52 @@ export class TypeormRunStore implements RunStore {
     await this.tables.questions.delete({
       run: {
         id: runId,
+      },
+    });
+  }
+
+  async attachTo(attachment: NewAttachment): Promise<void> {
+    await this.tables.attachments.save({
+      place: attachment.place,
+      path: attachment.path,
+      name: attachment.name,
+      kind: attachment.kind,
+      text: attachment.text,
+      binaries: attachment.binaries,
+      question: {
+        id: attachment.questionId,
+      },
+    });
+  }
+
+  async attachedTo(questionIds: string[]): Promise<RunQuestionAttachmentEntity[]> {
+    if (questionIds.length === 0) {
+      return [];
+    }
+
+    return this.tables.attachments.find({
+      where: {
+        question: {
+          id: In(questionIds),
+        },
+      },
+      // The question is read off each attachment; relations the query does not name come back empty.
+      relations: {
+        question: true,
+      },
+    });
+  }
+
+  async dropAttachedOf(runId: string): Promise<void> {
+    const asked = await this.askedIn(runId);
+
+    if (asked.length === 0) {
+      return;
+    }
+
+    await this.tables.attachments.delete({
+      question: {
+        id: In(asked.map((question) => question.id)),
       },
     });
   }
@@ -265,6 +318,7 @@ export class TypeormRunStore implements RunStore {
       prompt: given.prompt,
       temperature: given.temperature,
       maxCalls: given.maxCalls,
+      memoryLength: given.memoryLength,
       step: {
         id: given.stepId,
       },

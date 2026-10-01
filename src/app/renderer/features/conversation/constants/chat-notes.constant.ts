@@ -7,9 +7,6 @@ export const CHAT_FAILED_NOTE = "Відповідь не прийшла";
 /** Separates the app's word about a fall from the provider's own sentence. */
 export const CHAT_FELL_SEPARATOR = " · ";
 
-/** How the bridge and `Error` prefix a fault; neither is the provider talking. */
-export const IPC_WRAPPER_PATTERN = /^Error invoking remote method '[^']*':\s*/;
-export const THROWN_PREFIX = /^Error:\s*/;
 export const CHAT_STOPPED_NOTE = "Зупинено";
 export const CHAT_SAID_NOTHING_NOTE = "Модель не сказала нічого";
 

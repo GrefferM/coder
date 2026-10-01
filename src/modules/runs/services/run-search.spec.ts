@@ -34,6 +34,7 @@ function opening(patch: Partial<OpenRunDto> = {}): OpenRunDto {
     startedByAgentColor: "#6fd3d8",
     startedAt: ASKED_AT,
     asked: "Знайди md-файли",
+    attached: [],
     ...patch,
   };
 }
@@ -57,6 +58,7 @@ function step(runId: string, patch: Partial<AddStepDto> = {}): AddStepDto {
     prompt: "Ти шукаєш файли.",
     temperature: 0,
     maxCalls: 8,
+    memoryLength: 0,
     asked: "Знайди md-файли",
     said: "Нічого не знайшов.",
     state: "done",

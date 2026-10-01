@@ -10,8 +10,28 @@ import {
   RUN_STEP_STOPPED,
   RUN_STOPPED,
   addedMoney,
+  askedWithAttached,
 } from "../../../contracts";
-import type { RunCallEntity, RunEntity, RunQuestionEntity, RunStepEntity } from "../entities";
+import {
+  SHARED_MEMORY_ANSWER,
+  SHARED_MEMORY_BLOCK_SEPARATOR,
+  SHARED_MEMORY_FROM_SLOT,
+  SHARED_MEMORY_HEADING_SEPARATOR,
+  SHARED_MEMORY_NAMES_SEPARATOR,
+  SHARED_MEMORY_NAME_SLOT,
+  SHARED_MEMORY_OPENING,
+  SHARED_MEMORY_PERSON,
+  SHARED_MEMORY_QUESTION,
+  SHARED_MEMORY_TASK,
+} from "../constants";
+import type {
+  RunCallEntity,
+  RunEntity,
+  RunQuestionAttachmentEntity,
+  RunQuestionEntity,
+  RunStepEntity,
+} from "../entities";
+import type { AttachmentKind, PackedAttachment } from "../../../contracts";
 import type { CallPlace, ChatStopReason, Run, RunStore, RunWhole, WholeCall, WholeStep } from "../interfaces";
 
 /** The record read back: the run list and one run whole. */
@@ -47,6 +67,7 @@ export class RunReader {
     }
 
     const asked = await this.store.askedIn(id);
+    const attached = await this.store.attachedTo(asked.map((question) => question.id));
 
     return {
       ...this.toRun(row, stood, asked),
@@ -58,9 +79,61 @@ export class RunReader {
         askedAt: question.askedAt,
         // A question without an addressee falls back to the agent the run started from.
         askedAgentId: question.askedAgentId ?? row.startedByAgentId,
+        attached: this.attachedOf(attached, question.id),
       })),
       walk,
     };
+  }
+
+  /**
+   * What has happened to one question so far, as an agent with the shared memory reads it: the question with its files,
+   * then every answered turn in the order it landed and whom its work came from; fallen, cut or stopped turns and calls
+   * are left out. Empty while nothing has answered; null for a run or a question the record does not hold.
+   */
+  async sharedMemory(runId: string, questionId: string): Promise<string | null> {
+    const row = await this.store.runById(runId);
+
+    if (row === null) {
+      return null;
+    }
+
+    const question = (await this.store.askedIn(runId)).find((one) => one.id === questionId) ?? null;
+
+    if (question === null) {
+      return null;
+    }
+
+    const walk = (await this.store.walkOf(runId)).sort((one, other) => one.place - other.place);
+    const answered = walk.filter((step) => step.question.id === questionId && step.state === RUN_STEP_DONE);
+
+    if (answered.length === 0) {
+      return "";
+    }
+
+    // Names as they stood when each turn ran; a supplier may be any step of the run.
+    const names = new Map((await this.store.whoIn(walk.map((step) => step.id))).map((who) => [who.step.id, who.name]));
+    const feeds = await this.store.feedsIn(answered.map((step) => step.id));
+    const attached = this.attachedOf(await this.store.attachedTo([questionId]), questionId);
+    const asked = memoryBlock(
+      SHARED_MEMORY_QUESTION.replace(SHARED_MEMORY_NAME_SLOT, question.askedAgentName ?? row.startedByAgentName),
+      askedWithAttached(question.asked, attached),
+    );
+    const answers = answered.map((step) => {
+      const from = feeds
+        .filter((feed) => feed.step.id === step.id)
+        .sort((one, other) => one.place - other.place)
+        .map((feed) => names.get(feed.from.id) ?? "");
+
+      return memoryBlock(
+        SHARED_MEMORY_ANSWER.replace(SHARED_MEMORY_NAME_SLOT, names.get(step.id) ?? "").replace(
+          SHARED_MEMORY_FROM_SLOT,
+          from.length === 0 ? SHARED_MEMORY_PERSON : from.join(SHARED_MEMORY_NAMES_SEPARATOR),
+        ),
+        step.said,
+      );
+    });
+
+    return [SHARED_MEMORY_OPENING, asked, ...answers, SHARED_MEMORY_TASK].join(SHARED_MEMORY_BLOCK_SEPARATOR);
   }
 
   /** Where one call stands, by its id; null for a call the record does not hold (e.g. its run was forgotten). */
@@ -106,6 +179,7 @@ export class RunReader {
       prompt: given?.prompt ?? "",
       temperature: given?.temperature ?? null,
       maxCalls: given?.maxCalls ?? null,
+      memoryLength: given?.memoryLength ?? 0,
       asked: row.asked,
       said: row.said,
       state: row.state,
@@ -123,6 +197,20 @@ export class RunReader {
       endedAt: row.endedAt,
       calls: made.sort((one, other) => one.place - other.place).map((call) => this.toCall(call)),
     };
+  }
+
+  /** One question's attachments as they went with it, in the order they were glued in. */
+  private attachedOf(rows: RunQuestionAttachmentEntity[], questionId: string): PackedAttachment[] {
+    return rows
+      .filter((row) => row.question.id === questionId)
+      .sort((one, other) => one.place - other.place)
+      .map((row) => ({
+        path: row.path,
+        name: row.name,
+        kind: <AttachmentKind>row.kind,
+        text: row.text,
+        binaries: <string[]>JSON.parse(row.binaries),
+      }));
   }
 
   private toCall(row: RunCallEntity): WholeCall {
@@ -221,4 +309,9 @@ export class RunReader {
 /** The reason is stored as text and only two values are known; anything else counts as a link that went through. */
 function stopReasonOf(said: string | null): ChatStopReason | null {
   return said !== null && CHAT_STOP_REASONS.includes(<ChatStopReason>said) ? <ChatStopReason>said : null;
+}
+
+/** One block of the shared memory: its heading, then its words. */
+function memoryBlock(heading: string, words: string): string {
+  return `${heading}${SHARED_MEMORY_HEADING_SEPARATOR}${words}`;
 }

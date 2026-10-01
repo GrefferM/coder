@@ -4,6 +4,7 @@ export * from "./run-call-record.interface";
 export * from "./run-handoff-record.interface";
 export * from "./run-module.interface";
 export * from "./run-opened.interface";
+export * from "./run-question-attachment-record.interface";
 export * from "./run-question-record.interface";
 export * from "./run-question.interface";
 export * from "./run-record.interface";

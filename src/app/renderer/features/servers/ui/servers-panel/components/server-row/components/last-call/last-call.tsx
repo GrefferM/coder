@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { lastCallLine } from "../../../../../../words";
 import { timeLabel } from "../../../../../../../../utils/dates";
+import { thrownWords } from "../../../../../../../../utils/errors";
 import {
   SERVER_CALL_LOST_LABEL,
+  SERVER_CALL_UNREAD_LABEL,
   SERVER_FACTS_SEPARATOR,
   SERVER_FELL_COLOR,
   SERVER_LAST_CALL_FELL_LABEL,
@@ -43,6 +45,8 @@ export function LastCall({ failure, isNews, onShow }: LastCallProps) {
    * either.
    */
   const [isLost, setIsLost] = useState(false);
+  /** What the record said when it could not be asked; the press stays, since it may answer next time. */
+  const [refusal, setRefusal] = useState<string | null>(null);
 
   return (
     <div
@@ -106,6 +110,19 @@ export function LastCall({ failure, isNews, onShow }: LastCallProps) {
         >
           {lastCallLine(failure)}
         </span>
+        {refusal !== null && (
+          <span
+            className="font-monospace"
+            style={{
+              fontSize: LAST_CALL_LABEL_FONT_SIZE_PX,
+              letterSpacing: LAST_CALL_LABEL_LETTER_SPACING_PX,
+              color: SERVER_FELL_COLOR,
+              overflowWrap: "anywhere",
+            }}
+          >
+            {refusal}
+          </span>
+        )}
         {/* The full sentence stands in the call's own card; this hands the chat over to it. */}
         {isLost ? (
           <span
@@ -122,7 +139,16 @@ export function LastCall({ failure, isNews, onShow }: LastCallProps) {
           <span className="align-self-start">
             <TextAction
               label={SERVER_SHOW_CALL_LABEL}
-              onClick={() => void onShow().then((shown) => setIsLost(!shown))}
+              onClick={() =>
+                void onShow().then(
+                  (shown) => {
+                    setRefusal(null);
+                    setIsLost(!shown);
+                  },
+                  (failure: unknown) =>
+                    setRefusal(`${SERVER_CALL_UNREAD_LABEL}${SERVER_FACTS_SEPARATOR}${thrownWords(failure)}`),
+                )
+              }
             />
           </span>
         )}

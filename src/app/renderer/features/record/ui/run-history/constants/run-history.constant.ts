@@ -16,8 +16,6 @@ import type { RunStateDot } from "../interfaces";
 export const RUN_HISTORY_PADDING = "16px";
 export const RUN_HISTORY_GAP_PX = 10;
 export const RUN_HISTORY_EMPTY_NOTE = "Історія порожня";
-/** An unread record and an empty one look alike but differ. */
-export const RUN_HISTORY_FAILED_NOTE = "Не вдалося прочитати історію цієї машини.";
 export const RUN_HISTORY_EMPTY_COLOR = SECOND_LEVEL_TEXT_COLOR;
 /** The list's quiet lines: the closing rule and the failed-read note. */
 export const RUN_HISTORY_NOTE_COLOR = QUIET_MARK_COLOR;

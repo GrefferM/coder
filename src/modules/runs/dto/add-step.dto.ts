@@ -82,6 +82,10 @@ export class AddStepDto {
   @Min(0)
   declare maxCalls: number | null;
 
+  @IsInt()
+  @Min(0)
+  declare memoryLength: number;
+
   @IsString()
   declare asked: string;
 

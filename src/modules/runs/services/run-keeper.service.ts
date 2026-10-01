@@ -91,6 +91,7 @@ export class RunKeeper {
     }
 
     await this.store.dropStepsOf(id);
+    await this.store.dropAttachedOf(id);
     await this.store.dropQuestionsOf(id);
     await this.store.dropRun(id);
   }

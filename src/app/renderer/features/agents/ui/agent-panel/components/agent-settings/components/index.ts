@@ -2,6 +2,7 @@ export * from "./grant-view";
 export * from "./lost-grants";
 export * from "./lost-model";
 export * from "./lost-prompt";
+export * from "./memory-section";
 export * from "./settings-numbers";
 export * from "./settings-ties";
 export * from "./source-glyph";

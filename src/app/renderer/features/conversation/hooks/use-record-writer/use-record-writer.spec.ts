@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { useRecordWriter } from "./use-record-writer";
 import { ASK_AGAIN_CHANNEL, CLOSE_RUN_CHANNEL, OPEN_RUN_CHANNEL } from "../../../../../../contracts";
-import type { Agent } from "../../../../interfaces";
+import type { Agent, PackedAttachment } from "../../../../interfaces";
 import type { RunLedger } from "../../interfaces";
 import { standInBridge } from "../../../../testing";
 import { anAgent } from "../../../../testing";
@@ -17,6 +17,14 @@ const EDITOR: Agent = anAgent({
 });
 
 /** One walk's book, as the machine hands it to the writer. */
+const NOTES: PackedAttachment = {
+  path: "/tmp/notes.md",
+  name: "notes.md",
+  kind: "file",
+  text: "=== notes.md ===\n# Нотатки",
+  binaries: [],
+};
+
 function ledger(walkId: string, runId: string | null = null): RunLedger {
   return {
     walkId,
@@ -86,8 +94,12 @@ describe("useRecordWriter · the row a question is written into", () => {
     const { result } = writer();
     const second = ledger("walk-2");
 
-    act(() => result.current.askQuestion(ledger("walk-1"), "/tmp", EDITOR, "Перше", "walk-1"));
-    act(() => result.current.askQuestion(second, "/tmp", EDITOR, "Друге", "walk-2"));
+    act(() => {
+      void result.current.askQuestion(ledger("walk-1"), "/tmp", EDITOR, "Перше", [], "walk-1");
+    });
+    act(() => {
+      void result.current.askQuestion(second, "/tmp", EDITOR, "Друге", [NOTES], "walk-2");
+    });
     act(() => result.current.forgetOpening());
     act(() => release(OPEN_RUN_CHANNEL));
 
@@ -96,6 +108,8 @@ describe("useRecordWriter · the row a question is written into", () => {
     expect(sent[ASK_AGAIN_CHANNEL]?.[0]).toMatchObject({
       runId: "run-1",
       asked: "Друге",
+      // The files go into the record with the question they were sent with.
+      attached: [NOTES],
     });
     expect(second.runId).toBe("run-1");
   });
@@ -108,8 +122,12 @@ describe("useRecordWriter · what a walk waits for", () => {
     const { result } = writer();
     let isOtherSettled = false;
 
-    act(() => result.current.closeWalk(ledger("walk-1", "run-1"), "walk-1", 1_000));
-    act(() => result.current.askQuestion(ledger("walk-2", "run-2"), "/tmp", EDITOR, "Друге", "walk-2"));
+    act(() => {
+      void result.current.closeWalk(ledger("walk-1", "run-1"), "walk-1", 1_000);
+    });
+    act(() => {
+      void result.current.askQuestion(ledger("walk-2", "run-2"), "/tmp", EDITOR, "Друге", [], "walk-2");
+    });
     void result.current.settled("walk-1").then(() => {
       isOtherSettled = true;
     });
@@ -123,5 +141,57 @@ describe("useRecordWriter · what a walk waits for", () => {
 
     // The other one settles when its own write comes back.
     await waitFor(() => expect(isOtherSettled).toBe(true));
+  });
+});
+
+describe("useRecordWriter · a write the record refuses", () => {
+  it("rejects with what the record said, and the next question opens a row again", async () => {
+    let isRefusing = true;
+    const invoke = vi.fn(async (channel: string) => {
+      if (channel === OPEN_RUN_CHANNEL && isRefusing) {
+        throw new Error("SQLITE_FULL: database or disk is full");
+      }
+
+      return channel === OPEN_RUN_CHANNEL
+        ? {
+            runId: "run-1",
+            questionId: "question-walk-2",
+          }
+        : undefined;
+    });
+
+    standInBridge({
+      invoke,
+    });
+
+    const { result } = writer();
+
+    await expect(result.current.askQuestion(ledger("walk-1"), "/tmp", EDITOR, "Перше", [], "walk-1")).rejects.toThrow(
+      "SQLITE_FULL: database or disk is full",
+    );
+
+    isRefusing = false;
+
+    const second = ledger("walk-2");
+
+    await result.current.askQuestion(second, "/tmp", EDITOR, "Перше", [], "walk-2");
+
+    expect(second.runId).toBe("run-1");
+    expect(invoke.mock.calls.filter(([channel]) => channel === OPEN_RUN_CHANNEL)).toHaveLength(2);
+  });
+
+  it("settles a walk whose write was refused, so a reader waiting on it is not left hanging", async () => {
+    standInBridge({
+      invoke: vi.fn(async () => {
+        throw new Error("database is locked");
+      }),
+    });
+
+    const { result } = writer();
+
+    await expect(result.current.closeWalk(ledger("walk-1", "run-1"), "walk-1", 1_000)).rejects.toThrow(
+      "database is locked",
+    );
+    await expect(result.current.settled("walk-1")).resolves.toBeUndefined();
   });
 });

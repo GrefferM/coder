@@ -5,6 +5,7 @@ import type { ChatCost } from "./chat-cost.interface";
 import type { IncomingWork } from "./incoming-work.interface";
 import type { LinkOut } from "./link-out.interface";
 import type { TurnAnswer } from "./turn-answer.interface";
+import type { WalkClosing } from "./walk-closing.interface";
 import type { RunUnfinished, WholeStep } from "../../record";
 
 /**
@@ -52,6 +53,8 @@ export type WalkEvent =
       startAgentId: string;
       /** The words the turn was put with, as the card and record take them. */
       asked: string;
+      /** Characters of memory the turn carried ahead of them. */
+      memoryLength: number;
       answer: TurnAnswer;
       /** The card's id, minted by the adapter. */
       saidId: string;
@@ -89,6 +92,20 @@ export type WalkEvent =
   | { kind: "stopped"; runKey: string | null }
   /** The row this walk's question opened; all the walk's words are written into it. */
   | { kind: "rowOpened"; runKey: string; runId: string }
+  /** The walk's question is in the record; its first turn may go. */
+  | { kind: "questionWritten"; runKey: string }
+  /** The record refused the walk's question; nothing of the walk went. */
+  | { kind: "questionUnsaved"; runKey: string; failure: string }
+  /** A turn's step is in the record; its lines may go out. */
+  | { kind: "stepWritten"; runKey: string; saidId: string }
+  /** The record refused a turn's step; the walk stops there. */
+  | { kind: "stepUnsaved"; runKey: string; saidId: string; failure: string }
+  /** The record refused to stamp the walk's end. */
+  | { kind: "closeUnsaved"; runKey: string; closing: WalkClosing; failure: string }
+  /** The walk's end is stamped after all. */
+  | { kind: "walkClosed"; runKey: string }
+  /** The record could not be read for a repeat pressed under this card. */
+  | { kind: "recordUnread"; saidId: string; failure: string }
   /** The stream was emptied; its walks run on into the record and draw nothing. */
   | { kind: "putAway"; stream: string }
   /** «СПИТАТИ ЩЕ РАЗ» was pressed under one turn; the record is read to find what to resume. */
@@ -112,4 +129,6 @@ export type WalkEvent =
       notSentTo: string | null;
       /** That question's words, for the one case where the record has no step to rerun. */
       asked: string;
+      /** The files and folders sent with it, from the record. */
+      attached: PackedAttachment[];
     };

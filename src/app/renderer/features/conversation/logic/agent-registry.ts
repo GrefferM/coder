@@ -76,5 +76,8 @@ function reachableOf(
     answerCeiling: model.answerCeiling,
     systemPrompt: stands.prompt?.text ?? null,
     tools: agentTools(agent.tools, targets),
+    // Called as a tool it is given the question's shared memory, or the request alone; both weighed against this.
+    memory: agent.memory,
+    contextCeiling: model.contextCeiling,
   };
 }

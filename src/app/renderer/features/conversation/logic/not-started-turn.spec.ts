@@ -29,6 +29,7 @@ describe("notStartedTurn", () => {
     const wouldGo: TurnLength = {
       prompt: 400,
       asked: 720_000,
+      memory: 0,
       total: 720_400,
       ceiling: 700_000,
     };

@@ -1,9 +1,11 @@
-import { handleOf, sourceOf } from "../../../contracts";
+import { AGENT_MEMORIES, handleOf, sourceOf } from "../../../contracts";
+import type { AgentMemory } from "../../../contracts";
 import {
   ArrayUnique,
   IsArray,
   IsBoolean,
   IsHexColor,
+  IsIn,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -56,9 +58,8 @@ export class ProjectAgentDto {
   @IsBoolean()
   declare waitsForAll: boolean;
 
-  // Where true, the agent's earlier turns of the conversation go ahead of its input.
-  @IsBoolean()
-  declare keepsThread: boolean;
+  @IsIn(AGENT_MEMORIES)
+  declare memory: AgentMemory;
 
   @IsNumber()
   declare x: number;

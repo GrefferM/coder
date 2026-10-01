@@ -27,6 +27,7 @@ import {
   PROJECT_CONFIG_VERSION,
 } from "../constants";
 import { LINKS_MAKE_RING, LINKS_REPEAT, PROJECT_FILE_BROKEN, PROJECT_FROM_NEWER_BUILD } from "../../../contracts";
+import type { AgentMemory } from "../../../contracts";
 import { brokenPlace } from "../logic";
 import { Refusal } from "../../../utils/refusals";
 
@@ -202,8 +203,8 @@ export class ProjectConfigSerializer {
     agent.isActive = <boolean>source.isActive;
     // An absent mode defaults to waiting for all.
     agent.waitsForAll = typeof source.waitsForAll === "boolean" ? source.waitsForAll : true;
-    // An absent memory defaults to keeping the thread.
-    agent.keepsThread = typeof source.keepsThread === "boolean" ? source.keepsThread : true;
+    // An absent memory is the agent's own; any other word is left for the validator to refuse.
+    agent.memory = <AgentMemory>(source.memory ?? "own");
     agent.x = <number>source.x;
     agent.y = <number>source.y;
     agent.maxCalls = written(source.maxCalls, AGENT_MAX_CALLS_LEAST);

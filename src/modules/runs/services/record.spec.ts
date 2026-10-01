@@ -79,6 +79,7 @@ function step(runId: string, patch: Partial<AddStepDto> = {}): AddStepDto {
     prompt: "Ти шукаєш файли.",
     temperature: 0,
     maxCalls: 8,
+    memoryLength: 0,
     asked: "Знайди md-файли",
     said: "ЗНАЙДЕНО\n- report.md",
     state: "done",
@@ -134,6 +135,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -156,6 +158,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -166,6 +169,7 @@ describe("the record", () => {
       asked: "А тепер постав рев'ювера",
       askedAgentId: TELLER,
       askedAgentName: "Рев'юер",
+      attached: [],
       askedAt: ASKED_AT + 1_000,
     });
 
@@ -184,6 +188,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -194,6 +199,7 @@ describe("the record", () => {
       asked: "А тепер постав рев'ювера",
       askedAgentId: TELLER,
       askedAgentName: "Рев'юер",
+      attached: [],
       askedAt: ASKED_AT + 1_000,
     });
 
@@ -222,6 +228,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -241,6 +248,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -274,6 +282,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -303,6 +312,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -323,6 +333,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -356,6 +367,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -384,6 +396,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -414,6 +427,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -436,6 +450,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -473,6 +488,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -500,6 +516,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -526,6 +543,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -549,6 +567,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -578,6 +597,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -609,6 +629,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -641,6 +662,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -665,6 +687,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Перше",
     });
@@ -674,6 +697,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Друге",
     });
@@ -714,6 +738,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -745,6 +770,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT - HISTORY_DAY_MS,
       asked: "Перший",
     });
@@ -754,6 +780,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Другий",
     });
@@ -764,6 +791,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Чужий",
     });
@@ -782,6 +810,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -813,6 +842,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -835,6 +865,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Іде",
     });
@@ -844,6 +875,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Скінчився",
     });
@@ -867,6 +899,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -878,6 +911,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Чужий",
     });
@@ -894,6 +928,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT - HISTORY_DAY_MS,
       asked: "Знайди md-файли",
     });
@@ -909,6 +944,7 @@ describe("the record", () => {
       asked: "А тепер постав рев'ювера",
       askedAgentId: SEEKER,
       askedAgentName: "SEEKER",
+      attached: [],
       askedAt: ASKED_AT,
     });
 
@@ -930,6 +966,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT - HISTORY_DAY_MS,
       asked: "Давній",
     });
@@ -944,6 +981,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT - 9_000,
       asked: "Пізніший",
     });
@@ -953,6 +991,7 @@ describe("the record", () => {
       asked: "Давній, спитаний знову",
       askedAgentId: SEEKER,
       askedAgentName: "SEEKER",
+      attached: [],
       askedAt: ASKED_AT,
     });
 
@@ -969,6 +1008,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -1001,6 +1041,7 @@ describe("the record", () => {
         asked: "У порожнечу",
         askedAgentId: SEEKER,
         askedAgentName: "SEEKER",
+        attached: [],
         askedAt: ASKED_AT,
       }),
       null,
@@ -1015,6 +1056,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT - (HISTORY_DAYS + 1) * HISTORY_DAY_MS,
       asked: "Давній, але живий",
     });
@@ -1025,6 +1067,7 @@ describe("the record", () => {
       asked: "Давній, але живий",
       askedAgentId: SEEKER,
       askedAgentName: "SEEKER",
+      attached: [],
       askedAt: ASKED_AT - HISTORY_DAY_MS,
     });
 
@@ -1039,6 +1082,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -1086,6 +1130,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT - HISTORY_DAY_MS,
       asked: "Знайди md-файли",
     });
@@ -1106,6 +1151,7 @@ describe("the record", () => {
       asked: "А тепер постав рев'ювера",
       askedAgentId: SEEKER,
       askedAgentName: "SEEKER",
+      attached: [],
       askedAt: ASKED_AT,
     });
 
@@ -1134,6 +1180,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: first,
       asked: "Знайди md-файли",
     });
@@ -1144,6 +1191,7 @@ describe("the record", () => {
       asked: "А тепер постав рев'ювера",
       askedAgentId: SEEKER,
       askedAgentName: "SEEKER",
+      attached: [],
       askedAt: second,
     });
 
@@ -1160,6 +1208,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -1205,6 +1254,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -1214,6 +1264,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Не дійшло до кроку",
     });
@@ -1246,6 +1297,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT - (HISTORY_DAYS + 1) * HISTORY_DAY_MS,
       asked: "Давній",
     });
@@ -1255,6 +1307,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT - HISTORY_DAY_MS,
       asked: "Вчорашній",
     });
@@ -1273,6 +1326,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -1297,6 +1351,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -1325,6 +1380,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -1354,6 +1410,7 @@ describe("the record", () => {
       startedByAgentId: SEEKER,
       startedByAgentName: "Шукач",
       startedByAgentColor: "#6fd3d8",
+      attached: [],
       startedAt: ASKED_AT,
       asked: "Знайди md-файли",
     });
@@ -1367,5 +1424,123 @@ describe("the record", () => {
     const [row] = await reader.list(DIRECTORY);
 
     assert.equal(row.money, null);
+  });
+
+  describe("the shared memory of a question", () => {
+    const NOTES = {
+      path: "/tmp/coder-project/notes.md",
+      name: "notes.md",
+      kind: "file" as const,
+      text: "=== notes.md ===\n# Нотатки",
+      binaries: [],
+    };
+
+    async function opened(questionId: string): Promise<RunOpened> {
+      return openRun({
+        directory: DIRECTORY,
+        questionId,
+        startedByAgentId: SEEKER,
+        startedByAgentName: "Шукач",
+        startedByAgentColor: "#6fd3d8",
+        attached: [NOTES],
+        startedAt: ASKED_AT,
+        asked: "Знайди md-файли",
+      });
+    }
+
+    it("gives the question with its files glued in, then every answer with whom its work came from", async () => {
+      const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000201");
+      const found = await writer.step(step(runId));
+
+      await writer.step(
+        step(runId, {
+          agentId: TELLER,
+          agentName: "Рев'юер",
+          asked: "ЗНАЙДЕНО\n- report.md",
+          said: "Перевірено",
+          fromStepIds: [found],
+        }),
+      );
+
+      assert.equal(
+        await reader.sharedMemory(runId, questionId),
+        [
+          "ЗАГАЛЬНА ПАМ'ЯТЬ — що вже сталося з цим питанням до тебе: хто кому що передав.",
+          "ПИТАННЯ ЛЮДИНИ → Шукач:\nЗнайди md-файли\n\n=== notes.md ===\n# Нотатки",
+          "ВІДПОВІДЬ Шукач (отримав від: ЛЮДИНА):\nЗНАЙДЕНО\n- report.md",
+          "ВІДПОВІДЬ Рев'юер (отримав від: Шукач):\nПеревірено",
+          "ТВОЄ ЗАВДАННЯ:\n",
+        ].join("\n\n"),
+      );
+    });
+
+    it("leaves out a turn that did not answer, and every other question of the flow", async () => {
+      const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000202");
+
+      await writer.step(
+        step(runId, {
+          said: "Модель не відповіла",
+          state: "failed",
+        }),
+      );
+      await writer.step(
+        step(runId, {
+          said: "Зупинено на півслові",
+          state: "stopped",
+        }),
+      );
+      await writer.step(step(runId));
+      await writer.close({
+        runId,
+        endedAt: ASKED_AT + 4_000,
+      });
+
+      const next = await writer.askAgain({
+        runId,
+        questionId: "aaaaaaaa-0000-4000-8000-000000000203",
+        asked: "А тепер інше",
+        askedAgentId: SEEKER,
+        askedAgentName: "Шукач",
+        attached: [],
+        askedAt: ASKED_AT + 5_000,
+      });
+
+      await writer.step(
+        step(runId, {
+          questionId: next ?? "",
+          said: "Інша відповідь",
+        }),
+      );
+
+      const memory = (await reader.sharedMemory(runId, questionId)) ?? "";
+
+      assert.ok(memory.includes("ЗНАЙДЕНО\n- report.md"));
+      assert.ok(!memory.includes("Модель не відповіла"));
+      assert.ok(!memory.includes("Зупинено на півслові"));
+      assert.ok(!memory.includes("А тепер інше"));
+      assert.ok(!memory.includes("Інша відповідь"));
+    });
+
+    it("is empty while nothing of the question has answered, the question being the turn's own words then", async () => {
+      const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000204");
+
+      await writer.step(
+        step(runId, {
+          state: "failed",
+        }),
+      );
+
+      assert.equal(await reader.sharedMemory(runId, questionId), "");
+    });
+
+    it("names no memory for a run or a question the record does not hold, rather than an empty one", async () => {
+      const { runId } = await opened("aaaaaaaa-0000-4000-8000-000000000205");
+
+      assert.equal(await reader.sharedMemory(runId, "aaaaaaaa-0000-4000-8000-000000000299"), null);
+      assert.equal(
+        await reader.sharedMemory("aaaaaaaa-0000-4000-8000-000000000298", "aaaaaaaa-0000-4000-8000-000000000205"),
+        null,
+      );
+    });
   });
 });

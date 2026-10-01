@@ -1,4 +1,15 @@
-import { ArrayNotEmpty, IsArray, IsInt, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Max,
+  Min,
+  ValidateIf,
+} from "class-validator";
 import {
   AGENT_MAX_CALLS_LEAST,
   AGENT_TEMPERATURE_LEAST,
@@ -56,4 +67,13 @@ export class AskAgentDto {
   // Every agent reachable as a tool from this one, by id.
   @IsArray()
   declare agents: ReachableAgent[];
+
+  // The row the turn writes into; null only while the conversation has none, never left out.
+  @ValidateIf((asked: AskAgentDto) => asked.runId !== null)
+  @IsUUID()
+  declare runId: string | null;
+
+  // The question the turn works under; an agent it calls with the shared memory reads this one.
+  @IsUUID()
+  declare questionId: string;
 }
