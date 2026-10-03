@@ -140,6 +140,7 @@ const PROVIDERS: ProviderState[] = [
 const PROJECT: OpenProject = {
   directory: "/tmp/coder",
   config: CONFIG,
+  print: "print-1",
   view: null,
 };
 
@@ -268,6 +269,7 @@ describe("MainPage", () => {
     await waitFor(() => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
         directory: PROJECT.directory,
+        basis: expect.anything(),
         config: expect.objectContaining({
           agents: expect.arrayContaining([
             expect.objectContaining({
@@ -518,6 +520,7 @@ describe("MainPage", () => {
     await waitFor(() => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
         directory: PROJECT.directory,
+        basis: expect.anything(),
         config: expect.objectContaining({
           models: expect.arrayContaining([
             expect.objectContaining({
@@ -589,6 +592,7 @@ describe("MainPage", () => {
     await waitFor(() => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
         directory: PROJECT.directory,
+        basis: expect.anything(),
         config: expect.objectContaining({
           agents: [
             expect.objectContaining({
@@ -665,6 +669,7 @@ describe("MainPage", () => {
     await waitFor(() => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
         directory: PROJECT.directory,
+        basis: expect.anything(),
         config: expect.objectContaining({
           agents: [
             expect.objectContaining({
@@ -701,6 +706,7 @@ describe("MainPage", () => {
     await waitFor(() => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
         directory: PROJECT.directory,
+        basis: expect.anything(),
         config: expect.objectContaining({
           agents: [
             expect.objectContaining({
@@ -909,6 +915,7 @@ describe("MainPage", () => {
     await waitFor(() => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
         directory: PROJECT.directory,
+        basis: expect.anything(),
         config: expect.objectContaining({
           agents: expect.arrayContaining([
             expect.objectContaining({
@@ -1142,6 +1149,7 @@ describe("MainPage", () => {
     await waitFor(() => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
         directory: PROJECT.directory,
+        basis: expect.anything(),
         config: expect.objectContaining({
           // The copy carries the settings and the next number, no links.
           agents: [
@@ -1216,6 +1224,7 @@ describe("MainPage", () => {
     // The free place one step down and right of the original at 300, 200.
     expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
       directory: PROJECT.directory,
+      basis: expect.anything(),
       config: expect.objectContaining({
         agents: [
           CONFIG.agents[0],
@@ -1286,6 +1295,7 @@ describe("MainPage", () => {
     await waitFor(() => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
         directory: PROJECT.directory,
+        basis: expect.anything(),
         config: expect.objectContaining({
           links: [
             expect.objectContaining({
@@ -1387,6 +1397,7 @@ describe("MainPage", () => {
     await waitFor(() => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
         directory: PROJECT.directory,
+        basis: expect.anything(),
         config: expect.objectContaining({
           links: [],
         }),
@@ -1543,6 +1554,7 @@ describe("MainPage", () => {
     await waitFor(() => {
       expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
         directory: PROJECT.directory,
+        basis: expect.anything(),
         config: expect.objectContaining({
           prompts: [
             expect.objectContaining({
@@ -1969,6 +1981,7 @@ describe("MainPage", () => {
     expect(await screen.findByText(deletedPromptLabel(1))).toBeInTheDocument();
     expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
       directory: PROJECT.directory,
+      basis: expect.anything(),
       config: expect.objectContaining({
         prompts: [],
         agents: [
@@ -2077,6 +2090,7 @@ describe("MainPage", () => {
     ).toBeInTheDocument();
     expect(window.electronApi.invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
       directory: PROJECT.directory,
+      basis: expect.anything(),
       config: expect.objectContaining({
         links: [],
         agents: linked.config.agents,
@@ -2093,6 +2107,7 @@ describe("MainPage", () => {
           config: aConfig({
             name: "empty",
           }),
+          print: "print-1",
           view: null,
         }}
         setProject={() => {}}

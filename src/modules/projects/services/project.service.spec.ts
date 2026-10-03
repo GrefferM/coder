@@ -4,6 +4,7 @@ import { openTestDatabase } from "../../../utils/testing";
 import { ProjectEntryEntity } from "../entities";
 import { ProjectConfigDto } from "../dto";
 import { PROJECT_ALREADY_THERE } from "../constants";
+import { PROJECT_CHANGED_ON_DISK } from "../../../contracts";
 import { FolderContents, ProjectFileStore, ProjectHistory, ProjectWatch } from "../interfaces";
 import { ProjectService } from "./project.service";
 import type { Repository } from "typeorm";
@@ -56,11 +57,15 @@ class ProjectFileStoreStub implements ProjectFileStore {
 class ProjectWatchStub implements ProjectWatch {
   followed: string | null = null;
   remembered: string | null = null;
+  /** How many times the watch was asked to look again. */
+  looks = 0;
 
   constructor(private readonly projectFileStore: ProjectFileStoreStub) {}
 
-  async follow(directory: string): Promise<void> {
+  async follow(directory: string): Promise<string> {
     this.followed = directory;
+
+    return this.print();
   }
 
   unfollow(): void {
@@ -68,9 +73,20 @@ class ProjectWatchStub implements ProjectWatch {
   }
 
   /** The fingerprint of what stands in the folder at this moment. */
-  async remember(directory: string): Promise<void> {
+  async remember(directory: string): Promise<string> {
     this.remembered = directory;
     this.projectFileStore.steps.push(`fingerprint of ${this.projectFileStore.stored?.name ?? "nothing"}`);
+
+    return this.print();
+  }
+
+  /** The folder is told apart by the project's name alone. */
+  async print(): Promise<string> {
+    return `print of ${this.projectFileStore.stored?.name ?? "nothing"}`;
+  }
+
+  async look(): Promise<void> {
+    this.looks += 1;
   }
 }
 
@@ -112,12 +128,13 @@ describe("ProjectService", () => {
   });
 
   it("writes an empty project into the folder it is given", async () => {
-    const config = await projectService.create({
+    const { config, print } = await projectService.create({
       directory: "/tmp/one",
       name: "Coder",
     });
 
     assert.equal(config.name, "Coder");
+    assert.equal(print, "print of Coder");
     assert.equal(projectFileStore.written, config);
     // Every list is present and empty; a missing one reaches the screen as `undefined`.
     assert.deepEqual(config.models, []);
@@ -145,7 +162,7 @@ describe("ProjectService", () => {
       name: "Coder",
     });
 
-    const config = await projectService.open({
+    const { config } = await projectService.open({
       directory: "/tmp/one",
     });
 
@@ -182,7 +199,7 @@ describe("ProjectService", () => {
   });
 
   it("makes a project out of a chosen folder that has none, named after the folder", async () => {
-    const config = await projectService.openOrCreate({
+    const { config } = await projectService.openOrCreate({
       directory: "/tmp/projects/test",
     });
 
@@ -197,7 +214,7 @@ describe("ProjectService", () => {
     });
     projectFileStore.written = null;
 
-    const config = await projectService.openOrCreate({
+    const { config } = await projectService.openOrCreate({
       directory: "/tmp/one",
     });
 
@@ -353,6 +370,7 @@ describe("ProjectService", () => {
     await projectService.save({
       directory: "/tmp/one",
       config: <ProjectConfigDto>projectFileStore.stored,
+      basis: "print of Coder",
     });
 
     assert.equal(projectWatch.remembered, "/tmp/one");
@@ -418,10 +436,12 @@ describe("ProjectService", () => {
     const first = projectService.save({
       directory: "/tmp/one",
       config: named(stored, "one"),
+      basis: "print of Coder",
     });
     const second = projectService.save({
       directory: "/tmp/one",
       config: named(stored, "two"),
+      basis: "print of Coder",
     });
 
     await Promise.all([first, second]);
@@ -449,15 +469,110 @@ describe("ProjectService", () => {
     const first = projectService.save({
       directory: "/tmp/one",
       config: named(stored, "one"),
+      basis: "print of Coder",
     });
     const second = projectService.save({
       directory: "/tmp/two",
       config: named(stored, "two"),
+      basis: "print of Coder",
     });
 
     await Promise.all([first, second]);
 
     assert.deepEqual(projectFileStore.steps.slice(0, 2), ["write one", "write two"]);
+  });
+
+  it("gives the print of what the save left in the folder", async () => {
+    await projectService.create({
+      directory: "/tmp/one",
+      name: "Coder",
+    });
+
+    const print = await projectService.save({
+      directory: "/tmp/one",
+      config: named(<ProjectConfigDto>projectFileStore.stored, "two"),
+      basis: "print of Coder",
+    });
+
+    assert.equal(print, "print of two");
+  });
+
+  it("refuses a save made from a reading the folder has moved on from, and writes nothing over it", async () => {
+    // Guards the person's own edit of the files being undone by a save the app made from what it read before.
+    const { print } = await projectService.create({
+      directory: "/tmp/one",
+      name: "Coder",
+    });
+    const stored = <ProjectConfigDto>projectFileStore.stored;
+
+    projectFileStore.stored = named(stored, "edited by hand");
+
+    await assert.rejects(
+      projectService.save({
+        directory: "/tmp/one",
+        config: named(stored, "from the old reading"),
+        basis: print,
+      }),
+      new RegExp(PROJECT_CHANGED_ON_DISK),
+    );
+
+    assert.equal(projectFileStore.stored.name, "edited by hand");
+    // The screen is told, so it reads the folder again.
+    assert.equal(projectWatch.looks, 1);
+  });
+
+  it("lets a save from an older reading through where only the app's own saves moved the folder since", async () => {
+    // Two saves sent before the first came back both name the same reading.
+    const { print } = await projectService.create({
+      directory: "/tmp/one",
+      name: "Coder",
+    });
+    const stored = <ProjectConfigDto>projectFileStore.stored;
+
+    await projectService.save({
+      directory: "/tmp/one",
+      config: named(stored, "one"),
+      basis: print,
+    });
+    await projectService.save({
+      directory: "/tmp/one",
+      config: named(stored, "two"),
+      basis: print,
+    });
+
+    assert.equal(projectFileStore.stored?.name, "two");
+  });
+
+  it("refuses an older reading where a hand changed the folder after the app's own save", async () => {
+    const { print } = await projectService.create({
+      directory: "/tmp/one",
+      name: "Coder",
+    });
+    const stored = <ProjectConfigDto>projectFileStore.stored;
+    const saved = await projectService.save({
+      directory: "/tmp/one",
+      config: named(stored, "one"),
+      basis: print,
+    });
+
+    projectFileStore.stored = named(stored, "edited by hand");
+
+    await assert.rejects(
+      projectService.save({
+        directory: "/tmp/one",
+        config: named(stored, "two"),
+        basis: saved,
+      }),
+      new RegExp(PROJECT_CHANGED_ON_DISK),
+    );
+    await assert.rejects(
+      projectService.save({
+        directory: "/tmp/one",
+        config: named(stored, "two"),
+        basis: print,
+      }),
+      new RegExp(PROJECT_CHANGED_ON_DISK),
+    );
   });
 
   it("lets the next save of a folder through after one of them failed, rather than wedging the queue", async () => {
@@ -474,6 +589,7 @@ describe("ProjectService", () => {
       projectService.save({
         directory: "/tmp/one",
         config: named(stored, "one"),
+        basis: "print of Coder",
       }),
     );
 
@@ -482,6 +598,7 @@ describe("ProjectService", () => {
     await projectService.save({
       directory: "/tmp/one",
       config: named(stored, "two"),
+      basis: "print of Coder",
     });
 
     assert.equal(projectFileStore.stored?.name, "two");

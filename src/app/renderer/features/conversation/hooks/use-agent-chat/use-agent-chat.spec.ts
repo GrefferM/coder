@@ -68,6 +68,7 @@ const PROJECT: OpenProject = {
     agents: [agent("agent-1", "EDITOR", 0), agent("agent-2", "REVIEWER", 200)],
     links: [aLink()],
   }),
+  print: "print-1",
   view: null,
 };
 
@@ -627,6 +628,7 @@ const FAN: OpenProject = {
       }),
     ],
   }),
+  print: "print-1",
   view: null,
 };
 

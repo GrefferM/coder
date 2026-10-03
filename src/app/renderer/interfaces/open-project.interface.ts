@@ -4,5 +4,7 @@ import type { ProjectConfig, ProjectView } from "../../../contracts/project";
 export interface OpenProject {
   directory: string;
   config: ProjectConfig;
+  /** What the folder held when the config was read or last saved; every save names it. */
+  print: string;
   view: ProjectView | null;
 }

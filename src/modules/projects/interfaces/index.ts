@@ -7,4 +7,5 @@ export * from "./project-entry-record.interface";
 export * from "./project-file-store.interface";
 export * from "./project-history.interface";
 export * from "./project-module.interface";
+export * from "./project-read.interface";
 export * from "./deletion-record.interface";

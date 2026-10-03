@@ -25,6 +25,7 @@ const PROJECT: OpenProject = {
       }),
     ],
   }),
+  print: "print-1",
   view: null,
 };
 
@@ -50,7 +51,7 @@ const WITH_LINK: OpenProject = {
 
 function held() {
   const invoke = vi.fn(async (channel: string, _payload?: unknown) =>
-    channel === REMEMBER_DELETION_CHANNEL ? "deletion-1" : undefined,
+    channel === REMEMBER_DELETION_CHANNEL ? "deletion-1" : channel === SAVE_PROJECT_CHANNEL ? "print-2" : undefined,
   );
 
   standInBridge({
@@ -82,6 +83,7 @@ describe("useProjectActions", () => {
     expect(setProject).toHaveBeenCalled();
     expect(invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
       directory: PROJECT.directory,
+      basis: expect.anything(),
       config: expect.objectContaining({
         agents: [],
       }),
@@ -108,6 +110,7 @@ describe("useProjectActions", () => {
 
     expect(invoke).toHaveBeenCalledWith(SAVE_PROJECT_CHANNEL, {
       directory: PROJECT.directory,
+      basis: expect.anything(),
       config: expect.objectContaining({
         agents: [PROJECT.config.agents[0]],
       }),

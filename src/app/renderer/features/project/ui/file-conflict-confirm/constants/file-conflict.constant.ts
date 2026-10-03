@@ -13,7 +13,7 @@ export const FILE_CONFLICT_DISK_LABEL = "НА ДИСКУ";
 export const FILE_CONFLICT_KEEP_LABEL = "Лишити моє";
 export const FILE_CONFLICT_TAKE_LABEL = "Взяти з диска";
 export const FILE_CONFLICT_KEEP_NOTE =
-  "«Лишити моє» не пише у файл одразу — воно лише знімає питання; запис станеться, коли ви збережете самі";
+  "«Лишити моє» бере файл з диска і кладе на нього лише ваші незбережені зміни; запис станеться, коли ви збережете самі";
 export const FILE_CONFLICT_NOTHING_LABEL = "нічого";
 
 export const FILE_CONFLICT_COLUMNS_GAP_PX = 12;

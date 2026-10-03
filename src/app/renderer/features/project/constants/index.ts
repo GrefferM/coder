@@ -8,6 +8,7 @@ export * from "./config-difference.constant";
 export * from "./file-change.constant";
 export * from "./links-make-ring.constant";
 export * from "./links-repeat.constant";
+export * from "./project-changed-on-disk.constant";
 export * from "./project-file-broken.constant";
 export * from "./project-from-newer-build.constant";
 export * from "./write-note.constant";

@@ -39,6 +39,7 @@ function project(directory: string): OpenProject {
   return {
     directory,
     config: {} as OpenProject["config"],
+    print: "print-1",
     view: null,
   };
 }

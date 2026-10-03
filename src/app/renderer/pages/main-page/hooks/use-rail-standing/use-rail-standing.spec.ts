@@ -22,6 +22,7 @@ function project(view: ProjectView | null = null): OpenProject {
     config: aConfig({
       agents: [AGENT],
     }),
+    print: "print-1",
     view,
   };
 }

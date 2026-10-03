@@ -33,5 +33,6 @@ export function createProjectModule(dataSource: DataSource, voice: ProjectVoice)
   return {
     controller: projectController,
     deletionController: new DeletionController(deletionService),
+    watch: projectWatchService,
   };
 }

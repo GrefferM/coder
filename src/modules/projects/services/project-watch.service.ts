@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import { watch } from "node:fs";
 import path from "node:path";
@@ -27,7 +28,7 @@ export class ProjectWatchService implements ProjectWatch {
 
   constructor(private readonly voice: ProjectVoice) {}
 
-  async follow(directory: string): Promise<void> {
+  async follow(directory: string): Promise<string> {
     this.stop();
     this.followed = directory;
 
@@ -41,9 +42,9 @@ export class ProjectWatchService implements ProjectWatch {
     this.known = null;
   }
 
-  async remember(directory: string): Promise<void> {
+  async remember(directory: string): Promise<string> {
     if (directory !== this.followed) {
-      return;
+      return this.fingerprint(directory);
     }
 
     // A read waiting on our own write has nothing to report.
@@ -52,18 +53,32 @@ export class ProjectWatchService implements ProjectWatch {
     return this.queue(() => this.record(directory));
   }
 
-  /**
-   * Takes the folder as it stands as the new state, silently; `known` is written only here and in `read`, always inside
-   * the queue.
-   */
-  private async record(directory: string): Promise<void> {
-    if (directory !== this.followed) {
+  async print(directory: string): Promise<string> {
+    return this.fingerprint(directory);
+  }
+
+  async look(): Promise<void> {
+    if (this.followed === null) {
       return;
     }
 
-    this.known = await this.fingerprint(directory);
-    this.arm(directory);
-    this.sweep(directory);
+    return this.tell(this.followed, true);
+  }
+
+  /**
+   * Takes the folder as it stands as the new state, silently, and gives its print; `known` is written only here and in
+   * `read`, always inside the queue.
+   */
+  private async record(directory: string): Promise<string> {
+    const print = await this.fingerprint(directory);
+
+    if (directory === this.followed) {
+      this.known = print;
+      this.arm(directory);
+      this.sweep(directory);
+    }
+
+    return print;
   }
 
   /** Debounce: events for one change trigger one read after PROJECT_WATCH_SETTLE_MS of quiet. */
@@ -104,11 +119,16 @@ export class ProjectWatchService implements ProjectWatch {
     }
   }
 
-  /** Runs the work after any read already going. */
-  private queue(work: () => Promise<void>): Promise<void> {
-    this.reading = this.reading.then(work);
+  /** Runs the work after any read already going; a failed one does not stop the reads after it. */
+  private queue<T>(work: () => Promise<T>): Promise<T> {
+    const done = this.reading.then(work);
 
-    return this.reading;
+    this.reading = done.then(
+      () => undefined,
+      () => undefined,
+    );
+
+    return done;
   }
 
   /**
@@ -162,7 +182,10 @@ export class ProjectWatchService implements ProjectWatch {
     }
   }
 
-  /** The whole project as one string: the config file, then every part file it could name, each under its path. */
+  /**
+   * The whole project as one short string: the config file, then every part file it could name, each under its path,
+   * hashed.
+   */
   private async fingerprint(directory: string): Promise<string> {
     const pieces = [PROJECT_FILE_NAME, await this.text(this.filePath(directory))];
 
@@ -175,7 +198,7 @@ export class ProjectWatchService implements ProjectWatch {
       }
     }
 
-    return pieces.join("\0");
+    return createHash("sha256").update(pieces.join("\0")).digest("hex");
   }
 
   /** The app-written files in one part folder, in a settled order; a missing folder gives none. */

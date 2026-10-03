@@ -31,6 +31,7 @@ const CONFIG = aConfig({
 const PROJECT: OpenProject = {
   directory: "/code/coder-app",
   config: CONFIG,
+  print: "print-1",
   view: null,
 };
 
@@ -113,8 +114,11 @@ describe("ProjectSwitcher", () => {
 
     stubApi({
       [OPEN_PROJECT_CHANNEL]: {
-        ...CONFIG,
-        name: "docs-pipeline",
+        config: {
+          ...CONFIG,
+          name: "docs-pipeline",
+        },
+        print: "print-1",
       },
     });
     render(<ProjectSwitcher project={PROJECT} onProjectChange={onProjectChange} onClose={() => {}} />);
@@ -126,6 +130,7 @@ describe("ProjectSwitcher", () => {
       config: expect.objectContaining({
         name: "docs-pipeline",
       }),
+      print: "print-1",
       // No note for that folder: the project opens at home.
       view: null,
     });
@@ -165,7 +170,10 @@ describe("ProjectSwitcher", () => {
         linkCount: 1,
         promptCount: 0,
       },
-      [OPEN_PROJECT_CHANNEL]: CONFIG,
+      [OPEN_PROJECT_CHANNEL]: {
+        config: CONFIG,
+        print: "print-1",
+      },
     });
 
     render(<ProjectSwitcher project={PROJECT} onProjectChange={onProjectChange} onClose={() => {}} />);
@@ -192,7 +200,10 @@ describe("ProjectSwitcher", () => {
         linkCount: 0,
         promptCount: 0,
       },
-      [CREATE_PROJECT_CHANNEL]: CONFIG,
+      [CREATE_PROJECT_CHANNEL]: {
+        config: CONFIG,
+        print: "print-1",
+      },
     });
 
     render(<ProjectSwitcher project={PROJECT} onProjectChange={onProjectChange} onClose={() => {}} />);
@@ -358,8 +369,11 @@ describe("ProjectSwitcher", () => {
 
     stubApi({
       [OPEN_PROJECT_CHANNEL]: {
-        ...CONFIG,
-        name: "docs-pipeline",
+        config: {
+          ...CONFIG,
+          name: "docs-pipeline",
+        },
+        print: "print-1",
       },
     });
     render(<ProjectSwitcher project={PROJECT} onProjectChange={onProjectChange} onClose={() => {}} />);

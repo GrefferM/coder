@@ -17,6 +17,7 @@ const project: OpenProject = {
   config: aConfig({
     name: "Coder",
   }),
+  print: "print-1",
   view: null,
 };
 

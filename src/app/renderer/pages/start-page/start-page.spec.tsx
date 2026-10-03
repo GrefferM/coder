@@ -58,7 +58,10 @@ describe("StartPage", () => {
     const invoke = stubApi({
       [LIST_RECENT_PROJECTS_CHANNEL]: () => [ENTRY],
       [OPEN_PROJECT_CHANNEL]: () => ({
-        name: "coder-app",
+        config: {
+          name: "coder-app",
+        },
+        print: "print-1",
       }),
     });
     const onProjectOpened = vi.fn();
@@ -77,7 +80,10 @@ describe("StartPage", () => {
       [LIST_RECENT_PROJECTS_CHANNEL]: () => [],
       [CHOOSE_DIRECTORY_CHANNEL]: () => "/tmp/picked",
       [OPEN_OR_CREATE_PROJECT_CHANNEL]: () => ({
-        name: "picked",
+        config: {
+          name: "picked",
+        },
+        print: "print-1",
       }),
     });
 
@@ -114,7 +120,10 @@ describe("StartPage", () => {
         promptCount: 0,
       }),
       [CREATE_PROJECT_CHANNEL]: () => ({
-        name: "release-bot",
+        config: {
+          name: "release-bot",
+        },
+        print: "print-1",
       }),
     });
 
@@ -144,7 +153,10 @@ describe("StartPage", () => {
         promptCount: 3,
       }),
       [OPEN_PROJECT_CHANNEL]: () => ({
-        name: "coder-app",
+        config: {
+          name: "coder-app",
+        },
+        print: "print-1",
       }),
     });
 
@@ -177,12 +189,15 @@ describe("StartPage", () => {
       [LIST_RECENT_PROJECTS_CHANNEL]: () => [],
       [CHOOSE_DIRECTORY_CHANNEL]: () => "/Users/olena/projects/test",
       [OPEN_OR_CREATE_PROJECT_CHANNEL]: () => ({
-        version: 1,
-        name: "test",
-        models: [],
-        prompts: [],
-        agents: [],
-        links: [],
+        config: {
+          version: 1,
+          name: "test",
+          models: [],
+          prompts: [],
+          agents: [],
+          links: [],
+        },
+        print: "print-1",
       }),
     });
 

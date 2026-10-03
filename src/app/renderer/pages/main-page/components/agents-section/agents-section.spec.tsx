@@ -15,6 +15,7 @@ const project: OpenProject = {
     name: "Coder",
     models: [aModel()],
   }),
+  print: "print-1",
   view: null,
 };
 

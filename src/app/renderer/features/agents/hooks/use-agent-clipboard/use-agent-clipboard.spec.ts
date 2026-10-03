@@ -17,6 +17,7 @@ const PROJECT: OpenProject = {
   config: aConfig({
     agents: [SEEKER],
   }),
+  print: "print-1",
   view: null,
 };
 

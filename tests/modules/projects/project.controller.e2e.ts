@@ -67,9 +67,19 @@ function openProjectDto(directory: string): OpenProjectDto {
 }
 
 class ProjectWatchStub implements ProjectWatch {
-  async follow(): Promise<void> {}
+  async follow(): Promise<string> {
+    return "print";
+  }
 
-  async remember(): Promise<void> {}
+  async remember(): Promise<string> {
+    return "print";
+  }
+
+  async print(): Promise<string> {
+    return "print";
+  }
+
+  async look(): Promise<void> {}
 
   unfollow(): void {}
 }
@@ -100,9 +110,11 @@ describe("ProjectController", () => {
   });
 
   it("creates an empty project and remembers its folder", async () => {
-    const config = await projectController.create(createProjectDto("/tmp/one"));
+    const { config, print } = await projectController.create(createProjectDto("/tmp/one"));
 
     assert.equal(config.name, "Coder");
+    // The reading comes with the print a save of it names.
+    assert.equal(print, "print");
     assert.deepEqual(config.agents, []);
 
     const [entry] = await projectController.findRecent();
@@ -118,11 +130,11 @@ describe("ProjectController", () => {
   it("makes a chosen folder a project when it holds none, and reads it when it does", async () => {
     const created = await projectController.openOrCreate(openProjectDto("/tmp/projects/test"));
 
-    assert.equal(created.name, "test");
+    assert.equal(created.config.name, "test");
 
     const reread = await projectController.openOrCreate(openProjectDto("/tmp/projects/test"));
 
-    assert.equal(reread.name, "test");
+    assert.equal(reread.config.name, "test");
   });
 
   it("refuses to open a folder holding no project, saying which failure it is", async () => {

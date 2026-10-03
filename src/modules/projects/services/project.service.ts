@@ -9,14 +9,26 @@ import {
   SaveProjectDto,
 } from "../dto";
 import { PROJECT_ALREADY_THERE, PROJECT_CONFIG_VERSION, RECENT_PROJECTS_LIMIT } from "../constants";
-import { PROJECT_NOT_FOUND } from "../../../contracts";
-import { FolderContents, KnownProject, ProjectFileStore, ProjectHistory, ProjectWatch } from "../interfaces";
+import { PROJECT_CHANGED_ON_DISK, PROJECT_NOT_FOUND } from "../../../contracts";
+import {
+  FolderContents,
+  KnownProject,
+  ProjectFileStore,
+  ProjectHistory,
+  ProjectRead,
+  ProjectWatch,
+} from "../interfaces";
 import { Refusal } from "../../../utils/refusals";
 
 /** Opens and creates projects and keeps this machine's list; the config lives in the project's folder. */
 export class ProjectService {
   /** The save running in each project directory, with the next chained onto it. */
   private readonly saving = new Map<string, Promise<void>>();
+  /**
+   * What each of the app's own saves left in the folder, by the print it was made from; a save from an older reading
+   * stands on these, since the folder moved only by the app's own hand.
+   */
+  private readonly savedFrom = new Map<string, string>();
 
   constructor(
     private readonly projectEntryRepository: Repository<ProjectEntryEntity>,
@@ -26,7 +38,7 @@ export class ProjectService {
   ) {}
 
   /** Writes an empty project into the folder and remembers it; a folder already holding one is refused. */
-  async create(payload: CreateProjectDto): Promise<ProjectConfigDto> {
+  async create(payload: CreateProjectDto): Promise<ProjectRead> {
     const { directory, name } = payload;
 
     if (await this.projectFileStore.exists(directory)) {
@@ -35,10 +47,9 @@ export class ProjectService {
 
     await this.projectFileStore.write(directory, this.emptyConfig(name));
     await this.remember(directory, name);
-    await this.projectWatch.follow(directory);
 
     // Returns what the folder holds, not what was handed in.
-    return this.projectFileStore.read(directory);
+    return this.followed(directory);
   }
 
   /** What the chosen folder holds. */
@@ -47,7 +58,7 @@ export class ProjectService {
   }
 
   /** Opens the chosen folder, creating a project there if none exists. */
-  async openOrCreate(payload: OpenProjectDto): Promise<ProjectConfigDto> {
+  async openOrCreate(payload: OpenProjectDto): Promise<ProjectRead> {
     const { directory } = payload;
 
     if (await this.projectFileStore.exists(directory)) {
@@ -61,19 +72,18 @@ export class ProjectService {
   }
 
   /** Reads the folder's project and moves it to the top of the recent list. */
-  async open(payload: OpenProjectDto): Promise<ProjectConfigDto> {
+  async open(payload: OpenProjectDto): Promise<ProjectRead> {
     const { directory } = payload;
 
     if (!(await this.projectFileStore.exists(directory))) {
       throw new Refusal(PROJECT_NOT_FOUND);
     }
 
-    const config = await this.projectFileStore.read(directory);
+    const read = await this.followed(directory);
 
-    await this.remember(directory, config.name);
-    await this.projectWatch.follow(directory);
+    await this.remember(directory, read.config.name);
 
-    return config;
+    return read;
   }
 
   /** Closes the open project; the watch goes down with it. */
@@ -81,18 +91,24 @@ export class ProjectService {
     this.projectWatch.unfollow();
   }
 
-  /** Writes the whole config to the project's folder; saves of one folder run in sequence. */
-  async save(payload: SaveProjectDto): Promise<void> {
-    const { directory, config } = payload;
+  /**
+   * Writes the whole config to the project's folder and gives the new print; saves of one folder run in sequence. A
+   * save made from a reading the folder has moved on from is refused, rather than undoing what changed.
+   */
+  async save(payload: SaveProjectDto): Promise<string> {
+    const { directory, config, basis } = payload;
     const standing = this.saving.get(directory) ?? Promise.resolve();
-    const saving = standing.then(() => this.writeAndRemember(directory, config));
+    const saving = standing.then(() => this.writeAndRemember(directory, config, basis));
     // The chain continues past a failed save, which is reported to its own caller only.
-    const settled = saving.catch(() => undefined);
+    const settled = saving.then(
+      () => undefined,
+      () => undefined,
+    );
 
     this.saving.set(directory, settled);
 
     try {
-      await saving;
+      return await saving;
     } finally {
       this.forgetSaving(directory, settled);
     }
@@ -161,10 +177,54 @@ export class ProjectService {
     await this.projectHistory.forgetProject(directory);
   }
 
-  /** One save: writes the folder, then takes what stands in it as the app's own. */
-  private async writeAndRemember(directory: string, config: ProjectConfigDto): Promise<void> {
+  /**
+   * One save: checks the folder still holds the reading, writes it, then takes what stands in it as the app's own. A
+   * folder moved on is said to the screen, which reads it again.
+   */
+  private async writeAndRemember(directory: string, config: ProjectConfigDto, basis: string): Promise<string> {
+    if (!this.isStillHeld(await this.projectWatch.print(directory), basis)) {
+      void this.projectWatch.look();
+
+      throw new Refusal(PROJECT_CHANGED_ON_DISK);
+    }
+
     await this.projectFileStore.write(directory, config);
-    await this.projectWatch.remember(directory);
+
+    const print = await this.projectWatch.remember(directory);
+
+    this.savedFrom.set(basis, print);
+
+    return print;
+  }
+
+  /** Whether the folder holds the reading, or only what the app's own saves made of it since. */
+  private isStillHeld(print: string, basis: string): boolean {
+    const passed = new Set<string>();
+    let reading = basis;
+
+    while (reading !== print && !passed.has(reading)) {
+      passed.add(reading);
+
+      const next = this.savedFrom.get(reading);
+
+      if (next === undefined) {
+        return false;
+      }
+
+      reading = next;
+    }
+
+    return reading === print;
+  }
+
+  /** Follows the folder and reads it; the print is taken first, so a change in between makes a save refused, not lost. */
+  private async followed(directory: string): Promise<ProjectRead> {
+    const print = await this.projectWatch.follow(directory);
+
+    return {
+      config: await this.projectFileStore.read(directory),
+      print,
+    };
   }
 
   /** Drops a folder's chain once its last save is done. */

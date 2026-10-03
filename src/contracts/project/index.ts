@@ -1,5 +1,6 @@
 export * from "./project-file-name.constant";
 export * from "./project-refusals.constant";
+export * from "./project-on-disk.interface";
 export * from "./deletion.interface";
 export * from "./agent.interface";
 export * from "./agent-memory.type";

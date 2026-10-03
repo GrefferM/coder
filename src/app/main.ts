@@ -19,6 +19,7 @@ import {
 } from "./ipc";
 import { SafeStorageCipher, SystemShell, WindowProjectVoice, WindowVoice } from "./services";
 import type { McpClient } from "../modules/mcp";
+import type { ProjectWatch } from "../modules/projects";
 import {
   APP_ICON_PATH,
   APP_NAME,
@@ -34,6 +35,8 @@ app.setName(APP_NAME);
 
 /** The one client every MCP server is reached through; null until a server is asked for. */
 let mcpClient: McpClient | null = null;
+/** The open project's watch, asked to look again whenever the window comes to the front. */
+let projectWatch: ProjectWatch | null = null;
 
 /** Opens the SQLite database, applies pending migrations, registers every domain's IPC channels. */
 async function initializeIpc(): Promise<void> {
@@ -42,10 +45,13 @@ async function initializeIpc(): Promise<void> {
   await dataSource.initialize();
   await dataSource.runMigrations();
 
-  const { controller: projectController, deletionController } = createProjectModule(
-    dataSource,
-    new WindowProjectVoice(),
-  );
+  const {
+    controller: projectController,
+    deletionController,
+    watch,
+  } = createProjectModule(dataSource, new WindowProjectVoice());
+
+  projectWatch = watch;
   const { service: secretService } = createSecretsModule(new SafeStorageCipher(), app.getPath("userData"));
   const { controller: providerController, service: providerService } = createProvidersModule(
     secretService,
@@ -100,6 +106,11 @@ async function createWindow(): Promise<void> {
       contextIsolation: true,
       nodeIntegration: false,
     },
+  });
+
+  // Coming back from an editor, a change the file system did not deliver is read now, not at the next save.
+  window.on("focus", () => {
+    void projectWatch?.look();
   });
 
   await window.loadURL(RENDERER_DEV_SERVER_URL);

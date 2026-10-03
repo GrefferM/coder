@@ -1,26 +1,19 @@
 import { Validate } from "../../../utils/dto-validation";
 import { ProjectService } from "../services";
-import {
-  CreateProjectDto,
-  ForgetProjectDto,
-  ProjectConfigDto,
-  OpenProjectDto,
-  RememberProjectViewDto,
-  SaveProjectDto,
-} from "../dto";
-import { FolderContents, KnownProject } from "../interfaces";
+import { CreateProjectDto, ForgetProjectDto, OpenProjectDto, RememberProjectViewDto, SaveProjectDto } from "../dto";
+import { FolderContents, KnownProject, ProjectRead } from "../interfaces";
 
 /** The entry point to projects. */
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
   @Validate()
-  async create(payload: CreateProjectDto): Promise<ProjectConfigDto> {
+  async create(payload: CreateProjectDto): Promise<ProjectRead> {
     return this.projectService.create(payload);
   }
 
   @Validate()
-  async open(payload: OpenProjectDto): Promise<ProjectConfigDto> {
+  async open(payload: OpenProjectDto): Promise<ProjectRead> {
     return this.projectService.open(payload);
   }
 
@@ -30,7 +23,7 @@ export class ProjectController {
   }
 
   @Validate()
-  async openOrCreate(payload: OpenProjectDto): Promise<ProjectConfigDto> {
+  async openOrCreate(payload: OpenProjectDto): Promise<ProjectRead> {
     return this.projectService.openOrCreate(payload);
   }
 
@@ -45,7 +38,7 @@ export class ProjectController {
   }
 
   @Validate()
-  async save(payload: SaveProjectDto): Promise<void> {
+  async save(payload: SaveProjectDto): Promise<string> {
     return this.projectService.save(payload);
   }
 

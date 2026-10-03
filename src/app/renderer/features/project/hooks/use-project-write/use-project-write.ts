@@ -3,7 +3,7 @@ import { errorMessage } from "../../../../utils/errors";
 import { useUndoOffers } from "../use-undo-offers";
 import { forgetDeletion, rememberDeletion, saveProject } from "../../api";
 import { takenBetween, withTakenBack } from "../../logic";
-import { WRITE_FAILED_PREFIX } from "../../constants";
+import { PROJECT_CHANGED_ON_DISK, PROJECT_CHANGED_ON_DISK_NOTE, WRITE_FAILED_PREFIX } from "../../constants";
 import type { Dispatch, SetStateAction } from "react";
 import type { OpenProject, ProjectConfig } from "../../../../interfaces";
 import type { TakenThings, WriteNote } from "../../interfaces";
@@ -36,10 +36,24 @@ export function useProjectWrite(
 
   const save = useCallback(
     async (config: ProjectConfig, label?: string, quietly = false) => {
+      let print: string;
+
       try {
-        await saveProject(project.directory, config);
+        print = await saveProject(project.directory, config, project.print);
       } catch (reason) {
-        if (label !== undefined) {
+        // Written over a change made on disk, it would undo it; nothing is written, the folder is read again, and
+        // repeating the same save would only be refused again.
+        if (errorMessage(reason).includes(PROJECT_CHANGED_ON_DISK)) {
+          setWritten({
+            note: {
+              label: PROJECT_CHANGED_ON_DISK_NOTE,
+              detail: null,
+              reason: PROJECT_CHANGED_ON_DISK_NOTE,
+              isRefusal: true,
+            },
+            config,
+          });
+        } else if (label !== undefined) {
           setWritten({
             note: {
               label,
@@ -54,7 +68,15 @@ export function useProjectWrite(
         throw reason;
       }
 
-      changeConfig(() => config);
+      setProject((open) =>
+        open === null
+          ? open
+          : {
+              ...open,
+              config,
+              print,
+            },
+      );
       setWritten(
         label === undefined || quietly
           ? null
@@ -69,7 +91,7 @@ export function useProjectWrite(
             },
       );
     },
-    [changeConfig, project.directory],
+    [project.directory, project.print, setProject],
   );
 
   /** «ще раз»: the very write that failed, run again. */

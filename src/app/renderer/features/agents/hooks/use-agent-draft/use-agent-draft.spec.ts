@@ -21,6 +21,7 @@ function project(): OpenProject {
     config: aConfig({
       agents: [EDITOR, REVIEWER],
     }),
+    print: "print-1",
     view: null,
   };
 }

@@ -16,6 +16,7 @@ import type { OpenProject, ProjectEntry } from "../../../../interfaces";
 const PROJECT: OpenProject = {
   directory: "/tmp/coder",
   config: aConfig(),
+  print: "print-1",
   view: null,
 };
 
@@ -108,7 +109,10 @@ describe("useKnownProjects · what it does over the list", () => {
   it("opens a project and shuts the list behind it", async () => {
     const held = machine({
       [LIST_RECENT_PROJECTS_CHANNEL]: [entry("/tmp/other")],
-      [OPEN_PROJECT_CHANNEL]: aConfig(),
+      [OPEN_PROJECT_CHANNEL]: {
+        config: aConfig(),
+        print: "print-1",
+      },
     });
     const { result, onProjectChange, onDone } = switcher();
 
@@ -167,7 +171,10 @@ describe("useKnownProjects · what it does over the list", () => {
     const held = machine({
       [LIST_RECENT_PROJECTS_CHANNEL]: [],
       [CHOOSE_DIRECTORY_CHANNEL]: "/tmp/chosen",
-      [OPEN_OR_CREATE_PROJECT_CHANNEL]: aConfig(),
+      [OPEN_OR_CREATE_PROJECT_CHANNEL]: {
+        config: aConfig(),
+        print: "print-1",
+      },
     });
     const { result, onProjectChange, onDone } = switcher();
 

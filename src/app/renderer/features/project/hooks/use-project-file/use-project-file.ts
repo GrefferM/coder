@@ -23,6 +23,20 @@ export function useProjectFile(
     draft.current = unsaved;
   }, [unsaved]);
 
+  /** What was read becomes the project, and the line says what changed. */
+  const adopt = useCallback(
+    (read: OpenProject) => {
+      setProject(read);
+      sayNote({
+        label: PROJECT_REREAD_LABEL,
+        detail: fileChangeDetail(project.config, read.config),
+        reason: null,
+        isRefusal: false,
+      });
+    },
+    [project.config, sayNote, setProject],
+  );
+
   useEffect(
     () =>
       window.electronApi.subscribe(PROJECT_CHANGED_CHANNEL, (changed) => {
@@ -37,37 +51,31 @@ export function useProjectFile(
             return;
           }
 
-          setProject(read);
-          sayNote({
-            label: PROJECT_REREAD_LABEL,
-            detail: fileChangeDetail(project.config, read.config),
-            reason: null,
-            isRefusal: false,
-          });
+          adopt(read);
         });
       }),
-    [project.config, project.directory, sayNote, setProject],
+    [adopt, project.directory],
   );
 
-  /** «Лишити моє» writes nothing; it dismisses the question and the draft is written with its own save. */
-  const keepMine = useCallback(() => setArrived(null), []);
+  /**
+   * «Лишити моє» writes nothing: what arrived becomes the project and the draft stays laid over it, so its own save
+   * changes only what the draft touched and undoes nothing else that changed on disk.
+   */
+  const keepMine = useCallback(() => {
+    if (arrived !== null) {
+      adopt(arrived);
+      setArrived(null);
+    }
+  }, [adopt, arrived]);
 
   /** «Взяти з диска»: the draft is dropped and what arrived becomes the project. */
   const takeArrived = useCallback(() => {
-    if (arrived === null) {
-      return;
+    if (arrived !== null) {
+      unsaved?.discard();
+      adopt(arrived);
+      setArrived(null);
     }
-
-    unsaved?.discard();
-    setProject(arrived);
-    setArrived(null);
-    sayNote({
-      label: PROJECT_REREAD_LABEL,
-      detail: fileChangeDetail(project.config, arrived.config),
-      reason: null,
-      isRefusal: false,
-    });
-  }, [arrived, project.config, sayNote, setProject, unsaved]);
+  }, [adopt, arrived, unsaved]);
 
   return {
     arrived,

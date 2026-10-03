@@ -116,6 +116,28 @@ describe("ProjectWatchService", () => {
     assert.deepEqual(await spoken(), [directory]);
   });
 
+  it("tells at once of a change it was asked to look for, without waiting on the file system", async () => {
+    // A window coming to the front asks; a change the file system never delivered is heard this way.
+    const watch = watching();
+
+    await watch.follow(directory);
+    await writeFile(path.join(directory, PROJECT_FILE_NAME), "version: 1\nname: two\n");
+    await watch.look();
+
+    assert.deepEqual(heard, [directory]);
+  });
+
+  it("gives one print for the same files and another once they change, noting nothing", async () => {
+    const watch = watching();
+    const followed = await watch.follow(directory);
+
+    assert.equal(await watch.print(directory), followed);
+
+    await writeFile(path.join(directory, PROJECT_FILE_NAME), "version: 1\nname: two\n");
+
+    assert.notEqual(await watch.print(directory), followed);
+  });
+
   it("keeps hearing after the file is replaced rather than written over", async () => {
     const watch = watching();
     const filePath = path.join(directory, PROJECT_FILE_NAME);

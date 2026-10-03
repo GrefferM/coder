@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { useProjectWrite } from "./use-project-write";
-import { WRITE_FAILED_PREFIX } from "../../constants";
+import { PROJECT_CHANGED_ON_DISK, PROJECT_CHANGED_ON_DISK_NOTE, WRITE_FAILED_PREFIX } from "../../constants";
 import { FORGET_DELETION_CHANNEL, REMEMBER_DELETION_CHANNEL, SAVE_PROJECT_CHANNEL } from "../../../../../../contracts";
 import { aConfig, anAgent, standInBridge } from "../../../../testing";
 import type { OpenProject, ProjectConfig } from "../../../../interfaces";
@@ -22,11 +22,12 @@ const CONFIG = aConfig({
 const PROJECT: OpenProject = {
   directory: "/tmp/coder",
   config: CONFIG,
+  print: "print-1",
   view: null,
 };
 
 /** The machine as the writes meet it: every channel answers, and a spec can make one refuse. */
-function machine(failing: string[] = []) {
+function machine(failing: string[] = [], failure = "немає теки") {
   const sent: { channel: string; payload: unknown }[] = [];
   const invoke = vi.fn(async (channel: string, payload?: unknown) => {
     sent.push({
@@ -35,7 +36,11 @@ function machine(failing: string[] = []) {
     });
 
     if (failing.includes(channel)) {
-      throw new Error("немає теки");
+      throw new Error(failure);
+    }
+
+    if (channel === SAVE_PROJECT_CHANNEL) {
+      return "print-2";
     }
 
     return channel === REMEMBER_DELETION_CHANNEL ? "deletion-1" : undefined;
@@ -85,8 +90,12 @@ describe("useProjectWrite · one write", () => {
     expect(held.of(SAVE_PROJECT_CHANNEL)[0].payload).toEqual({
       directory: "/tmp/coder",
       config: WITHOUT_TELLER,
+      // The reading the config was made from, so a folder changed since is not written over.
+      basis: "print-1",
     });
     expect(page()?.config).toEqual(WITHOUT_TELLER);
+    // The next save stands on what this one left.
+    expect(page()?.print).toBe("print-2");
     expect(result.current.writeNote).toEqual({
       label: "Агента збережено",
       detail: null,
@@ -119,6 +128,25 @@ describe("useProjectWrite · one write", () => {
     expect(result.current.writeNote?.reason).toContain(WRITE_FAILED_PREFIX);
   });
 
+  it("says in red that nothing was written where the files changed on disk, and offers no «ще раз»", async () => {
+    // The same save again would only undo the change on disk; the folder is read again instead.
+    machine([SAVE_PROJECT_CHANNEL], `Error invoking remote method 'projects:save': Error: ${PROJECT_CHANGED_ON_DISK}`);
+
+    const { result, page } = writing();
+
+    await act(async () => {
+      await expect(result.current.save(WITHOUT_TELLER, undefined, true)).rejects.toThrow();
+    });
+
+    expect(page()?.config).toEqual(CONFIG);
+    expect(result.current.writeNote).toEqual({
+      label: PROJECT_CHANGED_ON_DISK_NOTE,
+      detail: null,
+      reason: PROJECT_CHANGED_ON_DISK_NOTE,
+      isRefusal: true,
+    });
+  });
+
   it("runs the very write that failed when «ще раз» is pressed", async () => {
     // The same config and word, not whatever the screen holds by then.
     const held = machine([SAVE_PROJECT_CHANNEL]);
@@ -133,6 +161,7 @@ describe("useProjectWrite · one write", () => {
     expect(held.of(SAVE_PROJECT_CHANNEL)[1].payload).toEqual({
       directory: "/tmp/coder",
       config: WITHOUT_TELLER,
+      basis: "print-1",
     });
   });
 

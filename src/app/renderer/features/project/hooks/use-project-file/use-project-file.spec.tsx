@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Mock } from "vitest";
 import { OPEN_PROJECT_CHANNEL, PROJECT_CHANGED_CHANNEL } from "../../../../../../contracts";
@@ -15,6 +16,7 @@ const CONFIG: ProjectConfig = aConfig({});
 const PROJECT: OpenProject = {
   directory: "/tmp/coder",
   config: CONFIG,
+  print: "print-1",
   view: null,
 };
 
@@ -30,21 +32,49 @@ const DRAFT: UnsavedWork = {
   discard: () => {},
 };
 
-/** The hook renders nothing; the probe shows what it holds. */
-function Probe({ isDirty, sayNote }: { isDirty: boolean; sayNote: (note: WriteNote) => void }) {
-  const { arrived } = useProjectFile(PROJECT, () => {}, isDirty ? DRAFT : null, sayNote);
+/** The hook renders nothing; the probe shows what it holds and offers «Лишити моє». */
+function Probe({
+  isDirty,
+  sayNote,
+  setProject = () => {},
+}: {
+  isDirty: boolean;
+  sayNote: (note: WriteNote) => void;
+  setProject?: (project: OpenProject) => void;
+}) {
+  const { arrived, keepMine } = useProjectFile(
+    PROJECT,
+    (change) => setProject(change as OpenProject),
+    isDirty ? DRAFT : null,
+    sayNote,
+  );
 
-  return <span>{arrived === null ? "нічого не тримає" : "тримає те, що прийшло"}</span>;
+  return (
+    <>
+      <span>{arrived === null ? "нічого не тримає" : "тримає те, що прийшло"}</span>
+      <button onClick={keepMine}>Лишити моє</button>
+    </>
+  );
 }
+
+/** What the folder holds after the change: two more agents. */
+const ARRIVED = {
+  ...CONFIG,
+  agents: [{}, {}],
+} as unknown as ProjectConfig;
 
 describe("useProjectFile", () => {
   let invoke: Mock<(channel: string, payload?: unknown) => unknown>;
 
   beforeEach(() => {
-    invoke = vi.fn(async () => ({
-      ...CONFIG,
-      agents: [{}, {}],
-    }));
+    invoke = vi.fn(async (channel: string) =>
+      channel === OPEN_PROJECT_CHANNEL
+        ? {
+            config: ARRIVED,
+            print: "print-2",
+          }
+        : null,
+    );
     standInBridge<ProjectChanged>({
       invoke,
       subscribe: (_channel, listener) => {
@@ -84,6 +114,32 @@ describe("useProjectFile", () => {
 
     expect(await screen.findByText("тримає те, що прийшло")).toBeInTheDocument();
     expect(sayNote).not.toHaveBeenCalled();
+  });
+
+  it("takes what arrived under «Лишити моє», keeping the draft laid over it rather than the old project", async () => {
+    // Guards a save of the draft writing back everything else that changed on disk.
+    const sayNote = vi.fn();
+    const setProject = vi.fn();
+
+    render(<Probe isDirty sayNote={sayNote} setProject={setProject} />);
+    tell({
+      directory: PROJECT.directory,
+    });
+    await screen.findByText("тримає те, що прийшло");
+    await userEvent.click(screen.getByText("Лишити моє"));
+
+    expect(setProject).toHaveBeenCalledWith({
+      directory: PROJECT.directory,
+      config: ARRIVED,
+      print: "print-2",
+      view: null,
+    });
+    expect(screen.getByText("нічого не тримає")).toBeInTheDocument();
+    expect(sayNote).toHaveBeenCalledWith(
+      expect.objectContaining({
+        label: PROJECT_REREAD_LABEL,
+      }),
+    );
   });
 
   it("says nothing about a folder that is not the open one", () => {

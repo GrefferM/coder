@@ -20,6 +20,8 @@ export interface CreateProject extends OfProject {
 
 export interface SaveProject extends OfProject {
   config: ProjectConfig;
+  /** The print of the reading the config was made from. */
+  basis: string;
 }
 
 /** The view is stored as text, so an unreadable one is not a view. */

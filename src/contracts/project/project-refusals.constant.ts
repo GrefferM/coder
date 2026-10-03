@@ -10,3 +10,5 @@ export const LINKS_MAKE_RING = "LINKS_MAKE_RING";
 export const LINKS_REPEAT = "LINKS_REPEAT";
 /** The file does not hold a project: a field is missing or invalid. */
 export const PROJECT_FILE_BROKEN = "PROJECT_FILE_BROKEN";
+/** The folder changed on disk since the screen read it, so a save from that reading would undo the change. */
+export const PROJECT_CHANGED_ON_DISK = "PROJECT_CHANGED_ON_DISK";

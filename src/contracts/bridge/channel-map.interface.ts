@@ -43,7 +43,7 @@ import type {
   SAVE_PROVIDER_KEY_CHANNEL,
   STOP_AGENT_CHANNEL,
 } from "../channels";
-import type { Deletion, FolderContents, ProjectConfig, ProjectEntry } from "../project";
+import type { Deletion, FolderContents, ProjectEntry, ProjectOnDisk } from "../project";
 import type { ProviderReply, ProviderState } from "../providers";
 import type { McpLook, McpSecretsHeld } from "../mcp";
 import type { SaidTurn } from "../llm";
@@ -75,11 +75,12 @@ import type {
 
 /** What is sent over each channel and what comes back. `void` where nothing is handed over or nothing is answered. */
 export interface ChannelMap {
-  [CREATE_PROJECT_CHANNEL]: { payload: CreateProject; answer: ProjectConfig };
-  [OPEN_PROJECT_CHANNEL]: { payload: OfProject; answer: ProjectConfig };
-  [OPEN_OR_CREATE_PROJECT_CHANNEL]: { payload: OfProject; answer: ProjectConfig };
+  [CREATE_PROJECT_CHANNEL]: { payload: CreateProject; answer: ProjectOnDisk };
+  [OPEN_PROJECT_CHANNEL]: { payload: OfProject; answer: ProjectOnDisk };
+  [OPEN_OR_CREATE_PROJECT_CHANNEL]: { payload: OfProject; answer: ProjectOnDisk };
   [LOOK_PROJECT_CHANNEL]: { payload: OfProject; answer: FolderContents };
-  [SAVE_PROJECT_CHANNEL]: { payload: SaveProject; answer: void };
+  /** The print of what the save left in the folder. */
+  [SAVE_PROJECT_CHANNEL]: { payload: SaveProject; answer: string };
   [FORGET_PROJECT_CHANNEL]: { payload: OfProject; answer: void };
   /** No payload: the main process watches one project at a time. */
   [CLOSE_PROJECT_CHANNEL]: { payload: void; answer: void };

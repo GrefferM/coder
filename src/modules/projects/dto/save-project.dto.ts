@@ -8,4 +8,9 @@ export class SaveProjectDto {
   declare directory: string;
 
   declare config: ProjectConfigDto;
+
+  /** The print of the reading the config was made from; the folder must still hold it, or what the app itself wrote. */
+  @IsString()
+  @IsNotEmpty()
+  declare basis: string;
 }

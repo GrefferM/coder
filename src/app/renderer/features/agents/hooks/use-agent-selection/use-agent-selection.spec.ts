@@ -18,6 +18,7 @@ const PROJECT: OpenProject = {
       }),
     ],
   }),
+  print: "print-1",
   view: null,
 };
 
