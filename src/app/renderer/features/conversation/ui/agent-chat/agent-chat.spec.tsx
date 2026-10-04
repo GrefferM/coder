@@ -107,6 +107,9 @@ function renderChat(overrides: ChatOverrides = {}) {
         onDetach: () => {},
         onSend: () => {},
         onStop: () => {},
+        repeats: 1,
+        onRepeats: () => {},
+        repeating: null,
         ...overrides.field,
       }}
       band={{

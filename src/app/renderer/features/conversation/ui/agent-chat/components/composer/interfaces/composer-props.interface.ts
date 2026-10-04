@@ -1,4 +1,5 @@
 import type { PickedAttachment } from "../../../../../../../interfaces";
+import type { RepeatProgress } from "../../../../../interfaces";
 
 export interface ComposerProps {
   /** The agent the stream is aimed at; `null` when none, so nothing can be sent. */
@@ -18,6 +19,11 @@ export interface ComposerProps {
   onDetach: (path: string) => void;
   onSend: () => void;
   onStop: () => void;
+  /** «x1»: how many times the next question goes in a row. */
+  repeats: number;
+  onRepeats: (count: number) => void;
+  /** Repeats under way: the field is shut and «x1» reads «2/5». */
+  repeating: RepeatProgress | null;
   /** The height the person pulled the field to; `null` means the least height. */
   fieldHeight: number | null;
   /** Called at the end of a pull, not on every pixel. */

@@ -2400,3 +2400,89 @@ describe("useAgentChat as one stream", () => {
     expect(result.current.messages.filter((message) => message.text === "Готово, тест зелений.")).toHaveLength(3);
   });
 });
+
+/** How many turns were asked of the model. */
+function askCount(invoke: Mock): number {
+  return invoke.mock.calls.filter(([channel]) => channel === ASK_AGENT_CHANNEL).length;
+}
+
+describe("useAgentChat · the same question, again and again", () => {
+  it("puts the question again after each whole walk, each a question of its own, until the count is reached", async () => {
+    const invoke = held();
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
+
+    act(() => result.current.setRepeats(3));
+    act(() => result.current.changeDraft("Прогони тести"));
+    act(() => result.current.send());
+
+    expect(result.current.repeating).toEqual({
+      sent: 1,
+      total: 3,
+    });
+
+    await waitFor(() => expect(result.current.repeating).toBeNull());
+
+    const questions = result.current.messages.filter((message) => message.from === "person");
+
+    expect(askCount(invoke)).toBe(3);
+    expect(questions.map((question) => question.text)).toEqual(["Прогони тести", "Прогони тести", "Прогони тести"]);
+    expect(new Set(questions.map((question) => question.questionId)).size).toBe(3);
+    // The count stays for the next send.
+    expect(result.current.repeats).toBe(3);
+  });
+
+  it("shuts the field while the repeats go, so nothing slips in between them", async () => {
+    held();
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
+
+    act(() => result.current.setRepeats(2));
+    act(() => result.current.changeDraft("Прогони тести"));
+    act(() => result.current.send());
+    act(() => result.current.changeDraft("Інше питання"));
+
+    expect(result.current.draft).toBe("");
+
+    await waitFor(() => expect(result.current.repeating).toBeNull());
+
+    act(() => result.current.changeDraft("Інше питання"));
+
+    expect(result.current.draft).toBe("Інше питання");
+  });
+
+  it("ends the repeats where a turn fell", async () => {
+    const invoke = held();
+
+    fallsOnce(invoke, new Error("постачальник не відповів"));
+
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
+
+    act(() => result.current.setRepeats(3));
+    act(() => result.current.changeDraft("Прогони тести"));
+    act(() => result.current.send());
+
+    await waitFor(() => expect(result.current.messages.at(-1)?.isFailure).toBe(true));
+    await waitFor(() => expect(result.current.repeating).toBeNull());
+
+    expect(askCount(invoke)).toBe(1);
+  });
+
+  it("ends the repeats on «ЗУПИНИТИ»", async () => {
+    const invoke = held();
+    const { result } = renderHook(() => useAgentChat(ALONE, "agent-1", PROVIDERS, heard, NO_SERVERS, NO_REFUSALS));
+
+    act(() => result.current.setRepeats(3));
+    act(() => result.current.changeDraft("Прогони тести"));
+    act(() => result.current.send());
+    act(() => result.current.stop());
+
+    expect(result.current.repeating).toBeNull();
+
+    await waitFor(() => expect(result.current.working).toEqual([]));
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(result.current.messages.filter((message) => message.from === "person")).toHaveLength(1);
+    expect(askCount(invoke)).toBeLessThanOrEqual(1);
+  });
+});

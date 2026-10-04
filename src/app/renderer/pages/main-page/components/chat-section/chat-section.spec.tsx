@@ -50,6 +50,9 @@ function chat(patch: Partial<AgentChatState> = {}): AgentChatState {
     detach: vi.fn(),
     send: vi.fn(),
     stop: vi.fn(),
+    repeats: 1,
+    setRepeats: vi.fn(),
+    repeating: null,
     ...patch,
   };
 }

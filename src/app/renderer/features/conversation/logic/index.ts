@@ -51,3 +51,5 @@ export * from "./walk-machine";
 export * from "./within-field";
 export * from "./words-awaiting-hand";
 export * from "./working-turns";
+export * from "./repeat-count";
+export * from "./walk-broke";

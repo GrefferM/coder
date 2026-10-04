@@ -176,6 +176,9 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
         onDetach={field.onDetach}
         onSend={field.onSend}
         onStop={field.onStop}
+        repeats={field.repeats}
+        onRepeats={field.onRepeats}
+        repeating={field.repeating}
         fieldHeight={field.height}
         onFieldHeight={field.onHeight}
       />

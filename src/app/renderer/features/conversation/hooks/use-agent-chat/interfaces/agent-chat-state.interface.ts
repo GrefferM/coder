@@ -1,4 +1,4 @@
-import type { ChatMessage } from "../../../interfaces";
+import type { ChatMessage, RepeatProgress } from "../../../interfaces";
 import type { PickedAttachment } from "../../../../../interfaces";
 import type { OpenCalls } from "../../use-open-calls";
 import type { LinkLife, WaitingAgent, WorkingAgent } from "../../../../../interfaces";
@@ -52,5 +52,11 @@ export interface AgentChatState {
   /** The × on a chip: removes the attachment with that path. */
   detach: (path: string) => void;
   send: () => void;
+  /** Ends the on-screen walk and any repeats under way. */
   stop: () => void;
+  /** «x1»: how many times the next question goes in a row. */
+  repeats: number;
+  setRepeats: (count: number) => void;
+  /** Repeats under way, for «2/5»; `null` when none go. */
+  repeating: RepeatProgress | null;
 }

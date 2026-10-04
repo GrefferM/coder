@@ -1,4 +1,5 @@
 import type { PickedAttachment } from "../../../../../interfaces";
+import type { RepeatProgress } from "../../../interfaces";
 /** The field under the stream: its text, its height and its two acts. */
 export interface ChatField {
   draft: string;
@@ -14,4 +15,9 @@ export interface ChatField {
   onDetach: (path: string) => void;
   onSend: () => void;
   onStop: () => void;
+  /** «x1»: how many times the next question goes in a row. */
+  repeats: number;
+  onRepeats: (count: number) => void;
+  /** Repeats under way, for «2/5»; the field is shut while they go. */
+  repeating: RepeatProgress | null;
 }

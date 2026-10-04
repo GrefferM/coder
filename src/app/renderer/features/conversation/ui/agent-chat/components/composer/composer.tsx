@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AttachChip } from "./components";
+import { AttachChip, RepeatCount } from "./components";
 import { Mark, TextButton } from "../../../../../../components";
 import { useInteraction } from "../../../../../../hooks";
 import { INTERACTION_HOVER_BACKGROUND_COLOR, INTERACTION_TRANSITION } from "../../../../../../constants";
@@ -29,6 +29,8 @@ import {
   AGENT_CHAT_NO_AIM_PLACEHOLDER,
   AGENT_CHAT_OFF_HINT,
   AGENT_CHAT_OFF_PLACEHOLDER,
+  AGENT_CHAT_REPEATING_PLACEHOLDER_PREFIX,
+  AGENT_CHAT_REPEATING_PLACEHOLDER_SUFFIX,
   AGENT_CHAT_RULE_COLOR,
   AGENT_CHAT_SEND_BACKGROUND_COLOR,
   AGENT_CHAT_SEND_BORDER_RADIUS_PX,
@@ -61,6 +63,9 @@ export function Composer({
   onDetach,
   onSend,
   onStop,
+  repeats,
+  onRepeats,
+  repeating,
   fieldHeight,
   onFieldHeight,
 }: ComposerProps) {
@@ -70,17 +75,19 @@ export function Composer({
   const field = useFieldHeight(fieldHeight ?? FIELD_LEAST_HEIGHT_PX, onFieldHeight);
   /** Count of ⌘↵ presses that could not go through; each restarts the stop's blink. */
   const [blockedPresses, setBlockedPresses] = useState(0);
+  /** Repeats hold the stop up between their walks too, and shut the field until the last ends. */
+  const isGoing = isWalking || repeating !== null;
   /** The field's state and its paint. */
-  const standing = fieldStanding(agentId, isAgentActive, isWalking);
+  const standing = fieldStanding(agentId, isAgentActive, isGoing);
   const ground = AGENT_CHAT_FIELD_GROUNDS[standing];
   const canSend = canAsk(draft, standing);
 
   // Quiets the blink when a walk ends.
   useEffect(() => {
-    if (!isWalking) {
+    if (!isGoing) {
       setBlockedPresses(0);
     }
-  }, [isWalking]);
+  }, [isGoing]);
 
   /** Placeholder: the target, agent off, or no target. */
   function fieldPlaceholder(): string {
@@ -90,6 +97,10 @@ export function Composer({
 
     if (!isAgentActive) {
       return AGENT_CHAT_OFF_PLACEHOLDER;
+    }
+
+    if (repeating !== null) {
+      return `${AGENT_CHAT_REPEATING_PLACEHOLDER_PREFIX}${repeating.sent}/${repeating.total}${AGENT_CHAT_REPEATING_PLACEHOLDER_SUFFIX}`;
     }
 
     // During a walk the placeholder gives the reason nothing is sent.
@@ -153,8 +164,8 @@ export function Composer({
       </div>
       <textarea
         value={draft}
-        // Disabled only when there is nothing to write in it.
-        disabled={standing === "stitched"}
+        // Disabled when there is nothing to write in it, and while repeats go, so nothing slips between them.
+        disabled={standing === "stitched" || repeating !== null}
         className={ground.wordClass ?? undefined}
         aria-label={`${AGENT_CHAT_FIELD_PLACEHOLDER_PREFIX}${agentName}`}
         placeholder={fieldPlaceholder()}
@@ -201,7 +212,7 @@ export function Composer({
         }}
       >
         {/* Any turn out, wherever held, can be stopped. */}
-        {isWalking ? (
+        {isGoing ? (
           <TextButton
             // The key restarts the blink on each press.
             key={blockedPresses}
@@ -234,6 +245,7 @@ export function Composer({
           // Stitched field: no «+», only the reason label.
           <Mark className="flex-fill">{aimLabel()}</Mark>
         )}
+        <RepeatCount repeats={repeats} repeating={repeating} isShut={standing === "stitched"} onRepeats={onRepeats} />
         <button
           type="button"
           aria-label={AGENT_CHAT_SEND_LABEL}

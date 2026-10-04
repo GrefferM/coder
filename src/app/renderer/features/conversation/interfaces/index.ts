@@ -44,3 +44,4 @@ export * from "./walk-state.interface";
 export * from "./walk.interface";
 export * from "./written-turn.interface";
 export * from "./words-awaiting-hand.interface";
+export * from "./repeat-progress.interface";

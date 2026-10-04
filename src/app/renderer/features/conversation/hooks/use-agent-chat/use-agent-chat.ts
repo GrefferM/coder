@@ -25,11 +25,12 @@ import {
   wordsAwaitingHand,
   repeatOf,
   waitingAgents,
+  walkBroke,
   walkMachine,
   workingTurns,
 } from "../../logic";
 import { refusedPickNote } from "../../words";
-import { NO_MEMORY } from "../../constants";
+import { NO_MEMORY, REPEAT_LEAST } from "../../constants";
 import { thrownWords } from "../../../../utils/errors";
 import { RECORD_GONE_NOTE, closeRun, readRun, sharedMemory } from "../../../record";
 import type {
@@ -51,7 +52,7 @@ import type {
   WalkHands,
   WalkState,
 } from "../../interfaces";
-import type { AgentChatState } from "./interfaces";
+import type { AgentChatState, RepeatCycle } from "./interfaces";
 
 /** Each agent's chat, in memory while the project is open; an answer walks the lines on until one runs out. */
 export function useAgentChat(
@@ -76,6 +77,11 @@ export function useAgentChat(
   const refused = useRef(onRefused);
   /** Height of the field under the stream; a per-machine, per-project setting kept beside the canvas scale. */
   const [fieldHeight, setFieldHeight] = useState<number | null>(project.view?.fieldHeight ?? null);
+  /** «x1»: how many times the next question goes in a row; kept after the repeats are done. */
+  const [repeats, setRepeats] = useState(REPEAT_LEAST);
+  /** The repeats under way; the field stays shut from the first send to the last walk's end. */
+  const [cycle, setCycle] = useState<RepeatCycle | null>(null);
+  const cycling = useRef(cycle);
   /** Remembers which calls a hand opened; nothing opens itself. */
   const openCalls = useOpenCalls();
   /** Whom the chat is aimed at; picking a sphere aims it, releasing the sphere keeps the aim. */
@@ -113,6 +119,12 @@ export function useAgentChat(
       setAimedAgentId(selectedAgentId);
     }
   }, [selectedAgentId]);
+
+  /** Moves the repeats and the ref with them, so an effect never puts the same repeat twice. */
+  const turnCycle = useCallback((next: RepeatCycle | null) => {
+    cycling.current = next;
+    setCycle(next);
+  }, []);
 
   /** Updates the walk as a whole and the ref with it, so the next callback sees the new one. */
   const change = useCallback((moved: (standing: WalkState) => WalkState) => {
@@ -202,6 +214,11 @@ export function useAgentChat(
 
   const changeDraft = useCallback(
     (written: string) => {
+      // The field is shut while repeats go.
+      if (cycling.current !== null) {
+        return;
+      }
+
       change((standing) => ({
         ...standing,
         drafts: {
@@ -635,7 +652,9 @@ export function useAgentChat(
    * walk).
    */
   const put = useCallback(
-    (agent: Agent, text: string, attached: PackedAttachment[]) => {
+    (agent: Agent, text: string, attached: PackedAttachment[]): string => {
+      const runKey = crypto.randomUUID();
+
       dispatch({
         kind: "put",
         agent,
@@ -645,10 +664,12 @@ export function useAgentChat(
         isAgain: false,
         // The question's id, minted here and kept by the record.
         questionId: crypto.randomUUID(),
-        runKey: crypto.randomUUID(),
+        runKey,
         askedAt: Date.now(),
         turnId: crypto.randomUUID(),
       });
+
+      return runKey;
     },
     [dispatch],
   );
@@ -689,11 +710,23 @@ export function useAgentChat(
 
     // The conversation is walking or still packing, so nothing is sent; typed text stays until the walk ends or
     // «ЗУПИНИТИ».
-    if (isWalking(walkNow()) || packed.isPacking(at)) {
+    if (isWalking(walkNow()) || packed.isPacking(at) || cycling.current !== null) {
       return;
     }
 
     const picked = stands.current.attachments[at] ?? [];
+    /** The first of the repeats; none for a plain send. */
+    const first = (runKey: string | null, attached: PackedAttachment[]): RepeatCycle | null =>
+      repeats > REPEAT_LEAST
+        ? {
+            agentId,
+            text,
+            attached,
+            runKey,
+            sent: 1,
+            total: repeats,
+          }
+        : null;
 
     // The question and its files leave the field together, which is left clear.
     change((standing) => ({
@@ -709,24 +742,79 @@ export function useAgentChat(
     }));
 
     if (picked.length === 0) {
-      put(agent, text, []);
+      turnCycle(first(put(agent, text, []), []));
 
       return;
     }
 
+    // The field is shut while packing, too; the repeats begin with the packed files once the first goes.
+    turnCycle(first(null, []));
     packed.send({
       stream: at,
       text,
       picked,
       ceiling: packCeiling(agentStands(agent, held.current.config, machine.current)),
-      onPacked: (attached) => put(agent, text, attached),
-      onGivenBack: () => giveBack(at, text, picked),
+      onPacked: (attached) => {
+        const runKey = put(agent, text, attached);
+
+        // Stopped while packing: the question goes alone.
+        if (cycling.current !== null) {
+          turnCycle({
+            ...cycling.current,
+            attached,
+            runKey,
+          });
+        }
+      },
+      onGivenBack: () => {
+        turnCycle(null);
+        giveBack(at, text, picked);
+      },
     });
-  }, [aimedAgentId, change, giveBack, packed, put, walkNow]);
+  }, [aimedAgentId, change, giveBack, packed, put, repeats, turnCycle, walkNow]);
+
+  // A whole walk puts the same question again until the count is reached; a broken, stopped or left walk ends the
+  // repeats.
+  useEffect(() => {
+    const going = cycling.current;
+
+    if (going === null || going.runKey === null) {
+      return;
+    }
+
+    const now = walkNow();
+
+    if (isOnScreen(now, going.runKey) && isWalking(now)) {
+      return;
+    }
+
+    const agent = held.current.config.agents.find((one) => one.id === going.agentId) ?? null;
+
+    if (
+      agent === null ||
+      going.sent >= going.total ||
+      !isOnScreen(now, going.runKey) ||
+      walkBroke(now.walks[going.runKey] ?? null)
+    ) {
+      turnCycle(null);
+
+      return;
+    }
+
+    turnCycle({
+      ...going,
+      runKey: put(agent, going.text, going.attached),
+      sent: going.sent + 1,
+    });
+  }, [cycle, put, turnCycle, walkNow, walked]);
 
   /** «+ ПРИКРІПИТИ»: opens the native pick; the choice waits under this stream's field. */
   const attach = useCallback(() => {
     const at = stream.current;
+
+    if (cycling.current !== null) {
+      return;
+    }
 
     const config = held.current.config;
     const agent = config.agents.find((one) => one.id === aimed.current) ?? null;
@@ -761,6 +849,10 @@ export function useAgentChat(
     (path: string) => {
       const at = stream.current;
 
+      if (cycling.current !== null) {
+        return;
+      }
+
       change((standing) => ({
         ...standing,
         attachments: {
@@ -785,6 +877,7 @@ export function useAgentChat(
 
   /** A fresh stream; a walk still out keeps writing into its record and its live row. */
   const fresh = useCallback(() => {
+    turnCycle(null);
     dispatch({
       kind: "putAway",
       stream: freshStream,
@@ -792,18 +885,19 @@ export function useAgentChat(
     // Ends the record, which otherwise goes on as long as the conversation.
     record.turnTo(null);
     setFreshStream(crypto.randomUUID());
-  }, [dispatch, freshStream, record]);
+  }, [dispatch, freshStream, record, turnCycle]);
 
   /**
-   * Ends every turn of the on-screen walk in the main process; a stopped turn hands nothing on. A put-away walk carries
-   * on.
+   * Ends every turn of the on-screen walk in the main process, and the repeats with it; a stopped turn hands nothing on.
+   * A put-away walk carries on.
    */
   const stop = useCallback(() => {
+    turnCycle(null);
     dispatch({
       kind: "stopped",
       runKey: null,
     });
-  }, [dispatch]);
+  }, [dispatch, turnCycle]);
   /** What this stream's walks stand on, as this render sees them. */
   const walk: WalkState = {
     ...walked,
@@ -875,5 +969,14 @@ export function useAgentChat(
     detach,
     send,
     stop,
+    repeats,
+    setRepeats,
+    repeating:
+      cycle === null
+        ? null
+        : {
+            sent: cycle.sent,
+            total: cycle.total,
+          },
   };
 }

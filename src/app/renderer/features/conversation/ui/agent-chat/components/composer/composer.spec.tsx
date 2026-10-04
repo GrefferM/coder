@@ -11,6 +11,7 @@ import {
   AGENT_CHAT_GRIP_LABEL,
   AGENT_CHAT_ATTACH_CLOSE_LABEL,
   AGENT_CHAT_ATTACH_LABEL,
+  AGENT_CHAT_REPEAT_LABEL,
   AGENT_CHAT_SEND_LABEL,
   AGENT_CHAT_STOP_BLINK_CLASS,
   AGENT_CHAT_STOP_LABEL,
@@ -80,6 +81,9 @@ function props(patch: Partial<ComposerProps> = {}): ComposerProps {
     onDetach: vi.fn(),
     onSend: vi.fn(),
     onStop: vi.fn(),
+    repeats: 1,
+    onRepeats: vi.fn(),
+    repeating: null,
     fieldHeight: null,
     onFieldHeight: vi.fn(),
     ...patch,
@@ -304,5 +308,97 @@ describe("Composer · attaching files", () => {
     render(<Composer {...props()} />);
 
     expect(screen.queryByText("logout.log")).not.toBeInTheDocument();
+  });
+});
+
+describe("Composer · «x1»", () => {
+  it("opens the count to typing on a press and keeps it on Enter, held to 999", async () => {
+    const onRepeats = vi.fn();
+
+    render(
+      <Composer
+        {...props({
+          onRepeats,
+        })}
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: AGENT_CHAT_REPEAT_LABEL,
+      }),
+    );
+    await userEvent.keyboard("1500{Enter}");
+
+    // Only three digits are taken, so 1500 is typed as 150.
+    expect(onRepeats).toHaveBeenCalledWith(150);
+  });
+
+  it("keeps one where nothing below it can go, and drops what was typed on Escape", async () => {
+    const onRepeats = vi.fn();
+
+    render(
+      <Composer
+        {...props({
+          repeats: 4,
+          onRepeats,
+        })}
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: AGENT_CHAT_REPEAT_LABEL,
+      }),
+    );
+    await userEvent.keyboard("0{Enter}");
+
+    expect(onRepeats).toHaveBeenLastCalledWith(1);
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: AGENT_CHAT_REPEAT_LABEL,
+      }),
+    );
+    await userEvent.keyboard("9{Escape}");
+
+    expect(onRepeats).toHaveBeenCalledTimes(1);
+    expect(
+      screen.getByRole("button", {
+        name: AGENT_CHAT_REPEAT_LABEL,
+      }),
+    ).toHaveTextContent("x4");
+  });
+
+  it("reads «2/5» while the repeats go, with the field shut and the stop under it", () => {
+    render(
+      <Composer
+        {...props({
+          repeats: 5,
+          repeating: {
+            sent: 2,
+            total: 5,
+          },
+          draft: "",
+        })}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", {
+        name: AGENT_CHAT_REPEAT_LABEL,
+      }),
+    ).toHaveTextContent("2/5");
+    expect(
+      screen.getByRole("button", {
+        name: AGENT_CHAT_REPEAT_LABEL,
+      }),
+    ).toBeDisabled();
+    expect(screen.getByLabelText(FIELD)).toBeDisabled();
+    expect(
+      screen.getByRole("button", {
+        name: AGENT_CHAT_STOP_LABEL,
+      }),
+    ).toBeInTheDocument();
   });
 });

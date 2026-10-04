@@ -69,6 +69,19 @@ export const AGENT_CHAT_SEND_BACKGROUND_COLOR = "#1b1f2c";
 export const AGENT_CHAT_SEND_ICON_SIZE_PX = 14;
 export const AGENT_CHAT_SEND_ICON_COLOR = "#5c6478";
 
+/** «x1» beside the send: how many times the question goes; a count over one is lit in the accent. */
+export const AGENT_CHAT_REPEAT_LABEL = "Скільки разів надіслати";
+export const AGENT_CHAT_REPEAT_MARK = "x";
+export const AGENT_CHAT_REPEAT_MIN_WIDTH_PX = 36;
+export const AGENT_CHAT_REPEAT_PADDING = "0 8px";
+export const AGENT_CHAT_REPEAT_FONT_SIZE_PX = 11;
+export const AGENT_CHAT_REPEAT_COLOR = "#5c6478";
+export const AGENT_CHAT_REPEAT_LIT_COLOR = FIRST_LEVEL_TEXT_COLOR;
+export const AGENT_CHAT_REPEAT_MANY_COLOR = INTERACTION_ACCENT_COLOR;
+/** While repeats go the field is shut and says which one is out. */
+export const AGENT_CHAT_REPEATING_PLACEHOLDER_PREFIX = "Повтор ";
+export const AGENT_CHAT_REPEATING_PLACEHOLDER_SUFFIX = " — зачекайте або зупиніть";
+
 /** While a turn runs, the hint is replaced by the stop action (muted red). */
 export const AGENT_CHAT_STOP_LABEL = "Зупинити";
 /** The stop button's own tone, not the ordinary accent. */

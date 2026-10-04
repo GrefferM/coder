@@ -59,6 +59,9 @@ export function ChatSection({
             onDetach: chat.detach,
             onSend: chat.send,
             onStop: chat.stop,
+            repeats: chat.repeats,
+            onRepeats: chat.setRepeats,
+            repeating: chat.repeating,
           }}
           band={{
             head: stream.head,
