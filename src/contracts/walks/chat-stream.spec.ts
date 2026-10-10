@@ -1,8 +1,9 @@
-import { describe, expect, it } from "vitest";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { chatStream } from "./chat-stream";
-import { begunWalk } from "./begun-walk";
-import { emptyWalk } from "./empty-walk";
-import type { ChatMessage, WalkSnapshot } from "../interfaces";
+import { aWalk, anEmptySnapshot } from "../testing";
+import type { ChatMessage } from "./chat-message.interface";
+import type { WalkSnapshot } from "./walk-snapshot.interface";
 
 function said(patch: Partial<ChatMessage>): ChatMessage {
   return {
@@ -35,12 +36,12 @@ function said(patch: Partial<ChatMessage>): ChatMessage {
 /** One stream's walks with the words each said, all standing on this screen. */
 function walk(said: Record<string, ChatMessage[]>): WalkSnapshot {
   return {
-    ...emptyWalk(),
+    ...anEmptySnapshot(),
     walks: Object.fromEntries(
       Object.entries(said).map(([runKey, words]) => [
         runKey,
         {
-          ...begunWalk("question-1", 1),
+          ...aWalk("question-1", 1),
           said: words,
         },
       ]),
@@ -77,7 +78,10 @@ describe("chatStream", () => {
     );
 
     // The older question stands first even when its words came later.
-    expect(stream.map((message) => message.id)).toEqual(["two", "three", "one"]);
+    assert.deepEqual(
+      stream.map((message) => message.id),
+      ["two", "three", "one"],
+    );
   });
 
   it("keeps two questions of one millisecond in two blocks: the id holds them apart where the clock cannot", () => {
@@ -106,7 +110,10 @@ describe("chatStream", () => {
       }),
     );
 
-    expect(stream.map((message) => message.id)).toEqual(["a-1", "a-2", "b-1"]);
+    assert.deepEqual(
+      stream.map((message) => message.id),
+      ["a-1", "a-2", "b-1"],
+    );
   });
 
   it("leaves out the copy of an answer that arrived down a line", () => {
@@ -124,16 +131,19 @@ describe("chatStream", () => {
       }),
     );
 
-    expect(stream.map((message) => message.id)).toEqual(["own"]);
+    assert.deepEqual(
+      stream.map((message) => message.id),
+      ["own"],
+    );
   });
 
   it("says nothing of a walk writing into another row: that is another conversation", () => {
     // A walk's words stand where its row stands, not on this screen.
     const stream = chatStream({
-      ...emptyWalk(),
+      ...anEmptySnapshot(),
       walks: {
         "walk-1": {
-          ...begunWalk("question-1", 1, "run-1"),
+          ...aWalk("question-1", 1, "run-1"),
           said: [
             said({
               id: "here",
@@ -141,7 +151,7 @@ describe("chatStream", () => {
           ],
         },
         "walk-2": {
-          ...begunWalk("question-2", 2, "run-2"),
+          ...aWalk("question-2", 2, "run-2"),
           said: [
             said({
               id: "elsewhere",
@@ -152,10 +162,13 @@ describe("chatStream", () => {
       flowRunId: "run-1",
     });
 
-    expect(stream.map((message) => message.id)).toEqual(["here"]);
+    assert.deepEqual(
+      stream.map((message) => message.id),
+      ["here"],
+    );
   });
 
   it("says nothing about a project nobody has spoken to", () => {
-    expect(chatStream(walk({}))).toEqual([]);
+    assert.deepEqual(chatStream(walk({})), []);
   });
 });

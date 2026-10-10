@@ -1,8 +1,10 @@
-import { describe, expect, it } from "vitest";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { chatFileName, chatText } from "./chat-text";
-import { CHAT_EXPORT_HEADING, CHAT_EXPORT_RULE } from "../constants";
-import type { ChatMessage } from "../interfaces";
-import type { NamedAgent, TurnCall } from "../../../interfaces";
+import { CHAT_EXPORT_HEADING, CHAT_EXPORT_RULE } from "./chat-export.constant";
+import type { ChatMessage } from "./chat-message.interface";
+import type { NamedAgent } from "../project";
+import type { TurnCall } from "../runs";
 
 const AT = new Date(2026, 8, 27, 14, 5).toISOString();
 
@@ -80,8 +82,8 @@ describe("chatText", () => {
     );
     const [head, rule] = out.split("\n");
 
-    expect(head).toMatch(new RegExp(`^${CHAT_EXPORT_HEADING} · \\d{2}\\.\\d{2}\\.\\d{4}$`));
-    expect(rule).toBe(CHAT_EXPORT_RULE);
+    assert.match(head, new RegExp(`^${CHAT_EXPORT_HEADING} · \\d{2}\\.\\d{2}\\.\\d{4}$`));
+    assert.equal(rule, CHAT_EXPORT_RULE);
   });
 
   it("names the person and the hour, then the words", () => {
@@ -95,8 +97,8 @@ describe("chatText", () => {
       AGENTS,
     );
 
-    expect(out).toContain("[14:05] ВИ:");
-    expect(out).toContain("Що це?");
+    assert.ok(out.includes("[14:05] ВИ:"));
+    assert.ok(out.includes("Що це?"));
   });
 
   it("names an agent by its own name", () => {
@@ -111,8 +113,8 @@ describe("chatText", () => {
       AGENTS,
     );
 
-    expect(out).toContain("[14:05] Рецензент:");
-    expect(out).toContain("Готово");
+    assert.ok(out.includes("[14:05] Рецензент:"));
+    assert.ok(out.includes("Готово"));
   });
 
   it("lists a question's attached files, a folder with a trailing slash", () => {
@@ -136,7 +138,7 @@ describe("chatText", () => {
       AGENTS,
     );
 
-    expect(out).toContain("Прикріплено: notes.txt, src/");
+    assert.ok(out.includes("Прикріплено: notes.txt, src/"));
   });
 
   it("writes a tool call — what went in and what came back", () => {
@@ -159,10 +161,10 @@ describe("chatText", () => {
       AGENTS,
     );
 
-    expect(out).toContain("→ fetch");
-    expect(out).toContain("url: https://x");
-    expect(out).toContain("результат:");
-    expect(out).toContain("200 OK");
+    assert.ok(out.includes("→ fetch"));
+    assert.ok(out.includes("url: https://x"));
+    assert.ok(out.includes("результат:"));
+    assert.ok(out.includes("200 OK"));
   });
 
   it("writes a command's own line, and its result", () => {
@@ -184,9 +186,9 @@ describe("chatText", () => {
       AGENTS,
     );
 
-    expect(out).toContain("команда: ls -a");
-    expect(out).toContain("a");
-    expect(out).toContain("b");
+    assert.ok(out.includes("команда: ls -a"));
+    assert.ok(out.includes("a"));
+    assert.ok(out.includes("b"));
   });
 
   it("says a call was refused with the refusal in place of the result", () => {
@@ -204,8 +206,8 @@ describe("chatText", () => {
       AGENTS,
     );
 
-    expect(out).toContain("відмовлено");
-    expect(out).toContain("ні");
+    assert.ok(out.includes("відмовлено"));
+    assert.ok(out.includes("ні"));
   });
 
   it("names a supplier turn by the neighbour it came from", () => {
@@ -220,8 +222,8 @@ describe("chatText", () => {
       AGENTS,
     );
 
-    expect(out).toContain("[14:05] Редактор (робота):");
-    expect(out).toContain("ось");
+    assert.ok(out.includes("[14:05] Редактор (робота):"));
+    assert.ok(out.includes("ось"));
   });
 
   it("writes a handoff as one line, from one agent to another", () => {
@@ -236,7 +238,7 @@ describe("chatText", () => {
       AGENTS,
     );
 
-    expect(out).toContain("роботу передано: Рецензент → Редактор");
+    assert.ok(out.includes("роботу передано: Рецензент → Редактор"));
   });
 
   it("writes a question that never went as one line, named by whom it was for", () => {
@@ -250,7 +252,7 @@ describe("chatText", () => {
       AGENTS,
     );
 
-    expect(out).toContain("не надіслано до: Редактор");
+    assert.ok(out.includes("не надіслано до: Редактор"));
   });
 
   it("keeps out an agent beat with nothing said, attached or called", () => {
@@ -264,7 +266,7 @@ describe("chatText", () => {
       AGENTS,
     );
 
-    expect(out).not.toContain("Рецензент");
+    assert.ok(!out.includes("Рецензент"));
   });
 
   it("carries nothing of tokens or price, even when the turn holds a cost", () => {
@@ -283,9 +285,9 @@ describe("chatText", () => {
       AGENTS,
     );
 
-    expect(out).not.toContain("111");
-    expect(out).not.toContain("222");
-    expect(out).not.toContain("3.5");
+    assert.ok(!out.includes("111"));
+    assert.ok(!out.includes("222"));
+    assert.ok(!out.includes("3.5"));
   });
 });
 
@@ -301,8 +303,8 @@ describe("chatFileName", () => {
       AGENTS,
     );
 
-    expect(out).toContain("[14:05] Рецензент (упав):");
-    expect(out).toContain("  ! Відповідь не прийшла · ключ відхилено");
+    assert.ok(out.includes("[14:05] Рецензент (упав):"));
+    assert.ok(out.includes("  ! Відповідь не прийшла · ключ відхилено"));
   });
 
   it("writes a turn that never began, marked, with the card's sentence", () => {
@@ -316,8 +318,8 @@ describe("chatFileName", () => {
       AGENTS,
     );
 
-    expect(out).toContain("[14:05] Рецензент (хід не почався):");
-    expect(out).toContain("Модель m належить провайдеру p, а ключа до нього немає.");
+    assert.ok(out.includes("[14:05] Рецензент (хід не почався):"));
+    assert.ok(out.includes("Модель m належить провайдеру p, а ключа до нього немає."));
   });
 
   it("says a step broke once, for the turns that broke together", () => {
@@ -339,9 +341,9 @@ describe("chatFileName", () => {
       AGENTS,
     );
 
-    expect(out).not.toContain("Рецензент");
-    expect(out).toContain("[14:05] Редактор:");
-    expect(out.match(/Крок обірвався/g)).toHaveLength(1);
+    assert.ok(!out.includes("Рецензент"));
+    assert.ok(out.includes("[14:05] Редактор:"));
+    assert.equal(out.match(/Крок обірвався/g)?.length, 1);
   });
 
   it("writes a line the work did not go down, with the reason", () => {
@@ -357,10 +359,10 @@ describe("chatFileName", () => {
       AGENTS,
     );
 
-    expect(out).toContain("[14:05] роботу не передано: Рецензент → Редактор (вимкнений)");
+    assert.ok(out.includes("[14:05] роботу не передано: Рецензент → Редактор (вимкнений)"));
   });
 
   it("is «розмова-РРРР-ММ-ДД.txt» by the day it is written", () => {
-    expect(chatFileName(new Date(2026, 8, 7))).toBe("розмова-2026-09-07.txt");
+    assert.equal(chatFileName(new Date(2026, 8, 7)), "розмова-2026-09-07.txt");
   });
 });

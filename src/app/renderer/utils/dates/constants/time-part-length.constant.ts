@@ -1,2 +1,1 @@
-/** Both time parts are two digits. */
-export const TIME_PART_LENGTH = 2;
+export { TIME_PART_LENGTH } from "../../../../../contracts/text/time-part-length.constant";

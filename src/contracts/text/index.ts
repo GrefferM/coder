@@ -6,3 +6,5 @@ export * from "./tidy-answer";
 export * from "./grouped-number";
 export * from "./number.constant";
 export * from "./ukrainian-plural";
+export * from "./time-label";
+export * from "./time-part-length.constant";

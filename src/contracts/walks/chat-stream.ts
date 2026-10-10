@@ -1,5 +1,6 @@
-import { isOnScreen } from "../../../../../contracts";
-import type { ChatMessage, WalkSnapshot } from "../interfaces";
+import { isOnScreen } from "./is-on-screen";
+import type { ChatMessage } from "./chat-message.interface";
+import type { WalkSnapshot } from "./walk-snapshot.interface";
 
 /**
  * One block per question in the order asked, each block's words in the order said; the id separates questions of the

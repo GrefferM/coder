@@ -15,3 +15,6 @@ export * from "./walk-hub-parts.interface";
 export * from "./walk-voice.interface";
 export * from "./walks-module.interface";
 export * from "./ears-owner.interface";
+export * from "./agent-answered.interface";
+export * from "./agent-asked.interface";
+export * from "./project-catalog.interface";

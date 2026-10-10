@@ -1,4 +1,4 @@
-import { inStreamOrder } from "./chat-stream";
+import { inStreamOrder } from "../../../../../contracts";
 import { isOnScreen } from "../../../../../contracts";
 import type { ChatMessage, WalkSnapshot } from "../interfaces";
 

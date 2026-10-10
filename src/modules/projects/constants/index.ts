@@ -14,3 +14,4 @@ export * from "./prompt-file.constant";
 export * from "./prompts-directory-name.constant";
 export * from "./recent-projects.constant";
 export * from "./tool-source.constant";
+export * from "./project-finder-notes.constant";

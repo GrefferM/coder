@@ -71,6 +71,11 @@ export class WalkHub implements EarsOwner {
     this.runner?.stop();
   }
 
+  /** Resolves once no walk is out and everything written has landed or been refused. */
+  async whenIdle(): Promise<void> {
+    await this.runner?.whenIdle();
+  }
+
   sayAgain(said: ChatMessage): void {
     this.opened().sayAgain(said);
   }

@@ -121,6 +121,19 @@ describe("WalkHub", () => {
     assert.equal(hub.put("agent-1", "друге", []), null);
   });
 
+  it("is idle at once where no conversation is open, and after the walk where one is", async () => {
+    const { hub, record } = hubOn({
+      "agent-1": "відповідь",
+    });
+
+    await hub.whenIdle();
+    hub.open("/work/coder", CONFIG);
+    hub.put("agent-1", "питання", []);
+    await hub.whenIdle();
+
+    assert.equal(record.steps.length, 1);
+  });
+
   it("reads the config it was last handed, so an agent added meanwhile can be asked", () => {
     const { hub } = hubOn({});
     const added = anAgent({

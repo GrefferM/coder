@@ -1,4 +1,4 @@
-import type { Walk } from "../interfaces";
+import type { Walk } from "./walk.interface";
 
 /**
  * Whether a walk ended other than whole: gone or put away, stopped, a question or an end the record refused, or any

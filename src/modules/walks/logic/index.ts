@@ -30,3 +30,4 @@ export * from "./unread-turn";
 export * from "./call-end";
 export * from "./granted-server-ids";
 export * from "./walk-snapshot";
+export * from "./agent-named";

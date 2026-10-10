@@ -1,4 +1,4 @@
-import { inStreamOrder } from "./chat-stream";
+import { inStreamOrder } from "../../../../../contracts";
 import { runStream } from "./run-stream";
 import type { WholeRun } from "../../record";
 import type { ChatMessage } from "../interfaces";

@@ -1,5 +1,5 @@
-import { CHAT_STEP_BROKEN_NOTE } from "../constants";
-import type { ChatMessage } from "../interfaces";
+import { CHAT_STEP_BROKEN_NOTE } from "./chat-notes.constant";
+import type { ChatMessage } from "./chat-message.interface";
 
 /**
  * Whether the app speaks at this turn: a broken step says its word once, at the last of the turns that broke together

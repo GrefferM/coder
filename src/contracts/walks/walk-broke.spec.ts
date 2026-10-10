@@ -1,7 +1,9 @@
-import { describe, expect, it } from "vitest";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { walkBroke } from "./walk-broke";
-import { begunWalk } from "./begun-walk";
-import type { ChatMessage, Walk } from "../interfaces";
+import { aWalk } from "../testing";
+import type { ChatMessage } from "./chat-message.interface";
+import type { Walk } from "./walk.interface";
 
 function said(patch: Partial<ChatMessage>): ChatMessage {
   return {
@@ -33,7 +35,7 @@ function said(patch: Partial<ChatMessage>): ChatMessage {
 
 function walk(patch: Partial<Walk> = {}): Walk {
   return {
-    ...begunWalk("question-1", 1),
+    ...aWalk("question-1", 1),
     said: [
       said({
         from: "person",
@@ -47,29 +49,31 @@ function walk(patch: Partial<Walk> = {}): Walk {
 
 describe("walkBroke", () => {
   it("lets a whole walk go on to the next repeat", () => {
-    expect(walkBroke(walk())).toBe(false);
+    assert.equal(walkBroke(walk()), false);
   });
 
   it("breaks on a walk that is gone, put away or stopped", () => {
-    expect(walkBroke(null)).toBe(true);
-    expect(
+    assert.equal(walkBroke(null), true);
+    assert.equal(
       walkBroke(
         walk({
           isPutAway: true,
         }),
       ),
-    ).toBe(true);
-    expect(
+      true,
+    );
+    assert.equal(
       walkBroke(
         walk({
           isStopped: true,
         }),
       ),
-    ).toBe(true);
+      true,
+    );
   });
 
   it("breaks where the record refused the end", () => {
-    expect(
+    assert.equal(
       walkBroke(
         walk({
           unclosed: {
@@ -78,11 +82,12 @@ describe("walkBroke", () => {
           },
         }),
       ),
-    ).toBe(true);
+      true,
+    );
   });
 
   it("breaks on a turn that fell, never began or did not go", () => {
-    expect(
+    assert.equal(
       walkBroke(
         walk({
           said: [
@@ -92,8 +97,9 @@ describe("walkBroke", () => {
           ],
         }),
       ),
-    ).toBe(true);
-    expect(
+      true,
+    );
+    assert.equal(
       walkBroke(
         walk({
           said: [
@@ -103,8 +109,9 @@ describe("walkBroke", () => {
           ],
         }),
       ),
-    ).toBe(true);
-    expect(
+      true,
+    );
+    assert.equal(
       walkBroke(
         walk({
           said: [
@@ -114,6 +121,7 @@ describe("walkBroke", () => {
           ],
         }),
       ),
-    ).toBe(true);
+      true,
+    );
   });
 });

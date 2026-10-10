@@ -3,3 +3,4 @@ export * from "./system-shell.service";
 export * from "./window-project-voice.service";
 export * from "./window-voice.service";
 export * from "./window-walk-voice.service";
+export * from "./quiet-voice.service";

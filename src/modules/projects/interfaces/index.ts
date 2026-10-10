@@ -9,3 +9,5 @@ export * from "./project-history.interface";
 export * from "./project-module.interface";
 export * from "./project-read.interface";
 export * from "./deletion-record.interface";
+export * from "./found-project.interface";
+export * from "./project-opener.interface";

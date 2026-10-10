@@ -90,7 +90,14 @@ export default tseslint.config(
     // window's preload script directly, bootstrap.js is what applies the hook itself, the repo's
     // own scripts run as plain Node outside any TypeScript pipeline, and a stand-in server a test
     // spawns is a separate process of its own with nothing hooked into it either.
-    files: ["src/app/preload.js", "src/app/bootstrap.js", "scripts/*.js", "scripts/*.cjs", "src/**/testing/*.cjs"],
+    files: [
+      "src/app/preload.js",
+      "src/app/bootstrap.js",
+      "src/app/agent-bootstrap.js",
+      "scripts/*.js",
+      "scripts/*.cjs",
+      "src/**/testing/*.cjs",
+    ],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
     },

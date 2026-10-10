@@ -1,7 +1,8 @@
-import { describe, expect, it } from "vitest";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { breakWords, saysBreak } from "./step-break";
-import { CHAT_STEP_BROKEN_NOTE } from "../constants";
-import type { ChatMessage } from "../interfaces";
+import { CHAT_STEP_BROKEN_NOTE } from "./chat-notes.constant";
+import type { ChatMessage } from "./chat-message.interface";
 
 function said(patch: Partial<ChatMessage> = {}): ChatMessage {
   return {
@@ -43,16 +44,16 @@ function broke(note: string, id: string, walkId = "walk-1"): ChatMessage {
 
 describe("saysBreak", () => {
   it("speaks at a turn that broke alone", () => {
-    expect(saysBreak([broke("Зупинено", "one")], 0)).toBe(true);
+    assert.equal(saysBreak([broke("Зупинено", "one")], 0), true);
   });
 
   it("keeps quiet at every turn of a break but the last of them", () => {
     // A broken step says its word once, at the end of the turns that broke together.
     const messages = [broke("Зупинено", "one"), broke("Зупинено", "two"), broke("Зупинено", "three")];
 
-    expect(saysBreak(messages, 0)).toBe(false);
-    expect(saysBreak(messages, 1)).toBe(false);
-    expect(saysBreak(messages, 2)).toBe(true);
+    assert.equal(saysBreak(messages, 0), false);
+    assert.equal(saysBreak(messages, 1), false);
+    assert.equal(saysBreak(messages, 2), true);
   });
 
   it("speaks at every walk of its own, so a repeat is counted and not folded into the try before it", () => {
@@ -63,13 +64,13 @@ describe("saysBreak", () => {
       broke("Зупинено", "three", "walk-3"),
     ];
 
-    expect(saysBreak(messages, 0)).toBe(true);
-    expect(saysBreak(messages, 1)).toBe(true);
-    expect(saysBreak(messages, 2)).toBe(true);
+    assert.equal(saysBreak(messages, 0), true);
+    assert.equal(saysBreak(messages, 1), true);
+    assert.equal(saysBreak(messages, 2), true);
   });
 
   it("speaks where the turn after it said something of its own, since that ends the break", () => {
-    expect(saysBreak([broke("Зупинено", "one"), said()], 0)).toBe(true);
+    assert.equal(saysBreak([broke("Зупинено", "one"), said()], 0), true);
   });
 
   it("speaks where the turn itself said something, whatever follows", () => {
@@ -80,26 +81,26 @@ describe("saysBreak", () => {
       broke("Зупинено", "two"),
     ];
 
-    expect(saysBreak(messages, 0)).toBe(true);
+    assert.equal(saysBreak(messages, 0), true);
   });
 });
 
 describe("breakWords", () => {
   it("says the end where a turn broke alone", () => {
-    expect(breakWords([broke("Зупинено", "one")], 0)).toBe("Зупинено");
+    assert.equal(breakWords([broke("Зупинено", "one")], 0), "Зупинено");
   });
 
   it("says the end the turns share, since it is true of all of them", () => {
     const messages = [broke("Зупинено", "one"), broke("Зупинено", "two")];
 
-    expect(breakWords(messages, 1)).toBe("Зупинено");
+    assert.equal(breakWords(messages, 1), "Зупинено");
   });
 
   it("says the general word where the turns came to different ends", () => {
     // Differing ends give the general word, not the last one's.
     const messages = [broke("Зупинено", "one"), broke("Модель не сказала нічого", "two")];
 
-    expect(breakWords(messages, 1)).toBe(CHAT_STEP_BROKEN_NOTE);
+    assert.equal(breakWords(messages, 1), CHAT_STEP_BROKEN_NOTE);
   });
 
   it("counts back only over the turns of this break, and not past one that spoke", () => {
@@ -111,6 +112,6 @@ describe("breakWords", () => {
     ];
 
     // A turn that spoke separates breaks: what is above it belongs to another break.
-    expect(breakWords(messages, 3)).toBe("Зупинено");
+    assert.equal(breakWords(messages, 3), "Зупинено");
   });
 });

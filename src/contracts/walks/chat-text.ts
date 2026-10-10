@@ -26,12 +26,14 @@ import {
   CHAT_EXPORT_REASON_OPEN,
   CHAT_EXPORT_RULE,
   CHAT_EXPORT_SUPPLIER_SUFFIX,
-  CHAT_STOP_REASON_LABELS,
-} from "../constants";
+} from "./chat-export.constant";
+import { CHAT_STOP_REASON_LABELS } from "./chat-notes.constant";
 import { breakWords, saysBreak } from "./step-break";
-import { timeLabel } from "../../../utils/dates";
-import type { AttachedFile, ChatMessage } from "../interfaces";
-import type { NamedAgent, TurnCall } from "../../../interfaces";
+import { timeLabel } from "../text/time-label";
+import type { AttachedFile } from "./attached-file.interface";
+import type { ChatMessage } from "./chat-message.interface";
+import type { NamedAgent } from "../project";
+import type { TurnCall } from "../runs";
 
 /**
  * The stream as a plain-text transcript: each turn's speaker and time, words, attached files, and tool calls with input

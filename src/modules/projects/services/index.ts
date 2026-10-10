@@ -6,3 +6,4 @@ export * from "./project-folder.service";
 export * from "./project-watch.service";
 export * from "./project.service";
 export * from "./deletion.service";
+export * from "./project-finder.service";

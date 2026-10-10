@@ -5,8 +5,6 @@ export * from "./call-end";
 export * from "./can-ask";
 export * from "./chat-levels";
 export * from "./chat-standing";
-export * from "./chat-stream";
-export * from "./chat-text";
 export * from "./code-points";
 export * from "./empty-walk";
 export * from "./fell-agents";
@@ -21,7 +19,6 @@ export * from "./run-stream";
 export * from "./standing-calls";
 export * from "./standing-in";
 export * from "./stands-with-repeat";
-export * from "./step-break";
 export * from "./memory-length";
 export * from "./turn-length";
 export * from "./waiting-agents";
@@ -29,5 +26,14 @@ export * from "./within-field";
 export * from "./words-awaiting-hand";
 export * from "./working-turns";
 export * from "./repeat-count";
-export * from "./walk-broke";
-export { isOnScreen, isWalking } from "../../../../../contracts";
+export {
+  breakWords,
+  chatFileName,
+  chatStream,
+  chatText,
+  inStreamOrder,
+  isOnScreen,
+  isWalking,
+  saysBreak,
+  walkBroke,
+} from "../../../../../contracts";

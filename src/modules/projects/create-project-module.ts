@@ -6,6 +6,7 @@ import {
   ProjectFileReader,
   ProjectFileService,
   ProjectFileWriter,
+  ProjectFinder,
   ProjectFolder,
   ProjectService,
   ProjectWatchService,
@@ -34,5 +35,6 @@ export function createProjectModule(dataSource: DataSource, voice: ProjectVoice)
     controller: projectController,
     deletionController: new DeletionController(deletionService),
     watch: projectWatchService,
+    finder: new ProjectFinder(projectService),
   };
 }
