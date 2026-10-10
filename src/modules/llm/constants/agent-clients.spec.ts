@@ -58,13 +58,14 @@ describe("the OpenCode Go client on the wire", () => {
   });
 
   /** One call of the model with the network stood in for; what went out is returned. */
-  async function sent(model: string): Promise<{ url: string; headers: Headers }> {
-    const out: { url: string; headers: Headers }[] = [];
+  async function sent(model: string, temperature?: number): Promise<{ url: string; headers: Headers; body: string }> {
+    const out: { url: string; headers: Headers; body: string }[] = [];
 
     globalThis.fetch = (async (url: string | URL | Request, init?: RequestInit) => {
       out.push({
         url: String(url),
         headers: new Headers(init?.headers),
+        body: String(init?.body ?? ""),
       });
 
       return new Response("{}", {
@@ -79,7 +80,7 @@ describe("the OpenCode Go client on the wire", () => {
       model,
       key: "oc-key",
       address: null,
-      temperature: 0,
+      temperature,
       answerTokens: 1_000,
       session: "chat-7",
     });
@@ -111,5 +112,21 @@ describe("the OpenCode Go client on the wire", () => {
     assert.equal(call.url, `${OPENCODE_PROTOCOL_ROOT}/responses`);
     assert.equal(call.headers.get(OPENCODE_SESSION_HEADER), "chat-7");
     assert.equal(call.headers.get("user-agent"), OPENCODE_USER_AGENT);
+  });
+
+  it("sends no temperature when none is given, whichever protocol the model is reached by", async () => {
+    for (const model of ["kimi-k3", "claude-haiku-5-5", "gpt-6-luna"]) {
+      const call = await sent(model);
+
+      assert.equal("temperature" in JSON.parse(call.body), false, model);
+    }
+  });
+
+  it("sends the temperature when it is set, whichever protocol the model is reached by", async () => {
+    for (const model of ["kimi-k3", "claude-haiku-5-5", "gpt-6-luna"]) {
+      const call = await sent(model, 0.4);
+
+      assert.equal(JSON.parse(call.body).temperature, 0.4, model);
+    }
   });
 });

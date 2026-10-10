@@ -34,6 +34,7 @@ import type {
   AgentAgentTool,
   AgentChunk,
   AgentClient,
+  AgentOpening,
   AgentCommandTool,
   AgentKeyStore,
   AgentServerTool,
@@ -445,6 +446,7 @@ const FIND_DEEP: AgentCommandTool = {
 function speaking(rounds: AIMessageChunk[]) {
   const heard: BaseMessage[][] = [];
   const bound: unknown[] = [];
+  const openings: AgentOpening[] = [];
   let round = 0;
   const model = {
     bindTools: (tools: unknown[]) => {
@@ -474,10 +476,16 @@ function speaking(rounds: AIMessageChunk[]) {
     conversations: heard,
     /** The schemas the tools were bound with, as given to the model. */
     boundTools: bound,
+    /** What the client was opened with, on each turn. */
+    openings,
     clients: <Record<string, AgentClient>>{
       [TEST_PROVIDER_ID]: {
         needs: ["key"],
-        open: () => <BaseChatModel>(<unknown>model),
+        open: (opening) => {
+          openings.push(opening);
+
+          return <BaseChatModel>(<unknown>model);
+        },
       },
     },
   };
@@ -1449,5 +1457,40 @@ describe("LlmService and an agent called as a tool", () => {
 
     assert.equal(provider.conversations.length, 2);
     assert.equal(answer.calls[0].refusal, "Агент «reviewer» не має моделі.");
+  });
+});
+
+describe("LlmService and the temperature", () => {
+  async function openedWith(temperature: number): Promise<AgentOpening> {
+    const provider = speaking([
+      new AIMessageChunk({
+        content: "Готово",
+      }),
+    ]);
+    const llmService = new LlmService(
+      keyStore("sk-1"),
+      voice([]),
+      runner(),
+      noServers(),
+      noMemory(),
+      toolArguments,
+      provider.clients,
+    );
+
+    await llmService.ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      temperature,
+    });
+
+    return provider.openings[0];
+  }
+
+  it("opens the client with no temperature where the person set zero", async () => {
+    assert.equal((await openedWith(0)).temperature, undefined);
+  });
+
+  it("opens the client with the temperature the person set", async () => {
+    assert.equal((await openedWith(0.7)).temperature, 0.7);
   });
 });

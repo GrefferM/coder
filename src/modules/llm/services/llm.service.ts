@@ -586,7 +586,8 @@ export class LlmService {
       model: run.model,
       key: held.key,
       address: held.address,
-      temperature: run.temperature,
+      // A zero is the word for none: some models take no temperature at all, and send it only to refuse.
+      temperature: run.temperature === 0 ? undefined : run.temperature,
       answerTokens: run.answerCeiling,
       session,
     });

@@ -2,6 +2,6 @@
 export interface RunPodOpening {
   address: string;
   key: string;
-  temperature: number;
+  temperature: number | undefined;
   answerTokens: number;
 }
