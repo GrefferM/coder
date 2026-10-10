@@ -11,6 +11,7 @@ import {
   LMSTUDIO_PROVIDER_ID,
   OLLAMA_PROVIDER_ID,
   OPENAI_PROVIDER_ID,
+  OPENCODE_PROVIDER_ID,
   OPENROUTER_PROVIDER_ID,
   RUNPOD_CLIENT_NAME,
   RUNPOD_PROVIDER_ID,
@@ -329,6 +330,7 @@ describe("AGENT_CLIENTS", () => {
       [OPENAI_PROVIDER_ID]: ["key"],
       [OPENROUTER_PROVIDER_ID]: ["key"],
       [GOOGLE_PROVIDER_ID]: ["key"],
+      [OPENCODE_PROVIDER_ID]: ["key"],
       // A serverless endpoint carries its id in the address, so the key alone is not enough.
       [RUNPOD_PROVIDER_ID]: ["key", "address"],
       [OLLAMA_PROVIDER_ID]: ["address"],
@@ -338,6 +340,7 @@ describe("AGENT_CLIENTS", () => {
 
   it("points LM Studio at the address it was given, with OpenAI's own path on the end of it", () => {
     const model = <ChatOpenAI>AGENT_CLIENTS[LMSTUDIO_PROVIDER_ID].open({
+      session: "chat-1",
       model: "qwen3",
       key: null,
       address: "http://localhost:1234",
@@ -350,6 +353,7 @@ describe("AGENT_CLIENTS", () => {
 
   it("appends that path once, whatever trailing slashes the address was written with", () => {
     const model = <ChatOpenAI>AGENT_CLIENTS[LMSTUDIO_PROVIDER_ID].open({
+      session: "chat-1",
       model: "qwen3",
       key: null,
       address: "http://localhost:1234/v1//",
@@ -362,6 +366,7 @@ describe("AGENT_CLIENTS", () => {
 
   it("leaves Ollama's address as it stands, since it is not OpenAI's protocol", () => {
     const model = <ChatOllama>AGENT_CLIENTS[OLLAMA_PROVIDER_ID].open({
+      session: "chat-1",
       model: "llama3",
       key: null,
       address: "http://localhost:11434",
@@ -374,6 +379,7 @@ describe("AGENT_CLIENTS", () => {
 
   it("opens RunPod on the queue's own client, since such an endpoint has no OpenAI door to knock at", () => {
     const model = AGENT_CLIENTS[RUNPOD_PROVIDER_ID].open({
+      session: "chat-1",
       model: "dphn/dolphin-2.9.3-mistral-nemo-12b",
       key: "rpa_test",
       address: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3",
@@ -389,6 +395,7 @@ describe("AGENT_CLIENTS", () => {
     // The endpoint id lives in the address; the model name is never sent.
     const asked = runpodQueue();
     const model = AGENT_CLIENTS[RUNPOD_PROVIDER_ID].open({
+      session: "chat-1",
       model: "dphn/dolphin-2.9.3-mistral-nemo-12b",
       key: "rpa_test",
       address: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3//",

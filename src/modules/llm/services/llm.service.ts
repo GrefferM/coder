@@ -111,7 +111,7 @@ export class LlmService {
     try {
       return await this.turn({
         voicedAs: payload.turnId,
-        answering: this.bound(client, held, payload),
+        answering: this.bound(client, held, payload, payload.runId ?? payload.questionId),
         conversation: this.said(payload.systemPrompt, payload.messages),
         directory: payload.directory,
         maxCalls: payload.maxCalls,
@@ -502,7 +502,7 @@ export class LlmService {
       const held = await this.opened(client, agent.providerId);
       const answer = await this.turn({
         voicedAs: null,
-        answering: this.bound(client, held, agent),
+        answering: this.bound(client, held, agent, turn.question.runId ?? turn.question.questionId),
         conversation: this.said(agent.systemPrompt, [
           {
             from: "person",
@@ -580,6 +580,7 @@ export class LlmService {
     client: AgentClient,
     held: { key: string | null; address: string | null },
     run: AgentRun,
+    session: string,
   ): Runnable<BaseMessage[], AIMessageChunk> | BaseChatModel {
     const model = client.open({
       model: run.model,
@@ -587,6 +588,7 @@ export class LlmService {
       address: held.address,
       temperature: run.temperature,
       answerTokens: run.answerCeiling,
+      session,
     });
 
     return this.answering(model, run.tools);

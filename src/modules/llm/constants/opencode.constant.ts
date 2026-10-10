@@ -5,6 +5,10 @@
 export const OPENCODE_ROOT = "https://opencode.ai/zen/go";
 export const OPENCODE_PROTOCOL_ROOT = `${OPENCODE_ROOT}/v1`;
 
+/** Headers a client of Go sends: the conversation, so a gateway can route and cache by it, and who is asking. */
+export const OPENCODE_SESSION_HEADER = "x-opencode-session";
+export const OPENCODE_USER_AGENT = "coder-app/1.0";
+
 /** The protocols a model is reached by. */
 export const OPENCODE_MESSAGES = "messages";
 export const OPENCODE_RESPONSES = "responses";

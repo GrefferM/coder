@@ -5,4 +5,6 @@ export interface AgentOpening {
   address: string | null;
   temperature: number;
   answerTokens: number;
+  /** The conversation the call belongs to, the same for every call of it; a gateway may route and cache by it. */
+  session: string;
 }

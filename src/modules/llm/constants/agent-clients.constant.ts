@@ -3,7 +3,14 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOllama } from "@langchain/ollama";
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatOpenRouter } from "@langchain/openrouter";
-import { OPENCODE_MESSAGES, OPENCODE_PROTOCOL_ROOT, OPENCODE_RESPONSES, OPENCODE_ROOT } from "./opencode.constant";
+import {
+  OPENCODE_MESSAGES,
+  OPENCODE_PROTOCOL_ROOT,
+  OPENCODE_RESPONSES,
+  OPENCODE_ROOT,
+  OPENCODE_SESSION_HEADER,
+  OPENCODE_USER_AGENT,
+} from "./opencode.constant";
 import {
   ANTHROPIC_PROVIDER_ID,
   GOOGLE_PROVIDER_ID,
@@ -26,6 +33,18 @@ function atProtocol(address: string | null): string {
 
   return machine.endsWith(OPENAI_PROTOCOL_PATH) ? machine : `${machine}${OPENAI_PROTOCOL_PATH}`;
 }
+
+/** A call that says who makes it: the OpenAI client puts its own library's name on the header, whatever it is given. */
+const asCoder: typeof fetch = (input, init) => {
+  const headers = new Headers(init?.headers);
+
+  headers.set("User-Agent", OPENCODE_USER_AGENT);
+
+  return fetch(input, {
+    ...init,
+    headers,
+  });
+};
 
 /** Every provider the app knows and how each is opened. */
 export const AGENT_CLIENTS: Record<string, AgentClient> = {
@@ -81,11 +100,20 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
     open: (opening) => {
       const protocol = opencodeProtocolOf(opening.model);
       const model = opencodeModelName(opening.model);
+      const session = {
+        [OPENCODE_SESSION_HEADER]: opening.session,
+      };
 
       if (protocol === OPENCODE_MESSAGES) {
         return new ChatAnthropic({
           apiKey: opening.key ?? undefined,
           anthropicApiUrl: OPENCODE_ROOT,
+          clientOptions: {
+            defaultHeaders: {
+              ...session,
+              "User-Agent": OPENCODE_USER_AGENT,
+            },
+          },
           model,
           temperature: opening.temperature,
           maxTokens: opening.answerTokens,
@@ -100,6 +128,8 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
         useResponsesApi: protocol === OPENCODE_RESPONSES,
         configuration: {
           baseURL: OPENCODE_PROTOCOL_ROOT,
+          defaultHeaders: session,
+          fetch: asCoder,
         },
       });
     },
