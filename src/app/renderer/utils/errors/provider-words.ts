@@ -1,7 +1,7 @@
 import { IPC_WRAPPER_PATTERN, THROWN_PREFIX } from "./constants";
 
 /**
- * What was actually said, without the transport's wrapper («Error invoking remote method 'llm:ask': Error: …») that a
+ * What was actually said, without the transport's wrapper («Error invoking remote method 'walks:put': Error: …») that a
  * fault from the main process arrives in.
  */
 export function providerWords(failure: string): string {

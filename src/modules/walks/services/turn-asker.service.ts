@@ -1,6 +1,6 @@
-import { RUN_STEP_DONE, RUN_STEP_FAILED } from "../../../contracts";
+import { RUN_STEP_DONE, RUN_STEP_FAILED, fellNote } from "../../../contracts";
 import { cutEnd, notStartedReason, notStartedTurn, turnCost, turnMessages, turnWall } from "../logic";
-import { fellNote, notStartedNote } from "../words";
+import { notStartedNote } from "../words";
 import type { FilledModel, SaidTurn, TurnAnswer, TurnAsked, TurnToAsk } from "../../../contracts";
 import type { TurnLlm } from "../interfaces";
 

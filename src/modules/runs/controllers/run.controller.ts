@@ -1,48 +1,15 @@
 import { Validate } from "../../../utils/dto-validation";
-import { RunKeeper, RunReader, RunSearch, RunWriter } from "../services";
-import {
-  AddStepDto,
-  AskAgainDto,
-  CallPlaceDto,
-  CloseRunDto,
-  ForgetRunDto,
-  ForgetRunsDto,
-  ListRunsDto,
-  OpenRunDto,
-  ReadRunDto,
-  SearchRunsDto,
-  SharedMemoryDto,
-} from "../dto";
-import type { CallPlace, Run, RunHit, RunOpened, RunWhole } from "../interfaces";
+import { RunKeeper, RunReader, RunSearch } from "../services";
+import { CallPlaceDto, ForgetRunDto, ForgetRunsDto, ListRunsDto, ReadRunDto, SearchRunsDto } from "../dto";
+import type { CallPlace, Run, RunHit, RunWhole } from "../interfaces";
 
-/** Entry point to a run's record: written as it goes, read afterwards. */
+/** Entry point to a run's record, read afterwards; the walks write it from the backend. */
 export class RunController {
   constructor(
-    private readonly writer: RunWriter,
     private readonly reader: RunReader,
     private readonly search: RunSearch,
     private readonly keeper: RunKeeper,
   ) {}
-
-  @Validate()
-  async open(payload: OpenRunDto): Promise<RunOpened> {
-    return this.writer.open(payload);
-  }
-
-  @Validate()
-  async step(payload: AddStepDto): Promise<string> {
-    return this.writer.step(payload);
-  }
-
-  @Validate()
-  async askAgain(payload: AskAgainDto): Promise<string | null> {
-    return this.writer.askAgain(payload);
-  }
-
-  @Validate()
-  async close(payload: CloseRunDto): Promise<void> {
-    return this.writer.close(payload);
-  }
 
   @Validate()
   async list(payload: ListRunsDto): Promise<Run[]> {
@@ -52,12 +19,6 @@ export class RunController {
   @Validate()
   async one(payload: ReadRunDto): Promise<RunWhole | null> {
     return this.reader.one(payload.id);
-  }
-
-  /** One question's shared memory, read from the record at the moment it is asked. */
-  @Validate()
-  async sharedMemory(payload: SharedMemoryDto): Promise<string | null> {
-    return this.reader.sharedMemory(payload.runId, payload.questionId);
   }
 
   /** Where one call stands, so «ПОКАЗАТИ ВИКЛИК» can lead the chat to it. */

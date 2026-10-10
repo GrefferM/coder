@@ -2,7 +2,6 @@ import { app, BrowserWindow, dialog } from "electron";
 import {
   registerIpcChannels,
   DELETIONS_IPC_CHANNELS,
-  LLM_IPC_CHANNELS,
   MCP_IPC_CHANNELS,
   PROJECTS_IPC_CHANNELS,
   PROVIDERS_IPC_CHANNELS,
@@ -47,7 +46,6 @@ async function initializeIpc(): Promise<void> {
   registerIpcChannels(wired.projectController, PROJECTS_IPC_CHANNELS);
   registerIpcChannels(wired.deletionController, DELETIONS_IPC_CHANNELS);
   registerIpcChannels(wired.providerController, PROVIDERS_IPC_CHANNELS);
-  registerIpcChannels(wired.llmController, LLM_IPC_CHANNELS);
   registerIpcChannels(wired.mcpController, MCP_IPC_CHANNELS);
   registerIpcChannels(wired.runController, RUNS_IPC_CHANNELS);
   registerIpcChannels(wired.walkController, WALKS_IPC_CHANNELS);

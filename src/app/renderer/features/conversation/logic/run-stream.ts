@@ -1,5 +1,3 @@
-import { notStartedOf } from "./not-started-of";
-import { turnLength } from "./turn-length";
 import {
   RUN_STEP_CALLS,
   RUN_STEP_CEILING,
@@ -8,6 +6,7 @@ import {
   RUN_STEP_STOPPED,
   RUN_STEP_TOO_LONG,
 } from "../../record";
+import { notStartedOf, turnLength } from "../../../../../contracts";
 import { answerCeilingNote, callsExhaustedNote, fellNote } from "../words";
 import { CHAT_SAID_NOTHING_NOTE, CHAT_STOPPED_NOTE } from "../constants";
 import type { ChatMessage } from "../interfaces";

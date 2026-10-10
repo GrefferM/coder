@@ -1,21 +1,11 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import { createRunModule } from "../../src/modules/runs";
-import {
-  AddCallDto,
-  AddStepDto,
-  AskAgainDto,
-  AttachedDto,
-  CloseRunDto,
-  ForgetRunDto,
-  ForgetRunsDto,
-  ListRunsDto,
-  OpenRunDto,
-  ReadRunDto,
-} from "../../src/modules/runs/dto";
+import { ForgetRunDto, ForgetRunsDto, ListRunsDto, ReadRunDto } from "../../src/modules/runs/dto";
+import type { PackedAttachment } from "../../src/contracts";
+import type { AddStep, OpenRun } from "../../src/modules/runs/interfaces";
 import {
   RunCallEntity,
-  RunEntity,
   RunQuestionAttachmentEntity,
   RunQuestionEntity,
   RunStepEntity,
@@ -24,6 +14,7 @@ import { openTestDatabase } from "../../src/utils/testing";
 import type { DataSource } from "typeorm";
 import type { TestDatabase } from "../../src/utils/testing";
 import type { RunController } from "../../src/modules/runs/controllers";
+import type { RunWriter } from "../../src/modules/runs/services";
 
 const DIRECTORY = "/tmp/coder-project";
 const OTHER_DIRECTORY = "/tmp/other-project";
@@ -36,13 +27,18 @@ const ASKED_AT = 1_700_000_000_000;
 let record: TestDatabase;
 let dataSource: DataSource;
 let door: RunController;
+/** The walks write the record from the backend, not through the door; the door only reads it. */
+let writer: RunWriter;
 
-function doorOver(source: DataSource): RunController {
-  return createRunModule(source).controller;
+function doorOver(source: DataSource): void {
+  const wired = createRunModule(source);
+
+  door = wired.controller;
+  writer = wired.writer;
 }
 
-function opening(patch: Record<string, unknown> = {}): OpenRunDto {
-  return Object.assign(new OpenRunDto(), {
+function opening(patch: Partial<OpenRun> = {}): OpenRun {
+  return {
     directory: DIRECTORY,
     startedByAgentId: SEEKER,
     startedByAgentName: "Шукач",
@@ -52,23 +48,23 @@ function opening(patch: Record<string, unknown> = {}): OpenRunDto {
     attached: [],
     startedAt: ASKED_AT,
     ...patch,
-  });
+  };
 }
 
 /** One file or folder sent with a question, as the bridge rebuilds it. */
-function attachment(patch: Record<string, unknown> = {}): AttachedDto {
-  return Object.assign(new AttachedDto(), {
+function attachment(patch: Partial<PackedAttachment> = {}): PackedAttachment {
+  return {
     path: "/tmp/coder-project/notes.md",
     name: "notes.md",
     kind: "file",
     text: "=== notes.md ===\n# Нотатки",
     binaries: [],
     ...patch,
-  });
+  };
 }
 
-function step(runId: string, patch: Record<string, unknown> = {}): AddStepDto {
-  return Object.assign(new AddStepDto(), {
+function step(runId: string, patch: Partial<AddStep> = {}): AddStep {
+  return {
     runId,
     questionId: QUESTION,
     walkId: WALK,
@@ -99,14 +95,14 @@ function step(runId: string, patch: Record<string, unknown> = {}): AddStepDto {
     endedAt: ASKED_AT + 2_000,
     calls: [],
     ...patch,
-  });
+  };
 }
 
 describe("the record on a real database of its own", () => {
   beforeEach(async () => {
     record = await openTestDatabase();
     dataSource = record.dataSource;
-    door = doorOver(dataSource);
+    doorOver(dataSource);
   });
 
   afterEach(async () => {
@@ -115,17 +111,15 @@ describe("the record on a real database of its own", () => {
 
   it("keeps what it wrote after the connection is closed and opened again", async () => {
     // Nothing is remembered by the writing process; data must be in the file.
-    const opened = await door.open(opening());
+    const opened = await writer.open(opening());
 
-    await door.step(step(opened.runId));
-    await door.close(
-      Object.assign(new CloseRunDto(), {
-        runId: opened.runId,
-        endedAt: ASKED_AT + 3_000,
-      }),
-    );
+    await writer.step(step(opened.runId));
+    await writer.close({
+      runId: opened.runId,
+      endedAt: ASKED_AT + 3_000,
+    });
     dataSource = await record.reopen();
-    door = doorOver(dataSource);
+    doorOver(dataSource);
 
     const rows = await door.list(
       Object.assign(new ListRunsDto(), {
@@ -140,9 +134,9 @@ describe("the record on a real database of its own", () => {
 
   it("brings the numbers back as they were written, not as something near them", async () => {
     // Money and tokens survive SQLite types: $0.0031 does not read back as $0.
-    const opened = await door.open(opening());
+    const opened = await writer.open(opening());
 
-    await door.step(step(opened.runId));
+    await writer.step(step(opened.runId));
 
     const whole = await door.one(
       Object.assign(new ReadRunDto(), {
@@ -161,9 +155,9 @@ describe("the record on a real database of its own", () => {
 
   it("keeps each project's runs to that project", async () => {
     // One file, many folders: a project's history shows only its own runs.
-    const mine = await door.open(opening());
+    const mine = await writer.open(opening());
 
-    await door.open(
+    await writer.open(
       opening({
         directory: OTHER_DIRECTORY,
         questionId: "55555555-5555-4555-8555-555555555555",
@@ -184,16 +178,16 @@ describe("the record on a real database of its own", () => {
 
   it("takes a run's steps, calls, questions and attachments with it when the run goes", async () => {
     // Deleting a run removes it and everything of it in other tables.
-    const opened = await door.open(
+    const opened = await writer.open(
       opening({
         attached: [attachment()],
       }),
     );
 
-    await door.step(
+    await writer.step(
       step(opened.runId, {
         calls: [
-          Object.assign(new AddCallDto(), {
+          {
             // A call keeps its existing id; the record mints none.
             id: crypto.randomUUID(),
             source: "command",
@@ -211,7 +205,7 @@ describe("the record on a real database of its own", () => {
             end: "ran",
             startedAt: ASKED_AT + 1_000,
             endedAt: ASKED_AT + 1_400,
-          }),
+          },
         ],
       }),
     );
@@ -225,12 +219,10 @@ describe("the record on a real database of its own", () => {
       false,
     );
 
-    await door.close(
-      Object.assign(new CloseRunDto(), {
-        runId: opened.runId,
-        endedAt: ASKED_AT + 3_000,
-      }),
-    );
+    await writer.close({
+      runId: opened.runId,
+      endedAt: ASKED_AT + 3_000,
+    });
     assert.equal(
       await door.forget(
         Object.assign(new ForgetRunDto(), {
@@ -248,7 +240,7 @@ describe("the record on a real database of its own", () => {
 
   it("keeps the files sent with each question whole and in the order they were glued in", async () => {
     // A repeat glues the question again from these, so nothing of them may come back changed.
-    const opened = await door.open(
+    const opened = await writer.open(
       opening({
         attached: [
           attachment(),
@@ -263,29 +255,25 @@ describe("the record on a real database of its own", () => {
       }),
     );
 
-    await door.close(
-      Object.assign(new CloseRunDto(), {
-        runId: opened.runId,
-        endedAt: ASKED_AT + 3_000,
-      }),
-    );
-    await door.askAgain(
-      Object.assign(new AskAgainDto(), {
-        runId: opened.runId,
-        questionId: "99999999-9999-4999-8999-999999999999",
-        asked: "А тепер це",
-        askedAgentId: SEEKER,
-        askedAgentName: "Шукач",
-        attached: [
-          attachment({
-            path: "/tmp/coder-project/todo.md",
-            name: "todo.md",
-            text: "=== todo.md ===\n- тести",
-          }),
-        ],
-        askedAt: ASKED_AT + 5_000,
-      }),
-    );
+    await writer.close({
+      runId: opened.runId,
+      endedAt: ASKED_AT + 3_000,
+    });
+    await writer.askAgain({
+      runId: opened.runId,
+      questionId: "99999999-9999-4999-8999-999999999999",
+      asked: "А тепер це",
+      askedAgentId: SEEKER,
+      askedAgentName: "Шукач",
+      attached: [
+        attachment({
+          path: "/tmp/coder-project/todo.md",
+          name: "todo.md",
+          text: "=== todo.md ===\n- тести",
+        }),
+      ],
+      askedAt: ASKED_AT + 5_000,
+    });
 
     const whole = await door.one(
       Object.assign(new ReadRunDto(), {
@@ -325,46 +313,16 @@ describe("the record on a real database of its own", () => {
     );
   });
 
-  it("refuses a question whose attachment is of a kind it does not know, and writes nothing of it", async () => {
-    await assert.rejects(
-      door.open(
-        opening({
-          attached: [
-            attachment({
-              kind: "link",
-            }),
-          ],
-        }),
-      ),
-    );
-
-    assert.equal(await dataSource.getRepository(RunEntity).count(), 0);
-  });
-
-  it("refuses a question sent without its list of attachments, rather than taking it for none", async () => {
-    await assert.rejects(
-      door.open(
-        opening({
-          attached: undefined,
-        }),
-      ),
-    );
-
-    assert.equal(await dataSource.getRepository(RunEntity).count(), 0);
-  });
-
   it("sweeps only the runs that ended, leaving a walk still going where it is", async () => {
     // «× ЗАБРАТИ N» counts only what has come back, not a run still writing.
-    const ended = await door.open(opening());
+    const ended = await writer.open(opening());
 
-    await door.close(
-      Object.assign(new CloseRunDto(), {
-        runId: ended.runId,
-        endedAt: ASKED_AT + 3_000,
-      }),
-    );
+    await writer.close({
+      runId: ended.runId,
+      endedAt: ASKED_AT + 3_000,
+    });
 
-    const going = await door.open(
+    const going = await writer.open(
       opening({
         questionId: "66666666-6666-4666-8666-666666666666",
       }),

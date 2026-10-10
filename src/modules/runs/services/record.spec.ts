@@ -7,8 +7,7 @@ import { RunWriter } from "./run-writer.service";
 import { TypeormRunStore, runTablesOf } from "../stores";
 import { RunQuestionEntity } from "../entities";
 import { HISTORY_DAYS, HISTORY_DAY_MS } from "../constants";
-import type { AddCallDto, AddStepDto, OpenRunDto } from "../dto";
-import type { RunOpened } from "../interfaces";
+import type { AddCall, AddStep, OpenRun, RunOpened } from "../interfaces";
 import type { TestDatabase } from "../../../utils/testing";
 
 const DIRECTORY = "/tmp/coder-project";
@@ -23,7 +22,7 @@ const TELLER = "33333333-3333-4333-8333-333333333333";
 /** The question each run was opened with. */
 const questionOf = new Map<string, string>();
 
-function ran(patch: Partial<AddCallDto> = {}): AddCallDto {
+function ran(patch: Partial<AddCall> = {}): AddCall {
   return {
     // A call reaches the record under its existing id and keeps it.
     id: crypto.randomUUID(),
@@ -47,7 +46,7 @@ function ran(patch: Partial<AddCallDto> = {}): AddCallDto {
   };
 }
 
-function refused(): AddCallDto {
+function refused(): AddCall {
   return ran({
     arguments: {
       depth: "швидко",
@@ -60,7 +59,7 @@ function refused(): AddCallDto {
   });
 }
 
-function step(runId: string, patch: Partial<AddStepDto> = {}): AddStepDto {
+function step(runId: string, patch: Partial<AddStep> = {}): AddStep {
   return {
     runId,
     questionId: questionOf.get(runId) ?? QUESTION,
@@ -102,7 +101,7 @@ describe("the record", () => {
   let keeper: RunKeeper;
 
   /** Opens a run and keeps its question so its steps can be written against it. */
-  async function openRun(payload: OpenRunDto): Promise<RunOpened> {
+  async function openRun(payload: OpenRun): Promise<RunOpened> {
     const opened = await writer.open(payload);
 
     questionOf.set(opened.runId, opened.questionId);

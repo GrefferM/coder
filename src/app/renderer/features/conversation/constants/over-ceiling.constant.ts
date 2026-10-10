@@ -2,8 +2,6 @@
 export const OVER_CEILING_LABEL = "БІЛЬШЕ ЗА СТЕЛЮ";
 export const OVER_CEILING_ACT_LABEL = "ВІДКРИТИ МОДЕЛЬ";
 
-export * from "../../../../../contracts/walks/over-ceiling-note.constant";
-
 /** Breakdown lines: the parts that would have gone, their sum, and the ceiling. */
 export const OVER_CEILING_PROMPT_LABEL = "промпт";
 export const OVER_CEILING_ASKED_LABEL = "питання";

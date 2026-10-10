@@ -1,37 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import {
-  AddCallDto,
-  AddHandoffDto,
-  AddStepDto,
-  AttachedDto,
-  CallPlaceDto,
-  ForgetRunDto,
-  OpenRunDto,
-  RunController,
-  SharedMemoryDto,
-} from "../../../modules/runs";
-import {
-  ADD_RUN_STEP_CHANNEL,
-  CALL_PLACE_CHANNEL,
-  FORGET_RUN_CHANNEL,
-  OPEN_RUN_CHANNEL,
-  SHARED_MEMORY_CHANNEL,
-} from "../../../contracts";
+import { CallPlaceDto, ForgetRunDto, RunController } from "../../../modules/runs";
+import { CALL_PLACE_CHANNEL, FORGET_RUN_CHANNEL } from "../../../contracts";
 import { RUNS_IPC_CHANNELS } from "./runs-ipc-channels";
 
 function controllerRecording(received: unknown[]): RunController {
   return <RunController>(<unknown>{
-    open: async (payload: unknown) => {
-      received.push(payload);
-
-      return "run-1";
-    },
-    step: async (payload: unknown) => {
-      received.push(payload);
-
-      return "step-1";
-    },
     forget: async (payload: unknown) => {
       received.push(payload);
     },
@@ -39,11 +13,6 @@ function controllerRecording(received: unknown[]): RunController {
       received.push(payload);
 
       return null;
-    },
-    sharedMemory: async (payload: unknown) => {
-      received.push(payload);
-
-      return "";
     },
   });
 }
@@ -58,123 +27,6 @@ describe("RUNS_IPC_CHANNELS", () => {
 
     assert.ok(received[0] instanceof CallPlaceDto);
     assert.equal((<CallPlaceDto>received[0]).callId, "11111111-1111-4111-8111-111111111111");
-  });
-
-  it("rebuilds the ask for a question's shared memory, so its ids are checked", async () => {
-    const received: unknown[] = [];
-
-    await RUNS_IPC_CHANNELS[SHARED_MEMORY_CHANNEL](controllerRecording(received), {
-      runId: "11111111-1111-4111-8111-111111111111",
-      questionId: "44444444-4444-4444-8444-444444444444",
-    });
-
-    assert.ok(received[0] instanceof SharedMemoryDto);
-    assert.equal((<SharedMemoryDto>received[0]).questionId, "44444444-4444-4444-8444-444444444444");
-  });
-
-  it("rebuilds an opened run into a real DTO, so its decorators are readable", async () => {
-    const received: unknown[] = [];
-
-    await RUNS_IPC_CHANNELS[OPEN_RUN_CHANNEL](controllerRecording(received), {
-      directory: "/tmp/project",
-      startedByAgentId: "22222222-2222-4222-8222-222222222222",
-      asked: "Знайди md-файли",
-    });
-
-    assert.ok(received[0] instanceof OpenRunDto);
-    assert.equal((<OpenRunDto>received[0]).asked, "Знайди md-файли");
-  });
-
-  it("rebuilds the attachments of an opened run too, so each one is checked", async () => {
-    const received: unknown[] = [];
-
-    await RUNS_IPC_CHANNELS[OPEN_RUN_CHANNEL](controllerRecording(received), {
-      directory: "/tmp/project",
-      startedByAgentId: "22222222-2222-4222-8222-222222222222",
-      asked: "Знайди md-файли",
-      attached: [
-        {
-          path: "/tmp/project/notes.md",
-          name: "notes.md",
-          kind: "file",
-          text: "=== notes.md ===",
-          binaries: [],
-        },
-      ],
-    });
-
-    assert.ok((<OpenRunDto>received[0]).attached[0] instanceof AttachedDto);
-  });
-
-  it("leaves a missing list of attachments missing, for the check to refuse", async () => {
-    const received: unknown[] = [];
-
-    await RUNS_IPC_CHANNELS[OPEN_RUN_CHANNEL](controllerRecording(received), {
-      directory: "/tmp/project",
-      startedByAgentId: "22222222-2222-4222-8222-222222222222",
-      asked: "Знайди md-файли",
-    });
-
-    assert.equal((<OpenRunDto>received[0]).attached, undefined);
-  });
-
-  it("rebuilds the calls and the links inside a step as well, since a plain object carries no decorators", async () => {
-    const received: unknown[] = [];
-
-    await RUNS_IPC_CHANNELS[ADD_RUN_STEP_CHANNEL](controllerRecording(received), {
-      runId: "11111111-1111-4111-8111-111111111111",
-      agentId: "22222222-2222-4222-8222-222222222222",
-      agentName: "Шукач",
-      agentColor: "#6fd3d8",
-      model: "deepseek/deepseek-v4-flash-0731",
-      providerId: "openrouter",
-      asked: "Знайди md-файли",
-      said: "ЗНАЙДЕНО",
-      state: "done",
-      inputTokens: 10,
-      outputTokens: 20,
-      fromStepIds: [],
-      handoffs: [
-        {
-          toAgentId: "33333333-3333-4333-8333-333333333333",
-          stopReason: "busy",
-        },
-      ],
-      startedAt: 1,
-      endedAt: 2,
-      calls: [
-        {
-          name: "find_deep",
-          arguments: {
-            depth: "2",
-          },
-          line: "find . -maxdepth 2",
-          output: "report.md",
-          refusal: "",
-          exitCode: 0,
-          serverId: null,
-          serverName: "",
-          isFailed: false,
-          end: "ran",
-          startedAt: 1,
-          endedAt: 2,
-        },
-      ],
-    });
-
-    assert.ok(received[0] instanceof AddStepDto);
-    assert.ok((<AddStepDto>received[0]).calls[0] instanceof AddCallDto);
-    assert.ok((<AddStepDto>received[0]).handoffs[0] instanceof AddHandoffDto);
-  });
-
-  it("rebuilds a step that made no calls without inventing a list for it", async () => {
-    const received: unknown[] = [];
-
-    await RUNS_IPC_CHANNELS[ADD_RUN_STEP_CHANNEL](controllerRecording(received), {
-      runId: "11111111-1111-4111-8111-111111111111",
-    });
-
-    assert.deepEqual((<AddStepDto>received[0]).calls, []);
   });
 
   it("rebuilds a run the person deletes, so an id nobody typed cannot slip through", async () => {

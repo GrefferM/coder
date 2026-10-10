@@ -1,11 +1,7 @@
 import type {
-  ADD_RUN_STEP_CHANNEL,
-  ASK_AGAIN_CHANNEL,
-  ASK_AGENT_CHANNEL,
   ASK_PROVIDER_CHANNEL,
   CHOOSE_DIRECTORY_CHANNEL,
   CLOSE_MCP_SERVER_CHANNEL,
-  CLOSE_RUN_CHANNEL,
   CREATE_PROJECT_CHANNEL,
   FORGET_DELETION_CHANNEL,
   FORGET_PROJECT_CHANNEL,
@@ -26,10 +22,8 @@ import type {
   OPEN_PROJECT_CHANNEL,
   PACK_ATTACHMENTS_CHANNEL,
   PICK_ATTACHMENT_CHANNEL,
-  OPEN_RUN_CHANNEL,
   PROJECT_VIEW_CHANNEL,
   CALL_PLACE_CHANNEL,
-  SHARED_MEMORY_CHANNEL,
   READ_RUN_CHANNEL,
   SEARCH_RUNS_CHANNEL,
   REMEMBER_DELETION_CHANNEL,
@@ -41,7 +35,6 @@ import type {
   SAVE_MCP_TOKEN_CHANNEL,
   SAVE_PROVIDER_ADDRESS_CHANNEL,
   SAVE_PROVIDER_KEY_CHANNEL,
-  STOP_AGENT_CHANNEL,
   CONFIGURE_WALKS_CHANNEL,
   FRESH_WALKS_CHANNEL,
   GO_ON_IN_WALKS_CHANNEL,
@@ -55,18 +48,12 @@ import type {
 import type { Deletion, FolderContents, ProjectEntry, ProjectOnDisk } from "../project";
 import type { ProviderReply, ProviderState } from "../providers";
 import type { McpLook, McpSecretsHeld } from "../mcp";
-import type { SaidTurn } from "../llm";
-import type { CallPlace, OpenedRecord, RunHit, RunRow, WholeRun } from "../runs";
+import type { CallPlace, RunHit, RunRow, WholeRun } from "../runs";
 import type { AttachmentPick, PackAttachmentsAsk, PackedAttachment, PickAttachmentsAsk } from "../attachments";
 import type { SaveTextAsk } from "../shell";
 import type { WalkSnapshot } from "../walks";
 import type {
-  AddRunStep,
-  AskAgain,
-  SharedMemoryAsk,
-  AskAgent,
   AskProvider,
-  CloseRun,
   SearchRuns,
   CreateProject,
   LookMcpServer,
@@ -75,12 +62,10 @@ import type {
   SaveMcpToken,
   OfOne,
   OfProject,
-  OpenRun,
   RememberDeletion,
   RememberProjectView,
   SaveProject,
   SaveProviderValue,
-  StopAgent,
   ConfigureWalks,
   GoOnInWalks,
   LetGoWalks,
@@ -125,18 +110,8 @@ export interface ChannelMap {
   [SAVE_MCP_ENV_VALUE_CHANNEL]: { payload: SaveMcpEnvValue; answer: void };
   [MCP_SECRETS_HELD_CHANNEL]: { payload: OfServer; answer: McpSecretsHeld };
 
-  [ASK_AGENT_CHANNEL]: { payload: AskAgent; answer: SaidTurn };
-  [STOP_AGENT_CHANNEL]: { payload: StopAgent; answer: void };
-
-  [OPEN_RUN_CHANNEL]: { payload: OpenRun; answer: OpenedRecord };
-  /** The id of the question the walk continues under, or null when the record is gone. */
-  [ASK_AGAIN_CHANNEL]: { payload: AskAgain; answer: string | null };
-  [ADD_RUN_STEP_CHANNEL]: { payload: AddRunStep; answer: string };
-  [CLOSE_RUN_CHANNEL]: { payload: CloseRun; answer: void };
   [LIST_RUNS_CHANNEL]: { payload: OfProject; answer: RunRow[] };
   [READ_RUN_CHANNEL]: { payload: OfOne; answer: WholeRun | null };
-  /** The shared memory of one question as the model reads it; null when the record holds no such question. */
-  [SHARED_MEMORY_CHANNEL]: { payload: SharedMemoryAsk; answer: string | null };
   /** Where one call stands, by id; null when the record no longer holds it. */
   [CALL_PLACE_CHANNEL]: { payload: { callId: string }; answer: CallPlace | null };
   /** One hit per run containing the word: the found words and where a press lands. */

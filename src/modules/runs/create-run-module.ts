@@ -12,7 +12,7 @@ export function createRunModule(dataSource: DataSource): RunModule {
   const writer = new RunWriter(store);
 
   return {
-    controller: new RunController(writer, reader, new RunSearch(store), keeper),
+    controller: new RunController(reader, new RunSearch(store), keeper),
     keeper,
     reader,
     writer,

@@ -29,7 +29,6 @@ export * from "./project-prompt.interface";
 export * from "./project-view.interface";
 export * from "./taken-things.interface";
 export * from "./tool-grant.type";
-export * from "./tool-sources.constant";
 export * from "./tool-source.type";
 export * from "./written-number.type";
 export * from "./grant-source";

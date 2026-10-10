@@ -1,6 +1,5 @@
 export * from "./asked-with-attached";
 export * from "./attachment-kind.type";
-export * from "./attachment-kinds.constant";
 export * from "./attachment-pick.interface";
 export * from "./denied-codes.constant";
 export * from "./pack-attachments-ask.interface";

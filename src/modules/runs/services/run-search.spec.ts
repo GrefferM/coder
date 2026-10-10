@@ -6,7 +6,7 @@ import { RunWriter } from "./run-writer.service";
 import { TypeormRunStore, runTablesOf } from "../stores";
 import { RUN_FOUND_LENGTH } from "../constants";
 import { RUN_HITS_LIMIT } from "../../../contracts";
-import type { AddStepDto, OpenRunDto } from "../dto";
+import type { AddStep, OpenRun } from "../interfaces";
 import type { TestDatabase } from "../../../utils/testing";
 
 const DIRECTORY = "/tmp/coder-project";
@@ -25,7 +25,7 @@ function anId(): string {
   return `aaaaaaaa-0000-4000-8000-${String(minted).padStart(12, "0")}`;
 }
 
-function opening(patch: Partial<OpenRunDto> = {}): OpenRunDto {
+function opening(patch: Partial<OpenRun> = {}): OpenRun {
   return {
     directory: DIRECTORY,
     questionId: anId(),
@@ -39,7 +39,7 @@ function opening(patch: Partial<OpenRunDto> = {}): OpenRunDto {
   };
 }
 
-function step(runId: string, patch: Partial<AddStepDto> = {}): AddStepDto {
+function step(runId: string, patch: Partial<AddStep> = {}): AddStep {
   return {
     runId,
     questionId: questionOf.get(runId) ?? "",
@@ -80,7 +80,7 @@ describe("the search over the record", () => {
   let search: RunSearch;
 
   /** Opens a run and keeps its question so steps can be written against it. */
-  async function openRun(patch: Partial<OpenRunDto> = {}): Promise<string> {
+  async function openRun(patch: Partial<OpenRun> = {}): Promise<string> {
     const payload = opening(patch);
     const opened = await writer.open(payload);
 

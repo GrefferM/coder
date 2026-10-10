@@ -1,12 +1,12 @@
-import type { RunOpened, RunStore } from "../interfaces";
-import type { AddCallDto, AddStepDto, AskAgainDto, AttachedDto, CloseRunDto, OpenRunDto } from "../dto";
+import type { PackedAttachment } from "../../../contracts";
+import type { AddCall, AddStep, AskAgain, CloseRun, OpenRun, RunOpened, RunStore } from "../interfaces";
 
 /** The record as written: a run opened, steps landing one by one, its end. */
 export class RunWriter {
   constructor(private readonly store: RunStore) {}
 
   /** Opens a run with the person's first question, both or neither, and returns both ids; open until closed. */
-  async open(payload: OpenRunDto): Promise<RunOpened> {
+  async open(payload: OpenRun): Promise<RunOpened> {
     return this.store.inOne(async (store) => {
       const row = await store.openRun({
         directory: payload.directory,
@@ -39,7 +39,7 @@ export class RunWriter {
    * Continues a flow in its existing record: the row's text and hour become the new question's, the start day stays, the
    * run reopens.
    */
-  async askAgain(payload: AskAgainDto): Promise<string | null> {
+  async askAgain(payload: AskAgain): Promise<string | null> {
     return this.store.inOne(async (store) => {
       const row = await store.runById(payload.runId);
 
@@ -67,7 +67,7 @@ export class RunWriter {
   }
 
   /** Appends one finished step whole, with everything beside it; its place is its order of arrival. */
-  async step(payload: AddStepDto): Promise<string> {
+  async step(payload: AddStep): Promise<string> {
     return this.store.inOne(async (store) => {
       const stood = await store.stepsOf(payload.runId);
       const step = await store.addStep({
@@ -138,12 +138,12 @@ export class RunWriter {
   }
 
   /** Ends a run; closing an ended run overwrites, the last word being true. */
-  async close(payload: CloseRunDto): Promise<void> {
+  async close(payload: CloseRun): Promise<void> {
     await this.store.endRun(payload.runId, new Date(payload.endedAt));
   }
 
   /** The files and folders sent with a question, beside it and in the order they were glued in. */
-  private async attach(store: RunStore, questionId: string, attached: AttachedDto[]): Promise<void> {
+  private async attach(store: RunStore, questionId: string, attached: PackedAttachment[]): Promise<void> {
     for (const [index, one] of attached.entries()) {
       await store.attachTo({
         place: index + 1,
@@ -158,7 +158,7 @@ export class RunWriter {
   }
 
   /** One call of a step; arguments and pinned names stored as text. */
-  private async saveCall(store: RunStore, stepId: string, place: number, call: AddCallDto): Promise<void> {
+  private async saveCall(store: RunStore, stepId: string, place: number, call: AddCall): Promise<void> {
     await store.addCall({
       id: call.id,
       source: call.source,

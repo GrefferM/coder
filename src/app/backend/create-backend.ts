@@ -39,13 +39,7 @@ export async function createBackend(
   const { runner: commandRunner } = createCommandsModule();
   // A local server is a process this backend started, so this backend stops it.
   const { controller: mcpController, client } = createMcpModule(secretService, dataSource);
-  const { controller: llmController, service: llmService } = createLlmModule(
-    providerService,
-    voices.agent,
-    commandRunner,
-    client,
-    runReader,
-  );
+  const { service: llmService } = createLlmModule(providerService, voices.agent, commandRunner, client, runReader);
   const { controller: walkController, hub } = createWalksModule({
     record: new RunRecordStore(runWriter, runReader),
     llm: llmService,
@@ -58,7 +52,6 @@ export async function createBackend(
     projectController,
     deletionController,
     providerController,
-    llmController,
     mcpController,
     runController,
     walkController,

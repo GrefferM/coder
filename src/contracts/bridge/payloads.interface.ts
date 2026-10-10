@@ -1,7 +1,5 @@
 import type { ProjectConfig, TakenThings } from "../project";
-import type { AgentTool, ChatTurn, ReachableAgent } from "../llm";
 import type { ProjectMcpServer } from "../project";
-import type { WrittenStep } from "../runs";
 import type { PackedAttachment } from "../attachments";
 import type { ChatMessage } from "../walks";
 
@@ -54,75 +52,10 @@ export interface SaveProviderValue {
   value: string;
 }
 
-/** One turn asked of the machine. The provider's key is looked up in the main process and never sent. */
-export interface AskAgent {
-  turnId: string;
-  /** The agent whose turn it is; excluded from its own tools, which would close a cycle. */
-  agentId: string;
-  providerId: string;
-  model: string;
-  directory: string;
-  maxCalls: number;
-  temperature: number;
-  answerCeiling: number;
-  systemPrompt: string | null;
-  messages: ChatTurn[];
-  tools: AgentTool[];
-  /** The reach of every server whose functions are among the tools. */
-  servers: ProjectMcpServer[];
-  /** Every agent reachable as a tool from this one, by id. */
-  agents: ReachableAgent[];
-  /** The row and the question the turn works under; an agent it calls with the shared memory reads that question. */
-  runId: string | null;
-  questionId: string;
-}
-
-export interface StopAgent {
-  turnId: string;
-}
-
-export interface OpenRun extends OfProject {
-  questionId: string;
-  startedByAgentId: string;
-  /** The agent's name and colour at start, so the row is named before its first step lands. */
-  startedByAgentName: string;
-  startedByAgentColor: string;
-  asked: string;
-  /** The files and folders sent with the question, packed as they went. */
-  attached: PackedAttachment[];
-  startedAt: number;
-}
-
-/** Another question in a flow already recorded. */
-export interface AskAgain {
-  runId: string;
-  questionId: string;
-  asked: string;
-  /** The agent asked and its current name, stored with the question. */
-  askedAgentId: string;
-  askedAgentName: string;
-  /** The files and folders sent with the question, packed as they went. */
-  attached: PackedAttachment[];
-  askedAt: number;
-}
-
-/** One question of a flow, by the run it stands in and its own id. */
-export interface SharedMemoryAsk {
-  runId: string;
-  questionId: string;
-}
-
-export interface CloseRun {
-  runId: string;
-  endedAt: number;
-}
-
 /** One word looked for through a project's whole record. */
 export interface SearchRuns extends OfProject {
   query: string;
 }
-
-export type AddRunStep = WrittenStep;
 
 /** The folder of the project whose file changed under the app. */
 export interface ProjectChanged {

@@ -1,9 +1,7 @@
 import { agentReadiness } from "./agent-readiness";
-import { agentTools } from "./agent-tools";
 import { notStartedTurn } from "./not-started-turn";
-import { memoryLength } from "./memory-length";
-import { turnLength } from "./turn-length";
 import { overCeilingNote } from "../words";
+import { agentTools, memoryLength, turnLength } from "../../../contracts";
 import type { TurnAnswer, TurnAsked, TurnToAsk } from "../../../contracts";
 
 /**

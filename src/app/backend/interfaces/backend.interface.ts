@@ -1,4 +1,3 @@
-import type { LlmController } from "../../../modules/llm";
 import type { McpController } from "../../../modules/mcp";
 import type { DeletionController, ProjectController, ProjectWatch } from "../../../modules/projects";
 import type { ProviderController } from "../../../modules/providers";
@@ -10,7 +9,6 @@ export interface Backend {
   projectController: ProjectController;
   deletionController: DeletionController;
   providerController: ProviderController;
-  llmController: LlmController;
   mcpController: McpController;
   runController: RunController;
   walkController: WalkController;

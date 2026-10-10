@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { cutEnd } from "./cut-end";
-import { answerCeilingNote, callsExhaustedNote } from "../words";
 import {
+  answerCeilingNote,
+  callsExhaustedNote,
   CHAT_SAID_NOTHING_NOTE,
   CHAT_STOPPED_NOTE,
   RUN_STEP_CALLS,

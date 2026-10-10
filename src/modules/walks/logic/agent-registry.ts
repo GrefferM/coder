@@ -1,7 +1,6 @@
 import { agentReadiness } from "./agent-readiness";
 
-import { agentTools } from "./agent-tools";
-import { agentStands, isAgentGrant } from "../../../contracts";
+import { agentStands, agentTools, isAgentGrant } from "../../../contracts";
 import type { Agent, GrantTargets, ProjectConfig, ProviderState, ReachableAgent } from "../../../contracts";
 
 /**

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { RECORD_GONE_NOTE, agentStands, isWalking } from "../../../contracts";
+import { RECORD_GONE_NOTE, agentStands, isWalking, memoryLength } from "../../../contracts";
 import {
   agentRegistry,
   agentThread,
@@ -8,7 +8,6 @@ import {
   emptyWalk,
   grantedServerIds,
   handoffCard,
-  memoryLength,
   repeatOf,
   unreadTurn,
   walkMachine,
