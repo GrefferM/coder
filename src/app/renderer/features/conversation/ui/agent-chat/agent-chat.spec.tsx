@@ -14,13 +14,13 @@ import {
   CHAT_FAILED_NOTE,
   CHAT_SAID_NOTHING_NOTE,
   CHAT_STEP_BROKEN_NOTE,
+  CHAT_STOP_REASON_LABELS,
   CHAT_STOPPED_NOTE,
 } from "../../constants";
 import { answerCeilingNote } from "../../words";
 import { RUN_STATE_LABELS } from "../../../record";
 import {
   AGENT_CHAT_OPENED_FAILED_NOTE,
-  AGENT_CHAT_STOP_REASON_LABELS,
   AGENT_CHAT_FIELD_PLACEHOLDER_PREFIX,
   AGENT_CHAT_NO_AIM_HINT,
   AGENT_CHAT_NO_AIM_PLACEHOLDER,
@@ -340,7 +340,7 @@ describe("AgentChat", () => {
     });
 
     expect(screen.getByText(HANDOFF_ROW_STOPPED_LABEL)).toBeInTheDocument();
-    expect(screen.getByText(new RegExp(AGENT_CHAT_STOP_REASON_LABELS.off))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(CHAT_STOP_REASON_LABELS.off))).toBeInTheDocument();
   });
 
   it("stands a refused call and a running one as rows of the running card, newest last", async () => {

@@ -11,7 +11,6 @@ import {
   SECOND_LEVEL_TEXT_COLOR,
   WORDS_COLOR,
 } from "../../../../../constants";
-import type { ChatStopReason } from "../../../../../interfaces";
 import type { FieldStanding, NotStartedAct } from "../../../interfaces";
 import type { ChatWayOut, FieldGround } from "../interfaces";
 
@@ -131,12 +130,6 @@ export const AGENT_CHAT_EMPTY_PADDING = "22px 16px";
 export const AGENT_CHAT_EMPTY_COLOR = QUIET_MARK_COLOR;
 export const AGENT_CHAT_EMPTY_FONT_SIZE_PX = 12;
 export const AGENT_CHAT_EMPTY_LINE_HEIGHT = 1.6;
-
-/** Labels for why a run stopped at a link; «зайнятий» is read from old rows and never written. */
-export const AGENT_CHAT_STOP_REASON_LABELS: Record<ChatStopReason, string> = {
-  off: "вимкнений",
-  busy: "зайнятий",
-};
 
 /** A history run opened in the stream is over, so the composer steps aside. */
 export const AGENT_CHAT_OPENED_FAILED_NOTE = "Не вдалося прочитати цей запуск.";

@@ -7,8 +7,9 @@ import { PersonCard } from "../person-card";
 import { SaidRow } from "../said-row";
 import { WorkingTurn } from "../working-turn";
 import { callEnd } from "../../../../logic";
+import { CHAT_STOP_REASON_LABELS } from "../../../../constants";
 import { dayLabel } from "../../../../../../utils/dates";
-import { AGENT_CHAT_ASKED_AGAIN_LABEL, AGENT_CHAT_LIST_GAP_PX, AGENT_CHAT_STOP_REASON_LABELS } from "../../constants";
+import { AGENT_CHAT_ASKED_AGAIN_LABEL, AGENT_CHAT_LIST_GAP_PX } from "../../constants";
 import type { SaidTurnProps } from "./interfaces";
 
 /**
@@ -87,7 +88,7 @@ export function SaidTurn({
             fromColor={isSent ? (spoke?.color ?? agentColor) : null}
             name={neighbour?.name ?? ""}
             color={neighbour?.color ?? agentColor}
-            reason={message.stopReason === null ? null : AGENT_CHAT_STOP_REASON_LABELS[message.stopReason]}
+            reason={message.stopReason === null ? null : CHAT_STOP_REASON_LABELS[message.stopReason]}
           />
           {/* A walk that ended at an unfollowable link can be asked again; the row already says what happened. */}
           {onAskAgain !== null && <SaidRow words={null} onAskAgain={onAskAgain} />}

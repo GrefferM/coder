@@ -11,6 +11,15 @@ export const CHAT_EXPORT_SUPPLIER_SUFFIX = " (робота)";
 export const CHAT_EXPORT_HANDOFF_PREFIX = "роботу передано: ";
 export const CHAT_EXPORT_HANDOFF_ARROW = " → ";
 export const CHAT_EXPORT_NOT_SENT_PREFIX = "не надіслано до: ";
+/** A line the work did not go down, with the neighbour's reason after it. */
+export const CHAT_EXPORT_NOT_HANDED_PREFIX = "роботу не передано: ";
+export const CHAT_EXPORT_REASON_OPEN = " (";
+export const CHAT_EXPORT_REASON_CLOSE = ")";
+/** Marks on a turn that fell and on one that never began. */
+export const CHAT_EXPORT_FAILED_SUFFIX = " (упав)";
+export const CHAT_EXPORT_NOT_STARTED_SUFFIX = " (хід не почався)";
+/** The app's own word about a turn or a broken step. */
+export const CHAT_EXPORT_NOTE_PREFIX = "  ! ";
 /** Files named under a question, by leaf name; a folder with a trailing slash. */
 export const CHAT_EXPORT_ATTACHED_LABEL = "Прикріплено: ";
 export const CHAT_EXPORT_ATTACHED_SEPARATOR = ", ";

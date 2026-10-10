@@ -23,10 +23,9 @@ describe("fellNote", () => {
     );
   });
 
-  it("cuts a sentence that runs long rather than making the rule a paragraph", () => {
-    const note = fellNote("б".repeat(400));
+  it("keeps a long sentence whole: the reason is what the rule is for", () => {
+    const said = "б".repeat(400);
 
-    expect(note.endsWith("…")).toBe(true);
-    expect(note.length).toBeLessThan(`${CHAT_FAILED_NOTE} · `.length + 210);
+    expect(fellNote(said)).toBe(`${CHAT_FAILED_NOTE} · ${said}`);
   });
 });

@@ -1,3 +1,5 @@
+import type { ChatStopReason } from "../../../interfaces";
+
 /** Shown in the agent's place when the local provider does not answer. */
 export const CHAT_PROVIDER_SILENT_NOTE =
   "Локальний провайдер не відповідає за своєю адресою. Перевірте, чи він запущений.";
@@ -20,3 +22,9 @@ export const CHAT_CALLS_EXHAUSTED_SEPARATOR = " · ";
 /** The answer's ceiling, with its number in tokens. */
 export const CHAT_ANSWER_CEILING_PREFIX = "Відповідь уперлася в стелю";
 export const CHAT_ANSWER_CEILING_UNIT = " ткн";
+
+/** Why a run stopped at a link; «зайнятий» is read from old rows and never written. */
+export const CHAT_STOP_REASON_LABELS: Record<ChatStopReason, string> = {
+  off: "вимкнений",
+  busy: "зайнятий",
+};

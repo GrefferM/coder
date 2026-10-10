@@ -10,28 +10,38 @@ import {
   CHAT_EXPORT_CALL_PREFIX,
   CHAT_EXPORT_CALL_REFUSED_LABEL,
   CHAT_EXPORT_CALL_RESULT_LABEL,
+  CHAT_EXPORT_FAILED_SUFFIX,
   CHAT_EXPORT_FILE_EXTENSION,
   CHAT_EXPORT_FILE_PREFIX,
   CHAT_EXPORT_FOLDER_SUFFIX,
   CHAT_EXPORT_HANDOFF_ARROW,
   CHAT_EXPORT_HANDOFF_PREFIX,
   CHAT_EXPORT_HEADING,
+  CHAT_EXPORT_NOT_HANDED_PREFIX,
   CHAT_EXPORT_NOT_SENT_PREFIX,
+  CHAT_EXPORT_NOT_STARTED_SUFFIX,
+  CHAT_EXPORT_NOTE_PREFIX,
   CHAT_EXPORT_PERSON,
+  CHAT_EXPORT_REASON_CLOSE,
+  CHAT_EXPORT_REASON_OPEN,
   CHAT_EXPORT_RULE,
   CHAT_EXPORT_SUPPLIER_SUFFIX,
+  CHAT_STOP_REASON_LABELS,
 } from "../constants";
+import { breakWords, saysBreak } from "./step-break";
 import { timeLabel } from "../../../utils/dates";
 import type { AttachedFile, ChatMessage } from "../interfaces";
 import type { NamedAgent, TurnCall } from "../../../interfaces";
 
 /**
  * The stream as a plain-text transcript: each turn's speaker and time, words, attached files, and tool calls with input
- * and output; no tokens, price or step.
+ * and output, what broke and why; no tokens, price or step.
  */
 export function chatText(messages: ChatMessage[], agents: NamedAgent[]): string {
   const nameOf = (agentId: string | null): string => agents.find((agent) => agent.id === agentId)?.name ?? "";
-  const blocks = messages.map((message) => turnBlock(message, nameOf)).filter((block) => block !== null);
+  const blocks = messages
+    .map((message, at) => turnBlock(message, wordsOf(messages, at), nameOf))
+    .filter((block) => block !== null);
   const head = `${CHAT_EXPORT_HEADING} · ${dateStamp(new Date())}`;
 
   return [head, CHAT_EXPORT_RULE, "", ...join(blocks)].join("\n");
@@ -42,21 +52,32 @@ export function chatFileName(at: Date = new Date()): string {
   return `${CHAT_EXPORT_FILE_PREFIX}-${isoDay(at)}${CHAT_EXPORT_FILE_EXTENSION}`;
 }
 
+/** The app's word under a turn, said once for turns that broke together, as the stream says it. */
+function wordsOf(messages: ChatMessage[], at: number): string | null {
+  if (messages[at].note === null || !saysBreak(messages, at)) {
+    return null;
+  }
+
+  return breakWords(messages, at);
+}
+
 /** One turn as lines, or null when it has nothing worth reading. */
-function turnBlock(message: ChatMessage, nameOf: (agentId: string | null) => string): string | null {
+function turnBlock(
+  message: ChatMessage,
+  words: string | null,
+  nameOf: (agentId: string | null) => string,
+): string | null {
   const at = timeLabel(new Date(message.at));
 
   if (message.from === "handoff") {
-    return `[${at}] ${CHAT_EXPORT_HANDOFF_PREFIX}${nameOf(message.agentId)}${CHAT_EXPORT_HANDOFF_ARROW}${nameOf(
-      message.otherAgentId,
-    )}`;
+    return handoffLine(message, at, nameOf);
   }
 
   if (message.from === "notSent") {
     return `[${at}] ${CHAT_EXPORT_NOT_SENT_PREFIX}${nameOf(message.otherAgentId)}`;
   }
 
-  const lines: string[] = [`[${at}] ${authorOf(message, nameOf)}:`];
+  const lines: string[] = [];
   const text = message.text.trim();
 
   if (text !== "") {
@@ -73,12 +94,39 @@ function turnBlock(message: ChatMessage, nameOf: (agentId: string | null) => str
     lines.push(...callLines(call));
   }
 
-  // An agent beat that neither spoke, attached nor called.
-  if (lines.length === 1) {
+  if (words !== null) {
+    lines.push(`${CHAT_EXPORT_NOTE_PREFIX}${words}`);
+  }
+
+  // An agent beat that neither spoke, attached, called nor broke.
+  if (lines.length === 0) {
     return null;
   }
 
-  return lines.join("\n");
+  return [`[${at}] ${authorOf(message, nameOf)}${markOf(message)}:`, ...lines].join("\n");
+}
+
+/** One line for work handed on, or for a line it did not go down and why. */
+function handoffLine(message: ChatMessage, at: string, nameOf: (agentId: string | null) => string): string {
+  const from = nameOf(message.agentId);
+  const to = nameOf(message.otherAgentId);
+
+  if (message.stopReason === null) {
+    return `[${at}] ${CHAT_EXPORT_HANDOFF_PREFIX}${from}${CHAT_EXPORT_HANDOFF_ARROW}${to}`;
+  }
+
+  const reason = CHAT_STOP_REASON_LABELS[message.stopReason];
+
+  return `[${at}] ${CHAT_EXPORT_NOT_HANDED_PREFIX}${from}${CHAT_EXPORT_HANDOFF_ARROW}${to}${CHAT_EXPORT_REASON_OPEN}${reason}${CHAT_EXPORT_REASON_CLOSE}`;
+}
+
+/** What is said after the speaker: that the turn fell, or never began. */
+function markOf(message: ChatMessage): string {
+  if (message.notStarted !== null) {
+    return CHAT_EXPORT_NOT_STARTED_SUFFIX;
+  }
+
+  return message.isFailure ? CHAT_EXPORT_FAILED_SUFFIX : "";
 }
 
 /** Who the turn is from: the person, the agent whose turn it is, or the neighbour the work came from. */

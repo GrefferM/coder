@@ -290,6 +290,76 @@ describe("chatText", () => {
 });
 
 describe("chatFileName", () => {
+  it("writes a turn that fell: marked, with the app's word and the provider's sentence", () => {
+    const out = chatText(
+      [
+        message({
+          isFailure: true,
+          note: "Відповідь не прийшла · ключ відхилено",
+        }),
+      ],
+      AGENTS,
+    );
+
+    expect(out).toContain("[14:05] Рецензент (упав):");
+    expect(out).toContain("  ! Відповідь не прийшла · ключ відхилено");
+  });
+
+  it("writes a turn that never began, marked, with the card's sentence", () => {
+    const out = chatText(
+      [
+        message({
+          notStarted: "noKey",
+          text: "Модель m належить провайдеру p, а ключа до нього немає.",
+        }),
+      ],
+      AGENTS,
+    );
+
+    expect(out).toContain("[14:05] Рецензент (хід не почався):");
+    expect(out).toContain("Модель m належить провайдеру p, а ключа до нього немає.");
+  });
+
+  it("says a step broke once, for the turns that broke together", () => {
+    const out = chatText(
+      [
+        message({
+          id: "m1",
+          agentId: "a1",
+          walkId: "w1",
+          note: "Крок обірвався",
+        }),
+        message({
+          id: "m2",
+          agentId: "a2",
+          walkId: "w1",
+          note: "Крок обірвався",
+        }),
+      ],
+      AGENTS,
+    );
+
+    expect(out).not.toContain("Рецензент");
+    expect(out).toContain("[14:05] Редактор:");
+    expect(out.match(/Крок обірвався/g)).toHaveLength(1);
+  });
+
+  it("writes a line the work did not go down, with the reason", () => {
+    const out = chatText(
+      [
+        message({
+          from: "handoff",
+          agentId: "a1",
+          otherAgentId: "a2",
+          stopReason: "off",
+        }),
+      ],
+      AGENTS,
+    );
+
+    expect(out).toContain("[14:05] роботу не передано: Рецензент → Редактор (вимкнений)");
+  });
+
   it("is «розмова-РРРР-ММ-ДД.txt» by the day it is written", () => {
     expect(chatFileName(new Date(2026, 8, 7))).toBe("розмова-2026-09-07.txt");
   });
