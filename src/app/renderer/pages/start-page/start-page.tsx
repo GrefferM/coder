@@ -240,6 +240,8 @@ export function StartPage({ onProjectOpened }: StartPageProps) {
               fontSize: RECENT_LABEL_FONT_SIZE_PX,
               letterSpacing: RECENT_LABEL_LETTER_SPACING_PX,
               color: START_PAGE_ERROR_COLOR,
+              // A fault is words to carry off: into a report, a search.
+              userSelect: "text",
             }}
           >
             {error}

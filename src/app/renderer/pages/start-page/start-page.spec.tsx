@@ -184,6 +184,22 @@ describe("StartPage", () => {
     expect(await screen.findByText(/ENOENT/)).toBeInTheDocument();
   });
 
+  it("lets the words of a fault be selected, to copy them out", async () => {
+    stubApi({
+      [LIST_RECENT_PROJECTS_CHANNEL]: () => [ENTRY],
+      [OPEN_PROJECT_CHANNEL]: () => {
+        throw new Error("ENOENT: no such file or directory");
+      },
+    });
+
+    render(<StartPage onProjectOpened={() => {}} />);
+    await userEvent.click(await screen.findByText("coder-app"));
+
+    expect(await screen.findByText(/ENOENT/)).toHaveStyle({
+      userSelect: "text",
+    });
+  });
+
   it("makes a project out of a chosen folder rather than refusing one that has none", async () => {
     const invoke = stubApi({
       [LIST_RECENT_PROJECTS_CHANNEL]: () => [],
