@@ -70,6 +70,7 @@ export const MODEL_NAME_EXAMPLES: Record<string, string> = {
   openai: "gpt-5.1-codex",
   openrouter: "anthropic/claude-sonnet-4.5",
   google: "gemini-2.5-pro",
+  opencode: "kimi-k3",
 };
 
 /**

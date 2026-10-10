@@ -3,6 +3,7 @@ export const ANTHROPIC_PROVIDER_ID = "anthropic";
 export const OPENAI_PROVIDER_ID = "openai";
 export const OPENROUTER_PROVIDER_ID = "openrouter";
 export const GOOGLE_PROVIDER_ID = "google";
+export const OPENCODE_PROVIDER_ID = "opencode";
 export const RUNPOD_PROVIDER_ID = "runpod";
 export const OLLAMA_PROVIDER_ID = "ollama";
 export const LMSTUDIO_PROVIDER_ID = "lmstudio";

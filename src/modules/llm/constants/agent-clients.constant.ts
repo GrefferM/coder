@@ -3,6 +3,7 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOllama } from "@langchain/ollama";
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatOpenRouter } from "@langchain/openrouter";
+import { OPENCODE_MESSAGES, OPENCODE_PROTOCOL_ROOT, OPENCODE_RESPONSES, OPENCODE_ROOT } from "./opencode.constant";
 import {
   ANTHROPIC_PROVIDER_ID,
   GOOGLE_PROVIDER_ID,
@@ -11,9 +12,11 @@ import {
   OLLAMA_PROVIDER_ID,
   OPENAI_PROTOCOL_PATH,
   OPENAI_PROVIDER_ID,
+  OPENCODE_PROVIDER_ID,
   OPENROUTER_PROVIDER_ID,
   RUNPOD_PROVIDER_ID,
 } from "./provider-ids.constant";
+import { opencodeModelName, opencodeProtocolOf } from "../logic";
 import { RunPodChat } from "../services/runpod-chat.service";
 import type { AgentClient } from "../interfaces";
 
@@ -71,6 +74,35 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
         temperature: opening.temperature,
         maxOutputTokens: opening.answerTokens,
       }),
+  },
+  [OPENCODE_PROVIDER_ID]: {
+    /** The person's OpenCode Go subscription: one key, and the protocol follows from the model's name. */
+    needs: ["key"],
+    open: (opening) => {
+      const protocol = opencodeProtocolOf(opening.model);
+      const model = opencodeModelName(opening.model);
+
+      if (protocol === OPENCODE_MESSAGES) {
+        return new ChatAnthropic({
+          apiKey: opening.key ?? undefined,
+          anthropicApiUrl: OPENCODE_ROOT,
+          model,
+          temperature: opening.temperature,
+          maxTokens: opening.answerTokens,
+        });
+      }
+
+      return new ChatOpenAI({
+        apiKey: opening.key ?? undefined,
+        model,
+        temperature: opening.temperature,
+        maxTokens: opening.answerTokens,
+        useResponsesApi: protocol === OPENCODE_RESPONSES,
+        configuration: {
+          baseURL: OPENCODE_PROTOCOL_ROOT,
+        },
+      });
+    },
   },
   [RUNPOD_PROVIDER_ID]: {
     /**

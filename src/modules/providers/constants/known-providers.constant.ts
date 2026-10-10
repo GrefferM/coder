@@ -35,6 +35,15 @@ export const KNOWN_PROVIDERS: KnownProvider[] = [
     customaryAddress: null,
   },
   {
+    /** The OpenCode Go subscription: Claude, GPT, Grok, MiniMax, Qwen, DeepSeek and others behind one key. */
+    id: "opencode",
+    name: "OpenCode Go",
+    kind: "remote",
+    needs: ["key"],
+    takesTools: true,
+    customaryAddress: null,
+  },
+  {
     /** Remote, yet asked for both key and address (a serverless endpoint carries its id in the path); never pinged. */
     id: "runpod",
     name: "RunPod",
