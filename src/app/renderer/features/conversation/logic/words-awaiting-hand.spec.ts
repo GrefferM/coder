@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { wordsAwaitingHand } from "./words-awaiting-hand";
 import { begunWalk } from "./begun-walk";
 import { emptyWalk } from "./empty-walk";
-import type { ChatMessage, WalkState } from "../interfaces";
+import type { ChatMessage, WalkSnapshot } from "../interfaces";
 
 function said(patch: Partial<ChatMessage>): ChatMessage {
   return {
@@ -33,7 +33,7 @@ function said(patch: Partial<ChatMessage>): ChatMessage {
 }
 
 /** One walk of another row with its words; the screen stands on «run-1». */
-function walk(words: ChatMessage[], runId: string | null = "run-2", patch: Partial<WalkState> = {}): WalkState {
+function walk(words: ChatMessage[], runId: string | null = "run-2", patch: Partial<WalkSnapshot> = {}): WalkSnapshot {
   return {
     ...emptyWalk(),
     walks: {

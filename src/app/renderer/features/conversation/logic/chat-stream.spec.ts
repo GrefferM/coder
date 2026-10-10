@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { chatStream } from "./chat-stream";
 import { begunWalk } from "./begun-walk";
 import { emptyWalk } from "./empty-walk";
-import type { ChatMessage, WalkState } from "../interfaces";
+import type { ChatMessage, WalkSnapshot } from "../interfaces";
 
 function said(patch: Partial<ChatMessage>): ChatMessage {
   return {
@@ -33,7 +33,7 @@ function said(patch: Partial<ChatMessage>): ChatMessage {
 }
 
 /** One stream's walks with the words each said, all standing on this screen. */
-function walk(said: Record<string, ChatMessage[]>): WalkState {
+function walk(said: Record<string, ChatMessage[]>): WalkSnapshot {
   return {
     ...emptyWalk(),
     walks: Object.fromEntries(

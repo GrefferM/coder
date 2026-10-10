@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fellAgents } from "./fell-agents";
 import { begunWalk } from "./begun-walk";
 import { emptyWalk } from "./empty-walk";
-import type { ChatMessage, WalkState } from "../interfaces";
+import type { ChatMessage, WalkSnapshot } from "../interfaces";
 
 function said(patch: Partial<ChatMessage>): ChatMessage {
   return {
@@ -35,7 +35,7 @@ function said(patch: Partial<ChatMessage>): ChatMessage {
 /**
  * One stream's walks with their words; each word is stamped with its walk's question so stream order is question order.
  */
-function walk(said: Record<string, { askedAt: number; words: ChatMessage[] }>): WalkState {
+function walk(said: Record<string, { askedAt: number; words: ChatMessage[] }>): WalkSnapshot {
   return {
     ...emptyWalk(),
     walks: Object.fromEntries(

@@ -2,12 +2,7 @@
 export const OVER_CEILING_LABEL = "БІЛЬШЕ ЗА СТЕЛЮ";
 export const OVER_CEILING_ACT_LABEL = "ВІДКРИТИ МОДЕЛЬ";
 
-/** What would have gone, against the number written on the model. */
-export const OVER_CEILING_NOTE_PREFIX = "У модель пішло б ";
-export const OVER_CEILING_NOTE_MIDDLE = ", а стеля ";
-export const OVER_CEILING_NOTE_DASH = " — ";
-export const OVER_CEILING_NOTE_SUFFIX = ". Хід не почався: нічого не обрізали й нічого не викинули.";
-export const OVER_CEILING_CHARACTER_FORMS = ["символ", "символи", "символів"];
+export * from "../../../../../contracts/walks/over-ceiling-note.constant";
 
 /** Breakdown lines: the parts that would have gone, their sum, and the ceiling. */
 export const OVER_CEILING_PROMPT_LABEL = "промпт";

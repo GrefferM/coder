@@ -78,7 +78,7 @@ import { MODEL_PICKER_PLACEHOLDER } from "../../features/agents/ui/agent-panel/c
 import { STEPPER_MORE_LABEL } from "../../components/stepper/constants";
 import { PROMPT_PICKER_NONE_LABEL } from "../../features/agents/ui/agent-panel/components/prompt-picker/constants";
 import { PICKER_SEARCH_PLACEHOLDER } from "../../components/picker-shell/constants";
-import { SAVE_PROJECT_CHANNEL } from "../../../../contracts";
+import { OPEN_WALKS_CHANNEL, SAVE_PROJECT_CHANNEL } from "../../../../contracts";
 import {
   LINK_PILL_DELETE_LABEL,
   LINK_PILL_DELETE_SHORTCUT,
@@ -122,6 +122,14 @@ const CONFIG: ProjectConfig = aConfig({
     }),
   ],
 });
+
+/** What the backend tells of a conversation that has no walk. */
+const NO_WALKS = {
+  out: {},
+  walks: {},
+  saidAgain: [],
+  flowRunId: null,
+};
 
 /** The providers the machine offers, as far as this page shows them. */
 const PROVIDERS: ProviderState[] = [
@@ -194,7 +202,13 @@ describe("MainPage", () => {
   beforeEach(() => {
     // The providers channel answers with the machine's list, every other with nothing.
     standInBridge({
-      invoke: vi.fn(async (channel: string) => (channel === LIST_PROVIDERS_CHANNEL ? PROVIDERS : [])),
+      invoke: vi.fn(async (channel: string) => {
+        if (channel === OPEN_WALKS_CHANNEL) {
+          return NO_WALKS;
+        }
+
+        return channel === LIST_PROVIDERS_CHANNEL ? PROVIDERS : [];
+      }),
     });
   });
 
@@ -661,7 +675,7 @@ describe("MainPage", () => {
     expect(await screen.findByLabelText(AGENT_SETTINGS_NAME_LABEL)).toHaveValue("EDITOR2");
 
     standInBridge({
-      invoke: vi.fn().mockResolvedValue([]),
+      invoke: vi.fn(async (channel: string) => (channel === OPEN_WALKS_CHANNEL ? NO_WALKS : [])),
     });
 
     await user.click(screen.getByText(WRITE_NOTE_RETRY_LABEL));
@@ -2286,6 +2300,10 @@ describe("MainPage", () => {
       invoke: vi.fn(async (channel: string) => {
         if (channel === LIST_PROVIDERS_CHANNEL) {
           return PROVIDERS;
+        }
+
+        if (channel === OPEN_WALKS_CHANNEL) {
+          return NO_WALKS;
         }
 
         // One row of this project's record, asked of the second agent.

@@ -1,12 +1,12 @@
 import { inStreamOrder } from "./chat-stream";
-import { isOnScreen } from "./is-on-screen";
-import type { ChatMessage, WalkState } from "../interfaces";
+import { isOnScreen } from "../../../../../contracts";
+import type { ChatMessage, WalkSnapshot } from "../interfaces";
 
 /**
  * An agent whose last turn of this conversation fell and has said nothing since, with the hour it fell. The machine's
  * walls (off, silent, no model) stand in every conversation.
  */
-export function fellAgents(walk: WalkState): Record<string, string> {
+export function fellAgents(walk: WalkSnapshot): Record<string, string> {
   const last: Record<string, ChatMessage> = {};
   const saidHere = Object.entries(walk.walks)
     .filter(([runKey]) => isOnScreen(walk, runKey))

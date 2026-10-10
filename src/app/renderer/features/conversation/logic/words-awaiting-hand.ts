@@ -1,12 +1,12 @@
-import { isOnScreen } from "./is-on-screen";
+import { isOnScreen } from "../../../../../contracts";
 import { standsWithRepeat } from "./stands-with-repeat";
-import type { WalkState, WordsAwaitingHand } from "../interfaces";
+import type { WalkSnapshot, WordsAwaitingHand } from "../interfaces";
 
 /**
  * Words of this session with a repeat under them, split by whether the person is looking at them; the elsewhere part
  * feeds the dot on «ІСТОРІЯ». Runs broken before the app opened live in the record, not here.
  */
-export function wordsAwaitingHand(walk: WalkState): WordsAwaitingHand {
+export function wordsAwaitingHand(walk: WalkSnapshot): WordsAwaitingHand {
   const elsewhere: string[] = [];
   const onScreen: string[] = [];
 

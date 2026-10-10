@@ -1,12 +1,12 @@
-import { isOnScreen } from "./is-on-screen";
-import type { WalkState } from "../interfaces";
+import { isOnScreen } from "../../../../../contracts";
+import type { WalkSnapshot } from "../interfaces";
 import type { WaitingAgent, WaitingSupplier } from "../../../interfaces";
 
 /**
  * Every point of the conversation on screen holding work while lines converge, with each supplier's state: answered,
  * still out, or settled with nothing; suppliers in line-drawing order.
  */
-export function waitingAgents(walk: WalkState): WaitingAgent[] {
+export function waitingAgents(walk: WalkSnapshot): WaitingAgent[] {
   const shown: Record<string, WaitingAgent & { askedAt: number }> = {};
 
   for (const [runKey, held] of Object.entries(walk.walks)) {

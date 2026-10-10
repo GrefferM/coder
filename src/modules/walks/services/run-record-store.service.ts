@@ -1,0 +1,57 @@
+import type { RunReader, RunWriter } from "../../runs";
+import type { AskedQuestion, OpenedRecord, WholeRun, WrittenStep } from "../../../contracts";
+import type { RunRecord } from "../interfaces";
+
+/** The record a walk writes, kept by the run services. */
+export class RunRecordStore implements RunRecord {
+  constructor(
+    private readonly writer: RunWriter,
+    private readonly reader: RunReader,
+  ) {}
+
+  async open(directory: string, question: AskedQuestion): Promise<OpenedRecord> {
+    return this.writer.open({
+      directory,
+      questionId: question.questionId,
+      startedByAgentId: question.agent.id,
+      startedByAgentName: question.agent.name,
+      startedByAgentColor: question.agent.color,
+      asked: question.asked,
+      attached: question.attached,
+      startedAt: question.askedAt,
+    });
+  }
+
+  async askAgain(runId: string, question: AskedQuestion): Promise<boolean> {
+    const id = await this.writer.askAgain({
+      runId,
+      questionId: question.questionId,
+      asked: question.asked,
+      askedAgentId: question.agent.id,
+      askedAgentName: question.agent.name,
+      attached: question.attached,
+      askedAt: question.askedAt,
+    });
+
+    return id !== null;
+  }
+
+  async step(step: WrittenStep): Promise<string> {
+    return this.writer.step(step);
+  }
+
+  async close(runId: string, endedAt: number): Promise<void> {
+    await this.writer.close({
+      runId,
+      endedAt,
+    });
+  }
+
+  async read(runId: string): Promise<WholeRun | null> {
+    return this.reader.one(runId);
+  }
+
+  async sharedMemory(runId: string, questionId: string): Promise<string | null> {
+    return this.reader.sharedMemory(runId, questionId);
+  }
+}

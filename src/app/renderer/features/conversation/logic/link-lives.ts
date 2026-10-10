@@ -1,6 +1,6 @@
-import { isOnScreen } from "./is-on-screen";
+import { isOnScreen } from "../../../../../contracts";
 import type { Link, LinkLife } from "../../../interfaces";
-import type { WaitedWork, WalkState } from "../interfaces";
+import type { WaitedWork, WalkSnapshot } from "../interfaces";
 
 /** Where one supplier of a converging point stands, or `null` where this line is no supplier of it. */
 function supplierLife(stood: WaitedWork, fromAgentId: string): LinkLife | null {
@@ -19,7 +19,7 @@ function supplierLife(stood: WaitedWork, fromAgentId: string): LinkLife | null {
  * The life of every canvas line: work flowing down, or an agent waiting on its suppliers (never both). Lines without
  * life are left out; only the conversation on screen gives life.
  */
-export function linkLives(links: Link[], walk: WalkState): Record<string, LinkLife> {
+export function linkLives(links: Link[], walk: WalkSnapshot): Record<string, LinkLife> {
   const lives: Record<string, LinkLife> = {};
 
   for (const standing of Object.values(walk.out)) {

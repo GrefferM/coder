@@ -9,10 +9,12 @@ export function createRunModule(dataSource: DataSource): RunModule {
   const store = new TypeormRunStore(runTablesOf(dataSource));
   const keeper = new RunKeeper(store);
   const reader = new RunReader(store);
+  const writer = new RunWriter(store);
 
   return {
-    controller: new RunController(new RunWriter(store), reader, new RunSearch(store), keeper),
+    controller: new RunController(writer, reader, new RunSearch(store), keeper),
     keeper,
     reader,
+    writer,
   };
 }

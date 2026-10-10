@@ -7,7 +7,3 @@ export const SLOT_CLOSE = "}";
 
 /** A parameter name: letters, digits and «_», not starting with a digit. */
 export const TEMPLATE_NAME_PATTERN = /^[\p{L}_][\p{L}\p{N}_]*$/u;
-
-/** Three or more newlines collapse to one blank line. */
-export const ANSWER_BLANK_LINES_PATTERN = /\n{3,}/g;
-export const ANSWER_ONE_BLANK_LINE = "\n\n";

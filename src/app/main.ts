@@ -7,6 +7,7 @@ import { createProjectModule } from "../modules/projects";
 import { createProvidersModule } from "../modules/providers";
 import { createRunModule } from "../modules/runs";
 import { createSecretsModule } from "../modules/secrets";
+import { RunRecordStore, createWalksModule } from "../modules/walks";
 import {
   registerIpcChannels,
   DELETIONS_IPC_CHANNELS,
@@ -16,8 +17,9 @@ import {
   PROVIDERS_IPC_CHANNELS,
   RUNS_IPC_CHANNELS,
   SHELL_IPC_CHANNELS,
+  WALKS_IPC_CHANNELS,
 } from "./ipc";
-import { SafeStorageCipher, SystemShell, WindowProjectVoice, WindowVoice } from "./services";
+import { SafeStorageCipher, SystemShell, WindowProjectVoice, WindowVoice, WindowWalkVoice } from "./services";
 import type { McpClient } from "../modules/mcp";
 import type { ProjectWatch } from "../modules/projects";
 import {
@@ -57,7 +59,12 @@ async function initializeIpc(): Promise<void> {
     secretService,
     app.getPath("userData"),
   );
-  const { controller: runController, keeper: runKeeper, reader: runReader } = createRunModule(dataSource);
+  const {
+    controller: runController,
+    keeper: runKeeper,
+    reader: runReader,
+    writer: runWriter,
+  } = createRunModule(dataSource);
 
   // Closes a run left open by a closing app.
   await runKeeper.settleOpen();
@@ -71,7 +78,7 @@ async function initializeIpc(): Promise<void> {
 
   mcpClient = client;
 
-  const { controller: llmController } = createLlmModule(
+  const { controller: llmController, service: llmService } = createLlmModule(
     providerService,
     new WindowVoice(),
     commandRunner,
@@ -79,6 +86,14 @@ async function initializeIpc(): Promise<void> {
     runReader,
   );
   const systemShell = new SystemShell();
+  const runRecord = new RunRecordStore(runWriter, runReader);
+  const { controller: walkController } = createWalksModule({
+    record: runRecord,
+    llm: llmService,
+    providers: providerService,
+    servers: client,
+    voice: new WindowWalkVoice(),
+  });
 
   registerIpcChannels(projectController, PROJECTS_IPC_CHANNELS);
   registerIpcChannels(deletionController, DELETIONS_IPC_CHANNELS);
@@ -86,6 +101,7 @@ async function initializeIpc(): Promise<void> {
   registerIpcChannels(llmController, LLM_IPC_CHANNELS);
   registerIpcChannels(mcpController, MCP_IPC_CHANNELS);
   registerIpcChannels(runController, RUNS_IPC_CHANNELS);
+  registerIpcChannels(walkController, WALKS_IPC_CHANNELS);
   registerIpcChannels(systemShell, SHELL_IPC_CHANNELS);
 }
 

@@ -1,5 +1,5 @@
 import type { RunController } from "../controllers";
-import type { RunKeeper, RunReader } from "../services";
+import type { RunKeeper, RunReader, RunWriter } from "../services";
 
 /**
  * What `createRunModule` returns: the controller for the channels, the keeper for housekeeping, and the reader an agent
@@ -9,4 +9,5 @@ export interface RunModule {
   controller: RunController;
   keeper: RunKeeper;
   reader: RunReader;
+  writer: RunWriter;
 }

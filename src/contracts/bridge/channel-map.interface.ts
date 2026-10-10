@@ -42,6 +42,15 @@ import type {
   SAVE_PROVIDER_ADDRESS_CHANNEL,
   SAVE_PROVIDER_KEY_CHANNEL,
   STOP_AGENT_CHANNEL,
+  CONFIGURE_WALKS_CHANNEL,
+  FRESH_WALKS_CHANNEL,
+  GO_ON_IN_WALKS_CHANNEL,
+  LET_GO_WALKS_CHANNEL,
+  OPEN_WALKS_CHANNEL,
+  PUT_WALK_CHANNEL,
+  SAY_WALK_AGAIN_CHANNEL,
+  STOP_WALKS_CHANNEL,
+  WALKS_STATE_CHANNEL,
 } from "../channels";
 import type { Deletion, FolderContents, ProjectEntry, ProjectOnDisk } from "../project";
 import type { ProviderReply, ProviderState } from "../providers";
@@ -50,6 +59,7 @@ import type { SaidTurn } from "../llm";
 import type { CallPlace, OpenedRecord, RunHit, RunRow, WholeRun } from "../runs";
 import type { AttachmentPick, PackAttachmentsAsk, PackedAttachment, PickAttachmentsAsk } from "../attachments";
 import type { SaveTextAsk } from "../shell";
+import type { WalkSnapshot } from "../walks";
 import type {
   AddRunStep,
   AskAgain,
@@ -71,6 +81,12 @@ import type {
   SaveProject,
   SaveProviderValue,
   StopAgent,
+  ConfigureWalks,
+  GoOnInWalks,
+  LetGoWalks,
+  OpenWalks,
+  PutWalk,
+  SayWalkAgain,
 } from "./payloads.interface";
 
 /** What is sent over each channel and what comes back. `void` where nothing is handed over or nothing is answered. */
@@ -127,6 +143,18 @@ export interface ChannelMap {
   [SEARCH_RUNS_CHANNEL]: { payload: SearchRuns; answer: RunHit[] };
   [FORGET_RUN_CHANNEL]: { payload: OfOne; answer: boolean };
   [FORGET_RUNS_CHANNEL]: { payload: OfProject; answer: number };
+
+  /** The conversation of the open project; its walks are said back by push. */
+  [OPEN_WALKS_CHANNEL]: { payload: OpenWalks; answer: WalkSnapshot };
+  [CONFIGURE_WALKS_CHANNEL]: { payload: ConfigureWalks; answer: void };
+  [WALKS_STATE_CHANNEL]: { payload: void; answer: WalkSnapshot | null };
+  /** The walk's id, or null when the conversation took no question: no such agent, or a walk is out. */
+  [PUT_WALK_CHANNEL]: { payload: PutWalk; answer: string | null };
+  [STOP_WALKS_CHANNEL]: { payload: void; answer: void };
+  [SAY_WALK_AGAIN_CHANNEL]: { payload: SayWalkAgain; answer: void };
+  [FRESH_WALKS_CHANNEL]: { payload: void; answer: void };
+  [GO_ON_IN_WALKS_CHANNEL]: { payload: GoOnInWalks; answer: void };
+  [LET_GO_WALKS_CHANNEL]: { payload: LetGoWalks; answer: void };
 
   /** Desktop calls: choose a folder, reveal a project's file, pick and pack files for a question. */
   [CHOOSE_DIRECTORY_CHANNEL]: { payload: void; answer: string | null };

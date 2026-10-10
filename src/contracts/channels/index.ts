@@ -6,3 +6,4 @@ export * from "./projects.channel";
 export * from "./providers.channel";
 export * from "./runs.channel";
 export * from "./shell.channel";
+export * from "./walks.channel";

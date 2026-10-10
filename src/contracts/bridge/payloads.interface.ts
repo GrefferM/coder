@@ -3,6 +3,7 @@ import type { AgentTool, ChatTurn, ReachableAgent } from "../llm";
 import type { ProjectMcpServer } from "../project";
 import type { WrittenStep } from "../runs";
 import type { PackedAttachment } from "../attachments";
+import type { ChatMessage } from "../walks";
 
 /** Every channel naming a folder names it by the project's directory. */
 export interface OfProject {
@@ -141,4 +142,35 @@ export interface SaveMcpToken extends OfServer {
 /** One variable's value, by the variable's name. */
 export interface SaveMcpEnvValue extends SaveMcpToken {
   name: string;
+}
+
+/** The conversation of the open project begins, with its config as the screen holds it. */
+export interface OpenWalks extends OfProject {
+  config: ProjectConfig;
+}
+
+/** The config as it stands now. */
+export interface ConfigureWalks {
+  config: ProjectConfig;
+}
+
+/** The person's question, put to one agent with the files packed for it. */
+export interface PutWalk {
+  agentId: string;
+  text: string;
+  attached: PackedAttachment[];
+}
+
+/** The card a repeat was pressed under. */
+export interface SayWalkAgain {
+  said: ChatMessage;
+}
+
+/** The run the conversation goes on in; none for a conversation with no row yet. */
+export interface GoOnInWalks {
+  runId: string | null;
+}
+
+export interface LetGoWalks {
+  runId: string;
 }

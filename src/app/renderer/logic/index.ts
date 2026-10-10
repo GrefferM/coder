@@ -1,5 +1,10 @@
-export * from "./agent-numbers";
-export * from "./broken-cause";
-export * from "./model-numbers";
+export {
+  agentNumbers,
+  brokenCause,
+  hasBrokenGrant,
+  isAgentFilled,
+  isModelFilled,
+  modelNumbers,
+} from "../../../contracts/project";
 export * from "./name-taken";
 export * from "./function-name";

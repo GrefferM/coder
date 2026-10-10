@@ -58,14 +58,7 @@ export function usePageParts(
       }),
     [sayNote],
   );
-  const chat = useAgentChat(
-    project,
-    agents.selectedAgentId,
-    machine.providers,
-    machine.heard,
-    servers.looks,
-    sayRefused,
-  );
+  const chat = useAgentChat(project, agents.selectedAgentId, machine.providers, machine.heard, sayRefused);
   /** The agent the stream targets; the selected one uses its unsaved draft. */
   const aimed =
     chat.aimedAgentId === agents.selectedAgentId && drafted.draft !== null

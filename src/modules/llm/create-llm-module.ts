@@ -16,5 +16,6 @@ export function createLlmModule(
 
   return {
     controller: llmController,
+    service: llmService,
   };
 }

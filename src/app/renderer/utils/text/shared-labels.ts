@@ -1,4 +1,4 @@
-import { shortLabel } from "./short-label";
+import { shortLabel } from "../../../../contracts/text";
 
 /** Two values on one line: the shorter takes only what it needs, and when both are long they halve the room. */
 export function sharedLabels(first: string, second: string, room: number): [string, string] {

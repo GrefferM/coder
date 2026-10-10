@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { workingTurns } from "./working-turns";
 import { begunWalk } from "./begun-walk";
 import { emptyWalk } from "./empty-walk";
-import type { TurnOut, WalkState } from "../interfaces";
+import type { TurnOut, WalkSnapshot } from "../interfaces";
 
 const out: Record<string, TurnOut> = {
   "turn-2": {
@@ -22,7 +22,7 @@ const out: Record<string, TurnOut> = {
 };
 
 /** One stream's walks with only the parts this reader looks at. */
-function walk(patch: Partial<WalkState>): WalkState {
+function walk(patch: Partial<WalkSnapshot>): WalkSnapshot {
   return {
     ...emptyWalk(),
     ...patch,

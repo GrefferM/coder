@@ -6,5 +6,5 @@ export * from "./run-agents";
 export * from "./run-named-today";
 export * from "./run-standing";
 export * from "./run-standings";
-export * from "./run-unfinished";
+export { runUnfinished } from "../../../../../contracts/runs";
 export * from "./step-began";

@@ -1,12 +1,12 @@
-import { isOnScreen } from "./is-on-screen";
-import type { WalkState } from "../interfaces";
+import { isOnScreen } from "../../../../../contracts";
+import type { WalkSnapshot } from "../interfaces";
 import type { WorkingAgent } from "../../../interfaces";
 
 /**
  * Every turn of the conversation on screen still out, oldest first: whose it is and since when. Turns of other
  * conversations are excluded; turn words arrive apart, so the list stands still.
  */
-export function workingTurns(walk: WalkState): WorkingAgent[] {
+export function workingTurns(walk: WalkSnapshot): WorkingAgent[] {
   const { out, walks } = walk;
 
   return Object.values(out)

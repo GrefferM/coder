@@ -1,5 +1,5 @@
-import { isOnScreen } from "./is-on-screen";
-import type { ChatMessage, WalkState } from "../interfaces";
+import { isOnScreen } from "../../../../../contracts";
+import type { ChatMessage, WalkSnapshot } from "../interfaces";
 
 /**
  * One block per question in the order asked, each block's words in the order said; the id separates questions of the
@@ -16,7 +16,7 @@ export function inStreamOrder(messages: ChatMessage[]): ChatMessage[] {
  * One stream for the project: every agent's turns of the walks standing on this screen, in order, without what arrived
  * down a line; walks of another row are another conversation.
  */
-export function chatStream(walk: WalkState): ChatMessage[] {
+export function chatStream(walk: WalkSnapshot): ChatMessage[] {
   return inStreamOrder(
     Object.entries(walk.walks)
       .filter(([runKey]) => isOnScreen(walk, runKey))

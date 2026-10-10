@@ -1,15 +1,11 @@
-import type { WalkState } from "../interfaces";
+import type { WalkSnapshot } from "../../../../../contracts";
 
-/** A stream with nothing in it: where every walk starts and what «+ НОВИЙ ЧАТ» returns to. */
-export function emptyWalk(): WalkState {
+/** A conversation with nothing in it: what the screen holds until the backend tells it of a walk. */
+export function emptyWalk(): WalkSnapshot {
   return {
     out: {},
     walks: {},
-    ledgers: {},
     saidAgain: [],
-    drafts: {},
-    attachments: {},
-    aimedAgentId: null,
     flowRunId: null,
   };
 }
