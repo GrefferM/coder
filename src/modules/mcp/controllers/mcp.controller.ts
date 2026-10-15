@@ -12,7 +12,6 @@ import {
 } from "../dto";
 import type { McpLook, McpSecretsHeld } from "../interfaces";
 
-/** The one door a screen reaches an MCP server through: what it hands over and what this machine holds for it. */
 export class McpController {
   constructor(
     private readonly client: McpClient,

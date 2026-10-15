@@ -8,7 +8,7 @@ export interface CallStanding {
   name: string;
   arguments: Record<string, string>;
   pinned: string[];
-  /** The server this call goes to and its current name; `null` for a command's call. */
+  /** The server this call goes to and its current name; `null` for a command's or an agent's call. */
   serverId: string | null;
   serverName: string;
 }
@@ -23,16 +23,13 @@ export interface CallResult {
 
 /**
  * One way of making a call: a declared command is the person's line, checked against their declared types and run as a
- * process; a server's function is asked over a connection, unchecked. The row minting, saying and handing to the model
- * is shared.
+ * process; a server's function is asked over a connection, unchecked; another agent runs a whole turn. The row minting,
+ * saying and handing to the model is shared.
  */
 export interface ToolWay {
   /** What the row says the moment it is minted. */
   standing(): CallStanding;
-  /**
-   * Why the call must not go out, or `null`; only a declared command has one: its arguments are checked against the
-   * declared types.
-   */
+  /** Why the call must not go out, or `null`: a command's arguments against its declared types, an agent's ring. */
   refusal(): string | null;
   /** The call itself, once the person has been told it is out. */
   make(callId: string, directory: string, signal: AbortSignal): Promise<CallResult>;

@@ -18,7 +18,6 @@ import {
 } from "./constants";
 import type { CommandsPanelProps } from "./interfaces";
 
-/** The catalogue of declared commands. */
 export function CommandsPanel({
   commands,
   openCommandId,

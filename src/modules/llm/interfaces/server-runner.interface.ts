@@ -1,9 +1,6 @@
 import type { ProjectMcpServer } from "../../../contracts/project";
 
-/**
- * What this module needs of whoever reaches MCP servers. No line or exit code; a call that could not happen comes back
- * named, not thrown.
- */
+/** A call that could not happen comes back named, not thrown. */
 export interface ServerRunner {
   call(payload: {
     server: ProjectMcpServer;

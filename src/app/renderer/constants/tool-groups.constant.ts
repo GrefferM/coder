@@ -7,7 +7,7 @@ export const SERVER_GROUP_PREFIX = "server:";
 /** The head of every agent granted as a tool. */
 export const AGENTS_GROUP_KEY = "agents";
 
-/** The group a grant belongs to; a server's is its id. */
+/** The group a grant belongs to; a server's carries the server's id. */
 export function groupOfGrant(grant: ToolGrant): string {
   const source = sourceOf(grant);
 

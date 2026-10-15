@@ -226,7 +226,6 @@ export class RunReader {
       refusal: row.refusal,
       exitCode: row.exitCode,
       serverId: row.serverId,
-      // Empty string where the call has no server name.
       serverName: row.serverName ?? "",
       // A server's «ні» is stored as the call's end.
       isFailed: row.end === RUN_CALL_SAID_NO,

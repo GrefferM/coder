@@ -11,7 +11,6 @@ import {
 import { COMMAND_NAME_MAX_LENGTH, COMMAND_NAME_PATTERN } from "../../../contracts";
 import { ProjectCommandParameterDto } from "./project-command-parameter.dto";
 
-/** A user-declared command: run line, description for the model, parameters. */
 export class ProjectCommandDto {
   @IsUUID()
   declare id: string;

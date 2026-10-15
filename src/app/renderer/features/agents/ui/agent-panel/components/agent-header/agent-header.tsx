@@ -25,7 +25,7 @@ import {
 } from "./constants";
 import type { AgentHeaderProps } from "./interfaces";
 
-/** Agent tab header above the switch, with the state line under the name. */
+/** Agent tab header, with the state line under the name. */
 export function AgentHeader({ name, color, isActive, state, startedAt }: AgentHeaderProps) {
   const clock = useElapsed(startedAt ?? 0);
   const said = state.at === null ? state.label : `${state.label}${STATE_SEPARATOR}${timeLabel(state.at)}`;

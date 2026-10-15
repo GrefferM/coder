@@ -67,7 +67,10 @@ export function ProvidersPanel({
     return [modelsCountLabel(own.length), agentsCountLabel(standing.length)];
   }
 
-  /** Local: whether it answers. Remote: key written, or kind and no key. Counts follow where models stand on it. */
+  /**
+   * Local: whether it answers. Remote: key written, or its kind and what is missing. Counts follow where models stand
+   * on it.
+   */
   function facts(provider: ProviderState): string {
     const answer = answers[provider.id];
     const local =
@@ -94,8 +97,8 @@ export function ProvidersPanel({
   }
 
   /**
-   * Untouched fields are not written: the key field holds only a hint, so empty means «unchanged»; taking a key off is
-   * the cross, then save writes the empty value.
+   * Untouched (`null`) fields are not written: the key field shows only a hint, so a field left alone means
+   * «unchanged»; taking a key off is the cross, then save writes the empty value.
    */
   async function save(provider: ProviderState) {
     if (draft.key !== null || draft.address !== null) {

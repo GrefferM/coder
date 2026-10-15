@@ -1,6 +1,6 @@
 import type { ProjectModel, ProviderAnswer, ProviderState } from "../../../interfaces";
 
-/** Whether the machine holds the declared model; `null` for a remote provider or a silent local one. */
+/** Whether the machine holds the declared model; `null` for an unknown or remote provider, or a silent local one. */
 export function modelInstalled(
   model: ProjectModel,
   providers: ProviderState[],

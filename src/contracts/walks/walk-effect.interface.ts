@@ -26,7 +26,7 @@ export type WalkEffect =
     }
   /** Stop the turn that is out. */
   | { kind: "stopMachine"; turnId: string }
-  /** Puts the work a converging point has gathered to the agent standing there. */
+  /** Puts work to an agent: what came down a line, or what a converging point gathered; the adapter mints the turn. */
   | {
       kind: "askAgent";
       agent: Agent;

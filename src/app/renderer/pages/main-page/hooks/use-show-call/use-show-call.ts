@@ -5,8 +5,9 @@ import type { RailStanding } from "../use-rail-standing";
 import type { ShownStream } from "../use-shown-stream";
 
 /**
- * «ПОКАЗАТИ ВИКЛИК»: hands the chat over to the call a catalogue row refers to: turns to that agent, shows the run in
- * the stream, scrolls to the call's message. A call the record cannot place returns `false` and opens nothing.
+ * «ПОКАЗАТИ ВИКЛИК»: hands the chat over to the call a catalogue row refers to: opens its run in the stream as a
+ * history row would, scrolls to the call's message. A call the record cannot place, or whose run is not listed,
+ * returns `false` and opens nothing.
  */
 export function useShowCall(
   stream: ShownStream,

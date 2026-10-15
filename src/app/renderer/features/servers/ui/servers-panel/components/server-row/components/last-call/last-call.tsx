@@ -101,7 +101,6 @@ export function LastCall({ failure, isNews, onShow }: LastCallProps) {
             fontSize: LAST_CALL_SAID_FONT_SIZE_PX,
             lineHeight: LAST_CALL_SAID_LINE_HEIGHT,
             overflowWrap: "anywhere",
-            // Two lines at most.
             display: "-webkit-box",
             WebkitLineClamp: LAST_CALL_SAID_LINES,
             WebkitBoxOrient: "vertical",

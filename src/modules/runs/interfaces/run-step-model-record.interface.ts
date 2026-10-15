@@ -1,4 +1,3 @@
-/** Columns of `run_step_models`; the entity implements it. */
 export interface RunStepModelRecord {
   id: string;
   modelId: string;

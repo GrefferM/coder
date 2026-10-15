@@ -1,7 +1,7 @@
 import { BORDER_AT_REST_COLOR } from "../../../../../constants";
 import { FIELD_BACKGROUND_COLOR } from "../../../../../components/field/constants";
 
-/** The one form for both kinds of server; its head switch picks the kind and is the first keyboard slot. */
+/** The one form for both kinds of server. */
 export const SERVER_FORM_NAME_LABEL = "ІМ'Я";
 export const SERVER_FORM_NAME_PLACEHOLDER = "brave_search";
 /** A server's name follows its own rule; the dash is allowed. */
@@ -27,10 +27,7 @@ export const SERVER_FORM_CHOICE_COLOR = "#8b93ab";
 export const SERVER_FORM_CHOICE_CHOSEN_COLOR = "#dde1ee";
 export const SERVER_FORM_CHOICE_CHOSEN_BACKGROUND = "#1b2030";
 
-/**
- * The half of the form that never reaches the project file: a variable's name goes in the file, its value and any token
- * stay in this machine's keychain.
- */
+/** A variable's name goes in the project file; its value, like any token, stays in this machine's keychain. */
 export const SERVER_FORM_ENV_LABEL = "ЗМІННІ СЕРЕДОВИЩА";
 export const SERVER_FORM_ENV_NOTE =
   "Ім'я їде у файлі проєкту, значення лишається на цій машині. Процес біжить із відфільтрованим середовищем плюс цим.";

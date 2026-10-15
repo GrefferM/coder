@@ -10,7 +10,7 @@ export interface SettingsTiesProps {
   prompts: ProjectPrompt[];
   /** The other agents, so a picker can count how many share a choice. */
   agents: Agent[];
-  /** The model is gone from the project, or its provider is undeclared. */
+  /** The model is gone from the project; a provider unknown to the app is `goneProviderId`. */
   isModelGone: boolean;
   isPromptGone: boolean;
   goneProviderId: string | null;

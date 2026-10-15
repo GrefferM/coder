@@ -7,7 +7,7 @@ import type { ProjectMcpServer } from "./mcp-server.interface";
 export interface GrantTargets {
   commands: ProjectCommand[];
   servers: ProjectMcpServer[];
-  /** What each server hands over, by server id; no entry for one that did not answer. */
+  /** What each server hands over, by server id; none for one not yet looked at, `isUp` false if it did not answer. */
   looks: Record<string, McpLook>;
   agents: Agent[];
 }

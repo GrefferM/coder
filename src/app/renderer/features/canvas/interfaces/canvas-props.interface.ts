@@ -8,7 +8,7 @@ import type { CanvasViewStanding } from "./canvas-view.interface";
 import type { CanvasWriteActs } from "./canvas-write-acts.interface";
 
 /**
- * What the canvas is handed, by owner: what stands on it, what is alive, what is picked, its bottom notes, its place,
+ * What the canvas is handed, by owner: what stands on it, what is alive, what is picked, its notes, its place,
  * and the acts grouped by target.
  */
 export interface CanvasProps {

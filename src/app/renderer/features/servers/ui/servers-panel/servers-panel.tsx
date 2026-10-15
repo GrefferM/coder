@@ -32,7 +32,6 @@ export function ServersPanel({ catalogue, declaring, serverActs, declaringActs }
   const [shownServerId, setShownServerId] = useState<string | null>(null);
   const shown = servers.find((server) => server.id === shownServerId) ?? null;
 
-  /** A server that goes takes its page with it, so ⌘Z after a delete lands on the catalogue. */
   // The arrow is news: opening the page reads it, mending the trouble does not.
   useEffect(() => {
     if (shownServerId !== null) {
@@ -40,6 +39,7 @@ export function ServersPanel({ catalogue, declaring, serverActs, declaringActs }
     }
   }, [shownServerId, onSeen]);
 
+  // A server that goes takes its page with it, so ⌘Z after a delete lands on the catalogue.
   useEffect(() => {
     if (shownServerId !== null && shown === null) {
       setShownServerId(null);

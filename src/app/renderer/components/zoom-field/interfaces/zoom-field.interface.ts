@@ -1,7 +1,6 @@
 import type { MouseEvent } from "react";
 import type { Point } from "../../../utils/math";
 
-/** A pan-and-zoom field: where it stands and every way of moving it. */
 export interface ZoomField {
   pan: Point;
   scale: number;

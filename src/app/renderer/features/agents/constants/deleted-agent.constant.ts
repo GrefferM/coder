@@ -1,7 +1,7 @@
 /** First half of the undo line, always present. */
 export const DELETED_AGENT_LABEL = "АГЕНТА ВИДАЛЕНО";
 
-/** The three forms of the removed-links count, and the closing word. */
+/** The closing word after the removed-links count. */
 export const DELETED_LINKS_SUFFIX = "ПРИБРАНО";
 
 /** The shape of every deletion question: «Заберемо ‹річ›. ‹Що піде або лишиться разом›.» */

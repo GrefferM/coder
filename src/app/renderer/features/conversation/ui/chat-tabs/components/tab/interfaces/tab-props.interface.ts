@@ -1,4 +1,3 @@
-/** What `Tab` is handed. */
 export interface TabProps {
   label: string;
   isActive: boolean;

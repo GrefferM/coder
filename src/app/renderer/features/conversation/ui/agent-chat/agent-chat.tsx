@@ -17,10 +17,9 @@ import { NOT_STARTED_ENDS } from "../../constants";
 import type { NotStartedReason } from "../../../../interfaces";
 import type { AgentChatProps } from "./interfaces";
 import type { ChatMessage, ChatStep } from "../../interfaces";
-/** Chat column: the person's messages on the right, the agent's on the left; day header shown once. */
+/** Chat column: the person and every agent in one card recipe, in stream order; a day header where the day changes. */
 export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
   const { messages, agents, working, openCalls } = said;
-  /** Whether this message is the last in the whole stream. */
   const isLastSaid = (at: number) => at === messages.length - 1;
   /** The step of the walk each turn stands on, counted off the steps that fed it; one rule for live and read turns. */
   const levels = chatLevels(messages);

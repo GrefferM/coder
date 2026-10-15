@@ -10,7 +10,7 @@ export const ARMED_MARKS_EACH = 2;
  * colours (`AGENT_COLORS`) nor the trouble colours (`FALLEN_COLOR`, `BROKEN_COLOR`).
  */
 export const ARMED_SOURCE_COLORS = ["#b7c4e8", "#ddd0a6", "#a8cfd2"];
-/** Declared commands are one source and take the first colour; a server takes one of the rest. */
+/** Declared commands are one source and take the first colour. */
 export const ARMED_COMMANDS_COLOR = ARMED_SOURCE_COLORS[0];
 /** All MCP servers share the second colour. */
 export const ARMED_SERVERS_COLOR = ARMED_SOURCE_COLORS[1];

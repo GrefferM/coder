@@ -60,7 +60,7 @@ const WALK_RULES: WalkRules = {
 
 /**
  * The walk itself: given an event and the drawn lines, yields the new walk state and the effects it asks for. Touches
- * no provider, record or React.
+ * no provider or record.
  */
 export function walkMachine(state: WalkState, event: WalkEvent, config: ProjectConfig): WalkNext {
   return (<WalkRule<WalkEvent["kind"]>>WALK_RULES[event.kind])(state, event, config);
@@ -704,7 +704,6 @@ function turnPut(event: WalkFact<"asked">, first: IncomingWork, walk: Walk): Wal
  */
 function answered(state: WalkState, event: WalkFact<"answered">, config: ProjectConfig): WalkNext {
   const ledger = state.ledgers[event.runKey] ?? null;
-  // Every word of the walk stands in the block of the question that began it.
   const walk = state.walks[event.runKey];
   const said = tidyAnswer(event.answer.text);
   // A question that never went is not given back to the field; it already stands in the stream and record, and the
@@ -1150,8 +1149,7 @@ function sayAgain(state: WalkState, event: WalkFact<"sayAgain">): WalkNext {
         kind: "askAgain",
         runId: state.flowRunId,
         questionId: event.said.questionId,
-        // The walk names the question, not the hour; two questions can differ by milliseconds, and a repeat under the
-        // wrong words is worse than none.
+        // The walk whose writes the record must hold before it is read back.
         walkId: event.said.walkId,
         notSentTo: event.said.from === "notSent" ? event.said.otherAgentId : null,
         saidId: event.said.id,

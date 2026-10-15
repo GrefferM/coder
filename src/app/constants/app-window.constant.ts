@@ -1,6 +1,6 @@
 import * as path from "node:path";
 
-/** Default size of the app's window on first open. */
+/** The window's size at every launch; a resized window is not remembered. */
 export const WINDOW_WIDTH = 1366;
 export const WINDOW_HEIGHT = 960;
 

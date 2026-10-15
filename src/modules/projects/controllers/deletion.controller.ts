@@ -3,7 +3,6 @@ import { DeletionService } from "../services";
 import { ForgetDeletionDto, OpenProjectDto, RememberDeletionDto } from "../dto";
 import { Deletion } from "../interfaces";
 
-/** The entry point to what a project has deleted. */
 export class DeletionController {
   constructor(private readonly deletionService: DeletionService) {}
 

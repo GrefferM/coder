@@ -4,10 +4,10 @@ import type { AgentChange } from "./agent-change.interface";
 /** The pass whose projection stands over the canvas, and the ways about it. */
 export interface OpenedPassState {
   isOpen: boolean;
-  /** One question's walk; `null` while being read or unreadable. */
+  /** One question's walk; `null` while closed, being read or unreadable. */
   run: WholeRun | null;
   isFailed: boolean;
-  /** Every agent of this run compared with the project as it stands. */
+  /** Every agent of this pass compared with the project as it stands. */
   standings: AgentStanding[];
   /** Agents whose name or circumstances changed since the run. */
   changes: AgentChange[];

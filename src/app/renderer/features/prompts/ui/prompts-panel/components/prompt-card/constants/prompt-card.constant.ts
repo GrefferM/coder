@@ -17,7 +17,6 @@ export const PROMPT_CARD_AGENT_FORMS = ["агент", "агенти", "аген�
 export const PROMPT_CARD_NO_AGENTS_LABEL = "Без агентів";
 export const PROMPT_CARD_WORD_FORMS = ["слово", "слова", "слів"];
 
-/** Text preview, cut after two lines. */
 export const PROMPT_CARD_PREVIEW_COLOR = SECOND_LEVEL_TEXT_COLOR;
 export const PROMPT_CARD_PREVIEW_FONT_SIZE_PX = 11.5;
 export const PROMPT_CARD_PREVIEW_LINE_HEIGHT = 1.55;

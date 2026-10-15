@@ -6,7 +6,7 @@ import type { ServersState } from "./interfaces";
 
 /**
  * Every declared server, asked what it hands over. The answer is held only while the project is open, never written
- * down; a server is asked once when the project names it, and again only on request.
+ * down; a server is asked once when the project names it, and again on request or when redeclared.
  */
 export function useServers(directory: string, servers: ProjectMcpServer[]): ServersState {
   const [looks, setLooks] = useState<Record<string, McpLook>>({});

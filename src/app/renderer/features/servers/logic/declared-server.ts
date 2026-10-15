@@ -3,8 +3,7 @@ import type { ServerFormValues } from "../interfaces";
 
 /**
  * What the project file holds for one kind of server: only that kind's fields are filled, the other kind's are empty
- * rather than absent. A remote server signs in by token, through the browser, or not at all (`none`); a local one signs
- * in to nothing.
+ * rather than absent. A remote server signs in by token or not at all (`none`); a local one signs in to nothing.
  */
 export function declaredServer(values: ServerFormValues): Omit<ProjectMcpServer, "id"> {
   const name = values.name.trim();

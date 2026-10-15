@@ -13,7 +13,6 @@ export class ProjectFileWriter {
     private readonly reader: ProjectFileReader,
   ) {}
 
-  /** Validates, writes each changed part file then the project file; deletes files of removed parts. */
   async write(projectDirectory: string, source: ProjectConfigDto): Promise<void> {
     const held = await this.reader.promptFiles(projectDirectory);
     const config = await this.serializer.toValidConfig({

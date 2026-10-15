@@ -2,10 +2,10 @@ import type { AgentStanding, WholeRun } from "../../../../record";
 import type { AgentChange } from "../../../interfaces";
 
 export interface RunDebugProps {
-  /** The run read whole from the record; `null` while being read or unreadable. */
+  /** One pass of the run, read from the record; `null` while being read or unreadable. */
   run: WholeRun | null;
   isFailed: boolean;
-  /** How each of the run's agents stands today, for the pills under the spheres. */
+  /** How each of the pass's agents stands today, for the pills under the spheres. */
   standings: AgentStanding[];
   /** What the card under the graph compares with today; empty when nothing changed. */
   changes: AgentChange[];

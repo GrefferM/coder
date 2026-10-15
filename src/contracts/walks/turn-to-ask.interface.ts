@@ -17,7 +17,7 @@ export interface TurnToAsk {
   asked: string;
   /** What goes to the model ahead of what arrived: the agent's own thread, or the question's shared memory. */
   memory: TurnMemory;
-  /** What the turn may reach: the project's commands and servers, and what each server hands over. */
+  /** What the turn may reach: the project's commands, its servers with what each hands over, and its agents. */
   catalogue: GrantTargets;
   /** Every agent reachable as a tool from this one, by id. */
   agents: ReachableAgent[];

@@ -16,8 +16,8 @@ import {
 } from "./constants";
 
 /**
- * How fresh something is, on the app's one scale (server row, «оновлено», recent folders). Six steps, rounded down with
- * the boundary in the lower step («1 хв» from the sixtieth second); from the seventh day it gives the date.
+ * How fresh something is, on the app's one scale (server page, recent folders). Six steps, each rounded down («1 хв»
+ * from sixty seconds on); from the seventh day it gives the date.
  */
 export function freshLabel(at: number, now: number): string {
   const seconds = Math.max(0, Math.floor((now - at) / MS_IN_SECOND));

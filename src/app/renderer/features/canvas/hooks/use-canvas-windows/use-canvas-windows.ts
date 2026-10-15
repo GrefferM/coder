@@ -99,7 +99,7 @@ export function useCanvasWindows(
 }
 
 /**
- * What a mark says under the pointer: a «+» gives a line per folded kind; a mark of its own gives its kind and name on
+ * What a mark says under the pointer: a «+» gives a line per folded mark; a mark of its own gives its kind and name on
  * one line, e.g. «MCP-СЕРВЕР · playwright-mcp», «КОМАНДА ПРОЄКТУ · run_lint».
  */
 function standingOf(agentId: string, orb: ArmedOrb, at: HTMLElement): CanvasMarkStanding | null {

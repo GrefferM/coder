@@ -7,6 +7,6 @@ export interface RunHistoryState {
   refusal: string | null;
   /** Takes one run out of the record for good; says whether it went. */
   forget: (runId: string) => Promise<boolean>;
-  /** Takes every run of this project; says whether they went. */
+  /** Takes every ended run of this project; a running one stays. Says whether the record agreed. */
   forgetAll: () => Promise<boolean>;
 }

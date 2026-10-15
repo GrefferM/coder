@@ -86,10 +86,8 @@ export default tseslint.config(
     },
   },
   {
-    // Plain CommonJS entry points ts-node/register hasn't hooked into yet: Electron loads a
-    // window's preload script directly, bootstrap.js is what applies the hook itself, the repo's
-    // own scripts run as plain Node outside any TypeScript pipeline, and a stand-in server a test
-    // spawns is a separate process of its own with nothing hooked into it either.
+    // Plain CommonJS that no ts-node hook reaches: the window's preload, the two bootstraps that register the hook
+    // themselves, the repo's scripts, and a stand-in server a test spawns as a process of its own.
     files: [
       "src/app/preload.js",
       "src/app/bootstrap.js",
@@ -286,20 +284,13 @@ export default tseslint.config(
         },
       ],
 
-      // Прибирає зайві порожні рядки (максимум 1 підряд, 0 на початку/кінці файлу)
       "no-multiple-empty-lines": ["warn", { max: 1, maxEOF: 0, maxBOF: 0 }],
-      // Прибирає зайві пробіли в кінці рядків
       "no-trailing-spaces": "warn",
-      // Гарантує один порожній рядок у кінці файлу
       "eol-last": ["warn", "always"],
 
-      // Обов'язкова крапка з комою в кінці інструкцій
       semi: ["error", "always"],
-      // Лише подвійні лапки
       quotes: ["error", "double", { avoidEscape: true }],
-      // Порожній рядок перед return (якщо перед ним є інший код)
       "padding-line-between-statements": ["warn", { blankLine: "always", prev: "*", next: "return" }],
-      // Кожна властивість об'єкта — на своєму рядку, якщо об'єкт багаторядковий
       "object-property-newline": ["warn", { allowAllPropertiesOnSameLine: false }],
       // Об'єктні літерали завжди багаторядкові, навіть з однією властивістю (не { x: 1 } в один рядок).
       // Імпорти й деструктуризацію (const { x } = y) не чіпаємо.

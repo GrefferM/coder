@@ -3,11 +3,11 @@
  * «+». Carries the id of what it stands for.
  */
 export interface ArmedMarkRow {
-  /** The source this line stands for: the commands' key for a command, `server:<id>` for a server. */
+  /** The source this line stands for: the commands' or agents' key, or `server:<id>` for a server. */
   group: string;
-  /** A command names its own grant; a server names none (its id is in `group`). */
+  /** A command or an agent names its own grant; a server names none (its id is in `group`). */
   grantId: string | null;
-  /** The command's or server's own name; no «N з M» count, which lives in the hint and the panel row. */
+  /** The command's, server's or agent's own name; no «N з M» count, which lives in the hint and the panel row. */
   name: string;
   color: string;
   /** All of this source's grants point at nothing; the line goes first in the trouble tone. */

@@ -1,4 +1,3 @@
-/** Columns of `run_steps`; the entity implements it. */
 export interface RunStepRecord {
   id: string;
   place: number;

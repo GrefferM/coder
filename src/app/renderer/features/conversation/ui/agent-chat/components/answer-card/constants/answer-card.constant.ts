@@ -16,7 +16,7 @@ export const ANSWER_CARD_DOT_SIZE_PX = 3;
 export const ANSWER_CARD_HEAD_GAP_PX = 6;
 export const ANSWER_CARD_STEP_HEAD_GAP_PX = 8;
 
-/** The head of a step read back: a dot, the name, a plain gap, the step. */
+/** The head of a turn on a walk: a dot, the name, a plain gap, the step. */
 export const ANSWER_CARD_STEP_PREFIX = "КРОК ";
 export const ANSWER_CARD_STEP_DOT_SIZE_PX = 6;
 export const ANSWER_CARD_STEP_COLOR = "#4a5164";

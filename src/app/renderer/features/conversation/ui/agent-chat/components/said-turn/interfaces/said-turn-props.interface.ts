@@ -13,7 +13,7 @@ export interface SaidTurnProps {
   openCalls: OpenCalls;
   /** The day header, shown once for the first turn of each day. */
   isNewDay: boolean;
-  /** The rule «СПИТАЛИ ЗНОВУ» over a question that is not the conversation's first. */
+  /** The rule «НОВИЙ ЗАПИТ» over a question that is not the conversation's first. */
   isAskedAgain: boolean;
   /** «КРОК 2 · 19:29»: the turn's place in the walk; `null` when it is not part of one. */
   step: ChatStep | null;

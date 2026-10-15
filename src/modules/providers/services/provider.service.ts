@@ -26,7 +26,6 @@ export class ProviderService {
     private readonly userDataDirectory: string,
   ) {}
 
-  /** Every known provider, with whatever this machine holds for it. */
   async list(): Promise<ProviderState[]> {
     const hints = await this.keys.hints();
     const addresses = await this.readAddresses();

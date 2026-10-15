@@ -1,7 +1,6 @@
 import type { AgentAgentTool } from "../../../contracts/llm";
 import type { AgentTurnOutcome } from "./agent-turn-outcome.interface";
 
-/** One call of another agent as a tool: the model's request, what stops it, and the turn that answers it. */
 export interface AgentCall {
   tool: AgentAgentTool;
   request: string;

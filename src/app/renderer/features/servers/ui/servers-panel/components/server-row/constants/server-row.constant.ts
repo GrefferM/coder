@@ -16,10 +16,10 @@ export const SERVER_ROW_FACTS_FONT_SIZE_PX = 9;
 export const SERVER_ROW_FACTS_LETTER_SPACING_PX = 1;
 export const SERVER_ROW_CHEVRON_COLOR = "#5c6478";
 export const SERVER_ROW_CHEVRON_SIZE_PX = 12;
-/** «ЗАПУСТИТИ» on a fallen row, in the trouble colour of its border. */
+/** The frame of a row's head action; red only on a row in trouble. */
 export const SERVER_ROW_RESTART_PADDING = "4px 9px";
 export const SERVER_ROW_RESTART_BORDER_RADIUS_PX = 7;
-/** The words a fallen server failed with, as it printed them. */
+/** The words a fallen server failed with, cut to their first line. */
 export const SERVER_ROW_FAILURE_COLOR = "#6b7490";
 export const SERVER_ROW_FAILURE_FONT_SIZE_PX = 10.5;
 export const SERVER_ROW_FAILURE_LINE_HEIGHT = 1.5;
@@ -40,7 +40,7 @@ export const SERVER_ROW_NOTE_COLOR = "#aab3cc";
 export const SERVER_ROW_NOTE_FONT_SIZE_PX = 11.5;
 export const SERVER_ROW_NOTE_LINE_HEIGHT = 1.55;
 
-/** The foot of the opened card: «Змінити» framed, «Видалити» a bare word. */
+/** The foot of a server's page: «Змінити» framed, «Видалити» a bare word. */
 export const SERVER_FOOT_GAP_PX = 14;
 export const SERVER_FOOT_EDIT_PADDING = "7px 12px";
 export const SERVER_FOOT_EDIT_RADIUS_PX = 7;

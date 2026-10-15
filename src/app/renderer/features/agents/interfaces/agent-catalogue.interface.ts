@@ -11,7 +11,7 @@ import type {
 /** Everything an agent's tab chooses from: what the project declares and what the machine reports. */
 export interface AgentCatalogue {
   models: ProjectModel[];
-  /** Declared providers, so a model on an undeclared one is flagged under the field. */
+  /** The app's providers, so a model on an unknown one is flagged under the field. */
   providers: ProviderState[];
   prompts: ProjectPrompt[];
   commands: ProjectCommand[];

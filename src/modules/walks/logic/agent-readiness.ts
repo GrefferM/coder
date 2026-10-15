@@ -54,7 +54,7 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
     };
   }
 
-  // Without the prices the turn's bill cannot be counted.
+  // Without its prices and ceilings a turn can be neither bounded nor billed.
   if (!isModelFilled(model)) {
     return {
       note: notStartedNote("notFilled", model, provider),

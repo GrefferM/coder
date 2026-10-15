@@ -76,7 +76,7 @@ export const RUN_DEBUG_STATE_LOOKS: Record<string, RunStateLook> = {
   },
 };
 
-/** «3 хв 06 · 6 КРОКІВ · 18 240 ТКН · $0.21»: the whole run's totals. */
+/** «3 хв 06 · 6 КРОКІВ · 18 240 ТКН · $0.21»: the pass's totals. */
 export const RUN_DEBUG_TOTALS_COLOR = "#5c6478";
 
 /** Shown where the graph will stand when the run could not be read. */

@@ -19,7 +19,7 @@ import {
 import { ATTACHMENT_DENIED_CODES } from "../../../contracts";
 import type { PackedAttachment, PickedAttachment } from "../interfaces";
 
-/** One file's content: its text, and whether it is base64 because the bytes were not text. */
+/** `text` is base64 when `isBinary`. */
 interface FileContent {
   text: string;
   isBinary: boolean;
@@ -36,7 +36,6 @@ interface PackBudget {
   left: number;
 }
 
-/** A pack being written: its pieces and the budget they are counted off. */
 interface PackWriting {
   parts: string[];
   budget: PackBudget;
@@ -50,7 +49,7 @@ interface PackWriting {
 export class AttachmentPacker {
   /**
    * A picked file or folder, named and weighed, with the fewest characters its pack can come to. Given a room under the
-   * ceiling, counting stops as soon as that least exceeds it.
+   * ceiling, counting stops with null as soon as that least exceeds it.
    */
   async measure(target: string, room: number | null = null): Promise<PickedAttachment | null> {
     const bound = room ?? Number.POSITIVE_INFINITY;
@@ -238,8 +237,8 @@ export class AttachmentPacker {
   }
 
   /**
-   * Hands every file under the folder, in name order, to `visit`, which says whether to go on; symlinks are not followed
-   * and an unopenable folder is handed over as such. Returns false when `visit` stopped it.
+   * Hands every file under the folder, in name order, to `visit`, which says whether to go on; symlinks are skipped and
+   * an unopenable folder is handed over as such. Returns false when `visit` stopped it.
    */
   private async walk(root: string, rel: string, visit: (entry: WalkedEntry) => boolean): Promise<boolean> {
     let listed;
@@ -317,7 +316,6 @@ export class AttachmentPacker {
     };
   }
 
-  /** The file's first bytes, at most `most`. */
   private async bytesOf(file: string, most: number): Promise<Buffer> {
     const handle = await open(file, "r");
 
@@ -332,14 +330,12 @@ export class AttachmentPacker {
     }
   }
 
-  /** One line of the tree: a file's path, or a shut folder, marked. */
   private treeLine(entry: WalkedEntry, at: number): string {
     const said = entry.isDenied ? `${entry.rel}/${ATTACHMENT_DENIED_TAG}` : entry.rel;
 
     return `${at === 0 ? "" : "\n"}${ATTACHMENT_TREE_INDENT}${said}`;
   }
 
-  /** The rule a file's content stands under, with a note on how it went in. */
   private ruleLine(rel: string, tag: string): string {
     return `${ATTACHMENT_FILE_RULE} ${rel}${tag} ${ATTACHMENT_FILE_RULE}\n`;
   }
@@ -350,7 +346,6 @@ export class AttachmentPacker {
     writing.budget.left -= characters(piece);
   }
 
-  /** The ceiling is crossed; nothing more is read. */
   private isOver(writing: PackWriting): boolean {
     return writing.budget.left < 0;
   }
@@ -360,7 +355,6 @@ export class AttachmentPacker {
   }
 }
 
-/** The system said the path is not ours to read. */
 function isDenied(error: unknown): boolean {
   if (typeof error !== "object" || error === null) {
     return false;

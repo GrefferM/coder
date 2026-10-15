@@ -1,6 +1,5 @@
 import type { McpLook, ProjectMcpServer } from "../../../../../../../interfaces";
 
-/** The boxed head of a server's page. */
 export interface StateCardProps {
   server: ProjectMcpServer;
   look: McpLook | null;

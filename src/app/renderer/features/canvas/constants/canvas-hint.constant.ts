@@ -1,6 +1,5 @@
 import { FIRST_LEVEL_TEXT_COLOR, QUIET_MARK_COLOR, SECOND_LEVEL_TEXT_COLOR } from "../../../constants";
 
-/** Empty-canvas hint text. */
 export const CANVAS_EMPTY_TITLE = "Правий клік по полотну";
 
 export const CANVAS_EMPTY_NOTE_LINES = ["Меню → «Додати агента».", "Сфера стане саме там, де ви клікнули."];

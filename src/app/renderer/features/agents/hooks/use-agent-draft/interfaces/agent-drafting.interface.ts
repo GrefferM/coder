@@ -8,7 +8,6 @@ export interface AgentDrafting {
   /** The same agent as saved. */
   saved: AgentDraft | null;
   isDirty: boolean;
-  /** Whether another agent already has the name. */
   isNameTaken: boolean;
   /** The page's unsaved-work question, when this panel holds the draft. */
   unsaved: UnsavedWork | null;

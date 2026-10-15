@@ -1,4 +1,3 @@
-/** One call of a declared command: the line, the arguments its braces stand for, and the folder to run in. */
 export interface CommandCall {
   run: string;
   directory: string;

@@ -1,4 +1,3 @@
-// The file's own name, printed by the panel; written once in `src/contracts`.
 export * from "../../../contracts/project";
 export * from "./broken-place.constant";
 export * from "./command-parameter-types.constant";

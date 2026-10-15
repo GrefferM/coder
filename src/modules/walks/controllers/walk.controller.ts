@@ -3,7 +3,6 @@ import { WalkHub } from "../services";
 import { ConfigureWalksDto, GoOnInWalksDto, LetGoWalksDto, OpenWalksDto, PutWalkDto, SayWalkAgainDto } from "../dto";
 import type { WalkSnapshot } from "../../../contracts";
 
-/** The one door a screen reaches the conversation of the open project through. */
 export class WalkController {
   constructor(private readonly hub: WalkHub) {}
 

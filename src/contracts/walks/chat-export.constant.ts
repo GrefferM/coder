@@ -6,7 +6,7 @@ export const CHAT_EXPORT_HEADING = "РОЗМОВА";
 export const CHAT_EXPORT_RULE = "────────────────────────────────────────";
 /** The person's own turns; an agent's are named by the agent. */
 export const CHAT_EXPORT_PERSON = "ВИ";
-/** Mark on a turn that carried work in from a neighbour, and on a question that never went. */
+/** Mark on a turn that carried work in from a neighbour. */
 export const CHAT_EXPORT_SUPPLIER_SUFFIX = " (робота)";
 export const CHAT_EXPORT_HANDOFF_PREFIX = "роботу передано: ";
 export const CHAT_EXPORT_HANDOFF_ARROW = " → ";

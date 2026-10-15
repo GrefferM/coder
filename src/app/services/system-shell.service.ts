@@ -64,7 +64,7 @@ export class SystemShell {
     return this.packer.packAll(paths, ceiling);
   }
 
-  /** Opens the system's folder chooser. */
+  /** `null` when the chooser is dismissed. */
   async choose(): Promise<string | null> {
     const result = await dialog.showOpenDialog({
       title: DIRECTORY_PICKER_TITLE,

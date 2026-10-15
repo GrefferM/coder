@@ -2,9 +2,8 @@ import * as path from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
-/** The `.ts` specs that need a browser. An `api/` spec is here by what that layer is: it talks to the bridge on the
- * window, so every one of them needs a window — named by the folder rather than one by one. A hook that stands
- * beside the component it serves rather than in a `hooks/` folder is named here, one by one, like the utils below. */
+/** The `.ts` specs that need a browser: whole `hooks/` and `api/` folders (an `api/` spec talks to the bridge on the
+ * window), then each hook or util outside them, one by one. */
 const DOM_SPECS = [
   "**/hooks/**/*.spec.ts",
   "**/api/**/*.spec.ts",

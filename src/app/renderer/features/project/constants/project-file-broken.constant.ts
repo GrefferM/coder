@@ -1,8 +1,8 @@
 import type { BrokenPlaceKind } from "../../../../../contracts";
 
 /**
- * What the screen says for that code, followed by the broken thing; a broken file cannot be opened, so the person goes
- * to that thing and fixes it.
+ * What the screen says for the `PROJECT_FILE_BROKEN` refusal, followed by the broken thing; a broken file cannot be
+ * opened, so the person goes to that thing and fixes it.
  */
 export const PROJECT_FILE_BROKEN_NOTE = "Файл проєкту не читається — ось що в ньому не так: ";
 

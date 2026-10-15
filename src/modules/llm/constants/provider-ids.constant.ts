@@ -1,4 +1,3 @@
-/** The providers a client has been built for. */
 export const ANTHROPIC_PROVIDER_ID = "anthropic";
 export const OPENAI_PROVIDER_ID = "openai";
 export const OPENROUTER_PROVIDER_ID = "openrouter";

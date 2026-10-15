@@ -114,7 +114,7 @@ export interface ChannelMap {
   [READ_RUN_CHANNEL]: { payload: OfOne; answer: WholeRun | null };
   /** Where one call stands, by id; null when the record no longer holds it. */
   [CALL_PLACE_CHANNEL]: { payload: { callId: string }; answer: CallPlace | null };
-  /** One hit per run containing the word: the found words and where a press lands. */
+  /** Every place the word stands, newest first, at most `RUN_HITS_LIMIT`: the found words and where a press lands. */
   [SEARCH_RUNS_CHANNEL]: { payload: SearchRuns; answer: RunHit[] };
   [FORGET_RUN_CHANNEL]: { payload: OfOne; answer: boolean };
   [FORGET_RUNS_CHANNEL]: { payload: OfProject; answer: number };
@@ -123,7 +123,7 @@ export interface ChannelMap {
   [OPEN_WALKS_CHANNEL]: { payload: OpenWalks; answer: WalkSnapshot };
   [CONFIGURE_WALKS_CHANNEL]: { payload: ConfigureWalks; answer: void };
   [WALKS_STATE_CHANNEL]: { payload: void; answer: WalkSnapshot | null };
-  /** The walk's id, or null when the conversation took no question: no such agent, or a walk is out. */
+  /** The walk's id, or null when the conversation took no question: no such agent, no words, or a walk is out. */
   [PUT_WALK_CHANNEL]: { payload: PutWalk; answer: string | null };
   [STOP_WALKS_CHANNEL]: { payload: void; answer: void };
   [SAY_WALK_AGAIN_CHANNEL]: { payload: SayWalkAgain; answer: void };

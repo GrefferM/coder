@@ -34,7 +34,7 @@ export const MODULES_ENTITIES = [
   RunStepSettingEntity,
 ];
 
-/** The `DataSource` over every `modules` entity, its SQLite file inside `databaseDirectory`; not initialized. */
+/** Returned not initialized. */
 export function createDataSource(databaseDirectory: string): DataSource {
   return new DataSource({
     type: "better-sqlite3",

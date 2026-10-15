@@ -13,13 +13,11 @@ import { RunStepEntity } from "./run-step.entity";
 import type { RunCallRecord } from "../interfaces";
 import type { ToolSource } from "../../../contracts";
 
-/** A row of `run_calls`: one call inside a step. */
 @Entity(RUN_CALL_TABLE_NAME)
 export class RunCallEntity implements RunCallRecord {
   @PrimaryGeneratedColumn("uuid")
   declare id: string;
 
-  // What the call went to.
   @Column({
     type: "varchar",
   })
@@ -63,14 +61,14 @@ export class RunCallEntity implements RunCallRecord {
   })
   declare refusal: string;
 
-  // No process, no code: a refused or stopped call has none.
+  // Null where no process gave one: a refused or stopped call, a server's or an agent's.
   @Column({
     type: "integer",
     nullable: true,
   })
   declare exitCode: number | null;
 
-  // The server the call went to and its name then; none for a command's call.
+  // The server the call went to and its name then; none for a command's or an agent's call.
   @Column({
     type: "varchar",
     nullable: true,

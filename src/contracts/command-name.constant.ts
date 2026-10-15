@@ -2,5 +2,5 @@
 export const COMMAND_NAME_PATTERN = /^[a-zA-Z0-9_]+$/;
 export const COMMAND_NAME_ALLOWED = /[^a-zA-Z0-9_]+/g;
 export const COMMAND_NAME_MAX_LENGTH = 64;
-/** The shape a whole name must have, used to refuse rather than edit; providers apply the same rule. */
+/** The same rule as `COMMAND_NAME_PATTERN`, used to refuse a typed name rather than edit it. */
 export const COMMAND_NAME_SHAPE = /^[a-zA-Z0-9_]+$/;

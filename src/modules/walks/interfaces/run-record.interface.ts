@@ -1,6 +1,5 @@
 import type { AskedQuestion, OpenedRecord, WholeRun, WrittenStep } from "../../../contracts";
 
-/** What a walk asks of the record: its questions and steps written, its end stamped, its run read back. */
 export interface RunRecord {
   open(directory: string, question: AskedQuestion): Promise<OpenedRecord>;
   /** False when the row is gone. */

@@ -1,5 +1,5 @@
-// Plain JavaScript: Electron loads a preload directly, before bootstrap.js registers ts-node. One generic bridge over
-// every domain's channels.
+// Plain JavaScript: Electron loads a preload in the window's process, where bootstrap.js never registered ts-node.
+// One generic bridge over every domain's channels.
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electronApi", {

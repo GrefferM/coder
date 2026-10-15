@@ -294,7 +294,7 @@ export function useAgentChat(
           return;
         }
 
-        // Stopped while packing: the question goes alone.
+        // Stopped while packing, there are no repeats left and the question goes alone.
         if (cycling.current !== null) {
           turnCycle({
             ...cycling.current,
@@ -498,16 +498,11 @@ export function useAgentChat(
   return {
     /** An agent whose last turn fell and has said nothing since; one good turn clears it. */
     fellAt: fellAgents(walked),
-    /**
-     * A conversation not on screen holds a turn that waits for the hand; this session's news only, not what the record held
-     * before.
-     */
     isNewsElsewhere: news.isNewsElsewhere,
-    /** The history was opened: no longer news. */
     readNews: news.readNews,
     /** The aim, or null when its agent was deleted from the project. */
     aimedAgentId: project.config.agents.some((agent) => agent.id === aimedAgentId) ? aimedAgentId : null,
-    /** Aims without touching the canvas; opening a run points the chat at whoever walked it. */
+    /** Aims without touching the canvas; opening a run points the chat at whom it was last asked. */
     aim: setAimedAgentId,
     openCalls,
     fieldHeight,
@@ -515,19 +510,17 @@ export function useAgentChat(
     fresh,
     sayAgain,
     saidAgain: walked.saidAgain,
-    /** The run this stream writes into, so the projection can open on it. */
     runId: walked.flowRunId,
     goOnIn,
     letGo,
     messages: chatStream(walked),
     draft: screened.drafts[stream.current] ?? "",
-    /** Attachments of the on-screen stream, waiting under the field. */
     attachments: screened.attachments[stream.current] ?? [],
     isWorking: turn !== undefined,
     /** Bumped by every step written and every run closed, so the history can follow. */
     written,
     startedAt: turn === undefined ? null : turn.startedAt,
-    // Every turn out, not just the aimed agent's; the canvas draws them all, the chat each in its own block.
+    // Every turn out on screen, not just the aimed agent's; the canvas draws them all, the chat each in its own block.
     working: workingTurns(walked),
     waiting: waitingAgents(walked),
     /** How each canvas line stands now: flowing, awaited, answered or silent. */

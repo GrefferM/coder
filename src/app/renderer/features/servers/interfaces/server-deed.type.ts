@@ -1,6 +1,6 @@
 /**
- * The one action a catalogue row's head offers: fill in what is missing, raise it, or reconnect afresh. A server that
- * is answering offers none there.
+ * The one action a catalogue row's head offers: fill in what is missing, raise it, or reconnect afresh one that
+ * answers but works for nobody. A working server offers none there.
  */
 export type ServerDeed = "fill" | "raise" | "raiseAgain" | null;
 

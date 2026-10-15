@@ -8,6 +8,6 @@ export type MachineWall = Extract<NotStartedReason, "noKey" | "noAddress" | "sil
 
 /**
  * Every wall the card's own sentence is written for: the four the machine refuses with, and `notFilled`, which the
- * screen works out before sending.
+ * walk works out before asking.
  */
 export type NotStartedWall = MachineWall | Extract<NotStartedReason, "notFilled">;

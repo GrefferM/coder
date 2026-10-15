@@ -33,7 +33,7 @@ import type { ProviderPickerProps } from "./interfaces";
 export function ProviderPicker({ providers, providerId, wasProviderId, isInvalid, onChange }: ProviderPickerProps) {
   const nameOf = (id: string) => providers.find((provider) => provider.id === id)?.name ?? id;
   const chosen = providers.find((provider) => provider.id === providerId) ?? null;
-  // A provider the file names but nobody declared: the usual broken tie.
+  // A provider the file names but the app lacks: the usual broken tie.
   const isLost = chosen === null && providerId !== "";
   // The was-value shows the display name, not the file's word.
   const wasValue = wasProviderId === null ? null : nameOf(wasProviderId);

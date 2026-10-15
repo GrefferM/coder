@@ -2,7 +2,6 @@ import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedCol
 import { PROJECT_ENTRY_TABLE_NAME } from "../constants";
 import { ProjectEntryRecord } from "../interfaces";
 
-/** A row of `project_entries`: one project this machine has opened. */
 @Entity(PROJECT_ENTRY_TABLE_NAME)
 export class ProjectEntryEntity implements ProjectEntryRecord {
   @PrimaryGeneratedColumn("uuid")

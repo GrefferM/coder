@@ -19,9 +19,7 @@ export function useOpenedPass(agents: Agent[], models: ProjectModel[], written: 
 
   return {
     isOpen: pass !== null,
-    // Today's agents, for comparison with the record.
     standings,
-    // What changed since the run.
     changes: runChanges(walked, standings, agents, models),
     run: run === null || pass === null ? null : oneWalk(run, pass.questionId),
     isFailed: opened.isFailed,

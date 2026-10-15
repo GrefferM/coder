@@ -19,8 +19,8 @@ import { RUN_HITS_LIMIT } from "../../../../../../contracts";
 import type { RunHistoryProps } from "./interfaces";
 
 /**
- * One row per run, newest first, grouped by start day, with one search over all. With a word typed the list is flat:
- * places ordered by message hour, with a rule naming the run wherever the record changes runs.
+ * One row per run, newest first, grouped by the day it last spoke, with one search over all. With a word typed the
+ * list is flat: places ordered by message hour, with a rule naming the run wherever the record changes runs.
  */
 export function RunHistory({ runs, agents, refusal, onOpen, onForget, query, hits, onQuery }: RunHistoryProps) {
   const now = new Date();

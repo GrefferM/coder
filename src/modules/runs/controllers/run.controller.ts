@@ -27,7 +27,6 @@ export class RunController {
     return this.reader.placeOfCall(payload.callId);
   }
 
-  /** Every run of this project containing the word, with the found words. */
   @Validate()
   async find(payload: SearchRunsDto): Promise<RunHit[]> {
     return this.search.find(payload.directory, payload.query);

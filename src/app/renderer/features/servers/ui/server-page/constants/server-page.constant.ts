@@ -15,6 +15,5 @@ export const SERVER_PAGE_ANSWERED_FONT_SIZE_PX = 9;
 export const SERVER_PAGE_ANSWERED_LETTER_SPACING_PX = 1.5;
 export const SERVER_PAGE_ANSWERED_LINE_HEIGHT = 1.7;
 
-/** The body under the head. */
 export const SERVER_PAGE_BODY_PADDING_PX = 14;
 export const SERVER_PAGE_BODY_GAP_PX = 10;

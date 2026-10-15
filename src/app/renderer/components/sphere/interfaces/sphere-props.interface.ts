@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import type { SphereMark } from "./sphere-mark.interface";
 import type { SphereTrailProps } from "../components/sphere-trail/interfaces";
 
-/** Inputs of one `Sphere`: content, the trouble mark, selected/dimmed/label-hidden flags, select handler. */
 export interface SphereProps {
   name: string;
   trouble?: SphereMark | null;
@@ -22,7 +21,7 @@ export interface SphereProps {
   isDrawnSmall?: boolean;
   /** The dim third line under the model: the prompt's page and the key with its number. */
   trail?: SphereTrailProps | null;
-  /** What stands under the labels — the working pill. */
+  /** What stands under the labels — the work or the wait pill. */
   underLabel?: ReactNode;
   onSelect: () => void;
 }

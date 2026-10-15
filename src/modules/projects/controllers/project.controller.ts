@@ -3,7 +3,6 @@ import { ProjectService } from "../services";
 import { CreateProjectDto, ForgetProjectDto, OpenProjectDto, RememberProjectViewDto, SaveProjectDto } from "../dto";
 import { FolderContents, KnownProject, ProjectRead } from "../interfaces";
 
-/** The entry point to projects. */
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
@@ -27,7 +26,6 @@ export class ProjectController {
     return this.projectService.openOrCreate(payload);
   }
 
-  /** Closes the one open project; takes no argument. */
   async close(): Promise<void> {
     this.projectService.close();
   }

@@ -1,4 +1,4 @@
-/** Aria label, state, and change handler. */
+/** `label` is the switch's aria label. */
 export interface ToggleProps {
   label: string;
   isOn: boolean;

@@ -25,6 +25,5 @@ export const PROMPTS_PANEL_EMPTY_PADDING_PX = 22;
 export const PROMPTS_PANEL_EMPTY_ICON_SIZE_PX = 30;
 export const PROMPTS_PANEL_EMPTY_ICON_COLOR = "#3a4258";
 
-/** Footer action under its rule. */
 export const PROMPTS_PANEL_NEW_LABEL = "Новий промпт";
 export const PROMPTS_PANEL_FOOTER_BORDER_COLOR = "#1c202c";

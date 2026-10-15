@@ -1,2 +1,2 @@
-/** What a provider needs to be called: remote, a key; local, an address. */
+/** Where a provider runs; only a local one is asked whether it answers and what it has installed. */
 export type ProviderKind = "remote" | "local";

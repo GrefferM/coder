@@ -12,7 +12,6 @@ export interface ProjectConfig {
   models: ProjectModel[];
   prompts: ProjectPrompt[];
   commands: ProjectCommand[];
-  /** Each has its own life: it is started, it answers or it fails. */
   servers: ProjectMcpServer[];
   agents: Agent[];
   links: Link[];

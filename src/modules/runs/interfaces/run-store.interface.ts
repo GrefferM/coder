@@ -95,7 +95,6 @@ export interface NewGiven {
 export interface NewCall {
   /** The call's existing id; the record keeps it and mints none. */
   id: string;
-  /** What the call went to. */
   source: ToolSource;
   place: number;
   name: string;
@@ -105,7 +104,7 @@ export interface NewCall {
   output: string;
   refusal: string;
   exitCode: number | null;
-  /** The server the call went to and its name then; none for a command's call. */
+  /** The server the call went to and its name then; none for a command's or an agent's call. */
   serverId: string | null;
   serverName: string | null;
   end: string;

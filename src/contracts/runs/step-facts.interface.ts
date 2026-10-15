@@ -16,7 +16,7 @@ export interface StepFacts {
   /** Price per million tokens then; `null` if the model had none. */
   inputPrice: number | null;
   outputPrice: number | null;
-  /** The model's context ceiling then. */
+  /** The model's context ceiling then, in characters. */
   contextCeiling: number | null;
   /** The tokens the model was allowed to say. */
   answerCeiling: number | null;

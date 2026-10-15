@@ -119,7 +119,7 @@ export function useServerSection(project: OpenProject, writes: ServerWrites): Se
     }
   }
 
-  /** Opens the form on a server, or empty for a new declaration. */
+  /** Opens the form on a server, empty on `new`, or closes it on `null`. */
   function openForm(serverId: string | "new" | null) {
     setOpenServerId(serverId);
     setEdits(null);

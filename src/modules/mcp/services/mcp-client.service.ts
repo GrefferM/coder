@@ -28,7 +28,7 @@ import { Refusal } from "../../../utils/refusals";
  * server is the same server, two running the same line are two. Nothing is written to a file.
  */
 export class McpClient {
-  /** The machine's keychain, where a token and every environment value live, never the file. */
+  /** This machine's secrets, where a token and every environment value live, never the project file. */
   constructor(private readonly secrets: McpSecretStore) {}
 
   private readonly live = new Map<string, Client>();
@@ -127,7 +127,6 @@ export class McpClient {
     }
   }
 
-  /** Whether this server is up right now. */
   isUp(serverId: string): boolean {
     return this.live.has(serverId);
   }
@@ -228,7 +227,7 @@ export class McpClient {
     return client;
   }
 
-  /** A remote server is reached, not started; its token is read from the keychain at that moment and never held. */
+  /** A remote server is reached, not started; its token is read from this machine's secrets then and never held. */
   private async reached(server: ProjectMcpServerDto): Promise<Client> {
     if (server.address === "") {
       throw new Refusal(MCP_SERVER_UNREACHABLE);

@@ -67,7 +67,6 @@ export function usePageParts(
   const stream = useShownStream(project.directory, project.config.agents, chat, agents.select);
   /** The pass whose projection stands over the canvas. */
   const pass = useOpenedPass(project.config.agents, project.config.models, chat.written);
-  /** The open rail section and its entry and exit paths. */
   const rail = useRailStanding(subjects, pass);
   // Opens the call a catalogue row refers to, in the chat.
   const showCall = useShowCall(stream, rail, chat.openCalls);
@@ -88,7 +87,7 @@ export function usePageParts(
     fellAt: chat.fellAt,
   });
 
-  // Rail order: agents, models, MCP, commands, prompts, store.
+  // Rail order: agents, models, MCP, commands, prompts; then the machine's chat and providers.
   const items: SidePanelItem[] = [
     {
       id: AGENTS_SECTION_ID,

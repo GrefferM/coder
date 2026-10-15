@@ -1,11 +1,10 @@
 import { PANEL_GROUND_COLOR } from "../../../constants";
-/** The opened card: search over a server's functions and the list it hands over. */
+/** A server page's search over its functions, and the list. */
 export const SERVER_FUNCTIONS_SEARCH_PLACEHOLDER = "Пошук";
 /** «4 / 33»: what the search found of what the server hands over; shown even with nothing typed. */
 export const SERVER_FUNCTIONS_FOUND_SEPARATOR = " / ";
 /** «2 АГ.»: an abbreviation, so it takes no number forms. */
 export const SERVER_AGENTS_ON_MARK = "АГ.";
-/** Shown when nothing matches what was typed. */
 export const SERVER_FUNCTIONS_NONE_FOUND = "Нічого не знайшлось";
 
 export const SERVER_FUNCTIONS_GAP_PX = 10;

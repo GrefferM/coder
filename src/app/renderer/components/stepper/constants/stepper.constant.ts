@@ -1,6 +1,5 @@
 import { BORDER_AT_REST_COLOR, CONTROL_AT_REST_COLOR } from "../../../constants";
 
-/** Stepper metrics. */
 export const STEPPER_STEP = 1;
 /** Whole number by default; a fractional value says how many places it is written to. */
 export const STEPPER_PLACES = 0;

@@ -23,9 +23,8 @@ if (typeof globalThis.ResizeObserver === "undefined") {
 }
 
 /**
- * @testing-library/react registers auto-cleanup only when `afterEach` is global.
- *
- * Settles late `quietly` writes inside `act`, so React does not warn about updates outside it.
+ * @testing-library/react registers auto-cleanup only when `afterEach` is global. The empty `act` settles late `quietly`
+ * writes, so React does not warn about updates outside it.
  */
 afterEach(async () => {
   await act(async () => {});

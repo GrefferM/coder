@@ -14,7 +14,6 @@ import {
 } from "../../constants";
 import type { ListActionProps } from "./interfaces";
 
-/** Action line of the list. */
 export function ListAction({
   label,
   onSelect,

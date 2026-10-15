@@ -44,7 +44,6 @@ function listen(onChange: () => void) {
   };
 }
 
-/** Whether keyboard mode is on. */
 export function useKeyboardMode(): boolean {
   return useSyncExternalStore(
     listen,

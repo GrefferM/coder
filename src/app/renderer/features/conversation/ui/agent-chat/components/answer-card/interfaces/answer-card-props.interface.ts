@@ -9,7 +9,7 @@ export interface AnswerCardProps {
   /** The ceiling the turn ran with, named on the pointer beside the counts; `null` where none. */
   answerCeiling?: number | null;
   isCounting: boolean;
-  /** Set on a turn read back from a run; the head then names the step, «КРОК 2 · 19:29», instead of the cost. */
+  /** The turn's place in the walk, «КРОК 2 · 19:29», named at the head's far end after the cost. */
   step?: ChatStep | null;
   /** This card is where the search stopped and wears the edge that says so. */
   isFound?: boolean;

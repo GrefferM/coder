@@ -1,4 +1,4 @@
-/** What a sub-agent's turn came to: its answer, and whether it could not run to one. */
+/** A sub-agent's turn; when it could not run to an answer, `isFailed` and `text` says why. */
 export interface AgentTurnOutcome {
   text: string;
   isFailed: boolean;

@@ -27,7 +27,6 @@ import { opencodeModelName, opencodeProtocolOf } from "../logic";
 import { RunPodChat } from "../services/runpod-chat.service";
 import type { AgentClient } from "../interfaces";
 
-/** The address with `/v1` appended unless it already ends in it. */
 function atProtocol(address: string | null): string {
   const machine = (address ?? "").replace(/\/+$/, "");
 
@@ -46,7 +45,6 @@ const asCoder: typeof fetch = (input, init) => {
   });
 };
 
-/** Every provider the app knows and how each is opened. */
 export const AGENT_CLIENTS: Record<string, AgentClient> = {
   [ANTHROPIC_PROVIDER_ID]: {
     needs: ["key"],

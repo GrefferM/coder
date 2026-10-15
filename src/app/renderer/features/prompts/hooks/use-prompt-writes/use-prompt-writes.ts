@@ -33,7 +33,7 @@ export function usePromptWrites(project: OpenProject, write: ProjectWrite): Prom
                 {
                   id: savedId,
                   name,
-                  // The backend names the file the first time it writes one.
+                  // The backend names the file itself on every write.
                   file: "",
                   text,
                 },

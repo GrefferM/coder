@@ -7,7 +7,7 @@ export interface ModelPickerProps {
   isInvalid?: boolean;
   /** The agent's model has lost its file: the field is empty and red. */
   isLost?: boolean;
-  /** The model is whole but its provider is undeclared; named under the field. */
+  /** The model is whole but its provider is unknown to the app; named under the field. */
   lostProviderId?: string | null;
   isChanged?: boolean;
   onModelIdChange: (modelId: string) => void;

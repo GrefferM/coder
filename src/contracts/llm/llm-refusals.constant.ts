@@ -1,7 +1,4 @@
-/**
- * The codes the main process refuses a turn with, shared so both sides match them (the renderer never imports
- * `src/modules` by value).
- */
+/** The codes the main process refuses a turn with; `MACHINE_WALLS` ties each to the card it draws. */
 
 /** The provider is known and this machine holds no key for it. */
 export const LLM_NO_KEY = "LLM_NO_KEY";

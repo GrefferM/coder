@@ -14,7 +14,7 @@ import type { StandingBandProps } from "./interfaces";
 
 /**
  * Says which half of the screen is «then» and which «now»: turn circumstances are the record's, names the project's.
- * Shown only when the two differ.
+ * Shown only when an agent was renamed or is gone.
  */
 export function StandingBand({ standings }: StandingBandProps) {
   if (!standings.some((standing) => standing.isGone || standing.wasName !== null)) {

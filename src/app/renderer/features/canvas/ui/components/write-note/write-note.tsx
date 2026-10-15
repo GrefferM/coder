@@ -23,7 +23,7 @@ import type { WriteNoteProps } from "./interfaces";
  */
 export function WriteNote({ note, onRetry, onDismiss }: WriteNoteProps) {
   const isDone = note.reason === null;
-  /** Leaves by itself: a done note at once, a refusal after a longer time; a failed write waits to be answered. */
+  /** Leaves by itself: a done note soon, a refusal after a longer time; a failed write waits to be answered. */
   const leavesAfter = isDone ? WRITE_NOTE_MS : note.isRefusal ? WRITE_NOTE_REFUSAL_MS : null;
   const [isLeaving, setIsLeaving] = useState(false);
   /** Held in a ref, so an inline `onDismiss` does not restart the timers on every render. */

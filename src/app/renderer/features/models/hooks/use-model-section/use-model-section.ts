@@ -36,14 +36,13 @@ export function useModelSection(project: OpenProject, writes: ModelWrites): Mode
           discard: () => setEdits(null),
         };
 
-  /** Opens the form on a model, or empty for a new one. */
+  /** Opens the form on a model, empty on `new`; `null` closes it. */
   function openForm(modelId: string | "new" | null, isMended = false) {
     setOpenModelId(modelId);
     setEdits(null);
     setIsMending(isMended);
   }
 
-  /** Puts one change into the form's draft. */
   function editForm(patch: Partial<ModelFormValues>) {
     setEdits((previous) => ({
       ...previous,

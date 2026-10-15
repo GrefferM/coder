@@ -13,7 +13,7 @@ export const RUNPOD_ASKED_EVERY_MS = 1_000;
 export const RUNPOD_WAITING = ["IN_QUEUE", "IN_PROGRESS"];
 export const RUNPOD_DONE = "COMPLETED";
 
-/** Prefix where the job ended in anything but an answer and the worker left no words. */
+/** Prefix where the job ended in anything but an answer. */
 export const RUNPOD_ENDED_PREFIX = "RunPod: ";
 /** Prefix where the queue itself refused the job; its status line follows. */
 export const RUNPOD_REFUSED_PREFIX = "RunPod ";

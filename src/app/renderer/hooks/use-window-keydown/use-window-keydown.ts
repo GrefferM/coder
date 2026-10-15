@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 
-/** Hears the window's keydown while `isListening`. */
 export function useWindowKeydown(isListening: boolean, onKeyDown: (event: KeyboardEvent) => void): void {
   const handler = useRef(onKeyDown);
 

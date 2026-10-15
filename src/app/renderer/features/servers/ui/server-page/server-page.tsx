@@ -33,7 +33,7 @@ export function ServerPage({
   const failure = !isAsking && look !== null && !look.isUp ? look.failure : null;
   /** When it last answered, on the app's freshness scale; nothing for a server that has not answered. */
   const answered = useFresh(look?.answeredAt ?? null);
-  /** When its list last changed, and what it was before, from this machine's memory. */
+  /** When its list last changed, by this machine's memory. */
   const updated = useFresh(look?.changedAt ?? null);
   const freshness = freshnessLine(look, answered, updated);
 

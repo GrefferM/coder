@@ -33,7 +33,7 @@ import {
 import type { ServerFunctionsProps } from "./interfaces";
 
 /**
- * The opened card of a server: search over what it hands over, and the list. «2 АГ.» beside a function counts the
+ * A server page's functions: search over what it hands over, and the list. «2 АГ.» beside a function counts the
  * agents holding it; the tick lives in the agent's own tab.
  */
 export function ServerFunctions({ rows }: ServerFunctionsProps) {

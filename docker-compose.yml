@@ -6,7 +6,7 @@
 #   docker compose down                                    # stop it, keeping the models
 #
 # The model is the smallest Qwen there is, because this is here to prove the wiring, not to write code:
-# a turn goes out, comes back, and costs nothing. Anything it says is worth what half a gigabyte says.
+# a turn goes out, comes back, and costs nothing.
 #
 # On macOS the container sees no GPU, so answers come slowly — enough to check that a turn goes out
 # and comes back, not to work in. The native app is the one to install for real use.

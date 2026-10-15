@@ -30,7 +30,7 @@ export class ProjectFinder {
     return wanted === "." || wanted === ".." || wanted.includes("/") || wanted.includes(path.sep);
   }
 
-  /** The folder of the one project that bears this name (case aside) among those this machine has opened. */
+  /** The folder of the one project that bears this name (case aside) among the recent ones still on disk. */
   private async directoryNamed(wanted: string): Promise<string> {
     const known = (await this.projects.findRecent()).filter((one) => one.exists);
     const same = known.filter((one) => one.name.toLowerCase() === wanted.trim().toLowerCase());

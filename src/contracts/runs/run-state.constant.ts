@@ -1,6 +1,5 @@
-/** How a flow stands, counted from its last turn on every read and never stored. */
+/** How a flow stands, counted from every turn of its last walk on each read and never stored. */
 
-/** A run that has not ended yet. */
 export const RUN_RUNNING = "running";
 export const RUN_DONE = "done";
 export const RUN_FAILED = "failed";

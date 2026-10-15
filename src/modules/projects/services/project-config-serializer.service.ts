@@ -55,7 +55,7 @@ export class ProjectConfigSerializer {
     return source;
   }
 
-  /** One part file (model, command or agent) as a plain record, without its id. */
+  /** One part file (model, command, server or agent) as a plain record, without its id. */
   partSource(text: string): Record<string, unknown> {
     const parsed: unknown = parse(text);
 
@@ -90,7 +90,6 @@ export class ProjectConfigSerializer {
     return config;
   }
 
-  /** Serializes a record back to YAML text. */
   text(source: unknown): string {
     return stringify(source, {
       lineWidth: 0,

@@ -1,12 +1,11 @@
 import type { McpSignIn } from "../../../interfaces";
 
 /**
- * What the one form holds for both kinds of server. The head switch picks the half in use; the other half keeps what
+ * What the one form holds for both kinds of server. The kind switch picks the half in use; the other half keeps what
  * was typed, and only the file holds the other kind's fields empty.
  */
 export interface ServerFormValues {
   name: string;
-  /** The switch in the form's head, and the first slot of the keyboard order. */
   isLocal: boolean;
   /** The line that starts a local server, run in the project's folder with no sandbox. */
   run: string;

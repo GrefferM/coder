@@ -1,4 +1,3 @@
-/** Columns of `run_question_attachments`; the entity implements it. */
 export interface RunQuestionAttachmentRecord {
   id: string;
   place: number;

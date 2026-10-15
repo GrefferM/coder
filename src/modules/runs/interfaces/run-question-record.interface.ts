@@ -1,4 +1,3 @@
-/** Columns of `run_questions`; the entity implements it. */
 export interface RunQuestionRecord {
   id: string;
   place: number;

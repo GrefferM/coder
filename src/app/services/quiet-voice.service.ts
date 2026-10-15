@@ -10,7 +10,7 @@ export class QuietVoice implements ProjectVoice, AgentVoice, WalkVoice {
   }
 
   say(_chunk: AgentChunk): void {
-    // The pieces of an answer are read whole, from the record, when the walk is over.
+    // The answer is read whole from the walks' snapshot once the walk is over.
   }
 
   written(): void {

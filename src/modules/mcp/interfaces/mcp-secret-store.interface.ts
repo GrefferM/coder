@@ -1,5 +1,5 @@
 /**
- * Where a server's secrets live: the machine's keychain, never the project file. A remote server's token and a local
+ * Where a server's secrets live: this machine's secrets, never the project file. A remote server's token and a local
  * one's environment values are held alike.
  */
 export interface McpSecretStore {

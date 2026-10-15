@@ -4,7 +4,7 @@ import { WriteNote as WriteNoteLine } from "../write-note";
 import { ZoomToolbar } from "../../../../../components";
 import type { CanvasOverProps } from "./interfaces";
 
-/** What stands over the field in its corners rather than being drawn on it. */
+/** What stands over the field rather than being drawn on it. */
 export function CanvasOver({
   tally,
   scale,

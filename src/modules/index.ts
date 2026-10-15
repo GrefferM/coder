@@ -1,4 +1,3 @@
-// The public surface of `modules`: the domain modules and the shared SQLite DataSource.
 export * from "./commands";
 export * from "./llm";
 export * from "./mcp";

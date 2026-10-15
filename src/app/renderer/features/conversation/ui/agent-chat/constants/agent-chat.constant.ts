@@ -43,7 +43,6 @@ export const AGENT_CHAT_CARD_BORDER_COLOR = BORDER_AT_REST_COLOR;
 export const AGENT_CHAT_CARD_BORDER_RADIUS_PX = 10;
 export const AGENT_CHAT_CARD_PADDING = "10px";
 
-/** Composer; the send keystroke is named under the field. */
 export const AGENT_CHAT_COMPOSER_PADDING = "12px";
 export const AGENT_CHAT_COMPOSER_GAP_PX = 8;
 export const AGENT_CHAT_FIELD_BORDER_RADIUS_PX = 10;
@@ -81,7 +80,7 @@ export const AGENT_CHAT_REPEAT_MANY_COLOR = INTERACTION_ACCENT_COLOR;
 export const AGENT_CHAT_REPEATING_PLACEHOLDER_PREFIX = "Повтор ";
 export const AGENT_CHAT_REPEATING_PLACEHOLDER_SUFFIX = " — зачекайте або зупиніть";
 
-/** While a turn runs, the hint is replaced by the stop action (muted red). */
+/** While anything is out, the stop (muted red) stands where «+ ПРИКРІПИТИ» or the reason would. */
 export const AGENT_CHAT_STOP_LABEL = "Зупинити";
 /** The stop button's own tone, not the ordinary accent. */
 export const AGENT_CHAT_STOP_TONE: IconTone = {
@@ -131,7 +130,7 @@ export const AGENT_CHAT_EMPTY_COLOR = QUIET_MARK_COLOR;
 export const AGENT_CHAT_EMPTY_FONT_SIZE_PX = 12;
 export const AGENT_CHAT_EMPTY_LINE_HEIGHT = 1.6;
 
-/** A history run opened in the stream is over, so the composer steps aside. */
+/** The note for a run that could not be read, and the band naming the conversation on screen. */
 export const AGENT_CHAT_OPENED_FAILED_NOTE = "Не вдалося прочитати цей запуск.";
 export const AGENT_CHAT_OPENED_BACKGROUND_COLOR = "#171b26";
 export const AGENT_CHAT_OPENED_PADDING = "9px 12px";

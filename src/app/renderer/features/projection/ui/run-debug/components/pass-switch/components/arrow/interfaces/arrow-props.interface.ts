@@ -1,4 +1,3 @@
-/** What `Arrow` is handed. */
 export interface ArrowProps {
   label: string;
   path: string;

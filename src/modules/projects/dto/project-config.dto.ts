@@ -38,7 +38,7 @@ export class ProjectConfigDto {
   @ArrayUnique((command: ProjectCommandDto) => command.id)
   declare commands: ProjectCommandDto[];
 
-  // Servers share the commands' namespace, so names are unique across both.
+  // Servers share the commands' namespace; the screen keeps names unique across both, the file only within each.
   @IsArray()
   @ValidateNested({
     each: true,

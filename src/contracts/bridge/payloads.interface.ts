@@ -62,7 +62,6 @@ export interface ProjectChanged {
   directory: string;
 }
 
-/** The server this machine is asked about or written for. */
 export interface OfServer {
   serverId: string;
 }
@@ -82,7 +81,6 @@ export interface OpenWalks extends OfProject {
   config: ProjectConfig;
 }
 
-/** The config as it stands now. */
 export interface ConfigureWalks {
   config: ProjectConfig;
 }

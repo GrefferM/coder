@@ -1,7 +1,4 @@
-/**
- * Watches the open project's folder; `follow` moves it, `remember` notes it, `unfollow` stops it. A print is what the
- * folder holds, in one short string.
- */
+/** Watches the open project's folder. A print is what the folder holds, in one short string. */
 export interface ProjectWatch {
   /** Follows the folder and gives the print it starts from. */
   follow(directory: string): Promise<string>;

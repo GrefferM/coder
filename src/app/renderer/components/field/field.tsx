@@ -98,7 +98,6 @@ export function Field({
         {unit !== undefined && <Mark spacing={FIELD_UNIT_LETTER_SPACING_PX}>{unit}</Mark>}
         {onClear !== undefined && <Clear onClear={onClear} />}
       </div>
-      {/* The note turns trouble-coloured when the value is invalid. */}
       {note !== undefined && <QuietLine isTroubled={isInvalid}>{note}</QuietLine>}
     </FieldSlot>
   );

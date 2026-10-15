@@ -1,6 +1,5 @@
 import type { AgentTool, ChatTurn, ProjectMcpServer, ReachableAgent } from "../../../contracts";
 
-/** One turn as the model layer is asked for it. */
 export interface ModelAsk {
   turnId: string;
   agentId: string;

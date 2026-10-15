@@ -3,12 +3,12 @@ import { isCommandGrant } from "./command-grant.guard";
 import { GRANT_HANDLE_SEPARATOR } from "./grant-handle.constant";
 import type { ToolGrant } from "./tool-grant.type";
 
-/** What a grant points at: the project's own command, or one function of a server. */
+/** What a grant points at: the project's own command, another agent, or one function of a server. */
 export interface GrantSource {
   kind: ToolGrant["source"];
-  /** The command's id, or the server's; never the function's, which the server names. */
+  /** The command's, agent's or server's id; never the function's, which the server names. */
   id: string;
-  /** The name the server gave the function; null for a command. */
+  /** The name the server gave the function; null for a command or an agent. */
   functionName: string | null;
 }
 
@@ -41,7 +41,7 @@ export function sourceOf(grant: ToolGrant): GrantSource {
   };
 }
 
-/** Whether the grant points at that command or server, by source id. */
+/** Whether the grant points at that command, agent or server, by source id. */
 export function pointsAt(grant: ToolGrant, sourceId: string): boolean {
   return sourceOf(grant).id === sourceId;
 }
@@ -54,8 +54,8 @@ export function namesFunction(grant: ToolGrant, serverId: string, functionName: 
 }
 
 /**
- * Identity of a grant's source: a command by id, a server function by server and name together. A picker row (a source,
- * not a grant) is compared to a held grant by this handle.
+ * Identity of a grant's source: a command or an agent by id, a server function by server and name together. A picker
+ * row (a source, not a grant) is compared to a held grant by this handle, and the file refuses two grants sharing one.
  */
 export function handleOf(source: GrantSource): string {
   return [source.kind, source.id, source.functionName].filter((part) => part !== null).join(GRANT_HANDLE_SEPARATOR);

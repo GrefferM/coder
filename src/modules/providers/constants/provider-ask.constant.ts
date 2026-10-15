@@ -5,5 +5,5 @@ export const PROVIDER_MODEL_PATHS: Record<string, string> = {
 };
 /** Time a provider has to answer before it counts as not running. */
 export const PROVIDER_ASK_TIMEOUT_MS = 2000;
-/** Refusal for asking a provider that has no address (a remote one). */
+/** Refusal for asking a local provider that has no address. */
 export const PROVIDER_HAS_NO_ADDRESS = "PROVIDER_HAS_NO_ADDRESS";

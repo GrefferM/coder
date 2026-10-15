@@ -3,7 +3,7 @@ import type { TurnOut } from "./turn-out.interface";
 import type { Walk } from "./walk.interface";
 import type { PickedAttachment } from "../attachments";
 
-/** Everything a stream's walks stand on, in one object, so views never learn which parts are state and which refs. */
+/** Everything a stream's walks stand on, in one object; the machine takes it whole and gives it back whole. */
 export interface WalkState {
   /** Turns out now, by id; one agent may hold several. */
   out: Record<string, TurnOut>;
@@ -16,15 +16,15 @@ export interface WalkState {
   ledgers: Record<string, RunLedger>;
   /** Turns already asked again; the act stands under a turn until used. */
   saidAgain: string[];
-  /** What is typed in each stream: the one on screen and every run opened in its place. */
+  /** Never filled in main: the screen keeps its own drafts. */
   drafts: Record<string, string>;
-  /** Files and folders attached in each stream, waiting under the field for the question to go. */
+  /** Never filled in main: the screen keeps its own attachments. */
   attachments: Record<string, PickedAttachment[]>;
-  /** Whom the chat is aimed at. */
+  /** Never set in main: the screen keeps its own aim. */
   aimedAgentId: string | null;
   /**
-   * The row the on-screen stream writes into (one conversation is one row); moves only at the person's word, never when a
-   * walk writes steps.
+   * The row the on-screen stream writes into (one conversation is one row): the first row a walk of it opens, then moved
+   * only at the person's word.
    */
   flowRunId: string | null;
 }

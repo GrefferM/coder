@@ -1,6 +1,5 @@
 import { HAIRLINE_COLOR, QUIET_MARK_COLOR, SECOND_LEVEL_TEXT_COLOR } from "../../../../../../../constants";
 
-/** Handoff row label. */
 export const HANDOFF_ROW_LABEL = "Передає";
 export const HANDOFF_ROW_GAP_PX = 8;
 export const HANDOFF_ROW_INNER_GAP_PX = 6;

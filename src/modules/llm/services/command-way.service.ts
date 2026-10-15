@@ -30,7 +30,6 @@ export class CommandWay implements ToolWay {
       name: this.tool.name,
       arguments: this.given,
       pinned: Object.keys(this.tool.pinned),
-      // A command has no server; it has a line and an exit code, not a source.
       serverId: null,
       serverName: "",
     };

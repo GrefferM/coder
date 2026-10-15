@@ -16,5 +16,4 @@ export const SPHERE_STATUS_DOT_COLOR = "#4ade80";
 
 export const SPHERE_STATUS_DOT_SIZE_PX = 6;
 
-/** Color of the status dot while the agent is switched off. */
 export const SPHERE_INACTIVE_STATUS_DOT_COLOR = "#4a5268";

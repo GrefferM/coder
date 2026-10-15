@@ -74,7 +74,6 @@ export class LlmService {
     // The record, read for the shared memory of an agent called as a tool.
     private readonly memory: RunMemory,
     private readonly arguments_: ToolArguments,
-    // Every provider the app knows, by id.
     private readonly clients: Record<string, AgentClient>,
   ) {}
 
@@ -90,9 +89,9 @@ export class LlmService {
     systemPrompt: string | null;
     messages: ChatTurn[];
     tools: AgentTool[];
-    /** The reach of every server whose functions are among the tools, by tool id. */
+    /** Every server whose functions are among the tools; a tool finds its own by `serverId`. */
     servers: ProjectMcpServer[];
-    /** Every agent reachable as a tool from this one, by id. */
+    /** Every agent reachable as a tool from this one. */
     agents: ReachableAgent[];
     runId: string | null;
     questionId: string;
@@ -374,7 +373,7 @@ export class LlmService {
     };
     const refusal = way.refusal();
 
-    // The check before the line runs; a complaint runs nothing.
+    // A refusal runs nothing.
     if (refusal !== null) {
       const refused = {
         ...standing,
@@ -586,7 +585,7 @@ export class LlmService {
       model: run.model,
       key: held.key,
       address: held.address,
-      // A zero is the word for none: some models take no temperature at all, and send it only to refuse.
+      // Zero means none, and none is sent: some models take no temperature and refuse a request that carries one.
       temperature: run.temperature === 0 ? undefined : run.temperature,
       answerTokens: run.answerCeiling,
       session,
@@ -655,7 +654,6 @@ export class LlmService {
     };
   }
 
-  /** The provider's key, or a refusal saying there is none. */
   private async heldKey(providerId: string): Promise<string> {
     const key = await this.keys.keyOf(providerId);
 
@@ -687,7 +685,6 @@ export class LlmService {
     return typeof count === "number" && Number.isFinite(count) ? count : 0;
   }
 
-  /** System prompt (if any), then the turns in order. */
   private said(systemPrompt: string | null, messages: ChatTurn[]): BaseMessage[] {
     const opening = systemPrompt === null || systemPrompt === "" ? [] : [new SystemMessage(systemPrompt)];
     const turns = messages.map((turn) =>

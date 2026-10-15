@@ -2,7 +2,7 @@ import type { McpLook, ProjectMcpServer } from "../../../../../../../interfaces"
 
 export interface ServerRowProps {
   server: ProjectMcpServer;
-  /** What it said this time; null where it has not been asked yet. */
+  /** What it said this time; null where it has not been asked yet or was let go. */
   look: McpLook | null;
   /** When this server's ask began, or null where it is not being asked; the clock counts up from it. */
   askingSince: number | null;

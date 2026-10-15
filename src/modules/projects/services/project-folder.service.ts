@@ -27,7 +27,6 @@ export class ProjectFolder {
     return path.join(PROMPTS_DIRECTORY_NAME, `${prompt.id}${PROMPT_FILE_EXTENSION}`);
   }
 
-  /** Whether the file exists; nothing is read. */
   async isThere(filePath: string): Promise<boolean> {
     try {
       await access(filePath);
@@ -68,7 +67,6 @@ export class ProjectFolder {
     }
   }
 
-  /** Writes the file unless it already holds exactly this text. */
   async writeIfChanged(filePath: string, contents: string): Promise<void> {
     if ((await this.textOf(filePath)) === contents) {
       return;

@@ -82,7 +82,7 @@ export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: Agent
       was: promptTitle(prompts, saved.promptId),
       now: promptTitle(prompts, draft.promptId),
     },
-    // «команди» and «MCP» are two tab fields, so two lines.
+    // «команди», «MCP» and «агенти» are three tab fields, so three lines.
     {
       label: AGENT_COMMANDS_CHANGE_LABEL,
       droppedLabel: AGENT_COMMANDS_DROPPED_LABEL,

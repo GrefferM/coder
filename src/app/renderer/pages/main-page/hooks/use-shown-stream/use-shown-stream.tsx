@@ -27,7 +27,7 @@ export function useShownStream(
   select: (agentId: string | null) => void,
 ): ShownStream {
   const [tab, setTab] = useState<ChatTab>("stream");
-  /** The opened run and when it opened; the stream shows it and everything said since, until «До потоку». */
+  /** The opened run; the stream shows it and everything said since, until «До потоку». */
   const [openedRunId, setOpenedRunId] = useState<string | null>(null);
   // The run armed for deletion; its question shows over the working area.
   const [doomedRun, setDoomedRun] = useState<RunRow | null>(null);

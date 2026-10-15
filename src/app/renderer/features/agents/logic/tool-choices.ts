@@ -4,8 +4,8 @@ import type { Agent, McpLook, ProjectCommand, ProjectMcpServer } from "../../../
 import type { ToolChoice } from "../interfaces";
 
 /**
- * Everything an agent may be given, in one list: commands sorted by name, then each server in project order with its
- * functions in the server's order. A server that did not answer contributes nothing.
+ * Commands sorted by name, then each server in project order with its functions in the server's order; agents come
+ * from `agentChoices`. A server that did not answer contributes nothing.
  */
 export function toolChoices(
   commands: ProjectCommand[],

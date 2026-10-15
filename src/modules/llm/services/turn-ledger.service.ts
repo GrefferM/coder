@@ -26,14 +26,12 @@ export class TurnLedger {
     this.calls += 1;
   }
 
-  /** A piece of the answer and the provider's count for it. */
   heard(words: string, inputTokens: number, outputTokens: number): void {
     this.said += words;
     this.inputTokens += inputTokens;
     this.outputTokens += outputTokens;
   }
 
-  /** One call this turn made, in the order it made it. */
   ran(call: TurnCall): void {
     this.made.push(call);
   }

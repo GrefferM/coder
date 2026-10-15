@@ -4,7 +4,7 @@ import type { WalkLine, WalkLineSizes } from "../interfaces";
 /**
  * The line between two turns: horizontals and verticals with rounded corners. Down: out by the sender's gutter, along
  * the receiver's lane, in at its rim; up: along its own lane, up the receiver's gutter, a corner into the row. Lines
- * into one turn share the gutter; the head is drawn by the receiver (`walkHead`).
+ * into one turn share the gutter and one head, which the receiver draws (`walkHead`).
  */
 export function walkLine(from: Point, to: Point, sizes: WalkLineSizes, isShared: boolean): WalkLine {
   const start = from.x + sizes.radius + sizes.tailAir;
@@ -86,7 +86,6 @@ function bentPath(points: Point[], corner: number): string {
   return [`M ${round(points[0].x)} ${round(points[0].y)}`, ...bends, `L ${round(last.x)} ${round(last.y)}`].join(" ");
 }
 
-/** Rounds to a tenth of a pixel. */
 function round(one: number): number {
   return Math.round(one * 10) / 10;
 }

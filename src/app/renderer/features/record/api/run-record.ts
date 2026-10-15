@@ -22,7 +22,7 @@ export async function readRun(id: string): Promise<WholeRun | null> {
   });
 }
 
-/** Runs containing this word, each with the found words; rejects when the record is unreadable. */
+/** Every place this word stands in, newest first, cut at `RUN_HITS_LIMIT`; rejects when the record is unreadable. */
 export async function searchRuns(directory: string, query: string): Promise<RunHit[]> {
   return window.electronApi.invoke(SEARCH_RUNS_CHANNEL, {
     directory,

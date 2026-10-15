@@ -6,7 +6,6 @@ export const PROMPT_TEXT_CHANGE_LABEL = "текст";
 export const PROMPT_NAME_DROPPED_LABEL = "назву";
 export const PROMPT_TEXT_DROPPED_LABEL = "текст";
 
-/** Empty editor values, and the unnamed prompt label. */
 export const EMPTY_PROMPT_FORM_VALUES = {
   name: "",
   text: "",

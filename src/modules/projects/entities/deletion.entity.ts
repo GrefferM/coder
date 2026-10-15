@@ -2,7 +2,6 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateCol
 import { DELETION_TABLE_NAME } from "../constants";
 import { DeletionRecord } from "../interfaces";
 
-/** A row of `deletions`: one deletion in one project, with everything it took. */
 @Entity(DELETION_TABLE_NAME)
 export class DeletionEntity implements DeletionRecord {
   @PrimaryGeneratedColumn("uuid")

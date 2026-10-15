@@ -33,7 +33,7 @@ export function useAgentDraft(
 
   /** Writes the whole draft; nothing unsaved remains. */
   async function save() {
-    // Nothing is written for a nameless agent or a taken name.
+    // Nothing is written while a blocker stands or the name is taken.
     if (selectedAgentId === null || draft === null || agentBlocked(draft).length > 0 || isNameTaken) {
       return;
     }

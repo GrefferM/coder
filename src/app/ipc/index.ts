@@ -1,4 +1,3 @@
-// The main process's IPC layer: `registerIpcChannels` plus each domain's channel map.
 export * from "./register-ipc-channels";
 export * from "./mcp";
 export * from "./projects";

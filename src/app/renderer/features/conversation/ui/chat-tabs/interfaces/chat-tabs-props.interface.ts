@@ -7,7 +7,7 @@ export interface ChatTabsProps {
   onActiveChange: (tab: ChatTab) => void;
   /** How many runs the history shows; the act carries it and dims at zero. */
   runs: number;
-  /** Takes every run the history is showing. */
+  /** Takes every ended run of the project; a running one stays. */
   onForgetAll: () => void;
   /** An off-screen conversation holds a turn waiting for the hand; the history wears a quiet dot. */
   isNews: boolean;

@@ -5,7 +5,6 @@ import type { TurnLlm } from "./turn-llm.interface";
 import type { WalkListener } from "./walk-listener.interface";
 import type { WalkProject } from "./walk-project.interface";
 
-/** What a conversation's runner stands on. */
 export interface WalkRunnerParts {
   project: WalkProject;
   record: RunRecord;

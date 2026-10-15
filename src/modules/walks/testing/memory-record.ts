@@ -46,12 +46,10 @@ export class MemoryRecord implements RunRecord {
     return "";
   }
 
-  /** The states the steps were written with, in order. */
   states(): string[] {
     return this.steps.map((step) => step.state);
   }
 
-  /** Whether every step answered. */
   answeredAll(): boolean {
     return this.steps.every((step) => step.state === RUN_STEP_DONE);
   }

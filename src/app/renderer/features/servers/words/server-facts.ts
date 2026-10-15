@@ -27,8 +27,8 @@ export function serverFacts(server: ProjectMcpServer, stands: ServerStanding): s
   const { look, clock, functionCount, agentCount } = stands;
 
   /**
-   * A count comes only from a server that has just answered; never-asked or being-raised servers show none. The agents
-   * stay counted.
+   * No function count while being raised or while a token is missing; a never-asked server has none to show. The
+   * agents stay counted.
    */
   const hasNoCount = clock !== null || serverTrouble(look)?.kind === "tokenMissing";
 
@@ -44,7 +44,6 @@ export function serverFacts(server: ProjectMcpServer, stands: ServerStanding): s
 /** What the server is, or what became of it; being asked wins over both. */
 function standing(server: ProjectMcpServer, look: McpLook | null, clock: string | null): string {
   if (clock !== null) {
-    // A clock counting up, no bar.
     return `${SERVER_STARTING_LABEL}${SERVER_FACTS_SEPARATOR}${clock}`;
   }
 

@@ -55,7 +55,6 @@ export function OpenedBand({ head, onExport }: OpenedBandProps) {
         {RUN_STATE_LABELS[head.state] ?? RUN_STATE_LABELS.running}
       </span>
       <Mark color={AGENT_CHAT_OPENED_WHEN_COLOR}>{`${dayLabel(head.at, new Date())} ${timeLabel(head.at)}`}</Mark>
-      {/* The band's act, on the right. */}
       {onExport !== null && (
         <TextButton className="ms-auto" tone={AGENT_CHAT_OPENED_EXPORT_TONE} onPress={onExport}>
           {AGENT_CHAT_OPENED_EXPORT_LABEL}

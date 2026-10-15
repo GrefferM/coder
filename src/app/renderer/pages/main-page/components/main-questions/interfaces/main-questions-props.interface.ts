@@ -8,7 +8,7 @@ import type { ProjectFileState } from "../../../../../features/project";
 import type { WayOut } from "../../../../../hooks/use-way-out/interfaces";
 import type { PageParts } from "../../../hooks/use-page-parts/interfaces";
 
-/** Everything a standing question can be about: the project, the way out, and the four subjects that arm one. */
+/** Everything a standing question can be about: the project, the way out, and the subjects that arm one. */
 export interface MainQuestionsProps {
   project: OpenProject;
   file: ProjectFileState;

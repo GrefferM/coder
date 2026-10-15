@@ -17,7 +17,7 @@ export const ZOOM_SCALE_STOPS = {
   step: ZOOM_SCALE_STEP,
 };
 
-/** Fit padding: half a sphere so outer spheres stand whole, plus as much again off the edges. */
+/** Fit padding: half a sphere so outer spheres stand whole, plus half as much again off the edges. */
 export const ZOOM_FIT_PADDING_PX = 120;
 
 export const ZOOM_SCALE_PERCENT = 100;

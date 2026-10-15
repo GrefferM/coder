@@ -6,7 +6,6 @@ const ICON_ACCENT_COLOR = "#38a3ff";
 const ICON_DANGER_COLOR = BROKEN_COLOR;
 const ICON_DISABLED_COLOR = "#3a4258";
 
-/** Add-agent menu item icon. */
 export function AddAgentIcon() {
   return (
     <svg
@@ -40,7 +39,6 @@ export function PasteAgentIcon({ isDisabled = false }: { isDisabled?: boolean })
   );
 }
 
-/** Add-link icon. */
 export function AddLinkIcon() {
   return (
     <svg
@@ -58,7 +56,6 @@ export function AddLinkIcon() {
   );
 }
 
-/** Copy-agent icon. */
 export function CopyAgentIcon() {
   return (
     <svg

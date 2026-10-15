@@ -1,4 +1,3 @@
-/** Label for copying a text whole. */
 export const COPY_ACTION_LABEL = "СКОПІЮВАТИ";
 /** Label shown briefly after the copy. */
 export const COPY_ACTION_TAKEN_LABEL = "СКОПІЙОВАНО";

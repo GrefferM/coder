@@ -20,7 +20,6 @@ import type { WholeStep } from "../../record";
 /** The sphere's drawn radius, from which line offsets are measured. */
 export const WALK_SPHERE_RADIUS_PX = (SPHERE_SIZE_PX / 2) * WALK_SPHERE_SCALE;
 
-/** Every size the routing is built on. */
 const LINE_SIZES: WalkLineSizes = {
   radius: WALK_SPHERE_RADIUS_PX,
   tailAir: WALK_SPHERE_RADIUS_PX * WALK_TAIL_AIR_SHARE,

@@ -33,7 +33,6 @@ export class ServerWay implements ToolWay {
     };
   }
 
-  /** Unchecked here; the server owns its schema. */
   refusal(): string | null {
     return null;
   }

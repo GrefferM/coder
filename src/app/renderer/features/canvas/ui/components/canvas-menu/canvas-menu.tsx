@@ -25,7 +25,6 @@ export function CanvasMenu({
   onDeleteAgent,
   onDismiss,
 }: CanvasMenuProps) {
-  /** Canvas context-menu items at the opened point. */
   function canvasItems() {
     return [
       {
@@ -50,7 +49,6 @@ export function CanvasMenu({
     ];
   }
 
-  /** Sphere context-menu items. */
   function sphereItems(held: string) {
     return [
       {

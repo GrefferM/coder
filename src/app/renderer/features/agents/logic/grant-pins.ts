@@ -22,7 +22,6 @@ export function withoutPinned(grant: CommandToolGrant, pinnedId: string): Comman
   };
 }
 
-/** Sets one pinned parameter's value by id. */
 export function withPinnedValue(grant: CommandToolGrant, pinnedId: string, value: string): CommandToolGrant {
   return {
     ...grant,

@@ -1,6 +1,5 @@
 import type { ProjectMcpServerDto } from "../../projects";
 
-/** One call of one function: which server holds it, where that server starts, and what it was given. */
 export interface McpCall {
   server: ProjectMcpServerDto;
   /** The project's own folder, where a server is started. */

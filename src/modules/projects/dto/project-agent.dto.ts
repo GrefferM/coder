@@ -19,7 +19,6 @@ import {
 import type { ToolGrantDto } from "./tool-grant.dto";
 import { AGENT_MAX_CALLS_LEAST, AGENT_TEMPERATURE_LEAST, AGENT_TEMPERATURE_MOST } from "../constants";
 
-/** One agent as the project file carries it. */
 export class ProjectAgentDto {
   @IsUUID()
   declare id: string;
@@ -28,7 +27,7 @@ export class ProjectAgentDto {
   @IsNotEmpty()
   declare name: string;
 
-  // What the agent is for; null where unwritten.
+  // Null where unwritten.
   @IsOptional()
   @IsString()
   declare purpose: string | null;
@@ -40,7 +39,7 @@ export class ProjectAgentDto {
   @IsUUID()
   declare promptId: string | null;
 
-  // What this agent may call: declared commands and MCP server functions, each granted once.
+  // Declared commands, MCP server functions and other agents, each granted once.
   @IsArray()
   @ValidateNested({
     each: true,
@@ -67,13 +66,13 @@ export class ProjectAgentDto {
   @IsNumber()
   declare y: number;
 
-  // Empty where the file never carried the number.
+  // Null where the file never carried the number.
   @IsOptional()
   @IsInt()
   @Min(AGENT_MAX_CALLS_LEAST)
   declare maxCalls: number | null;
 
-  // 0 sticks to the input, 1 is freer; same bounds for every provider.
+  // 0 is not sent, so the model keeps its own; same bounds for every provider.
   @IsOptional()
   @IsNumber()
   @Min(AGENT_TEMPERATURE_LEAST)

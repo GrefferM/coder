@@ -1,6 +1,6 @@
 import type { ScaleStops } from "./interfaces";
 
-/** A tenth of a step: slack so an inexact scale still counts as on its stop. */
+/** A hundredth of a step: slack so an inexact scale still counts as on its stop. */
 const SCALE_SLACK = 0.01;
 
 /**

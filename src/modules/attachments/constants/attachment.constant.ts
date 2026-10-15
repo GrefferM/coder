@@ -1,7 +1,7 @@
 /** How many leading bytes are sniffed for a zero, the mark of non-text. */
 export const ATTACHMENT_BINARY_SNIFF_BYTES = 8000;
 
-/** The header that opens one attachment's block, and what closes it. */
+/** Around the attachment's name in the header that opens its block. */
 export const ATTACHMENT_HEADER_PREFIX = "[Вкладення · ";
 export const ATTACHMENT_HEADER_SUFFIX = "]";
 
@@ -11,7 +11,6 @@ export const ATTACHMENT_FILE_RULE = "───";
 /** Written after a binary file's path; its body is base64. */
 export const ATTACHMENT_BINARY_TAG = " (base64)";
 
-/** The label above a folder's list of paths, and the indent of each path. */
 export const ATTACHMENT_TREE_LABEL = "Дерево:";
 export const ATTACHMENT_TREE_INDENT = "  ";
 

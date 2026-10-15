@@ -1,10 +1,10 @@
-/** One walk being written; its row was opened by the question it grew from. */
+/** One walk being written. */
 export interface RunLedger {
   /** This walk's own id, written with every step it lays down. */
   walkId: string;
   /** When the question this walk grew from was asked; all its words stand in that block. */
   askedAt: number;
-  /** The id of the row, once a step has opened it. */
+  /** The row it writes into, once known: the one its question opened, or the conversation's standing one. */
   runId: string | null;
   /** The question this walk is written against, by the id minted when it was asked. */
   questionId: string;

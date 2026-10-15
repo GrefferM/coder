@@ -14,10 +14,7 @@ import {
 } from "../../constants";
 import type { ServerFootProps } from "./interfaces";
 
-/**
- * The foot of the opened card: «Змінити» in the same place in every state, with «Видалити» to its right (not built
- * yet).
- */
+/** The foot of a server's page: «Змінити» in the same place in every state, «Видалити» to its right. */
 export function ServerFoot({ onEdit, onDelete }: ServerFootProps) {
   const { isLit, handlers } = useInteraction();
 

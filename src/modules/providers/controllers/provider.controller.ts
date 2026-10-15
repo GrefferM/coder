@@ -3,7 +3,6 @@ import { ProviderService } from "../services";
 import { AskProviderDto, SaveProviderAddressDto, SaveProviderKeyDto } from "../dto";
 import type { ProviderReply, ProviderState } from "../interfaces";
 
-/** The entry point to the providers this machine can call. */
 export class ProviderController {
   constructor(private readonly providerService: ProviderService) {}
 

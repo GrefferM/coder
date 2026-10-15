@@ -175,7 +175,7 @@ export function runStream(run: WholeRun): ChatMessage[] {
                   money: step.money,
                 },
           calls: turnCall(step),
-          // The step of the walk, counted off the same edges the record keeps.
+          // When the turn began and its step, for «КРОК 2 · 19:29»; the level is counted off `fedBy`.
           began: step.startedAt.toISOString(),
           stepId: step.id,
           walkId: step.walkId,

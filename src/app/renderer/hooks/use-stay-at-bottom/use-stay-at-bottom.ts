@@ -3,9 +3,8 @@ import { STAY_AT_BOTTOM_REACH_PX } from "./constants";
 import type { StayAtBottom } from "./interfaces";
 
 /**
- * Keeps a scrolling box at its end; scrolling up holds until the person returns; a new `stream` starts at its end.
- *
- * Also reports whether the end is in view, from the same measurement.
+ * Keeps a scrolling box at its end; scrolling up holds until the person returns; a new `stream` starts at its end. Also
+ * reports whether the end is in view.
  */
 export function useStayAtBottom<T extends HTMLElement>(stream: string | null): StayAtBottom<T> {
   const box = useRef<T>(null);

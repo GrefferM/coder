@@ -23,8 +23,8 @@ import {
 import type { IpcChannelMap } from "../register-ipc-channels";
 
 /**
- * Look at a server, and release it so the next look starts it afresh. Three more concern this machine only: what opens
- * a server stays out of the project file.
+ * Look at a server, and release it so the next look starts it afresh. The rest concern this machine only: what opens a
+ * server stays out of the project file.
  */
 export const MCP_IPC_CHANNELS: IpcChannelMap<McpController> = {
   [LOOK_MCP_SERVER_CHANNEL]: (controller, payload) => {

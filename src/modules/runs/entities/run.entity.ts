@@ -4,7 +4,7 @@ import { RunQuestionEntity } from "./run-question.entity";
 import { RunStepEntity } from "./run-step.entity";
 import type { RunRecord } from "../interfaces";
 
-/** A row of `runs`: one walk of the drawn line, from the question to its last step. */
+/** A row of `runs`: one flow, every question asked in it and every step its walks took. */
 @Entity(RUN_TABLE_NAME)
 export class RunEntity implements RunRecord {
   @PrimaryGeneratedColumn("uuid")

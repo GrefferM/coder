@@ -18,12 +18,10 @@ export const RAIL_BUTTON_BORDER_RADIUS_PX = 10;
 
 export const RAIL_BUTTON_GAP_PX = 4;
 
-/** Icon color of a rail button neither active nor hovered. */
 export const RAIL_ICON_IDLE_COLOR = CONTROL_AT_REST_COLOR;
 
 export const RAIL_ICON_ACTIVE_COLOR = "#38a3ff";
 
-/** Icon color of a hovered, inactive rail button. */
 export const RAIL_ICON_HOVER_COLOR = FIRST_LEVEL_TEXT_COLOR;
 
 export const RAIL_BUTTON_HOVER_ACTIVE_BACKGROUND_COLOR = "#1b1f2c";
@@ -45,5 +43,4 @@ export const RAIL_REALM_RULE_WIDTH_PX = 20;
 export const RAIL_REALM_RULE_COLOR = BORDER_AT_REST_COLOR;
 export const RAIL_REALM_PADDING_PX = 6;
 
-/** Gap, px, between the button and its tooltip. */
 export const RAIL_TOOLTIP_GAP_PX = 8;

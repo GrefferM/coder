@@ -11,7 +11,7 @@ export interface AgentChatState {
   aimedAgentId: string | null;
   /** Points the chat at an agent without the canvas taking part. */
   aim: (agentId: string) => void;
-  /** Empties the stream; leaves the record, aim and drafts alone. */
+  /** Empties the stream and its draft; leaves the record, the aim and opened runs' drafts alone. */
   fresh: () => void;
   /** Asks one agent the same question again, as a turn of its own in the same conversation. */
   sayAgain: (said: ChatMessage) => void;

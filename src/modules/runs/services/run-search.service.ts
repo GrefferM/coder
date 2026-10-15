@@ -16,11 +16,10 @@ import type { RunHit, RunStore } from "../interfaces";
 export class RunSearch {
   constructor(private readonly store: RunStore) {}
 
-  /** Every run of this project containing the word, with the found words. */
   async find(directory: string, query: string): Promise<RunHit[]> {
     const looked = query.trim().toLocaleLowerCase();
 
-    // An empty query is no search: the list is returned whole.
+    // An empty query is no search and finds nothing.
     if (looked === "") {
       return [];
     }
@@ -157,10 +156,7 @@ function levelsIn(walked: RunStepEntity[], feeds: RunStepFeedEntity[]): Record<s
   );
 }
 
-/**
- * The found thing from the start of its sentence (or line, without sentences); only the left edge is cut, the right is
- * the card's.
- */
+/** The found thing from the start of its sentence (or line, without sentences), at most `RUN_FOUND_LENGTH` long. */
 function foundIn(words: string, looked: string, hasSentences: boolean): string {
   const at = words.toLocaleLowerCase().indexOf(looked);
   const before = words.slice(0, at);

@@ -1,6 +1,5 @@
 import type { ToolSource } from "../../../contracts";
 
-/** Columns of `run_calls`; the entity implements it. */
 export interface RunCallRecord {
   id: string;
   source: ToolSource;

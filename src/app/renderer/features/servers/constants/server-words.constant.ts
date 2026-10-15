@@ -8,14 +8,13 @@ export const SERVER_FUNCTION_FORMS: [string, string, string] = ["ФУНКЦІЯ"
 export const SERVER_AGENT_FORMS: [string, string, string] = ["АГЕНТ", "АГЕНТИ", "АГЕНТІВ"];
 export const SERVER_FACTS_SEPARATOR = " · ";
 export const SERVER_RESTART_LABEL = "ЗАПУСТИТИ";
-/** One sentence per fix: type a token, type another, or check the address. */
+/** One sentence per fix: type a token, or check the address. */
 export const SERVER_TOKEN_MISSING_LABEL = "ПОТРІБЕН ТОКЕН";
 export const SERVER_TOKEN_MISSING_ACTION = "УВІЙТИ";
 export const SERVER_UNREACHABLE_LABEL = "СЕРВЕР НЕ ВІДПОВІДАЄ";
 /** A declared variable with no value on this machine; the name follows it. */
 export const SERVER_VALUE_MISSING_LABEL = "НЕ ЗАПУСТИТЬСЯ · НЕМА ЗНАЧЕННЯ: ";
 export const SERVER_VALUE_MISSING_ACTION = "ВПИСАТИ";
-/** The edit action of a server row. */
 export const SERVER_EDIT_LABEL = "ЗМІНИТИ";
 /** Beside «Змінити», lighter: a bare word, red only inside the question's box. */
 export const SERVER_DELETE_LABEL = "ВИДАЛИТИ";
@@ -47,10 +46,7 @@ export const SERVER_STARTING_SLOW_AFTER_SECONDS = 20;
 export const SERVER_STOP_ASKING_LABEL = "СКАСУВАТИ";
 /** A server nobody has raised has no function count; its grants stay and are counted. */
 export const SERVER_UNKNOWN_LABEL = "ФУНКЦІЇ НЕВІДОМІ";
-/**
- * The closing line of a server's page: «Відповів 2 хв тому · оновлено вчора · 34 → 33». Only the first part is built; a
- * server that never answered has no line.
- */
+/** Opens the closing line of a server's page: «Відповів 2 хв тому · оновлено вчора · 34 → 33». */
 export const SERVER_ANSWERED_PREFIX = "Відповів ";
 /** When the function list last differed from what this machine saw. */
 export const SERVER_UPDATED_PREFIX = "оновлено ";

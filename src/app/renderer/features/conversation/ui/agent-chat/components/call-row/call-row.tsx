@@ -85,9 +85,7 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
       return `${isAgent ? CALL_ROW_AGENT_FAILED_LABEL : CALL_ROW_SAID_NO_LABEL}${CALL_ROW_SEPARATOR}${answeredIn()}`;
     }
 
-    /**
-     * «коду виходу немає · процесу не було». A server call shows its answer time, a command its exit code; never swapped.
-     */
+    // A server call shows its answer time, a command its exit code; never swapped.
     return isCommand ? `${CALL_ROW_CODE_LABEL}${call.exitCode}` : `${CALL_ROW_ANSWERED_LABEL}${answeredIn()}`;
   }
 

@@ -92,7 +92,7 @@ export function AgentSettings({
   const isPromptGone = isPromptLost(draft.promptId, prompts);
   // Likewise the model: an empty red field, not the choice placeholder.
   const isModelGone = isModelLost(draft.modelId, models);
-  // The model is whole but its provider is undeclared; the field names it.
+  // The model is whole but its provider is unknown to the app; the field names it.
   const goneProviderId = lostProvider(draft.modelId, models, providers);
   // The provider has no function calls: fields are shut, earlier grants stay listed.
   const isToolless = takesNoTools(draft.modelId, models, providers);
@@ -115,10 +115,7 @@ export function AgentSettings({
     });
   }
 
-  /**
-   * A connected server opens as a step of its own, showing its functions; which server is kept in this tab, as only the
-   * arc sends here.
-   */
+  /** A connected server opens as a step of its own, showing its functions; which one is kept by `useToolsStep`. */
   const serverStep = servers.find((server) => server.id === openServerId) ?? null;
 
   if (serverStep !== null) {

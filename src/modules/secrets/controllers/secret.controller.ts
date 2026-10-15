@@ -3,7 +3,6 @@ import { SecretService } from "../services";
 import { RemoveSecretDto, SetSecretDto } from "../dto";
 import type { SecretHint } from "../interfaces";
 
-/** The entry point to this machine's secrets. */
 export class SecretController {
   constructor(private readonly secretService: SecretService) {}
 

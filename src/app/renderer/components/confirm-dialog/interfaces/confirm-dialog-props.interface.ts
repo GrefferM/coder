@@ -6,7 +6,6 @@ export interface ConfirmDialogProps {
   question: string;
   children?: ReactNode;
   tone?: "danger" | "calm";
-  /** Whether the backdrop darkens. */
   hasScrim?: boolean;
   noLabel?: string;
   yesLabel?: string | null;

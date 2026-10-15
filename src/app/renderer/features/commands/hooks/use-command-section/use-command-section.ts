@@ -43,7 +43,7 @@ export function useCommandSection(project: OpenProject, writes: CommandWrites): 
           discard: () => setEdits(null),
         };
 
-  /** Opens the form on a command, or empty for a new declaration. */
+  /** Opens the form on a command, empty on `new`; `null` closes it. */
   function openForm(commandId: string | "new" | null) {
     setOpenCommandId(commandId);
     setEdits(null);
@@ -58,7 +58,7 @@ export function useCommandSection(project: OpenProject, writes: CommandWrites): 
 
   /** Writes the form and closes it, new declarations included. */
   async function saveForm() {
-    // Blocked by the same rules as «Оголосити».
+    // Blocked like «Оголосити», except the name-shape check, which only the form makes.
     if (form === null || commandBlocker(form).length > 0 || isNameTaken) {
       return;
     }

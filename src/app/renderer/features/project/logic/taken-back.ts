@@ -4,7 +4,8 @@ import type { ProjectConfig } from "../../../interfaces";
 import type { TakenThings } from "../interfaces";
 
 /**
- * Puts a deletion back into the current project; a link with a missing end or a grant on a missing command stays gone.
+ * Puts a deletion back into the current project; a link with a missing end or a grant whose command or server is
+ * missing stays gone.
  */
 export function withTakenBack(config: ProjectConfig, taken: TakenThings): ProjectConfig {
   const models = [

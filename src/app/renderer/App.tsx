@@ -3,7 +3,6 @@ import { MainPage, StartPage } from "./pages";
 import { useChoiceArrows, useFieldTab, useScrollMark } from "./hooks";
 import type { OpenProject } from "./interfaces";
 
-/** Shows `StartPage` until a project is open, then `MainPage`. */
 export function App() {
   const [project, setProject] = useState<OpenProject | null>(null);
 
@@ -17,9 +16,6 @@ export function App() {
     return <StartPage onProjectOpened={setProject} />;
   }
 
-  /**
-   * Keyed by folder: another project rebuilds the page and everything it holds; rereading the same project's file keeps
-   * it.
-   */
+  // Keyed by folder: another project rebuilds the page and all it holds; rereading the same project's file keeps it.
   return <MainPage key={project.directory} project={project} setProject={setProject} />;
 }

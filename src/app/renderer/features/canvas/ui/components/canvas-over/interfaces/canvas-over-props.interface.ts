@@ -1,14 +1,13 @@
 import type { LinkTally } from "../../../../interfaces";
 import type { UndoOffer, WriteNote } from "../../../../../project";
 
-/** What floats over the field in its corners: the counts, the scale, and the bottom notes. */
+/** What floats over the field: the counts, the scale, the write note along the top and the undo offers along the bottom. */
 export interface CanvasOverProps {
   /** The selected sphere's lines both ways; null when nothing is selected. */
   tally: LinkTally | null;
   scale: number;
   /** Every deletion still returnable, oldest first. */
   undoOffers: UndoOffer[];
-  /** The file's note, which takes the offers' place while it stands. */
   writeNote: WriteNote | null;
   onZoomOut: () => void;
   onZoomIn: () => void;

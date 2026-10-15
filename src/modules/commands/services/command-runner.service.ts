@@ -22,7 +22,7 @@ export class CommandRunner {
       const { stdout, stderr } = await run(line, {
         cwd: payload.directory,
         maxBuffer: undefined,
-        // A stop kills the process; the abort surfaces as a failure the turn treats as stopped.
+        // A stop kills the process; the turn reads the stop from its own signal, not from this failure.
         signal: payload.signal,
       });
 
@@ -72,7 +72,6 @@ export class CommandRunner {
       : COMMAND_NOTHING_PRINTED_NOTE.replace(COMMAND_CODE_SLOT, String(code));
   }
 
-  /** The numeric exit code, if any. */
   private code(failure: unknown): number | null {
     if (typeof failure !== "object" || failure === null || !("code" in failure)) {
       return null;
@@ -81,7 +80,6 @@ export class CommandRunner {
     return typeof failure.code === "number" ? failure.code : null;
   }
 
-  /** What a failed run printed before it failed. */
   private printed(failure: unknown): string {
     if (typeof failure !== "object" || failure === null) {
       return "";
@@ -93,7 +91,6 @@ export class CommandRunner {
     return `${out}${error}`.trim();
   }
 
-  /** The trimmed output, or a note when there is none. */
   private said(output: string): string {
     const printed = output.trim();
 

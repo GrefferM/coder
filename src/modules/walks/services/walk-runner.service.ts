@@ -71,7 +71,6 @@ export class WalkRunner implements RecordWatcher {
     this.writer = new RecordWriter(this.record, this);
   }
 
-  /** The conversation as it stands now. */
   snapshot(): WalkState {
     return {
       ...this.state,

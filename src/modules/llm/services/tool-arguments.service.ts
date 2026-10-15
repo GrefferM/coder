@@ -22,7 +22,6 @@ import type { AgentCommandTool, AgentToolParameter, ToolComplaint } from "../int
 
 /** The model's arguments against the types a command declared; only commands are checked, not a server's schema. */
 export class ToolArguments {
-  /** What failed, one entry each; empty when every argument holds. */
   complaints(tool: AgentCommandTool, given: Record<string, string>): ToolComplaint[] {
     return tool.parameters.flatMap((parameter) => this.complaintsOf(parameter, given));
   }
@@ -43,7 +42,6 @@ export class ToolArguments {
     return `${toolName}${TOOL_REFUSED_MIDDLE}${said.join(TOOL_REFUSED_SEPARATOR)}`;
   }
 
-  /** One parameter's complaint, or none. */
   private complaintsOf(parameter: AgentToolParameter, given: Record<string, string>): ToolComplaint[] {
     if (!Object.hasOwn(given, parameter.name)) {
       return parameter.isRequired
@@ -62,7 +60,7 @@ export class ToolArguments {
     return wrong === null ? [] : [wrong];
   }
 
-  /** What is wrong with one value; `null` where the declared type says nothing about it. */
+  /** `null` where the value holds or its type checks nothing. */
   private wrongIn(parameter: AgentToolParameter, value: string): ToolComplaint | null {
     if (parameter.type === "number" && !this.isNumber(value)) {
       return {

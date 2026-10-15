@@ -6,7 +6,6 @@ export const CONFIRM_DIALOG_BORDER_RADIUS_PX = 10;
 export const CONFIRM_DIALOG_PADDING_PX = 16;
 export const CONFIRM_DIALOG_GAP_PX = 12;
 
-/** Scrim color. */
 export const CONFIRM_DIALOG_SCRIM_COLOR = "#07080c80";
 
 /** Header: icon and question text. */

@@ -2,7 +2,6 @@ import { ArrayUnique, IsArray, IsIn, IsUUID, ValidateNested } from "class-valida
 import { COMMAND_TOOL_SOURCE } from "../constants";
 import { PinnedArgumentDto } from "./pinned-argument.dto";
 
-/** A declared command granted to an agent; `source` names the kind. */
 export class CommandToolGrantDto {
   @IsUUID()
   declare id: string;

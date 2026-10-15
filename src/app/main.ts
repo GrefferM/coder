@@ -84,7 +84,6 @@ function applyDockIcon(): void {
   app.dock?.setIcon(APP_ICON_PATH);
 }
 
-/** Names the startup failure in a system dialog, then quits. */
 function failToStart(failure: unknown): void {
   dialog.showErrorBox(STARTUP_FAILURE_TITLE, failure instanceof Error ? failure.message : String(failure));
   app.quit();

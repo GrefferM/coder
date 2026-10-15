@@ -7,7 +7,7 @@ export function grantedOf(option: ToolChoice, grants: ToolGrant[]): ToolGrant | 
   return grants.find((grant) => handleOf(sourceOf(grant)) === option.key) ?? null;
 }
 
-/** A fresh grant for this row; a command's carries its pinned arguments, a server's and an agent's pin nothing. */
+/** A fresh grant for this row; a command's starts with nothing pinned. */
 export function grantFor(option: ToolChoice): ToolGrant {
   if (option.source === "command") {
     return {

@@ -115,7 +115,7 @@ export const Canvas = forwardRef<CanvasHandle, CanvasProps>(function Canvas(
       onMouseDown={grabField}
       onMouseMove={(event) => line.followTo(contentPointAt(event.clientX, event.clientY))}
       onWheel={(event) => stepAround(-Math.sign(event.deltaY), pointAt(event.clientX, event.clientY))}
-      // Double click on empty canvas replaces «повернутись у центр».
+      // Double click on empty canvas fits every sphere into view.
       onDoubleClick={() => fitAll(agents)}
       onContextMenu={(event) => {
         event.preventDefault();

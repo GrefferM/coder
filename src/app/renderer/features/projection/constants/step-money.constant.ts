@@ -10,5 +10,4 @@ export const STEP_NOT_STARTED_SPAN = "—";
 export const STEP_NOT_STARTED_TOKENS = 0;
 export const STEP_NOT_STARTED_MONEY = 0;
 
-/** What stands between the pieces of a step's one mono line. */
 export const STEP_SEPARATOR = " · ";

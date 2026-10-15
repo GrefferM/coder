@@ -42,7 +42,6 @@ export const PROJECT_FORM_APPEARING: AppearingPart[] = [
 ];
 export const PROJECT_FORM_PLACE_NOTE = "Прямо в теці, без крапки на початку — видно у Finder і в діалогах відкриття";
 
-/** A folder already holding a project never reaches this form; the app opens it instead of describing it. */
 export const PROJECT_FORM_CANCEL_LABEL = "Скасувати";
 export const PROJECT_FORM_CREATE_LABEL = "Створити";
 

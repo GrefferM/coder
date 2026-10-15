@@ -1,4 +1,3 @@
-/** The extension of a prompt's file. */
 export const PROMPT_FILE_EXTENSION = ".md";
 
 /** Matches only prompt bodies the app wrote, named by prompt id. */

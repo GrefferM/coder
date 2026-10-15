@@ -5,7 +5,8 @@ export interface SphereOrb {
   /** The source this mark stands for; null on a «+». */
   group: string | null;
   /**
-   * Id of the grant this mark stands for; set on a command, null on a server's mark (its id is in `group`) and on a «+».
+   * Id of the grant this mark stands for; set on a command or an agent, null on a server's mark (its id is in `group`)
+   * and on a «+».
    */
   grantId: string | null;
   color: string;

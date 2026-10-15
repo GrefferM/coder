@@ -4,8 +4,8 @@ import type { McpLook } from "../../../interfaces";
 import type { ServerDeed } from "../interfaces";
 
 /**
- * The at most one action a catalogue row's head offers, chosen by state («УВІЙТИ» and «ВПИСАТИ» are one deed). An
- * answering server offers none.
+ * The at most one action a catalogue row's head offers, chosen by state («УВІЙТИ» and «ВПИСАТИ» are one deed). A
+ * working server offers none.
  */
 export function serverDeed(look: McpLook | null): ServerDeed {
   const trouble = serverTrouble(look);

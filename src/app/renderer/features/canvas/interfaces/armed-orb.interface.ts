@@ -6,7 +6,7 @@ import type { ToolSource } from "../../../interfaces";
 export interface ArmedOrb {
   /** The source this stands for; null for a «+». */
   group: string | null;
-  /** The grant behind a command's mark; null for a server's mark and a «+». */
+  /** The grant behind a command's or agent's mark; null for a server's mark and a «+». */
   grantId: string | null;
   /** The source's colour; on a «+», the colour of the kind it folds. */
   color: string;

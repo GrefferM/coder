@@ -9,7 +9,6 @@ export const OPENCODE_PROTOCOL_ROOT = `${OPENCODE_ROOT}/v1`;
 export const OPENCODE_SESSION_HEADER = "x-opencode-session";
 export const OPENCODE_USER_AGENT = "coder-app/1.0";
 
-/** The protocols a model is reached by. */
 export const OPENCODE_MESSAGES = "messages";
 export const OPENCODE_RESPONSES = "responses";
 export const OPENCODE_CHAT = "chat";

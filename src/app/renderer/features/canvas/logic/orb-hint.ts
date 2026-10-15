@@ -22,7 +22,7 @@ import type { ToolGrant } from "../../../interfaces";
 
 /**
  * What one mini-sphere says under the cursor. A server gives its name and granted-against-offered count; a command
- * gives its name and no number. Function names are never listed.
+ * or an agent gives its name and no number. Function names are never listed.
  */
 export function orbHint(group: string, granted: ToolGrant[], said: GrantTargets): OrbHint {
   if (group === COMMANDS_GROUP_KEY) {

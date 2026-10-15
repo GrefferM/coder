@@ -5,7 +5,7 @@ export const START_PAGE_TITLE = "Coder";
 export const START_PAGE_SUBTITLE =
   "Проєкт — це папка на диску. Конфіг лежить у ній і комітиться разом із кодом: колега відкриє ту саму папку й отримає тих самих агентів.";
 
-/** Label of the action that opens a folder already holding a project. */
+/** Label of the action that opens a folder, making it a project if it is not one. */
 export const OPEN_FOLDER_LABEL = "Відкрити папку";
 
 /** Label of the action that turns a folder into a project. */

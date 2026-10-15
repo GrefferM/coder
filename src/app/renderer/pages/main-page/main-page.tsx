@@ -32,7 +32,6 @@ export function MainPage({ project, setProject }: MainPageProps) {
   const prompts = usePromptSection(project, actions);
   // Only the open section can be holding unsaved work.
   const wayOut = useWayOut(drafted.unsaved ?? models.unsaved ?? commands.unsaved ?? servers.unsaved ?? prompts.unsaved);
-  // The subjects the screen works through, gathered once for the page's hooks.
   const subjects: PageSubjects = {
     project,
     agents,

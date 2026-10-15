@@ -18,7 +18,6 @@ const NOTHING: LiveAnswer = {
 let arriving: Record<string, LiveAnswer> = {};
 let listening: Record<string, Set<() => void>> = {};
 
-/** Tells everyone drawing this turn. */
 function tell(turnId: string): void {
   for (const listener of listening[turnId] ?? []) {
     listener();
@@ -34,7 +33,6 @@ export function sayPiece(turnId: string, text: string, call: LiveCall | null): v
     ...arriving,
     [turnId]: {
       text: `${was.text}${text}`,
-      // A call stands for the rest of the turn: an event, not a state.
       calls,
     },
   };

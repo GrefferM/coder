@@ -78,7 +78,7 @@ function agentMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
   }));
 }
 
-/** One mark per server, in the order the project connected them, whatever it hands over. */
+/** One mark per server, in the project's server order (gone ones last), whatever it hands over. */
 function serverMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
   const byServer = new Map<string, ToolGrant[]>();
 

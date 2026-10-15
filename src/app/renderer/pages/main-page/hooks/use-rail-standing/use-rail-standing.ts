@@ -12,7 +12,7 @@ export function useRailStanding(subjects: PageSubjects, pass: OpenedPassState): 
 
   // The open section is remembered per machine and project.
   const [activeSectionId, setActiveSectionId] = useState(project.view?.sectionId ?? AGENTS_SECTION_ID);
-  // Panel collapse is page state; catalogues stay open with nothing selected.
+  // Remembered like the section; catalogues stay open with nothing selected.
   const [isCollapsed, setIsCollapsed] = useState(project.view?.isCollapsed ?? true);
   // The place in the agent's tab a card named: numbers, prompt or grants.
   const [agentMend, setAgentMend] = useState<AgentMend | null>(null);
@@ -21,7 +21,7 @@ export function useRailStanding(subjects: PageSubjects, pass: OpenedPassState): 
   // A sphere press the tab has not yet answered; resets the tab to its root.
   const [agentPress, setAgentPress] = useState<AgentPress | null>(null);
 
-  /** Brings the agents section forward. */
+  /** Brings the agents section forward, unless the chat stands open. */
   function openAgentsSection() {
     if (activeSectionId === CHAT_SECTION_ID && !isCollapsed) {
       return;
@@ -116,7 +116,6 @@ export function useRailStanding(subjects: PageSubjects, pass: OpenedPassState): 
   function openAgentTools(group: string | null, grantId: string | null) {
     wayOut.guard(() => {
       openSection(AGENTS_SECTION_ID);
-      // A new object per press, so a repeat press reopens the page.
       setToolsPress({
         group,
         grantId,

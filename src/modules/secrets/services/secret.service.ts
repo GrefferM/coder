@@ -11,14 +11,13 @@ import type { SecretCipher, SecretHint } from "../interfaces";
 import type { RemoveSecretDto, SetSecretDto } from "../dto";
 import { Refusal } from "../../../utils/refusals";
 
-/** Secrets as one ciphertext file beside the app's database; only hints leave the module. */
+/** Secrets as one ciphertext file beside the app's database; the controller hands out only hints. */
 export class SecretService {
   constructor(
     private readonly cipher: SecretCipher,
     private readonly userDataDirectory: string,
   ) {}
 
-  /** Writes one secret and returns its hint. */
   async set(payload: SetSecretDto): Promise<SecretHint> {
     this.assertAvailable();
 
@@ -45,7 +44,6 @@ export class SecretService {
     await this.write(held);
   }
 
-  /** A hint per stored secret; an unavailable cipher yields an empty list. */
   async hints(): Promise<SecretHint[]> {
     if (!this.cipher.isAvailable()) {
       return [];
@@ -59,7 +57,7 @@ export class SecretService {
     }));
   }
 
-  /** The plain value, main-process callers only. */
+  /** The plain value, for main-process callers only; null when not stored. */
   async value(key: string): Promise<string | null> {
     const held = await this.read();
     const encrypted = held[key];
@@ -67,7 +65,6 @@ export class SecretService {
     return encrypted === undefined ? null : this.decrypt(encrypted);
   }
 
-  /** The hint: the head, the bullets and the tail. */
   private hint(value: string): string {
     if (value.length <= SECRET_HINT_HEAD_LENGTH + SECRET_HINT_TAIL_LENGTH) {
       return SECRET_HINT_BULLETS;

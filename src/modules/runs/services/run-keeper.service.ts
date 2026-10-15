@@ -31,7 +31,7 @@ export class RunKeeper {
     return ended.length;
   }
 
-  /** Every run of one project, by hand from the history's end or when the project is forgotten. */
+  /** Every run of one project, running ones too. */
   async forgetProject(directory: string): Promise<number> {
     const rows = await this.store.runsIn(directory);
 
@@ -43,7 +43,7 @@ export class RunKeeper {
   }
 
   /**
-   * A walk cannot outlive its window: on waking, runs left open are closed at their last event (last step's end, or the
+   * A walk cannot outlive the app: on start, runs left open are closed at their last event (last step's end, or the
    * question if no step).
    */
   async settleOpen(): Promise<number> {

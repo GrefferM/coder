@@ -5,7 +5,7 @@ import type { ToolSource } from "../../../contracts";
  * server, not the function.
  */
 export interface CallOut {
-  /** The command's name, or the server's; never a server's function. */
+  /** A command's or an agent's own name, or the server's; never a server's function. */
   name: string;
   /** The colour the pill wears is the source's, not the agent's. */
   source: ToolSource;

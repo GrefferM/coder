@@ -11,7 +11,6 @@ import type { TurnLlm } from "../interfaces";
 export class TurnAsker {
   constructor(private readonly llm: TurnLlm) {}
 
-  /** Ends a turn still out. */
   stop(turnId: string): void {
     this.llm.stop({
       turnId,

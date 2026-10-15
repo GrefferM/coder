@@ -71,7 +71,6 @@ export function ServerRow({
   // A row that answers but works for nobody takes the trouble ground; its dot stays green.
   const worksForNobody = !isAsking && noneAnswered(look);
   const isTroubled = hasFallen || worksForNobody;
-  /** The one action the state asks for. A missing token or unset variable is filled in, not restarted. */
   // Being asked wins over the last answer, which describes a server that is neither up nor down now.
   const trouble = isAsking ? null : serverTrouble(look);
   const isUnasked = trouble?.kind === "tokenMissing";

@@ -16,7 +16,6 @@ import type { BaseMessage } from "@langchain/core/messages";
 import type { ChatResult } from "@langchain/core/outputs";
 import type { RunPodOpening } from "../interfaces";
 
-/** One turn of the conversation as the endpoint's worker takes it. */
 interface RunPodSaid {
   role: string;
   content: string;
@@ -64,7 +63,6 @@ export class RunPodChat extends BaseChatModel {
     };
   }
 
-  /** Submits the job; returns its id. */
   private async thrown(messages: BaseMessage[], signal: AbortSignal | undefined): Promise<string> {
     const thrown = await this.asked(RUNPOD_RUN_PATH, {
       method: "POST",
@@ -160,7 +158,7 @@ export class RunPodChat extends BaseChatModel {
     return typeof said === "string" && said !== "" ? said : JSON.stringify(held ?? null);
   }
 
-  /** Why a job ended: the queue's `error`, or its status. */
+  /** Why a job ended: the queue's `error` or `output` where it is words, else its status. */
   private endedOn(stood: Record<string, unknown>, status: string): string {
     const said = stood.error ?? stood.output;
 

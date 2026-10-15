@@ -5,7 +5,6 @@ import type { AgentTool, ReachableAgent } from "../../../contracts/llm";
 import type { ProjectMcpServer } from "../../../contracts/project/mcp-server.interface";
 import type { TurnQuestion } from "./turn-question.interface";
 
-/** One turn as it runs: the model with its tools bound, the conversation so far, and what its calls reach. */
 export interface RunningTurn {
   /** The turn id its pieces are said under; `null` for a sub-agent's turn, which says nothing onward. */
   voicedAs: string | null;

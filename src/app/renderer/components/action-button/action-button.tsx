@@ -10,11 +10,7 @@ import {
 } from "./constants";
 import type { ActionButtonProps } from "./interfaces";
 
-/**
- * The app's action button, per variant, with lit, pressed, focused and disabled states.
- *
- * A dimmed button keeps focus and ignores presses (`aria-disabled`, not `disabled`).
- */
+/** A dimmed button keeps focus and ignores presses (`aria-disabled`, not `disabled`). */
 export function ActionButton({ variant, label, type = "button", ref, onClick, isDisabled = false }: ActionButtonProps) {
   const { isPressed, isFocused, isLit, handlers } = useInteraction();
   const palette = ACTION_BUTTON_PALETTES[variant];

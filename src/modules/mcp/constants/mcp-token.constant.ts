@@ -3,7 +3,6 @@
  * keeps the token.
  */
 export const MCP_TOKEN_PREFIX = "mcp-token:";
-/** The scheme the token is sent under. */
 export const MCP_TOKEN_SCHEME = "Bearer";
 /**
  * Head of the key one environment value is held under: `mcp-env:<server id>:<NAME>`. The name is in the project file,

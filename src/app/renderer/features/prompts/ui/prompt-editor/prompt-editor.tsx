@@ -49,7 +49,7 @@ export function PromptEditor({
   });
 
   async function save() {
-    // A taken name is treated like an empty one: the field opens and the line under it says whose.
+    // A taken name is treated like an empty one: the field opens and the line under it says the name is taken.
     if (promptBlocker(values).length > 0 || isNameTaken) {
       setIsRenaming(true);
 

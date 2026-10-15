@@ -57,7 +57,6 @@ export function usePromptSection(project: OpenProject, writes: PromptWrites): Pr
     setForm(promptFormValues(project.config.prompts.find((prompt) => prompt.id === promptId) ?? null));
   }
 
-  /** Merges a change into the draft. */
   function editForm(patch: Partial<PromptFormValues>) {
     setForm((current) =>
       current === null

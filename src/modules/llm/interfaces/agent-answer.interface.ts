@@ -9,6 +9,5 @@ export interface AgentAnswer {
   isCeilingHit: boolean;
   inputTokens: number;
   outputTokens: number;
-  /** Every call this turn made, in the order it made them. */
   calls: TurnCall[];
 }

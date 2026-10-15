@@ -6,7 +6,6 @@ export const FIELD_VALUE_FONT_SIZE_PX = 13;
 
 export const FIELD_LABEL_FONT_SIZE_PX = 11;
 
-/** Gap, in pixels, between a field's label and its box. */
 export const FIELD_LABEL_GAP_PX = 5;
 
 export const FIELD_LABEL_COLOR = SECOND_LEVEL_TEXT_COLOR;
@@ -18,14 +17,12 @@ export const FIELD_BACKGROUND_COLOR = "#171b26";
 /** Background of a field inside a box of the field's own colour; sunk so the field stays distinct from it. */
 export const FIELD_SUNKEN_BACKGROUND_COLOR = "#0d0f16";
 
-/** Border of a field's box at rest. */
 export const FIELD_BORDER_COLOR = BORDER_AT_REST_COLOR;
 
 export const FIELD_FOCUS_BORDER_COLOR = "#38a3ff";
 
 export const FIELD_BORDER_RADIUS_PX = 10;
 
-/** How much a price field steps by. */
 export const FIELD_PRICE_STEP = 0.1;
 
 /** The unit inside the box, at the quiet mark's tone. */
@@ -38,7 +35,6 @@ export const FIELD_INVALID_BORDER_COLOR = "#ff6b6b";
 export const FIELD_WARNED_BORDER_COLOR = "#4a2530";
 export const FIELD_WARNED_CLASS = "field-warned";
 
-/** Invalid border fade transition. */
 export const FIELD_INVALID_TRANSITION = "border-color 0.6s";
 
 /** How long the invalid mark holds after a save press, ms. */
@@ -50,6 +46,5 @@ export const FIELD_CLEAR_SIZE_PX = 15;
 export const FIELD_CLEAR_COLOR = "#5c6478";
 export const FIELD_CLEAR_LIT_COLOR = "#dde1ee";
 
-/** Least value of a number field. */
 export const FIELD_NUMBER_LEAST = 0;
 export const FIELD_MINUS = "-";

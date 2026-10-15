@@ -29,7 +29,7 @@ export const AGENT_MAX_CALLS_DROPPED_LABEL = "максимум викликів"
 export const AGENT_TEMPERATURE_CHANGE_LABEL = "температура";
 export const AGENT_TEMPERATURE_DROPPED_LABEL = "температура";
 
-/** The two tool fields, named as their heads on the tab. */
+/** The three tool fields, named as their heads on the tab. */
 export const AGENT_COMMANDS_CHANGE_LABEL = "команди";
 export const AGENT_COMMANDS_DROPPED_LABEL = "команди";
 export const AGENT_MCP_CHANGE_LABEL = "MCP";

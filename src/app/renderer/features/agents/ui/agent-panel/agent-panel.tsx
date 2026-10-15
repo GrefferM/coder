@@ -34,7 +34,7 @@ export function AgentPanel({ agentId, catalogue, writing, standing, presses, act
   );
 
   /**
-   * A step has its own head, so the agent's head stands down while one is open; the tab stays mounted, or leaving a step
+   * A grant step has its own head, so the agent's head stands down while one is open; the tab stays mounted, or leaving a step
    * would hear the standing press and reopen it.
    */
   return (

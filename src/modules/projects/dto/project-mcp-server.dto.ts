@@ -3,7 +3,7 @@ import { MCP_SIGN_INS } from "../constants";
 import { McpSignIn } from "../interfaces";
 import { COMMAND_NAME_PATTERN } from "../../../contracts";
 
-/** An MCP server the project declares, only how to reach it; a token goes to the keychain, never here. */
+/** Only how to reach the server; a token goes to this machine's secrets, never here. */
 export class ProjectMcpServerDto {
   @IsUUID()
   declare id: string;
@@ -26,7 +26,7 @@ export class ProjectMcpServerDto {
   @IsIn(MCP_SIGN_INS)
   declare signIn: McpSignIn;
 
-  /** Names of the environment variables the process starts with, names only. */
+  /** The environment variables the process starts with, names only. */
   @IsArray()
   @IsString({
     each: true,

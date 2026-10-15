@@ -6,7 +6,7 @@ import {
   QUIET_MARK_COLOR,
 } from "../../../../../../../constants";
 
-/** The opened provider — name, kind, its one field. */
+/** The opened provider — name, kind, its fields. */
 export const PROVIDER_CARD_PADDING = "12px";
 export const PROVIDER_CARD_GAP_PX = 11;
 export const PROVIDER_CARD_BORDER_RADIUS_PX = 10;
@@ -48,7 +48,6 @@ export const PROVIDER_CARD_SILENT_LABEL = "Не відповідає";
 export const PROVIDER_CARD_INSTALLED_SUFFIX = " встановлено";
 /** Prefix for the time a silent provider was last checked. */
 export const PROVIDER_CARD_CHECKED_PREFIX = "перевірено ";
-/** Plural forms for the model count. */
 export const PROVIDER_CARD_MODEL_FORMS = ["модель", "моделі", "моделей"];
 export const PROVIDER_CARD_REPLY_SEPARATOR = " · ";
 export const PROVIDER_CARD_ANSWERED_COLOR = "#5fd39a";

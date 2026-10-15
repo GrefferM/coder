@@ -29,7 +29,6 @@ export function AimPicker({ agents, aimedAgentId, onAim }: AimPickerProps) {
   const [asked, setAsked] = useState("");
   const box = useRef<HTMLDivElement>(null);
   const aimed = agents.find((agent) => agent.id === aimedAgentId) ?? null;
-  // Search appears from the thirteenth agent.
   const hasSearch = agents.length >= AIM_PICKER_SEARCH_FROM;
   const found = agents.filter((agent) => agent.name.toLowerCase().includes(asked.trim().toLowerCase()));
   // The project's order, with switched-off agents together at the end.

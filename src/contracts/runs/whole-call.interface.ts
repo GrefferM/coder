@@ -3,7 +3,6 @@ import type { ToolSource } from "../project";
 /** One call of a step read back from the record; a refused one has no output and no code. */
 export interface WholeCall {
   id: string;
-  /** What the call went to. */
   source: ToolSource;
   place: number;
   name: string;
@@ -15,7 +14,7 @@ export interface WholeCall {
   output: string;
   refusal: string;
   exitCode: number | null;
-  /** The server this call went to and its name then; `null` for a command's call. */
+  /** The server this call went to and its name then; `null` for a command's or an agent's call. */
   serverId: string | null;
   serverName: string;
   /** The server answered «ні», read from the end the record kept. */

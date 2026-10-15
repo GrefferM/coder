@@ -12,12 +12,12 @@ import {
 import { RUN_DONE, RUN_FAILED, RUN_NOT_SENT, RUN_RUNNING, RUN_STOPPED } from "../../../constants";
 import type { RunStateDot } from "../interfaces";
 
-/** The list of runs — one row is one walk of the line. */
+/** The list of runs — one row per flow, however many questions it was asked. */
 export const RUN_HISTORY_PADDING = "16px";
 export const RUN_HISTORY_GAP_PX = 10;
 export const RUN_HISTORY_EMPTY_NOTE = "Історія порожня";
 export const RUN_HISTORY_EMPTY_COLOR = SECOND_LEVEL_TEXT_COLOR;
-/** The list's quiet lines: the closing rule and the failed-read note. */
+/** The closing rule under the list. */
 export const RUN_HISTORY_NOTE_COLOR = QUIET_MARK_COLOR;
 export const RUN_HISTORY_EMPTY_PADDING = "22px 16px";
 export const RUN_HISTORY_EMPTY_FONT_SIZE_PX = 12.5;
@@ -105,7 +105,7 @@ export const RUN_SEARCH_NOTHING_LINE_HEIGHT = 1.6;
 
 export const RUN_HISTORY_RULE_COLOR = HAIRLINE_COLOR;
 
-/** A flow that sent nothing is worded, since «—» would read as an uncounted sum. */
+/** A flow with no known sum (`money` null): it has no steps, or none ran with prices written. */
 export const RUN_HISTORY_NO_MONEY_LABEL = "БЕЗ ГРОШЕЙ";
 
 /** Under a flow older than its group: the day it began, said quietly. */

@@ -8,7 +8,7 @@ import type { FunctionRow } from "../interfaces";
  * A granted function the server no longer names is left out; that trouble shows among the agent's broken grants.
  */
 export function functionRows(serverId: string, look: McpLook | null, agents: Agent[]): FunctionRow[] {
-  // A server that has not answered hands nothing over, and its card does not open.
+  // A server that has not answered hands nothing over, and its page shows no list.
   if (look === null || !look.isUp) {
     return [];
   }

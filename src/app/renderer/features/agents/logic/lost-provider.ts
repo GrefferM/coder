@@ -1,6 +1,6 @@
 import type { ProjectModel, ProviderState } from "../../../interfaces";
 
-/** The provider a held model names that nobody declared; nothing where the model itself is gone. */
+/** The provider a held model names that the app does not know; nothing where the model itself is gone. */
 export function lostProvider(modelId: string, models: ProjectModel[], providers: ProviderState[]): string | null {
   const model = models.find((standing) => standing.id === modelId) ?? null;
 

@@ -8,7 +8,7 @@ export const ROW_BORDER_RADIUS_PX = 10;
 
 export const ROW_PADDING = "12px 14px";
 
-/** Gap, in pixels, between a row's name and the path under it. */
+/** Gap between a row's name and the path under it. */
 export const ROW_TEXT_GAP_PX = 3;
 
 export const ROW_NAME_FONT_SIZE_PX = 13;
@@ -25,7 +25,7 @@ export const ROW_MISSING_LABEL = "НЕ ЗНАЙДЕНО";
 /** Colour of a row whose folder no longer holds a project. */
 export const ROW_MISSING_COLOR = QUIET_MARK_COLOR;
 
-/** Title of the cross that drops a project from the list. */
+/** Hint and label of the cross that drops a project from the list. */
 export const ROW_FORGET_LABEL = "Прибрати зі списку";
 
 /** Colour of that cross at rest. */

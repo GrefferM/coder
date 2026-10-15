@@ -1,5 +1,4 @@
-// What the machine says back is the boundary's: written once in `src/contracts`.
-// The walk's shapes are the boundary's: written once in `src/contracts`.
+// The walk's shapes and what the machine says back are the boundary's: written once in `src/contracts`.
 export * from "../../../../../contracts/walks";
 export * from "../../../../../contracts/llm";
 export * from "./chat-step.interface";

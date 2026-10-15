@@ -71,13 +71,11 @@ export function Composer({
 }: ComposerProps) {
   const send = useInteraction();
   const grip = useInteraction();
-  /** Remembered height, else the least height. */
   const field = useFieldHeight(fieldHeight ?? FIELD_LEAST_HEIGHT_PX, onFieldHeight);
   /** Count of ⌘↵ presses that could not go through; each restarts the stop's blink. */
   const [blockedPresses, setBlockedPresses] = useState(0);
   /** Repeats hold the stop up between their walks too, and shut the field until the last ends. */
   const isGoing = isWalking || repeating !== null;
-  /** The field's state and its paint. */
   const standing = fieldStanding(agentId, isAgentActive, isGoing);
   const ground = AGENT_CHAT_FIELD_GROUNDS[standing];
   const canSend = canAsk(draft, standing);
@@ -211,7 +209,7 @@ export function Composer({
           gap: AGENT_CHAT_COMPOSER_GAP_PX,
         }}
       >
-        {/* Any turn out, wherever held, can be stopped. */}
+        {/* Anything of this conversation out, repeats included, is stopped from here. */}
         {isGoing ? (
           <TextButton
             // The key restarts the blink on each press.

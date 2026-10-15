@@ -13,8 +13,6 @@ import type { EnvListProps } from "./interfaces";
 /**
  * «ЗМІННІ СЕРЕДОВИЩА». A variable is a name and a value: the name goes into the project file, the value into this
  * machine's keychain. One with no value says so on its block.
- *
- * Each variable is its own box. The head carries the count; the dashed row under the last block adds a variable.
  */
 export function EnvList({ names, drafts, held, onNamesChange, onValueChange }: EnvListProps) {
   function rename(at: number, name: string) {

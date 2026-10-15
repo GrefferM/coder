@@ -80,10 +80,8 @@ export function RunSearch({ query, record, places, runs, onQuery }: RunSearchPro
           letterSpacing: RUN_HISTORY_QUIET_LETTER_SPACING_PX,
         }}
       >
-        {/* The whole record's count at rest; with a word, what it was found in. */}
         {foundCount(query, places, runs, record)}
       </span>
-      {/* The clear cross shows only while there is a word. */}
       {query !== "" && <Clear onClear={() => onQuery("")} />}
     </div>
   );

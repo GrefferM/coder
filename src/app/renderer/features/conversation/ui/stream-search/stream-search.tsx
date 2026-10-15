@@ -149,7 +149,6 @@ export function StreamSearch({
         >
           {foundOfLabel(at, found)}
         </span>
-        {/* A cross of its own clears the word; shown only while there is one. */}
         {query !== "" && (
           <Step
             label={STREAM_SEARCH_CLEAR_LABEL}

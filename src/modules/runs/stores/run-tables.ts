@@ -13,7 +13,7 @@ import {
 import type { DataSource, EntityManager } from "typeorm";
 import type { RunTables } from "../interfaces";
 
-/** Every table the record writes to, from one connection or one transaction; shared by the module and tests. */
+/** From one connection or one transaction. */
 export function runTablesOf(dataSource: DataSource | EntityManager): RunTables {
   return {
     runs: dataSource.getRepository(RunEntity),

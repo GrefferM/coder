@@ -16,9 +16,8 @@
     "incremental": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo"
   },
-  // Tests import from ../src, so both trees need to be in scope — otherwise tsc reports every
-  // relative import into src as a rootDir violation (TS6059), the same error an IDE's own
-  // TypeScript service surfaces as an unresolved-path warning right on the import string.
+  // Tests import from ../src, so both trees are in scope; otherwise tsc (and an IDE) reports every import into src as
+  // a rootDir violation (TS6059).
   "include": ["**/*.ts", "../src/**/*.ts"],
   "exclude": ["../node_modules", "../src/modules/electron-app/renderer", "../src/app/renderer"]
 }

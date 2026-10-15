@@ -27,7 +27,7 @@ import type {
 } from "../interfaces";
 import { runTablesOf } from "./run-tables";
 
-/** The record's questions answered over TypeORM; the only file in the module that knows of the ORM. */
+/** The record's questions answered over TypeORM; the services know only `RunStore`. */
 export class TypeormRunStore implements RunStore {
   constructor(private readonly tables: RunTables) {}
 
@@ -337,7 +337,6 @@ export class TypeormRunStore implements RunStore {
 
   async addCall(call: NewCall): Promise<void> {
     await this.tables.calls.save({
-      // The call keeps its existing id.
       id: call.id,
       source: call.source,
       place: call.place,

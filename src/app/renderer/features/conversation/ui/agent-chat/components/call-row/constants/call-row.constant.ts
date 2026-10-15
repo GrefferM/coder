@@ -6,7 +6,7 @@ import {
   PANEL_GROUND_COLOR,
 } from "../../../../../../../constants";
 
-/** One call folded into a line; same block a step of the projection opens. */
+/** One call folded into a line. */
 export const CALL_ROW_BACKGROUND_COLOR = PANEL_GROUND_COLOR;
 export const CALL_ROW_BORDER_COLOR = BORDER_AT_REST_COLOR;
 export const CALL_ROW_OPEN_BORDER_COLOR = "#2c3550";

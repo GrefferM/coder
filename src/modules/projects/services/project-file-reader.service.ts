@@ -67,7 +67,6 @@ export class ProjectFileReader {
     };
   }
 
-  /** Whether the folder holds a project at all. */
   async exists(projectDirectory: string): Promise<boolean> {
     return this.folder.isThere(this.folder.filePath(projectDirectory));
   }

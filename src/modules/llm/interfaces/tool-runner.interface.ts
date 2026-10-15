@@ -1,4 +1,3 @@
-/** What this module needs of whoever runs a declared command: line, folder, arguments and outcome. */
 export interface ToolRunner {
   call(payload: {
     run: string;

@@ -34,7 +34,6 @@ export const CANVAS_LINK_HANDLE_SIZE_PX = 9;
 export const CANVAS_LINK_HANDLE_FILL = "#0d0f16";
 export const CANVAS_LINK_HANDLE_WIDTH = 1.6;
 
-/** Invisible hit stroke width. */
 export const CANVAS_LINK_HIT_WIDTH = 16;
 
 /** Links of an agent under a deletion ask: dashed red, drift stopped. */

@@ -9,7 +9,7 @@ import {
 } from "../../../contracts";
 import type { PackAttachmentsAsk, PickAttachmentsAsk, SaveTextAsk } from "../../../contracts";
 
-/** Desktop channels: pick a working folder, reveal a project file, pick and pack files for a question. */
+/** Desktop channels: pick a working folder, reveal a project file, pick and pack files for a question, save a text. */
 export const SHELL_IPC_CHANNELS: IpcChannelMap<SystemShell> = {
   [CHOOSE_DIRECTORY_CHANNEL]: (systemShell) => systemShell.choose(),
   [REVEAL_PROJECT_CHANNEL]: (systemShell, payload) => systemShell.revealProject(<string>payload),

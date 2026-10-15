@@ -1,6 +1,6 @@
 import type { Ref } from "react";
 
-/** Value, change handler, and the aria label of the −/+ buttons. */
+/** `label` is the aria label of the −/+ buttons. */
 export interface StepperProps {
   label: string;
   /** Lets a card focus «+», the one way out of an empty row. */

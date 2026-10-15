@@ -158,7 +158,6 @@ export class ProjectWatchService implements ProjectWatch {
       },
       () => this.settle(directory),
     );
-    // The watch does not keep the process alive.
     this.watcher.unref();
     standing?.close();
   }

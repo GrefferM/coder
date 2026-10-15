@@ -24,8 +24,8 @@ export const STANDING_GONE_BORDER_COLOR = "#3a2a30";
 export const STANDING_GONE_COLOR = BROKEN_COLOR;
 
 /**
- * Band over the projection marking which half of the screen is «then» and which is «now»; shown only when the run's
- * record and the project differ.
+ * Band over the projection marking which half of the screen is «then» and which is «now»; shown only when an agent of
+ * the pass was renamed or is gone.
  */
 export const STANDING_BAND_LABEL = "ОБСТАВИНИ — НА МОМЕНТ ЗАПУСКУ · ІМЕНА — СЬОГОДНІШНІ";
 export const STANDING_BAND_GAP_PX = 6;

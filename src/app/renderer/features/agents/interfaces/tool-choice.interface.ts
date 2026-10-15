@@ -1,8 +1,8 @@
 import type { ToolSource } from "../../../interfaces";
 
-/** One function an agent may be given, from a command, a server or an agent; one list so the heads can divide it. */
+/** One function an agent may be given, from a command, a server or an agent. */
 export interface ToolChoice {
-  /** The function's handle: a command's id, or a server's id and name together. */
+  /** The source's handle (`handleOf`): kind and id, plus the function's name for a server's. */
   key: string;
   /** Which head this row stands under. */
   group: string;

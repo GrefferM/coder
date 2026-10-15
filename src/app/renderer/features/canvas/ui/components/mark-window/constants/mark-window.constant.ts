@@ -19,4 +19,3 @@ export const MARK_WINDOW_DOT_SIZE_PX = 7;
 export const MARK_WINDOW_CHOSEN_COLOR = "#4f8bff";
 export const MARK_WINDOW_CHOSEN_STRIPE_PX = 2;
 export const MARK_WINDOW_CHOSEN_BACKGROUND = "#1d2333";
-/** No key row along the bottom, to keep the window small; the keys still walk it. */

@@ -9,7 +9,7 @@ export interface Run {
   state: string;
   /** The day the flow began, not of its last question. */
   startedAt: Date;
-  /** When the flow was last asked; the row's own hour while nothing has come back. */
+  /** When the flow was last asked; its start where no question is recorded. */
   askedAt: Date;
   endedAt: Date | null;
   /** How many steps the run took, for the row's «N кроків». */
@@ -18,7 +18,7 @@ export interface Run {
   money: number | null;
   /** Milliseconds the agents worked over the flow: the sum of every step's time. */
   worked: number;
-  /** The agent it started from, as it then stood; empty when no step was written. */
+  /** The agent it started from, as it then stood. */
   startedByAgentName: string;
   startedByAgentColor: string;
   /** Whom the flow was last asked; names the row's head. */

@@ -10,7 +10,6 @@ export const AGENT_SETTINGS_PURPOSE_PLACEHOLDER =
 export const AGENT_SETTINGS_MODEL_LABEL = "МОДЕЛЬ";
 export const AGENT_SETTINGS_COLOR_LABEL = "КОЛІР";
 
-/** The row that turns an agent on and off. */
 export const AGENT_SETTINGS_SWITCH_LABEL = "Увімкнено";
 
 /** The converging-wait toggle and the line under it. */
@@ -24,7 +23,6 @@ export const AGENT_SETTINGS_DELETE_LABEL = "Видалити";
 export const AGENT_SETTINGS_REVERT_LABEL = "Скасувати";
 export const AGENT_SETTINGS_SAVE_LABEL = "Зберегти";
 
-/** Prompt field. */
 export const AGENT_SETTINGS_PROMPT_LABEL = "ПРОМПТ";
 /** Gap between a field and the broken tie under it. */
 export const AGENT_SETTINGS_TIE_GAP_PX = 8;
@@ -40,5 +38,5 @@ export const AGENT_SETTINGS_MAX_CALLS_HINT = "0 — БЕЗ ЛІМІТУ";
 export const AGENT_SETTINGS_TEMPERATURE_LABEL = "Температура";
 export const AGENT_SETTINGS_TEMPERATURE_HINT = "0 — СТРОГО ФОРМУЛЮЄ · 1 — ВІЛЬНІШЕ ФОРМУЛЮЄ · КРОК 0.1";
 
-/** Both tab steps (grant, server) go back to where they were opened from. */
+/** Both tab steps (grant, server) go back to the settings root. */
 export const SETTINGS_BACK_LABEL = "Назад до налаштувань";

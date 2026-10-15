@@ -5,7 +5,7 @@ import type { McpLook, ProjectMcpServer } from "../../../../../interfaces";
 export interface ServerPageProps {
   server: ProjectMcpServer;
   look: McpLook | null;
-  /** What it hands over now, and what a grant still points at; empty where it has not answered. */
+  /** What it hands over now; empty where it has not answered. */
   rows: FunctionRow[];
   /** «N АГ.» — how many agents hold any function of this server. */
   agentCount: number;

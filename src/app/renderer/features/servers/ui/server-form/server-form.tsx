@@ -35,7 +35,7 @@ import { NAME_TAKEN_COMMAND_NOTE } from "../../../../constants";
 import type { ServerFormProps } from "./interfaces";
 
 /**
- * The one form both kinds of server are declared in. The head switch picks the half asked for; the other half keeps
+ * The one form both kinds of server are declared in. The kind switch picks the half asked for; the other half keeps
  * what was typed, and the file is written with only the half this server is.
  */
 export function ServerForm({
@@ -67,10 +67,7 @@ export function ServerForm({
   const token = secrets[""];
   const isTokenHeld = token === undefined && held.token !== null;
 
-  /**
-   * Typed text stays and the field refuses in words. The name rule is checked on what is typed, not on the file: an
-   * already accepted name is the file's truth, so it does not block the run line.
-   */
+  // The name rule is checked only once the name is edited: a name the file already holds does not block a save.
   const opened = useRef(values.name);
   const isNameWrong = isServerNameWrong(values.name) && values.name !== opened.current;
 

@@ -52,12 +52,10 @@ export class ProjectService {
     return this.followed(directory);
   }
 
-  /** What the chosen folder holds. */
   async look(payload: OpenProjectDto): Promise<FolderContents> {
     return this.projectFileStore.glance(payload.directory);
   }
 
-  /** Opens the chosen folder, creating a project there if none exists. */
   async openOrCreate(payload: OpenProjectDto): Promise<ProjectRead> {
     const { directory } = payload;
 
@@ -114,7 +112,7 @@ export class ProjectService {
     }
   }
 
-  /** Every project this machine has opened, most recent first, each with whether it still exists. */
+  /** The `RECENT_PROJECTS_LIMIT` last opened projects, most recent first, each with whether it still exists. */
   async findRecent(): Promise<KnownProject[]> {
     const entries = await this.projectEntryRepository.find({
       order: {
@@ -248,7 +246,7 @@ export class ProjectService {
         name,
         openedAt: new Date(),
       });
-      // Reopening a forgotten folder restores the soft-deleted row.
+      // A soft-deleted row is restored; `forget` hard-deletes, so nothing here soft-deletes one.
       await this.projectEntryRepository.restore(existing.id);
 
       return existing;

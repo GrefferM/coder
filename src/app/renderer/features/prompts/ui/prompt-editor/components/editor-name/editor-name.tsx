@@ -15,7 +15,6 @@ import type { EditorNameProps } from "./interfaces";
 /** The prompt's name: a word until pressed, a field while being written. */
 export function EditorName({ name, wasName, isRenaming, onRenaming, onRename }: EditorNameProps) {
   const press = usePressable(() => onRenaming(true));
-  /** Shared by the word and the field so both fill the same slot and nothing beside shifts on press. */
   const slot = {
     width: PROMPT_EDITOR_NAME_WIDTH_PX,
     fontSize: PROMPT_EDITOR_NAME_FONT_SIZE_PX,
