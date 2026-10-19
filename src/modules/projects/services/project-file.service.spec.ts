@@ -49,8 +49,8 @@ function fullConfig(): Record<string, unknown> {
         provider: "anthropic",
         inputPrice: 3,
         outputPrice: 15,
-        contextCeiling: 4096,
-        answerCeiling: 8,
+        contextCeiling: 128000,
+        answerCeiling: 4096,
       },
     ],
     prompts: [],
@@ -252,13 +252,13 @@ describe("ProjectFileService", () => {
 
     const model = await readFile(path.join(projectDirectory, "models", `${MODEL_ID}.yaml`), "utf8");
 
-    assert.match(model, /contextCeiling: 4096/);
-    assert.match(model, /answerCeiling: 8/);
+    assert.match(model, /contextCeiling: 128000/);
+    assert.match(model, /answerCeiling: 4096/);
 
     const config = await projectFileService.read(projectDirectory);
 
-    assert.equal(config.models[0].contextCeiling, 4096);
-    assert.equal(config.models[0].answerCeiling, 8);
+    assert.equal(config.models[0].contextCeiling, 128000);
+    assert.equal(config.models[0].answerCeiling, 4096);
   });
 
   it("puts an empty skeleton where a description is gone, instead of refusing the project", async () => {

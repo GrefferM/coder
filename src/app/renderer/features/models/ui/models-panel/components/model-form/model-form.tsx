@@ -28,7 +28,12 @@ import {
   MODEL_NAME_NOTE_UNCHOSEN,
   MODELS_PANEL_TITLE_FIELD_LABEL,
 } from "../../constants";
-import { MODEL_ANSWER_CEILING_LEAST, MODEL_CONTEXT_CEILING_LEAST } from "../../../../../../../../contracts";
+import {
+  MODEL_ANSWER_CEILING_LEAST,
+  MODEL_ANSWER_CEILING_MOST,
+  MODEL_CONTEXT_CEILING_LEAST,
+  MODEL_CONTEXT_CEILING_MOST,
+} from "../../../../../../../../contracts";
 import { ProviderPicker } from "./components";
 import type { ModelFormValues } from "../../../../interfaces";
 import type { ModelFormProps } from "./interfaces";
@@ -56,11 +61,19 @@ export function ModelForm({ providers, values, saved, isNew, isMending, onChange
 
   const isMissing = (value: string) => wasTried && !value;
   /**
-   * A ceiling under the floor the file refuses; flagged as typed, unlike an empty required field, which is flagged at the
+   * A ceiling outside the bounds the file refuses; flagged as typed, unlike an empty required field, which is flagged at the
    * press.
    */
-  const isContextCeilingWrong = isCeilingWrong(values.contextCeiling, MODEL_CONTEXT_CEILING_LEAST);
-  const isAnswerCeilingWrong = isCeilingWrong(values.answerCeiling, MODEL_ANSWER_CEILING_LEAST);
+  const isContextCeilingWrong = isCeilingWrong(
+    values.contextCeiling,
+    MODEL_CONTEXT_CEILING_LEAST,
+    MODEL_CONTEXT_CEILING_MOST,
+  );
+  const isAnswerCeilingWrong = isCeilingWrong(
+    values.answerCeiling,
+    MODEL_ANSWER_CEILING_LEAST,
+    MODEL_ANSWER_CEILING_MOST,
+  );
 
   /** Saved value a field moved away from; `null` when unmoved. */
   function wasValue(field: keyof ModelFormValues): string | null {

@@ -1,5 +1,11 @@
 import { BORDER_AT_REST_COLOR, FIRST_LEVEL_TEXT_COLOR, SECOND_LEVEL_TEXT_COLOR } from "../../../../../constants";
-import { MODEL_ANSWER_CEILING_LEAST, MODEL_CONTEXT_CEILING_LEAST } from "../../../../../../../contracts";
+import { groupedNumber } from "../../../../../utils/numbers";
+import {
+  MODEL_ANSWER_CEILING_LEAST,
+  MODEL_ANSWER_CEILING_MOST,
+  MODEL_CONTEXT_CEILING_LEAST,
+  MODEL_CONTEXT_CEILING_MOST,
+} from "../../../../../../../contracts";
 
 /** Catalogue layout: full-height list, one action in the footer. */
 export const MODELS_PANEL_PADDING_PX = 14;
@@ -47,11 +53,11 @@ export const MODELS_PANEL_CEILING_NOTE_NEW = MODELS_PANEL_CEILING_NOTE;
 export const MODELS_PANEL_ANSWER_CEILING_NOTE =
   "Максимум токенів, які модель згенерує за один хід. Це число йде провайдерові як є — рахує й обриває він.";
 /**
- * Replaces the field's note while the number cannot stand; the floor is read from the contract so the sentence matches
+ * Replaces the field's note while the number cannot stand; the bounds are read from the contract so the sentence matches
  * what the file refuses.
  */
-export const MODELS_PANEL_CEILING_WRONG_NOTE = `Найменше ${MODEL_CONTEXT_CEILING_LEAST}: стеля в нуль — це модель, якій нічого не надіслати.`;
-export const MODELS_PANEL_ANSWER_CEILING_WRONG_NOTE = `Найменше ${MODEL_ANSWER_CEILING_LEAST}: стеля в нуль — це модель, якій нічого не сказати.`;
+export const MODELS_PANEL_CEILING_WRONG_NOTE = `Від ${groupedNumber(MODEL_CONTEXT_CEILING_LEAST)} до ${groupedNumber(MODEL_CONTEXT_CEILING_MOST)} символів: менше — нічого не надіслати, більше — зайвий нуль.`;
+export const MODELS_PANEL_ANSWER_CEILING_WRONG_NOTE = `Від ${groupedNumber(MODEL_ANSWER_CEILING_LEAST)} до ${groupedNumber(MODEL_ANSWER_CEILING_MOST)} токенів: менше — майже нічого не сказати, більше — зайвий нуль.`;
 
 export const MODELS_PANEL_CEILING_STEP = 1000;
 

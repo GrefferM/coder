@@ -270,6 +270,23 @@ describe("ProjectConfigSerializer", () => {
     assert.equal(config.models[0].contextCeiling, null);
   });
 
+  it("takes an answer's ceiling under the least a model may carry as unwritten, one token short of it too", async () => {
+    const answer = await serializer.parse(
+      VALID_YAML.replace("outputPrice: 15", "outputPrice: 15\n    answerCeiling: 1023"),
+    );
+
+    assert.equal(answer.models[0].answerCeiling, null);
+  });
+
+  it("refuses a ceiling past the most a model may carry, since that is a stray zero", async () => {
+    await assert.rejects(() =>
+      serializer.parse(VALID_YAML.replace("outputPrice: 15", "outputPrice: 15\n    contextCeiling: 1048577")),
+    );
+    await assert.rejects(() =>
+      serializer.parse(VALID_YAML.replace("outputPrice: 15", "outputPrice: 15\n    answerCeiling: 524289")),
+    );
+  });
+
   it("reads a model without the answer's ceiling as a field nobody has written", async () => {
     const config = await serializer.parse(VALID_YAML);
 
