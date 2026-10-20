@@ -12,51 +12,48 @@ import {
   AGENT_SETTINGS_COMPRESS_TO_HINT,
   AGENT_SETTINGS_COMPRESS_TO_LABEL,
 } from "../../constants";
+import type { MemoryNumber } from "../../../../../../logic";
 import type { MemoryNumbersProps } from "./interfaces";
+
+/** The two numbers of a kept memory, each with what it is called, what it says and how far it may go. */
+const ROWS: { field: MemoryNumber; label: string; hint: string; least: number; most: number }[] = [
+  {
+    field: "compressAt",
+    label: AGENT_SETTINGS_COMPRESS_AT_LABEL,
+    hint: AGENT_SETTINGS_COMPRESS_AT_HINT,
+    least: AGENT_COMPRESS_AT_LEAST,
+    most: AGENT_COMPRESS_AT_MOST,
+  },
+  {
+    field: "compressTo",
+    label: AGENT_SETTINGS_COMPRESS_TO_LABEL,
+    hint: AGENT_SETTINGS_COMPRESS_TO_HINT,
+    least: AGENT_COMPRESS_TO_LEAST,
+    most: AGENT_COMPRESS_TO_MOST,
+  },
+];
 
 /** Where a kept memory is compressed and what it is written down to, as shares of the model's ceiling. */
 export function MemoryNumbers({ draft, was, mendedStepper, mendedRow, onDraftChange }: MemoryNumbersProps) {
   return (
     <>
-      <SettingRow
-        label={AGENT_SETTINGS_COMPRESS_AT_LABEL}
-        wasValue={was.compressAt}
-        hint={AGENT_SETTINGS_COMPRESS_AT_HINT}
-      >
-        <Stepper
-          ref={mendedRow === "compressAt" ? mendedStepper : undefined}
-          label={AGENT_SETTINGS_COMPRESS_AT_LABEL}
-          value={draft.compressAt}
-          step={AGENT_COMPRESS_STEP}
-          least={AGENT_COMPRESS_AT_LEAST}
-          most={AGENT_COMPRESS_AT_MOST}
-          onChange={(compressAt) =>
-            onDraftChange({
-              compressAt,
-            })
-          }
-        />
-      </SettingRow>
-
-      <SettingRow
-        label={AGENT_SETTINGS_COMPRESS_TO_LABEL}
-        wasValue={was.compressTo}
-        hint={AGENT_SETTINGS_COMPRESS_TO_HINT}
-      >
-        <Stepper
-          ref={mendedRow === "compressTo" ? mendedStepper : undefined}
-          label={AGENT_SETTINGS_COMPRESS_TO_LABEL}
-          value={draft.compressTo}
-          step={AGENT_COMPRESS_STEP}
-          least={AGENT_COMPRESS_TO_LEAST}
-          most={AGENT_COMPRESS_TO_MOST}
-          onChange={(compressTo) =>
-            onDraftChange({
-              compressTo,
-            })
-          }
-        />
-      </SettingRow>
+      {ROWS.map((row) => (
+        <SettingRow key={row.field} label={row.label} wasValue={was[row.field]} hint={row.hint}>
+          <Stepper
+            ref={mendedRow === row.field ? mendedStepper : undefined}
+            label={row.label}
+            value={draft[row.field]}
+            step={AGENT_COMPRESS_STEP}
+            least={row.least}
+            most={row.most}
+            onChange={(value) =>
+              onDraftChange({
+                [row.field]: value,
+              })
+            }
+          />
+        </SettingRow>
+      ))}
     </>
   );
 }

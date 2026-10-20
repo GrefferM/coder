@@ -1,5 +1,5 @@
-import { addedMoney } from "../runs/added-money";
-import type { ChatCost } from "./chat-cost.interface";
+import { addedMoney } from "./added-money";
+import type { ChatCost } from "../walks/chat-cost.interface";
 
 /** Two bills as one: tokens added, money added where either is known; a missing bill adds nothing. */
 export function addedCost(one: ChatCost | null, other: ChatCost | null): ChatCost | null {

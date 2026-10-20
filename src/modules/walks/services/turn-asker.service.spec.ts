@@ -10,6 +10,7 @@ import {
   RUN_STEP_STOPPED,
   composedMemory,
   composedSharedMemory,
+  sharedMemoryWithTask,
   composerLength,
   composerWords,
   composerMessage,
@@ -170,7 +171,10 @@ describe("TurnAsker", () => {
       );
       const answer = await new TurnAsker(llm).answer(asked);
 
-      assert.equal(llm.asked[0].messages[0].text, `${composedSharedMemory("Зміст усього")}Прогони тести`);
+      assert.equal(
+        llm.asked[0].messages[0].text,
+        `${sharedMemoryWithTask(composedSharedMemory("Зміст усього"))}Прогони тести`,
+      );
       assert.equal(answer.compressed?.facts.questionId, "question-1");
       assert.equal(answer.compressed?.facts.coversPlace, 5);
     });

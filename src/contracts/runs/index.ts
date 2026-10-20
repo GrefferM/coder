@@ -24,6 +24,7 @@ export * from "./written-step.interface";
 export * from "./level-node.interface";
 export * from "./levels-of";
 export * from "./added-money";
+export * from "./added-cost";
 export * from "./run-unfinished.interface";
 export * from "./unfinished-arrival.interface";
 export * from "./unfinished-turn.interface";

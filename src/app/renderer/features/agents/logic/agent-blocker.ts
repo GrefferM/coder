@@ -5,6 +5,7 @@ import {
   AGENT_NAME_DROPPED_LABEL,
   AGENT_TEMPERATURE_DROPPED_LABEL,
 } from "../constants";
+import { keepsMemory } from "../../../../../contracts";
 import type { AgentDraft } from "../interfaces";
 
 /**
@@ -12,7 +13,7 @@ import type { AgentDraft } from "../interfaces";
  * compression's two are asked for only where the memory is kept.
  */
 export function agentBlocked(draft: AgentDraft): string[] {
-  const isKept = draft.memory !== "none";
+  const isKept = keepsMemory(draft.memory);
 
   return [
     draft.name.trim() ? null : AGENT_NAME_DROPPED_LABEL,

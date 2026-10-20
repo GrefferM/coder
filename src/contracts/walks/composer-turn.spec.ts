@@ -4,7 +4,7 @@ import { composedOutcome, composerAsk, composerBudget } from "./composer-turn";
 import { composedMemory } from "./composed-memory";
 import { composerLength, composerMessage } from "./composer-words";
 import { COMPOSER_MEMORY_OPENING, COMPOSER_SAID_NOTHING_NOTE } from "./composer-words.constant";
-import { composedSharedMemory } from "./shared-memory";
+import { composedSharedMemory, sharedMemoryWithTask } from "./shared-memory";
 import type { TurnMemory } from "./turn-memory.interface";
 
 const MEMORY: TurnMemory = {
@@ -28,8 +28,8 @@ describe("composerBudget", () => {
     assert.equal(composerBudget("own", 1_000), 1_000 - [...composedMemory("")].length);
   });
 
-  it("takes the longer words a shared memory is told in from it", () => {
-    assert.equal(composerBudget("shared", 1_000), 1_000 - [...composedSharedMemory("")].length);
+  it("takes the longer words a shared memory is told in from it, the turn's task after it too", () => {
+    assert.equal(composerBudget("shared", 1_000), 1_000 - [...sharedMemoryWithTask(composedSharedMemory(""))].length);
   });
 
   it("never leaves less than one character", () => {

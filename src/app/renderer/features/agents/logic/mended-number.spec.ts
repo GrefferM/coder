@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { mendedNumber } from "./mended-number";
+import { memoryNumberOf, mendedNumber, runNumberOf } from "./mended-number";
 import type { AgentDraft } from "../interfaces";
 import { aDraft } from "../../../testing";
 
@@ -76,5 +76,18 @@ describe("mendedNumber", () => {
         }),
       ),
     ).toBeNull();
+  });
+});
+
+describe("memoryNumberOf and runNumberOf", () => {
+  it("tell the memory's two numbers from the run's two, and nothing of the rest", () => {
+    expect(memoryNumberOf("compressAt")).toBe("compressAt");
+    expect(memoryNumberOf("compressTo")).toBe("compressTo");
+    expect(memoryNumberOf("maxCalls")).toBeNull();
+    expect(memoryNumberOf(null)).toBeNull();
+    expect(runNumberOf("temperature")).toBe("temperature");
+    expect(runNumberOf("maxCalls")).toBe("maxCalls");
+    expect(runNumberOf("compressTo")).toBeNull();
+    expect(runNumberOf(null)).toBeNull();
   });
 });

@@ -1,4 +1,5 @@
 import { grantedToolsLabel } from "../words";
+import { keepsMemory } from "../../../../../contracts";
 import { isAgentGrant, isCommandGrant, isServerGrant } from "../../../interfaces";
 import { writtenNumber, writtenPercent } from "../words";
 import {
@@ -156,7 +157,7 @@ export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: Agent
   ];
 
   // The two rows are not on the screen where the memory is off, so what is left in them is not a change.
-  const isCompressionSeen = saved.memory !== "none" || draft.memory !== "none";
+  const isCompressionSeen = keepsMemory(saved.memory) || keepsMemory(draft.memory);
 
   return written.filter(
     (change) =>

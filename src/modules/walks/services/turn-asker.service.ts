@@ -10,6 +10,7 @@ import {
   memoryLength,
   turnCost,
   turnMessages,
+  sharesMemory,
 } from "../../../contracts";
 import { cutEnd, notStartedReason, notStartedTurn, turnWall } from "../logic";
 import { notStartedNote } from "../words";
@@ -128,7 +129,7 @@ export class TurnAsker {
       compressed: {
         facts: {
           agentId: agent.id,
-          questionId: agent.memory === "shared" ? turn.questionId : null,
+          questionId: sharesMemory(agent.memory) ? turn.questionId : null,
           coversPlace: turn.memory.covers,
           text,
           lengthBefore: memoryLength(turn.memory),

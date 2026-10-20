@@ -1,11 +1,14 @@
 import { randomUUID } from "node:crypto";
 import {
+  NO_MEMORY,
   RECORD_GONE_NOTE,
   agentStands,
   composedMemory,
   isWalking,
   latestMemory,
   memoryLength,
+  keepsMemory,
+  sharesMemory,
 } from "../../../contracts";
 import {
   agentRegistry,
@@ -20,7 +23,6 @@ import {
   unreadTurn,
   walkMachine,
 } from "../logic";
-import { NO_MEMORY } from "../constants";
 import { RecordWriter } from "./record-writer.service";
 import { TurnAsker } from "./turn-asker.service";
 import type {
@@ -622,13 +624,13 @@ export class WalkRunner implements RecordWatcher {
   private async memoryOf(reading: MemoryToRead): Promise<TurnMemory> {
     const { runId, questionId, agent } = reading;
 
-    if (runId === null || agent.memory === "none") {
+    if (runId === null || !keepsMemory(agent.memory)) {
       return NO_MEMORY;
     }
 
     await this.writer.settled();
 
-    if (agent.memory === "shared") {
+    if (sharesMemory(agent.memory)) {
       return this.sharedMemoryOf(runId, questionId, agent.id);
     }
 

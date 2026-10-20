@@ -15,20 +15,19 @@ describe("memorySettingsOf", () => {
   });
 
   it("keeps the threshold and the target of an agent that keeps a memory, and nothing else of it", () => {
-    assert.deepEqual(
-      memorySettingsOf({
-        ...{
-          name: "лишнє",
-        },
-        memory: "shared",
-        compressAt: 70,
-        compressTo: 10,
-      } as never),
-      {
-        memory: "shared",
-        compressAt: 70,
-        compressTo: 10,
-      },
-    );
+    // An agent carries more than its memory; none of the rest is handed on.
+    const agent = {
+      name: "Архіваріус",
+      maxCalls: 4,
+      memory: "shared" as const,
+      compressAt: 70,
+      compressTo: 10,
+    };
+
+    assert.deepEqual(memorySettingsOf(agent), {
+      memory: "shared",
+      compressAt: 70,
+      compressTo: 10,
+    });
   });
 });

@@ -1,8 +1,18 @@
 import { useEffect, useRef, useState } from "react";
+import { keepsMemory } from "../../../../../../../../contracts";
 import { ActionButton, Field } from "../../../../../../components";
 import { FIELD_INVALID_MS } from "../../../../../../components/field/constants";
 import { wasAgent } from "../../../../words";
-import { isModelLost, isPromptLost, lostProvider, mendedNumber, takesNoTools, withFunction } from "../../../../logic";
+import {
+  isModelLost,
+  isPromptLost,
+  lostProvider,
+  memoryNumberOf,
+  mendedNumber,
+  runNumberOf,
+  takesNoTools,
+  withFunction,
+} from "../../../../logic";
 import { NAME_TAKEN_AGENT_NOTE } from "../../../../../../constants";
 import { NEW_AGENT_COMPRESS_AT, NEW_AGENT_COMPRESS_TO } from "../../../../constants";
 
@@ -255,23 +265,23 @@ export function AgentSettings({
             onDraftChange({
               memory,
               // A memory turned on for an agent whose file never said how it is compressed starts at the usual numbers.
-              ...(memory === "none"
-                ? {}
-                : {
+              ...(keepsMemory(memory)
+                ? {
                     compressAt: draft.compressAt ?? NEW_AGENT_COMPRESS_AT,
                     compressTo: draft.compressTo ?? NEW_AGENT_COMPRESS_TO,
-                  }),
+                  }
+                : {}),
             })
           }
         />
 
         {/* Where there is no memory kept there is nothing to compress. */}
-        {draft.memory !== "none" && (
+        {keepsMemory(draft.memory) && (
           <MemoryNumbers
             draft={draft}
             was={was}
             mendedStepper={mendedStepper}
-            mendedRow={mendedRow === "compressAt" || mendedRow === "compressTo" ? mendedRow : null}
+            mendedRow={memoryNumberOf(mendedRow)}
             onDraftChange={onDraftChange}
           />
         )}
@@ -282,7 +292,7 @@ export function AgentSettings({
           draft={draft}
           was={was}
           mendedStepper={mendedStepper}
-          mendedRow={mendedRow === "maxCalls" || mendedRow === "temperature" ? mendedRow : null}
+          mendedRow={runNumberOf(mendedRow)}
           isConverging={standing.suppliers.length > 1}
           onDraftChange={onDraftChange}
         />

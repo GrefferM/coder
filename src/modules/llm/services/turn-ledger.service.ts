@@ -1,4 +1,4 @@
-import { addedCost } from "../../../contracts/walks/added-cost";
+import { addedCost } from "../../../contracts/runs/added-cost";
 import type { ChatCost } from "../../../contracts/walks/chat-cost.interface";
 import type { AgentAnswer, ToolMemory, TurnCall } from "../interfaces";
 

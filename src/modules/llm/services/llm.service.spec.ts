@@ -26,6 +26,7 @@ import {
   REFUSAL_SAID_SEPARATOR,
   composedMemory,
   composedSharedMemory,
+  sharedMemoryWithTask,
 } from "../../../contracts";
 import { LlmService } from "./llm.service";
 import { RunPodChat } from "./runpod-chat.service";
@@ -1217,7 +1218,7 @@ describe("LlmService and an agent called as a tool", () => {
       voice([]),
       runner(),
       noServers(),
-      remembering("ЗАГАЛЬНА ПАМ'ЯТЬ\n\nТВОЄ ЗАВДАННЯ:\n", read),
+      remembering("ЗАГАЛЬНА ПАМ'ЯТЬ", read),
       toolArguments,
       provider.clients,
     );
@@ -1839,7 +1840,7 @@ describe("LlmService and the memory of an agent called as a tool", () => {
       answer.calls.map((call) => [call.output, call.isFailed]),
       [
         [
-          "[агент «reviewer» не почав: його промпт і запит — 73 символів, і ще 10 зарезервовано під його пам'ять, а поріг стиснення — 70 (стеля моделі claude-sonnet-4-5 — 100). Разом вони мають лишатися нижче порогу. Нічого не обрізали.]",
+          "[агент «reviewer» не почав: його промпт і запит — 73 символи, і ще 10 зарезервовано під його пам'ять, а поріг стиснення — 70 (стеля моделі claude-sonnet-4-5 — 100). Разом вони мають лишатися нижче порогу. Нічого не обрізали.]",
           true,
         ],
       ],
@@ -1901,7 +1902,7 @@ describe("LlmService and the memory of an agent called as a tool", () => {
     assert.ok(composer[0].includes(long));
     assert.deepEqual(
       provider.conversations[2].map((message) => message.content),
-      ["Ти рецензент.", `${composedSharedMemory("Стисло про питання")}Перше`],
+      ["Ти рецензент.", `${sharedMemoryWithTask(composedSharedMemory("Стисло про питання"))}Перше`],
     );
   });
 
@@ -1956,7 +1957,7 @@ describe("LlmService and the memory of an agent called as a tool", () => {
     assert.equal(answer.memories.length, 1);
     assert.deepEqual(
       provider.conversations[4].map((message) => message.content),
-      ["Ти рецензент.", `${composedSharedMemory("Стисло про питання")}Друге`],
+      ["Ти рецензент.", `${sharedMemoryWithTask(composedSharedMemory("Стисло про питання"))}Друге`],
     );
   });
 

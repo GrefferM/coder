@@ -1,19 +1,8 @@
 import { AIMessage, HumanMessage, SystemMessage, ToolMessage } from "@langchain/core/messages";
 import {
-  AGENT_ASKED_SLOT,
-  AGENT_CEILING_SLOT,
   AGENT_CYCLE_NOTE,
   AGENT_GONE_NOTE,
-  AGENT_MEMORY_SLOT,
-  AGENT_MODEL_SLOT,
   AGENT_NAME_SLOT,
-  AGENT_LIMIT_SLOT,
-  AGENT_PROMPT_SLOT,
-  AGENT_RESERVE_SLOT,
-  AGENT_RESERVED_NOTE,
-  AGENT_WORDS_SLOT,
-  AGENT_TOO_LONG_NOTE,
-  AGENT_TOTAL_SLOT,
   AGENT_TOOL_INPUT_DESCRIPTION,
   AGENT_TOOL_INPUT_NAME,
   LLM_ASK_FAILED,
@@ -24,10 +13,12 @@ import {
   TOOL_SCHEMA_OBJECT,
   TOOL_SCHEMA_TYPES,
 } from "../constants";
+import { threadAfterCall, toolMemoryFacts, toolThreadMemory, toolWallNote } from "../logic";
 import {
+  NO_MEMORY,
   LLM_NO_ADDRESS,
   addedCost,
-  codePoints,
+  sharesMemory,
   composerAsk,
   composerBudget,
   composedOutcome,
@@ -49,7 +40,7 @@ import { CommandWay } from "./command-way.service";
 import { ServerWay } from "./server-way.service";
 import { TurnLedger } from "./turn-ledger.service";
 import { isAgentTool, isCommandTool } from "../interfaces";
-import type { ChatCost, ComposedOutcome, TurnLength, TurnMemory } from "../../../contracts";
+import type { ChatCost, ComposedOutcome, TurnMemory } from "../../../contracts";
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import type { AIMessageChunk, BaseMessage } from "@langchain/core/messages";
 import type { Runnable } from "@langchain/core/runnables";
@@ -76,21 +67,24 @@ import type {
   ToolRunner,
 } from "../interfaces";
 
-/** One turn of the model as it is asked: the agent's run and what it is given. */
+/**
+ * One turn of the model as it is asked: the agent's run and what it is given. What an agent needs to call its tools —
+ * its id, the directory, the tools, the servers and the agents reachable — a call that asks for words alone leaves out.
+ */
 interface AskedPayload {
   turnId: string;
-  agentId: string;
+  agentId?: string;
   providerId: string;
   model: string;
-  directory: string;
+  directory?: string;
   maxCalls: number;
   temperature: number;
   answerCeiling: number;
   systemPrompt: string | null;
   messages: ChatTurn[];
-  tools: AgentTool[];
-  servers: ProjectMcpServer[];
-  agents: ReachableAgent[];
+  tools?: AgentTool[];
+  servers?: ProjectMcpServer[];
+  agents?: ReachableAgent[];
   runId: string | null;
   questionId: string;
 }
@@ -165,12 +159,7 @@ export class LlmService {
       ...payload,
       turnId: payload.turnId ?? "",
       systemPrompt: null,
-      agentId: "",
-      directory: "",
       maxCalls: 1,
-      tools: [],
-      servers: [],
-      agents: [],
     };
   }
 
@@ -199,16 +188,24 @@ export class LlmService {
 
     return this.turn({
       voicedAs: isVoiced ? payload.turnId : null,
-      answering: this.bound(client, held, payload, payload.runId ?? payload.questionId),
+      answering: this.bound(
+        client,
+        held,
+        {
+          ...payload,
+          tools: payload.tools ?? [],
+        },
+        payload.runId ?? payload.questionId,
+      ),
       conversation: this.said(payload.systemPrompt, payload.messages),
-      directory: payload.directory,
+      directory: payload.directory ?? "",
       maxCalls: payload.maxCalls,
       answerCeiling: payload.answerCeiling,
-      byName: new Map(payload.tools.map((tool) => [tool.name, tool])),
-      servers: payload.servers,
+      byName: new Map((payload.tools ?? []).map((tool) => [tool.name, tool])),
+      servers: payload.servers ?? [],
       signal,
-      reachable: new Map(payload.agents.map((agent) => [agent.agentId, agent])),
-      stack: new Set([payload.agentId]),
+      reachable: new Map((payload.agents ?? []).map((agent) => [agent.agentId, agent])),
+      stack: new Set(payload.agentId === undefined ? [] : [payload.agentId]),
       question: {
         runId: payload.runId,
         questionId: payload.questionId,
@@ -600,7 +597,7 @@ export class LlmService {
       const plan = memoryPlan(agent, length);
 
       if (plan.kind === "wall") {
-        return this.failed(this.walled(agent, length, plan.reserve, plan.limit));
+        return this.failed(toolWallNote(agent, length, plan.reserve, plan.limit));
       }
 
       let memory = read;
@@ -639,25 +636,19 @@ export class LlmService {
         // The question's memory is every agent's of it and the record's to keep; an own thread dies with the turn.
         spent.push({
           cost,
-          facts:
-            agent.memory === "shared"
-              ? {
-                  agentId: agent.agentId,
-                  questionId: turn.question.questionId,
-                  coversPlace: read.covers,
-                  text: composed.text,
-                  lengthBefore: memoryLength(read),
-                  lengthAfter: codePoints(composed.text),
-                  compressAt: plan.at,
-                  compressTo: plan.to,
-                  inputTokens: cost?.inputTokens ?? 0,
-                  outputTokens: cost?.outputTokens ?? 0,
-                  money: cost?.money ?? null,
-                }
-              : null,
+          facts: sharesMemory(agent.memory)
+            ? toolMemoryFacts({
+                agentId: agent.agentId,
+                questionId: turn.question.questionId,
+                read,
+                composed,
+                compression: plan,
+                cost,
+              })
+            : null,
         });
 
-        if (agent.memory === "shared") {
+        if (sharesMemory(agent.memory)) {
           turn.unwritten.set(agent.agentId, {
             text: composed.text,
             coversPlace: read.covers,
@@ -697,20 +688,7 @@ export class LlmService {
           composed: memory.composed,
         };
 
-        turn.threads.set(agent.agentId, {
-          composed: kept.composed,
-          thread: [
-            ...kept.thread,
-            {
-              from: "person",
-              text: request,
-            },
-            {
-              from: "agent",
-              text: answer.text,
-            },
-          ],
-        });
+        turn.threads.set(agent.agentId, threadAfterCall(kept, request, answer.text));
       }
 
       return this.outcome(
@@ -734,33 +712,13 @@ export class LlmService {
    * caller's turn so far, or nothing. Null where the record lost the shared memory.
    */
   private async memoryOf(agent: ReadyAgent, turn: RunningTurn): Promise<TurnMemory | null> {
-    if (agent.memory === "none") {
-      return {
-        thread: [],
-        composed: "",
-        shared: "",
-        covers: 0,
-      };
-    }
-
     if (agent.memory === "own") {
-      const kept = turn.threads.get(agent.agentId) ?? null;
-
-      return {
-        thread: kept?.thread ?? [],
-        composed: kept?.composed ?? "",
-        shared: "",
-        covers: 0,
-      };
+      return toolThreadMemory(turn.threads.get(agent.agentId) ?? null);
     }
 
-    if (turn.question.runId === null) {
-      return {
-        thread: [],
-        composed: "",
-        shared: "",
-        covers: 0,
-      };
+    // Off, or the question has no row yet to be read.
+    if (agent.memory === "none" || turn.question.runId === null) {
+      return NO_MEMORY;
     }
 
     const shared = await this.memory.sharedMemory(
@@ -773,8 +731,7 @@ export class LlmService {
     return shared === null
       ? null
       : {
-          thread: [],
-          composed: "",
+          ...NO_MEMORY,
           shared: shared.text,
           covers: shared.coversPlace,
         };
@@ -804,26 +761,6 @@ export class LlmService {
       false,
       signal,
     );
-  }
-
-  /** Why the agent's call does not begin: all of it is longer than its model takes, or its words leave no room for its memory. */
-  private walled(agent: ReadyAgent, length: TurnLength, reserve: number, limit: number): string {
-    if (reserve > 0) {
-      return AGENT_RESERVED_NOTE.replace(AGENT_NAME_SLOT, agent.name)
-        .replace(AGENT_WORDS_SLOT, String(length.prompt + length.asked))
-        .replace(AGENT_RESERVE_SLOT, String(reserve))
-        .replace(AGENT_LIMIT_SLOT, String(limit))
-        .replace(AGENT_MODEL_SLOT, agent.model)
-        .replace(AGENT_CEILING_SLOT, String(length.ceiling));
-    }
-
-    return AGENT_TOO_LONG_NOTE.replace(AGENT_NAME_SLOT, agent.name)
-      .replace(AGENT_MODEL_SLOT, agent.model)
-      .replace(AGENT_TOTAL_SLOT, String(length.total))
-      .replace(AGENT_PROMPT_SLOT, String(length.prompt))
-      .replace(AGENT_MEMORY_SLOT, String(length.memory))
-      .replace(AGENT_ASKED_SLOT, String(length.asked))
-      .replace(AGENT_CEILING_SLOT, String(length.ceiling));
   }
 
   /** A sub-agent's call that came to nothing, with the words of whatever stopped it. */

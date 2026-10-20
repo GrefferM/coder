@@ -12,17 +12,15 @@ import {
   addedMoney,
   askedWithAttached,
   SHARED_MEMORY_ANSWER,
-  SHARED_MEMORY_BLOCK_SEPARATOR,
   SHARED_MEMORY_COMPOSED,
   SHARED_MEMORY_FROM_SLOT,
   SHARED_MEMORY_NAMES_SEPARATOR,
   SHARED_MEMORY_NAME_SLOT,
-  SHARED_MEMORY_OPENING,
   SHARED_MEMORY_PERSON,
   SHARED_MEMORY_QUESTION,
-  SHARED_MEMORY_TASK,
   latestMemory,
   sharedMemoryBlock,
+  sharedMemoryText,
 } from "../../../contracts";
 import type {
   RunCallEntity,
@@ -157,7 +155,7 @@ export class RunReader {
     });
 
     return {
-      text: [SHARED_MEMORY_OPENING, asked, ...answers, SHARED_MEMORY_TASK].join(SHARED_MEMORY_BLOCK_SEPARATOR),
+      text: sharedMemoryText([asked, ...answers]),
       // The last place the words stand for or tell: what a compression of them would cover.
       coversPlace: Math.max(composed?.coversPlace ?? 0, ...answered.map((step) => step.place)),
     };

@@ -7,16 +7,12 @@ import {
   ATTACHMENT_FILE_RULE,
   ATTACHMENT_HEADER_PREFIX,
   ATTACHMENT_HEADER_SUFFIX,
-  ATTACHMENT_HIGH_SURROGATE_FIRST,
-  ATTACHMENT_HIGH_SURROGATE_LAST,
-  ATTACHMENT_LOW_SURROGATE_FIRST,
-  ATTACHMENT_LOW_SURROGATE_LAST,
   ATTACHMENT_MOST_BYTES_PER_CHARACTER,
   ATTACHMENT_STAT_BATCH,
   ATTACHMENT_TREE_INDENT,
   ATTACHMENT_TREE_LABEL,
 } from "../constants";
-import { ATTACHMENT_DENIED_CODES } from "../../../contracts";
+import { ATTACHMENT_DENIED_CODES, codePoints } from "../../../contracts";
 import type { PackedAttachment, PickedAttachment } from "../interfaces";
 
 /** `text` is base64 when `isBinary`. */
@@ -58,8 +54,8 @@ export class AttachmentPacker {
 
     if (!found.isDirectory()) {
       const least =
-        characters(`${this.header(name)}\n\n`) +
-        characters(this.ruleLine(name, "")) +
+        codePoints(`${this.header(name)}\n\n`) +
+        codePoints(this.ruleLine(name, "")) +
         Math.ceil(found.size / ATTACHMENT_MOST_BYTES_PER_CHARACTER) +
         1;
 
@@ -75,15 +71,15 @@ export class AttachmentPacker {
     }
 
     // The whole tree, then every file under its rule; the tail «\n\n» and «\n» are counted.
-    let least = characters(`${this.header(name)}\n\n${ATTACHMENT_TREE_LABEL}\n`) + 2 + 1;
+    let least = codePoints(`${this.header(name)}\n\n${ATTACHMENT_TREE_LABEL}\n`) + 2 + 1;
     let lines = 0;
     const files: string[] = [];
     const isWalked = await this.walk(target, "", (entry) => {
-      least += characters(this.treeLine(entry, lines));
+      least += codePoints(this.treeLine(entry, lines));
       lines += 1;
 
       if (!entry.isDenied) {
-        least += (files.length === 0 ? 0 : 2) + characters(this.ruleLine(entry.rel, ""));
+        least += (files.length === 0 ? 0 : 2) + codePoints(this.ruleLine(entry.rel, ""));
         files.push(entry.rel);
       }
 
@@ -343,7 +339,7 @@ export class AttachmentPacker {
   /** A piece of the pack, counted off the ceiling the way the ceiling counts. */
   private write(writing: PackWriting, piece: string): void {
     writing.parts.push(piece);
-    writing.budget.left -= characters(piece);
+    writing.budget.left -= codePoints(piece);
   }
 
   private isOver(writing: PackWriting): boolean {
@@ -363,22 +359,4 @@ function isDenied(error: unknown): boolean {
   const { code } = <{ code?: unknown }>error;
 
   return typeof code === "string" && ATTACHMENT_DENIED_CODES.includes(code);
-}
-
-/** Characters as the person sees them (a surrogate pair is one), as the turn's ceiling counts. */
-function characters(text: string): number {
-  let count = 0;
-
-  for (let at = 0; at < text.length; at += 1) {
-    const code = text.charCodeAt(at);
-    const previous = at === 0 ? 0 : text.charCodeAt(at - 1);
-    const isLowHalf = code >= ATTACHMENT_LOW_SURROGATE_FIRST && code <= ATTACHMENT_LOW_SURROGATE_LAST;
-    const followsHighHalf = previous >= ATTACHMENT_HIGH_SURROGATE_FIRST && previous <= ATTACHMENT_HIGH_SURROGATE_LAST;
-
-    if (!isLowHalf || !followsHighHalf) {
-      count += 1;
-    }
-  }
-
-  return count;
 }

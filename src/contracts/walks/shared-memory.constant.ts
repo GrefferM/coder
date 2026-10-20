@@ -1,6 +1,7 @@
 /**
  * The words the shared memory is told in. It opens with what it is, gives the person's question and then every answer
- * in the order it landed, each with whom its work came from, and closes on the turn's own task, which follows it.
+ * in the order it landed, each with whom its work came from. A turn that has it is closed on the task, which the turn's
+ * own words follow; the task is the turn's, not the memory's.
  */
 export const SHARED_MEMORY_OPENING = "ЗАГАЛЬНА ПАМ'ЯТЬ — що вже сталося з цим питанням до тебе: хто кому що передав.";
 /** The slots the headings below fill: an agent's name, and whom its work came from. */
@@ -17,5 +18,5 @@ export const SHARED_MEMORY_NAMES_SEPARATOR = ", ";
 /** Between the blocks, and between a heading and its words. */
 export const SHARED_MEMORY_BLOCK_SEPARATOR = "\n\n";
 export const SHARED_MEMORY_HEADING_SEPARATOR = "\n";
-/** The last line; the turn's own words follow it. */
+/** The line a turn with a shared memory has after it; the turn's own words follow it. */
 export const SHARED_MEMORY_TASK = "ТВОЄ ЗАВДАННЯ:\n";

@@ -1,3 +1,4 @@
+import { sharedMemoryWithTask } from "./shared-memory";
 import type { TurnMemory } from "./turn-memory.interface";
 import type { ChatTurn } from "../llm";
 
@@ -10,7 +11,7 @@ export function turnMessages(memory: TurnMemory, asked: string): ChatTurn[] {
     ...memory.thread,
     {
       from: "person",
-      text: `${memory.shared}${asked}`,
+      text: `${memory.shared === "" ? "" : sharedMemoryWithTask(memory.shared)}${asked}`,
     },
   ];
 

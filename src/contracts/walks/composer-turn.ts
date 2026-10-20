@@ -2,10 +2,10 @@ import { composedMemory } from "./composed-memory";
 import { composerLength, composerMessage } from "./composer-words";
 import { COMPOSER_SAID_NOTHING_NOTE } from "./composer-words.constant";
 import { codePoints } from "./code-points";
-import { cutComposed } from "./cut-composed";
+import { cutAtWord } from "./cut-at-word";
 import { memoryText } from "./memory-text";
-import { newestText } from "./newest-text";
-import { composedSharedMemory } from "./shared-memory";
+import { composedSharedMemory, sharedMemoryWithTask } from "./shared-memory";
+import { sharesMemory } from "../project/memory-kept";
 import type { TurnMemory } from "./turn-memory.interface";
 import type { ChatTurn } from "../llm";
 import type { AgentMemory } from "../project";
@@ -21,7 +21,7 @@ export interface ComposedOutcome {
  * since the ceiling counts that too.
  */
 export function composerBudget(memory: AgentMemory, budget: number): number {
-  const told = memory === "shared" ? composedSharedMemory("") : composedMemory("");
+  const told = sharesMemory(memory) ? sharedMemoryWithTask(composedSharedMemory("")) : composedMemory("");
 
   return Math.max(1, budget - codePoints(told));
 }
@@ -34,7 +34,7 @@ export function composerAsk(memory: TurnMemory, ceiling: number, budget: number)
   return [
     {
       from: "person",
-      text: composerMessage(newestText(memoryText(memory), ceiling - composerLength(ceiling)), budget),
+      text: composerMessage(cutAtWord(memoryText(memory), ceiling - composerLength(ceiling), "end"), budget),
     },
   ];
 }
@@ -44,7 +44,7 @@ export function composerAsk(memory: TurnMemory, ceiling: number, budget: number)
  * the agent's memory is told; nothing written is an error, since the memory it read cannot be dropped for it.
  */
 export function composedOutcome(said: string, budget: number, kept: AgentMemory, covers: number): ComposedOutcome {
-  const text = cutComposed(said, budget);
+  const text = cutAtWord(said, budget, "start");
 
   if (text === "") {
     throw new Error(COMPOSER_SAID_NOTHING_NOTE);

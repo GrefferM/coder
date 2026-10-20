@@ -50,7 +50,7 @@ describe("memoryText", () => {
     assert.equal(text, "ПОПЕРЕДНЯ РОЗМОВА, СТИСЛО:\nстаре\n\nЛЮДИНА:\nНове");
   });
 
-  it("leaves off the shared memory's closing line, which addresses the agent's own turn and not the composer", () => {
+  it("tells the shared memory as it stands; the task a turn closes it on is the turn's own and is not in it", () => {
     const text = memoryText({
       ...EMPTY,
       shared: composedSharedMemory("факти"),

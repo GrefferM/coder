@@ -53,7 +53,7 @@ describe("turnMessages", () => {
         },
         {
           from: "person",
-          text: "ПАМ'ЯТЬ\nПитання",
+          text: "ПАМ'ЯТЬ\n\n\nТВОЄ ЗАВДАННЯ:\nПитання",
         },
       ],
     );
