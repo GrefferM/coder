@@ -1,7 +1,13 @@
 import { useCallback } from "react";
 import { copiedAgentName } from "../../logic";
 import { deletedAgentLabel } from "../../words";
-import { NEW_AGENT_COLOR, NEW_AGENT_MAX_CALLS, NEW_AGENT_TEMPERATURE } from "../../constants";
+import {
+  NEW_AGENT_COLOR,
+  NEW_AGENT_COMPRESS_AT,
+  NEW_AGENT_COMPRESS_TO,
+  NEW_AGENT_MAX_CALLS,
+  NEW_AGENT_TEMPERATURE,
+} from "../../constants";
 import { WRITE_AGENT_LABEL } from "../../../project";
 import type { Agent, OpenProject } from "../../../../interfaces";
 import type { AgentDraft } from "../../interfaces";
@@ -32,6 +38,8 @@ export function useAgentWrites(project: OpenProject, write: ProjectWrite): Agent
         y: at.y,
         maxCalls: NEW_AGENT_MAX_CALLS,
         temperature: NEW_AGENT_TEMPERATURE,
+        compressAt: NEW_AGENT_COMPRESS_AT,
+        compressTo: NEW_AGENT_COMPRESS_TO,
       };
 
       await save(

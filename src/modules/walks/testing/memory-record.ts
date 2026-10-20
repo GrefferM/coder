@@ -1,5 +1,5 @@
 import { RUN_STEP_DONE } from "../../../contracts";
-import type { AskedQuestion, OpenedRecord, WholeRun, WrittenStep } from "../../../contracts";
+import type { AskedQuestion, OpenedRecord, SharedMemory, WholeRun, WrittenStep } from "../../../contracts";
 import type { RunRecord } from "../interfaces";
 
 /** A record held in memory: what a walk wrote, for a spec to read back. */
@@ -42,8 +42,11 @@ export class MemoryRecord implements RunRecord {
     return null;
   }
 
-  async sharedMemory(_runId: string, _questionId: string): Promise<string | null> {
-    return "";
+  async sharedMemory(_runId: string, _questionId: string, _agentId: string): Promise<SharedMemory | null> {
+    return {
+      text: "",
+      coversPlace: 0,
+    };
   }
 
   states(): string[] {

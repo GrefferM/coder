@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { agentBlocked } from "./agent-blocker";
-import { AGENT_MAX_CALLS_DROPPED_LABEL, AGENT_NAME_DROPPED_LABEL, AGENT_TEMPERATURE_DROPPED_LABEL } from "../constants";
+import {
+  AGENT_COMPRESS_AT_DROPPED_LABEL,
+  AGENT_COMPRESS_TO_DROPPED_LABEL,
+  AGENT_MAX_CALLS_DROPPED_LABEL,
+  AGENT_NAME_DROPPED_LABEL,
+  AGENT_TEMPERATURE_DROPPED_LABEL,
+} from "../constants";
 import type { AgentDraft } from "../interfaces";
 import { aDraft } from "../../../testing";
 
@@ -38,5 +44,28 @@ describe("agentBlocked", () => {
 
   it("blocks nothing where the name stands and both numbers are written", () => {
     expect(agentBlocked(draft("ТЕЗАР"))).toEqual([]);
+  });
+
+  it("blocks the write while a kept memory has no threshold or target, in the tab's order", () => {
+    expect(
+      agentBlocked(
+        draft("ТЕЗАР", {
+          compressAt: null,
+          compressTo: null,
+        }),
+      ),
+    ).toEqual([AGENT_COMPRESS_AT_DROPPED_LABEL, AGENT_COMPRESS_TO_DROPPED_LABEL]);
+  });
+
+  it("asks for neither where the memory is off", () => {
+    expect(
+      agentBlocked(
+        draft("ТЕЗАР", {
+          memory: "none",
+          compressAt: null,
+          compressTo: null,
+        }),
+      ),
+    ).toEqual([]);
   });
 });

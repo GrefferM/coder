@@ -17,6 +17,7 @@ function answer(patch: Partial<TurnAnswer> = {}): TurnAnswer {
     wouldGo: null,
     state: RUN_STEP_DONE,
     calls: [],
+    compressed: null,
     ...patch,
   };
 }
@@ -80,5 +81,39 @@ describe("answeredCard", () => {
 
     assert.equal(card.otherAgentId, null);
     assert.equal(card.stopReason, null);
+  });
+
+  it("carries the settings a compression was made under, the composer's words left out", () => {
+    const card = answeredCard(
+      turn({
+        answer: answer({
+          compressed: {
+            facts: {
+              agentId: "editor",
+              questionId: null,
+              coversPlace: 3,
+              text: "Зміст",
+              lengthBefore: 91_000,
+              lengthAfter: 9_400,
+              compressAt: 70,
+              compressTo: 30,
+              inputTokens: 10,
+              outputTokens: 5,
+              money: null,
+            },
+            carried: 9_460,
+          },
+        }),
+      }),
+    );
+
+    assert.deepEqual(card.compressed, {
+      at: 70,
+      to: 30,
+    });
+  });
+
+  it("carries none for a turn whose memory was not compressed", () => {
+    assert.equal(answeredCard(turn()).compressed, null);
   });
 });

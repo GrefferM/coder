@@ -55,12 +55,14 @@ function run(walk: WholeStep[], questions: { id: string; askedAt: string }[] = [
         askedAt: new Date(one.askedAt),
         askedAgentId: "agent-1",
         attached: [],
+        compressed: null,
       })),
     ],
     steps: walk.length,
     money: 0.0001,
     worked: 4_000,
     walk,
+    memories: [],
   };
 }
 
@@ -83,6 +85,7 @@ function live(patch: Partial<ChatMessage> & Pick<ChatMessage, "id" | "from" | "q
     asked: null,
     fedBy: [],
     attached: [],
+    compressed: null,
     calls: [],
     ...patch,
   };

@@ -7,6 +7,8 @@ import type { AgentSettingsProps } from "./interfaces";
 import type { AgentCatalogue, AgentPanelActs, AgentPresses, AgentStanding, AgentWriting } from "../../../../interfaces";
 import {
   AGENT_SETTINGS_COLOR_LABEL,
+  AGENT_SETTINGS_COMPRESS_AT_LABEL,
+  AGENT_SETTINGS_COMPRESS_TO_LABEL,
   AGENT_SETTINGS_DELETE_LABEL,
   AGENT_SETTINGS_NAME_LABEL,
   AGENT_SETTINGS_REVERT_LABEL,
@@ -199,6 +201,76 @@ describe("AgentSettings", () => {
         name: "Температура: +",
       }),
     ).toHaveFocus();
+  });
+
+  it("opens on the memory's own number when it is the first one empty, since it stands above the run's", () => {
+    renderSettings({
+      draft: {
+        ...DRAFT,
+        compressTo: null,
+        temperature: null,
+      },
+      presses: {
+        mending: "number",
+      },
+    });
+
+    expect(
+      screen.getByRole("button", {
+        name: `${AGENT_SETTINGS_COMPRESS_TO_LABEL}: +`,
+      }),
+    ).toHaveFocus();
+  });
+
+  it("shows the compression's threshold and target under the memory where the memory is kept", () => {
+    renderSettings({
+      draft: {
+        ...DRAFT,
+        memory: "own",
+      },
+    });
+
+    expect(screen.getByText(AGENT_SETTINGS_COMPRESS_AT_LABEL)).toBeInTheDocument();
+    expect(screen.getByText(AGENT_SETTINGS_COMPRESS_TO_LABEL)).toBeInTheDocument();
+  });
+
+  it("hides them where the memory is off, since there is nothing to compress", () => {
+    renderSettings({
+      draft: {
+        ...DRAFT,
+        memory: "none",
+      },
+    });
+
+    expect(screen.queryByText(AGENT_SETTINGS_COMPRESS_AT_LABEL)).not.toBeInTheDocument();
+    expect(screen.queryByText(AGENT_SETTINGS_COMPRESS_TO_LABEL)).not.toBeInTheDocument();
+  });
+
+  it("starts the numbers at the usual ones when the memory is turned on for an agent that had none written", async () => {
+    const onDraftChange = vi.fn();
+
+    renderSettings({
+      draft: {
+        ...DRAFT,
+        memory: "none",
+        compressAt: null,
+        compressTo: null,
+      },
+      acts: {
+        onDraftChange,
+      },
+    });
+    await userEvent.click(
+      screen.getByRole("radio", {
+        name: "Своя",
+      }),
+    );
+
+    expect(onDraftChange).toHaveBeenCalledWith({
+      memory: "own",
+      compressAt: 90,
+      compressTo: 10,
+    });
   });
 
   it("opens on the prompt field when a card said the prompt is gone", () => {

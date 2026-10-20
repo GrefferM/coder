@@ -1,12 +1,45 @@
-import { RUN_STEP_DONE, RUN_STEP_FAILED, fellNote } from "../../../contracts";
+import {
+  COMPOSER_SAID_NOTHING_NOTE,
+  RUN_STEP_DONE,
+  RUN_STEP_FAILED,
+  addedMoney,
+  codePoints,
+  composedMemory,
+  composedSharedMemory,
+  composerLength,
+  composerMessage,
+  cutComposed,
+  fellNote,
+  memoryLength,
+  memoryText,
+  newestText,
+} from "../../../contracts";
 import { cutEnd, notStartedReason, notStartedTurn, turnCost, turnMessages, turnWall } from "../logic";
 import { notStartedNote } from "../words";
-import type { FilledModel, SaidTurn, TurnAnswer, TurnAsked, TurnToAsk } from "../../../contracts";
+import type {
+  ChatCost,
+  CompressedMemory,
+  FilledModel,
+  SaidTurn,
+  TurnAnswer,
+  TurnAsked,
+  TurnMemory,
+  TurnToAsk,
+} from "../../../contracts";
 import type { TurnLlm } from "../interfaces";
 
+/** A memory the composer wrote on the way to a turn, with what the call cost and what the turn then goes with. */
+interface Composed {
+  said: SaidTurn;
+  cost: ChatCost | null;
+  compressed: CompressedMemory;
+  memory: TurnMemory;
+}
+
 /**
- * One turn asked of the model layer. Walls are checked first, so the model is never asked past one; an answer, a
- * refusal or a fall all return as words with their cost.
+ * One turn asked of the model layer. Walls are checked first, so the model is never asked past one; where the memory has
+ * to be compressed first, the composer is asked once and the turn goes with its message. An answer, a refusal or a fall
+ * all return as words with their cost, the composer's included.
  */
 export class TurnAsker {
   constructor(private readonly llm: TurnLlm) {}
@@ -24,11 +57,130 @@ export class TurnAsker {
       return wall;
     }
 
+    let composed: Composed | null = null;
+
     try {
-      return this.answered(await this.put(turn, wall), wall);
+      if (wall.compression !== null) {
+        const budget = this.written(wall, wall.compression.budget);
+        const said = await this.compose(turn, wall, budget);
+
+        // A stop is the person's act, not the composer's fall; what it had written is not a memory, but what it used is spent.
+        if (said.isStopped) {
+          return this.answered(
+            {
+              ...said,
+              text: "",
+            },
+            wall,
+            null,
+          );
+        }
+
+        composed = this.composed(turn, wall, said, budget, wall.compression);
+      }
+
+      const memory = composed?.memory ?? turn.memory;
+
+      return this.answered(
+        await this.put(
+          {
+            ...turn,
+            memory,
+          },
+          wall,
+        ),
+        wall,
+        composed,
+      );
     } catch (error) {
-      return this.refused(error, wall.model, turn);
+      return this.refused(error, wall.model, turn, composed);
     }
+  }
+
+  /**
+   * What the composer may write, in characters: the compression's budget less what the memory is told in around it,
+   * since the ceiling counts that too.
+   */
+  private written(wall: TurnAsked, budget: number): number {
+    const told = wall.agent.memory === "shared" ? composedSharedMemory("") : composedMemory("");
+
+    return Math.max(1, budget - codePoints(told));
+  }
+
+  /**
+   * The composer, asked for the main of the whole memory in no more than so many words, the most important first. It is
+   * one message, the memory fenced in and then the instruction, with no system prompt. A memory too long to be read with
+   * its instruction is read from its newest end.
+   */
+  private async compose(turn: TurnToAsk, wall: TurnAsked, budget: number): Promise<SaidTurn> {
+    const { agent, model } = wall;
+    const memory = newestText(memoryText(turn.memory), model.contextCeiling - composerLength(model.contextCeiling));
+
+    return this.llm.compose({
+      turnId: turn.turnId,
+      providerId: model.provider,
+      model: model.title,
+      temperature: agent.temperature,
+      answerCeiling: model.answerCeiling,
+      messages: [
+        {
+          from: "person",
+          text: composerMessage(memory, budget),
+        },
+      ],
+      runId: turn.runId,
+      questionId: turn.questionId,
+    });
+  }
+
+  /**
+   * What the composer wrote, held to its budget by cutting the end off, and what the turn goes with in place of the
+   * memory it read; nothing written is a fall.
+   */
+  private composed(
+    turn: TurnToAsk,
+    wall: TurnAsked,
+    said: SaidTurn,
+    budget: number,
+    compression: { at: number; to: number },
+  ): Composed {
+    const { agent, model } = wall;
+    const text = cutComposed(said.text, budget);
+
+    if (text === "") {
+      throw new Error(COMPOSER_SAID_NOTHING_NOTE);
+    }
+
+    const isShared = agent.memory === "shared";
+    const memory: TurnMemory = {
+      thread: [],
+      composed: isShared ? "" : composedMemory(text),
+      shared: isShared ? composedSharedMemory(text) : "",
+      covers: turn.memory.covers,
+    };
+    const cost = turnCost(said.inputTokens, said.outputTokens, model);
+
+    return {
+      said,
+      cost,
+      memory,
+      compressed: {
+        facts: {
+          agentId: agent.id,
+          questionId: isShared ? turn.questionId : null,
+          coversPlace: turn.memory.covers,
+          text,
+          lengthBefore: memoryLength(turn.memory),
+          lengthAfter: codePoints(text),
+          compressAt: compression.at,
+          compressTo: compression.to,
+          inputTokens: cost?.inputTokens ?? 0,
+          outputTokens: cost?.outputTokens ?? 0,
+          money: cost?.money ?? null,
+        },
+        carried: memoryLength(memory),
+      },
+    };
   }
 
   private async put(turn: TurnToAsk, wall: TurnAsked): Promise<SaidTurn> {
@@ -53,15 +205,15 @@ export class TurnAsker {
     });
   }
 
-  /** What the model said, with the end it came to. */
-  private answered(said: SaidTurn, wall: TurnAsked): TurnAnswer {
+  /** What the model said, with the end it came to; the composer's cost, where it was asked, is part of the turn's. */
+  private answered(said: SaidTurn, wall: TurnAsked, composed: Composed | null): TurnAnswer {
     const { agent, model } = wall;
     const cut = cutEnd(said, agent.maxCalls, model.answerCeiling);
 
     return {
       text: said.text,
       note: cut?.note ?? null,
-      cost: turnCost(said.inputTokens, said.outputTokens, model),
+      cost: this.added(composed?.cost ?? null, turnCost(said.inputTokens, said.outputTokens, model)),
       answerCeiling: model.answerCeiling,
       isFailure: false,
       fell: null,
@@ -70,13 +222,14 @@ export class TurnAsker {
       wouldGo: null,
       state: cut?.state ?? RUN_STEP_DONE,
       calls: said.calls ?? [],
+      compressed: composed?.compressed ?? null,
     };
   }
 
   /** A turn that never began where a wall of the machine refused it, else a fall with the provider's own sentence. */
-  private refused(error: unknown, model: FilledModel, turn: TurnToAsk): TurnAnswer {
+  private refused(error: unknown, model: FilledModel, turn: TurnToAsk, composed: Composed | null): TurnAnswer {
     const thrown = error instanceof Error ? error.message : String(error);
-    const reason = notStartedReason(thrown);
+    const reason = composed === null ? notStartedReason(thrown) : null;
 
     if (reason !== null) {
       return notStartedTurn(notStartedNote(reason, model, turn.stands.provider), reason);
@@ -88,7 +241,8 @@ export class TurnAsker {
       text: "",
       note: fellNote(said),
       fell: said,
-      cost: null,
+      // What the composer already used is spent, whatever came after.
+      cost: composed?.cost ?? null,
       answerCeiling: model.answerCeiling,
       isFailure: true,
       isCut: false,
@@ -96,6 +250,20 @@ export class TurnAsker {
       wouldGo: null,
       state: RUN_STEP_FAILED,
       calls: [],
+      compressed: composed?.compressed ?? null,
+    };
+  }
+
+  /** Two bills as one: tokens added, money added where either is known. */
+  private added(one: ChatCost | null, other: ChatCost | null): ChatCost | null {
+    if (one === null || other === null) {
+      return one ?? other;
+    }
+
+    return {
+      inputTokens: one.inputTokens + other.inputTokens,
+      outputTokens: one.outputTokens + other.outputTokens,
+      money: addedMoney([one.money, other.money]),
     };
   }
 }

@@ -52,6 +52,12 @@ export const AGENT_MEMORY_WORDS: Record<AgentMemory, string> = {
   shared: "загальна",
 };
 
+/** The memory's compression: the share of the ceiling it starts at, and the share it is written down to. */
+export const AGENT_COMPRESS_AT_CHANGE_LABEL = "поріг стиснення";
+export const AGENT_COMPRESS_AT_DROPPED_LABEL = "поріг стиснення";
+export const AGENT_COMPRESS_TO_CHANGE_LABEL = "ціль стиснення";
+export const AGENT_COMPRESS_TO_DROPPED_LABEL = "ціль стиснення";
+
 /** The purpose line, as a moved field says it. */
 export const AGENT_PURPOSE_CHANGE_LABEL = "опис";
 export const AGENT_PURPOSE_DROPPED_LABEL = "опис";

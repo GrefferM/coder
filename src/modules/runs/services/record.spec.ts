@@ -5,9 +5,9 @@ import { RunKeeper } from "./run-keeper.service";
 import { RunReader } from "./run-reader.service";
 import { RunWriter } from "./run-writer.service";
 import { TypeormRunStore, runTablesOf } from "../stores";
-import { RunQuestionEntity } from "../entities";
+import { RunMemoryEntity, RunQuestionEntity } from "../entities";
 import { HISTORY_DAYS, HISTORY_DAY_MS } from "../constants";
-import type { AddCall, AddStep, OpenRun, RunOpened } from "../interfaces";
+import type { AddCall, AddStep, MemoryFacts, OpenRun, RunOpened } from "../interfaces";
 import type { TestDatabase } from "../../../utils/testing";
 
 const DIRECTORY = "/tmp/coder-project";
@@ -90,6 +90,7 @@ function step(runId: string, patch: Partial<AddStep> = {}): AddStep {
     startedAt: 900,
     endedAt: 2_000,
     calls: [],
+    compressed: null,
     ...patch,
   };
 }
@@ -1462,7 +1463,7 @@ describe("the record", () => {
       );
 
       assert.equal(
-        await reader.sharedMemory(runId, questionId),
+        (await reader.sharedMemory(runId, questionId, SEEKER))?.text ?? null,
         [
           "ЗАГАЛЬНА ПАМ'ЯТЬ — що вже сталося з цим питанням до тебе: хто кому що передав.",
           "ПИТАННЯ ЛЮДИНИ → Шукач:\nЗнайди md-файли\n\n=== notes.md ===\n# Нотатки",
@@ -1511,7 +1512,7 @@ describe("the record", () => {
         }),
       );
 
-      const memory = (await reader.sharedMemory(runId, questionId)) ?? "";
+      const memory = (await reader.sharedMemory(runId, questionId, SEEKER))?.text ?? "";
 
       assert.ok(memory.includes("ЗНАЙДЕНО\n- report.md"));
       assert.ok(!memory.includes("Модель не відповіла"));
@@ -1529,15 +1530,196 @@ describe("the record", () => {
         }),
       );
 
-      assert.equal(await reader.sharedMemory(runId, questionId), "");
+      assert.equal((await reader.sharedMemory(runId, questionId, SEEKER))?.text ?? null, "");
+    });
+
+    describe("compressed by the composer", () => {
+      /** What the composer wrote for the Seeker's memory of the question, covering the first answer. */
+      function composed(patch: Partial<MemoryFacts> = {}): MemoryFacts {
+        return {
+          agentId: SEEKER,
+          questionId: null,
+          coversPlace: 1,
+          text: "Знайдено report.md",
+          lengthBefore: 900,
+          lengthAfter: 18,
+          compressAt: 80,
+          compressTo: 20,
+          inputTokens: 500,
+          outputTokens: 20,
+          money: 0.0004,
+          ...patch,
+        };
+      }
+
+      it("tells the composer's message in place of the question and the answers it covers, then the answers after it", async () => {
+        const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000206");
+        const found = await writer.step(step(runId));
+
+        await writer.step(
+          step(runId, {
+            agentId: TELLER,
+            agentName: "Рев'юер",
+            asked: "ЗНАЙДЕНО\n- report.md",
+            said: "Перевірено",
+            fromStepIds: [found],
+          }),
+        );
+        await writer.step(
+          step(runId, {
+            asked: "Ще раз",
+            said: "ЗНАЙДЕНО\n- other.md",
+            compressed: composed({
+              questionId,
+            }),
+          }),
+        );
+
+        assert.equal(
+          (await reader.sharedMemory(runId, questionId, SEEKER))?.text ?? null,
+          [
+            "ЗАГАЛЬНА ПАМ'ЯТЬ — що вже сталося з цим питанням до тебе: хто кому що передав.",
+            "ПОПЕРЕДНЄ, СТИСЛО (питання людини і відповіді до цього моменту):\nЗнайдено report.md",
+            "ВІДПОВІДЬ Рев'юер (отримав від: Шукач):\nПеревірено",
+            "ВІДПОВІДЬ Шукач (отримав від: ЛЮДИНА):\nЗНАЙДЕНО\n- other.md",
+            "ТВОЄ ЗАВДАННЯ:\n",
+          ].join("\n\n"),
+        );
+      });
+
+      it("leaves another agent's shared memory of the same question as it stood, whole", async () => {
+        const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000207");
+
+        await writer.step(step(runId));
+        await writer.step(
+          step(runId, {
+            compressed: composed({
+              questionId,
+            }),
+          }),
+        );
+
+        const told = (await reader.sharedMemory(runId, questionId, TELLER))?.text ?? "";
+
+        assert.ok(told.includes("ПИТАННЯ ЛЮДИНИ → Шукач:"));
+        assert.ok(!told.includes("ПОПЕРЕДНЄ, СТИСЛО"));
+      });
+
+      it("stands in for nothing the composer was not given: the answers after the covered place stay, however many", async () => {
+        const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000208");
+
+        await writer.step(step(runId));
+        await writer.step(
+          step(runId, {
+            said: "Друга",
+            compressed: composed({
+              questionId,
+              coversPlace: 1,
+            }),
+          }),
+        );
+        await writer.step(
+          step(runId, {
+            said: "Третя",
+            compressed: composed({
+              questionId,
+              coversPlace: 2,
+              text: "Знайдено report.md і Друга",
+            }),
+          }),
+        );
+
+        const told = (await reader.sharedMemory(runId, questionId, SEEKER))?.text ?? "";
+
+        // The later compression stands, and it covers the second answer too.
+        assert.ok(told.includes("Знайдено report.md і Друга"));
+        assert.ok(!told.includes("Знайдено report.md\n"));
+        assert.ok(!told.includes("ВІДПОВІДЬ Шукач (отримав від: ЛЮДИНА):\nДруга"));
+        assert.ok(told.includes("ВІДПОВІДЬ Шукач (отримав від: ЛЮДИНА):\nТретя"));
+      });
+
+      it("hands the compressions back with the run, each with the step that paid for it and its place", async () => {
+        const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000209");
+
+        await writer.step(step(runId));
+        const paid = await writer.step(
+          step(runId, {
+            compressed: composed({
+              questionId,
+            }),
+          }),
+        );
+        const whole = await reader.one(runId);
+
+        assert.equal(whole?.memories.length, 1);
+        assert.equal(whole?.memories[0].stepId, paid);
+        assert.equal(whole?.memories[0].stepPlace, 2);
+        assert.equal(whole?.memories[0].coversPlace, 1);
+        assert.equal(whole?.memories[0].text, "Знайдено report.md");
+        assert.equal(whole?.memories[0].lengthBefore, 900);
+        assert.equal(whole?.memories[0].lengthAfter, 18);
+        // The agent's settings then, kept as a fact of the step.
+        assert.equal(whole?.memories[0].compressAt, 80);
+        assert.equal(whole?.memories[0].compressTo, 20);
+        assert.equal(whole?.memories[0].money, 0.0004);
+      });
+
+      it("keeps an agent's own thread's compression apart, with no question", async () => {
+        const { runId } = await opened("aaaaaaaa-0000-4000-8000-000000000210");
+
+        await writer.step(step(runId));
+        await writer.step(
+          step(runId, {
+            compressed: composed(),
+          }),
+        );
+
+        const whole = await reader.one(runId);
+
+        assert.equal(whole?.memories[0].questionId, null);
+        assert.equal(whole?.memories[0].agentId, SEEKER);
+      });
+
+      it("writes none for a step that compressed nothing", async () => {
+        const { runId } = await opened("aaaaaaaa-0000-4000-8000-000000000211");
+
+        await writer.step(step(runId));
+
+        assert.deepEqual((await reader.one(runId))?.memories, []);
+      });
+
+      it("goes with the run when it is forgotten", async () => {
+        const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000212");
+
+        await writer.step(
+          step(runId, {
+            compressed: composed({
+              questionId,
+            }),
+          }),
+        );
+        await writer.close({
+          runId,
+          endedAt: ASKED_AT + 4_000,
+        });
+        await keeper.forget({
+          id: runId,
+        });
+
+        assert.equal(await record.dataSource.getRepository(RunMemoryEntity).count(), 0);
+      });
     });
 
     it("names no memory for a run or a question the record does not hold, rather than an empty one", async () => {
       const { runId } = await opened("aaaaaaaa-0000-4000-8000-000000000205");
 
-      assert.equal(await reader.sharedMemory(runId, "aaaaaaaa-0000-4000-8000-000000000299"), null);
+      assert.equal(await reader.sharedMemory(runId, "aaaaaaaa-0000-4000-8000-000000000299", SEEKER), null);
       assert.equal(
-        await reader.sharedMemory("aaaaaaaa-0000-4000-8000-000000000298", "aaaaaaaa-0000-4000-8000-000000000205"),
+        await reader.sharedMemory(
+          "aaaaaaaa-0000-4000-8000-000000000298",
+          "aaaaaaaa-0000-4000-8000-000000000205",
+          SEEKER,
+        ),
         null,
       );
     });

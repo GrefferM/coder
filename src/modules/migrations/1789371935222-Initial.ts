@@ -144,9 +144,19 @@ export class Initial1789371935222 implements MigrationInterface {
     await queryRunner.query(
       'CREATE INDEX "IDX_27e55be18041d68addb473e534" ON "run_question_attachments" ("questionId") ',
     );
+    await queryRunner.query(
+      'CREATE TABLE "run_memories" ("id" varchar PRIMARY KEY NOT NULL, "agentId" varchar NOT NULL, "coversPlace" integer NOT NULL, "text" text NOT NULL, "lengthBefore" integer NOT NULL, "lengthAfter" integer NOT NULL, "compressAt" integer NOT NULL, "compressTo" integer NOT NULL, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "money" float, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, "questionId" varchar, "stepId" varchar, CONSTRAINT "REL_926120e9297f9fd01eef794936" UNIQUE ("stepId"), CONSTRAINT "FK_48943a80562423f216988372a99" FOREIGN KEY ("runId") REFERENCES "runs" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_ed6fe8cdbc0593e9d34e6ddd142" FOREIGN KEY ("questionId") REFERENCES "run_questions" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_926120e9297f9fd01eef7949368" FOREIGN KEY ("stepId") REFERENCES "run_steps" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
+    );
+    await queryRunner.query('CREATE INDEX "IDX_48943a80562423f216988372a9" ON "run_memories" ("runId") ');
+    await queryRunner.query('CREATE INDEX "IDX_ed6fe8cdbc0593e9d34e6ddd14" ON "run_memories" ("questionId") ');
+    await queryRunner.query('CREATE INDEX "IDX_926120e9297f9fd01eef794936" ON "run_memories" ("stepId") ');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query('DROP INDEX "IDX_926120e9297f9fd01eef794936"');
+    await queryRunner.query('DROP INDEX "IDX_ed6fe8cdbc0593e9d34e6ddd14"');
+    await queryRunner.query('DROP INDEX "IDX_48943a80562423f216988372a9"');
+    await queryRunner.query('DROP TABLE "run_memories"');
     await queryRunner.query('DROP INDEX "IDX_27e55be18041d68addb473e534"');
     await queryRunner.query('DROP TABLE "run_question_attachments"');
     await queryRunner.query('DROP INDEX "IDX_a272800cd4cd6b0ea2262db21e"');

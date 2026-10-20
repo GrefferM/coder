@@ -38,5 +38,13 @@ export const AGENT_SETTINGS_MAX_CALLS_HINT = "0 — БЕЗ ЛІМІТУ";
 export const AGENT_SETTINGS_TEMPERATURE_LABEL = "Температура";
 export const AGENT_SETTINGS_TEMPERATURE_HINT = "0 — СТРОГО ФОРМУЛЮЄ · 1 — ВІЛЬНІШЕ ФОРМУЛЮЄ · КРОК 0.1";
 
+/** The compression's two rows under the memory, shown where the memory is kept; the numbers are percents of the ceiling. */
+export const AGENT_SETTINGS_COMPRESS_AT_LABEL = "Поріг стиснення, %";
+export const AGENT_SETTINGS_COMPRESS_AT_HINT =
+  "СТИСКАЄ ПАМ'ЯТЬ, КОЛИ ХІД ЗАПОВНИВ СТІЛЬКИ СТЕЛІ МОДЕЛІ · 70–90 · КРОК 5";
+export const AGENT_SETTINGS_COMPRESS_TO_LABEL = "Ціль стиснення, %";
+export const AGENT_SETTINGS_COMPRESS_TO_HINT =
+  "ДО СКІЛЬКИ СТЕЛІ СТИСКАЄ · ПИТАННЯ З ПРОМПТОМ І ЦЕ ЧИСЛО МАЮТЬ ЛИШАТИСЬ НИЖЧЕ ПОРОГУ · 10–30 · КРОК 5";
+
 /** Both tab steps (grant, server) go back to the settings root. */
 export const SETTINGS_BACK_LABEL = "Назад до налаштувань";

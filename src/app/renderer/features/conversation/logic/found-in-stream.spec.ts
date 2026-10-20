@@ -47,6 +47,7 @@ function said(id: string, text: string, calls: TurnCall[] = [], patch: Partial<C
     asked: null,
     fedBy: [],
     attached: [],
+    compressed: null,
     ...patch,
   };
 }

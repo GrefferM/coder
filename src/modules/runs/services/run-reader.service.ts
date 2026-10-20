@@ -11,27 +11,28 @@ import {
   RUN_STOPPED,
   addedMoney,
   askedWithAttached,
-} from "../../../contracts";
-import {
   SHARED_MEMORY_ANSWER,
   SHARED_MEMORY_BLOCK_SEPARATOR,
+  SHARED_MEMORY_COMPOSED,
   SHARED_MEMORY_FROM_SLOT,
-  SHARED_MEMORY_HEADING_SEPARATOR,
   SHARED_MEMORY_NAMES_SEPARATOR,
   SHARED_MEMORY_NAME_SLOT,
   SHARED_MEMORY_OPENING,
   SHARED_MEMORY_PERSON,
   SHARED_MEMORY_QUESTION,
   SHARED_MEMORY_TASK,
-} from "../constants";
+  latestMemory,
+  sharedMemoryBlock,
+} from "../../../contracts";
 import type {
   RunCallEntity,
   RunEntity,
+  RunMemoryEntity,
   RunQuestionAttachmentEntity,
   RunQuestionEntity,
   RunStepEntity,
 } from "../entities";
-import type { AttachmentKind, PackedAttachment } from "../../../contracts";
+import type { AttachmentKind, PackedAttachment, SharedMemory, WholeMemory } from "../../../contracts";
 import type { CallPlace, ChatStopReason, Run, RunStore, RunWhole, WholeCall, WholeStep } from "../interfaces";
 
 /** The record read back: the run list and one run whole. */
@@ -82,15 +83,18 @@ export class RunReader {
         attached: this.attachedOf(attached, question.id),
       })),
       walk,
+      memories: await this.memoriesOf(id),
     };
   }
 
   /**
    * What has happened to one question so far, as an agent with the shared memory reads it: the question with its files,
    * then every answered turn in the order it landed and whom its work came from; fallen, cut or stopped turns and calls
-   * are left out. Empty while nothing has answered; null for a run or a question the record does not hold.
+   * are left out. Where the agent's memory of this question was compressed, the composer's message stands for the
+   * question and every answer up to the place it covers, and the answers after it follow as they were. Empty while
+   * nothing has answered; null for a run or a question the record does not hold.
    */
-  async sharedMemory(runId: string, questionId: string): Promise<string | null> {
+  async sharedMemory(runId: string, questionId: string, agentId: string): Promise<SharedMemory | null> {
     const row = await this.store.runById(runId);
 
     if (row === null) {
@@ -104,27 +108,38 @@ export class RunReader {
     }
 
     const walk = (await this.store.walkOf(runId)).sort((one, other) => one.place - other.place);
-    const answered = walk.filter((step) => step.question.id === questionId && step.state === RUN_STEP_DONE);
+    const composed = latestMemory(await this.memoriesOf(runId), agentId, questionId);
+    // What the composer's message stands for is not told again.
+    const answered = walk.filter(
+      (step) =>
+        step.question.id === questionId && step.state === RUN_STEP_DONE && step.place > (composed?.coversPlace ?? 0),
+    );
 
-    if (answered.length === 0) {
-      return "";
+    if (answered.length === 0 && composed === null) {
+      return {
+        text: "",
+        coversPlace: 0,
+      };
     }
 
     // Names as they stood when each turn ran; a supplier may be any step of the run.
     const names = new Map((await this.store.whoIn(walk.map((step) => step.id))).map((who) => [who.step.id, who.name]));
     const feeds = await this.store.feedsIn(answered.map((step) => step.id));
     const attached = this.attachedOf(await this.store.attachedTo([questionId]), questionId);
-    const asked = memoryBlock(
-      SHARED_MEMORY_QUESTION.replace(SHARED_MEMORY_NAME_SLOT, question.askedAgentName ?? row.startedByAgentName),
-      askedWithAttached(question.asked, attached),
-    );
+    const asked =
+      composed === null
+        ? sharedMemoryBlock(
+            SHARED_MEMORY_QUESTION.replace(SHARED_MEMORY_NAME_SLOT, question.askedAgentName ?? row.startedByAgentName),
+            askedWithAttached(question.asked, attached),
+          )
+        : sharedMemoryBlock(SHARED_MEMORY_COMPOSED, composed.text);
     const answers = answered.map((step) => {
       const from = feeds
         .filter((feed) => feed.step.id === step.id)
         .sort((one, other) => one.place - other.place)
         .map((feed) => names.get(feed.from.id) ?? "");
 
-      return memoryBlock(
+      return sharedMemoryBlock(
         SHARED_MEMORY_ANSWER.replace(SHARED_MEMORY_NAME_SLOT, names.get(step.id) ?? "").replace(
           SHARED_MEMORY_FROM_SLOT,
           from.length === 0 ? SHARED_MEMORY_PERSON : from.join(SHARED_MEMORY_NAMES_SEPARATOR),
@@ -133,7 +148,37 @@ export class RunReader {
       );
     });
 
-    return [SHARED_MEMORY_OPENING, asked, ...answers, SHARED_MEMORY_TASK].join(SHARED_MEMORY_BLOCK_SEPARATOR);
+    return {
+      text: [SHARED_MEMORY_OPENING, asked, ...answers, SHARED_MEMORY_TASK].join(SHARED_MEMORY_BLOCK_SEPARATOR),
+      // The last place the words stand for or tell: what a compression of them would cover.
+      coversPlace: Math.max(composed?.coversPlace ?? 0, ...answered.map((step) => step.place)),
+    };
+  }
+
+  /** Every compression of a memory in one run, with the step that paid for each. */
+  private async memoriesOf(runId: string): Promise<WholeMemory[]> {
+    return (await this.store.memoriesOf(runId))
+      .map((row) => this.toMemory(row))
+      .sort((one, other) => one.stepPlace - other.stepPlace);
+  }
+
+  private toMemory(row: RunMemoryEntity): WholeMemory {
+    return {
+      id: row.id,
+      stepId: row.step.id,
+      stepPlace: row.step.place,
+      agentId: row.agentId,
+      questionId: row.question?.id ?? null,
+      coversPlace: row.coversPlace,
+      text: row.text,
+      lengthBefore: row.lengthBefore,
+      lengthAfter: row.lengthAfter,
+      compressAt: row.compressAt,
+      compressTo: row.compressTo,
+      inputTokens: row.inputTokens,
+      outputTokens: row.outputTokens,
+      money: row.money,
+    };
   }
 
   /** Where one call stands, by its id; null for a call the record does not hold (e.g. its run was forgotten). */
@@ -308,9 +353,4 @@ export class RunReader {
 /** The reason is stored as text and only two values are known; anything else counts as a link that went through. */
 function stopReasonOf(said: string | null): ChatStopReason | null {
   return said !== null && CHAT_STOP_REASONS.includes(<ChatStopReason>said) ? <ChatStopReason>said : null;
-}
-
-/** One block of the shared memory: its heading, then its words. */
-function memoryBlock(heading: string, words: string): string {
-  return `${heading}${SHARED_MEMORY_HEADING_SEPARATOR}${words}`;
 }

@@ -15,5 +15,6 @@ export function unreadTurn(failure: string): TurnAnswer {
     wouldGo: null,
     state: RUN_STEP_FAILED,
     calls: [],
+    compressed: null,
   };
 }

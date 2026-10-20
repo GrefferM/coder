@@ -1,4 +1,4 @@
-import type { AskedQuestion, OpenedRecord, WholeRun, WrittenStep } from "../../../contracts";
+import type { AskedQuestion, OpenedRecord, SharedMemory, WholeRun, WrittenStep } from "../../../contracts";
 
 export interface RunRecord {
   open(directory: string, question: AskedQuestion): Promise<OpenedRecord>;
@@ -7,5 +7,6 @@ export interface RunRecord {
   step(step: WrittenStep): Promise<string>;
   close(runId: string, endedAt: number): Promise<void>;
   read(runId: string): Promise<WholeRun | null>;
-  sharedMemory(runId: string, questionId: string): Promise<string | null>;
+  /** What the agent's shared memory of the question tells; null for a run or a question the record lost. */
+  sharedMemory(runId: string, questionId: string, agentId: string): Promise<SharedMemory | null>;
 }

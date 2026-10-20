@@ -38,6 +38,8 @@ const AGENTS: Agent[] = ["a", "b", "c"].map((id) => ({
   y: 0,
   maxCalls: 10,
   temperature: 0.3,
+  compressAt: 90,
+  compressTo: 10,
   tools: [],
 }));
 

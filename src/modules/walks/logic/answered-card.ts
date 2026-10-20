@@ -1,3 +1,4 @@
+import { compressionOf } from "../../../contracts";
 import type { AnsweredTurn, ChatMessage } from "../../../contracts";
 
 /**
@@ -29,5 +30,6 @@ export function answeredCard(turn: AnsweredTurn): ChatMessage {
     stepId: null,
     walkId: turn.walkId,
     calls: turn.answer.calls,
+    compressed: turn.answer.compressed === null ? null : compressionOf(turn.answer.compressed.facts),
   };
 }

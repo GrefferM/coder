@@ -3,6 +3,7 @@ import type {
   RunCallEntity,
   RunEntity,
   RunHandoffEntity,
+  RunMemoryEntity,
   RunQuestionAttachmentEntity,
   RunQuestionEntity,
   RunStepAgentEntity,
@@ -17,6 +18,7 @@ import type {
   NewFeed,
   NewGiven,
   NewHandoff,
+  NewMemory,
   NewQuestion,
   NewRan,
   NewRun,
@@ -464,6 +466,47 @@ export class TypeormRunStore implements RunStore {
     });
   }
 
+  async addMemory(memory: NewMemory): Promise<void> {
+    await this.tables.memories.save({
+      agentId: memory.agentId,
+      coversPlace: memory.coversPlace,
+      text: memory.text,
+      lengthBefore: memory.lengthBefore,
+      lengthAfter: memory.lengthAfter,
+      compressAt: memory.compressAt,
+      compressTo: memory.compressTo,
+      inputTokens: memory.inputTokens,
+      outputTokens: memory.outputTokens,
+      money: memory.money,
+      run: {
+        id: memory.runId,
+      },
+      question:
+        memory.questionId === null
+          ? null
+          : {
+              id: memory.questionId,
+            },
+      step: {
+        id: memory.stepId,
+      },
+    });
+  }
+
+  async memoriesOf(runId: string): Promise<RunMemoryEntity[]> {
+    return this.tables.memories.find({
+      where: {
+        run: {
+          id: runId,
+        },
+      },
+      relations: {
+        question: true,
+        step: true,
+      },
+    });
+  }
+
   async dropBesideStep(stepId: string): Promise<void> {
     const beside = {
       step: {
@@ -483,5 +526,6 @@ export class TypeormRunStore implements RunStore {
     await this.tables.who.delete(beside);
     await this.tables.ran.delete(beside);
     await this.tables.given.delete(beside);
+    await this.tables.memories.delete(beside);
   }
 }

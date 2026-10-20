@@ -18,4 +18,6 @@ export const AGENT_SKELETON = {
   // Unset; the agent shows «НЕ ЗАПОВНЕНО».
   maxCalls: null,
   temperature: null,
+  compressAt: null,
+  compressTo: null,
 };

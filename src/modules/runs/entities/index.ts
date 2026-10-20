@@ -1,5 +1,6 @@
 export * from "./run-call.entity";
 export * from "./run-handoff.entity";
+export * from "./run-memory.entity";
 export * from "./run-question-attachment.entity";
 export * from "./run-question.entity";
 export * from "./run-step-agent.entity";

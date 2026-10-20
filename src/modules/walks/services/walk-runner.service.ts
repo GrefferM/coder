@@ -1,8 +1,16 @@
 import { randomUUID } from "node:crypto";
-import { RECORD_GONE_NOTE, agentStands, isWalking, memoryLength } from "../../../contracts";
+import {
+  RECORD_GONE_NOTE,
+  agentStands,
+  composedMemory,
+  isWalking,
+  latestMemory,
+  memoryLength,
+} from "../../../contracts";
 import {
   agentRegistry,
   agentThread,
+  threadCovers,
   answeredCard,
   askedCards,
   emptyWalk,
@@ -598,7 +606,8 @@ export class WalkRunner implements RecordWatcher {
       incoming: put.incoming,
       startAgentId: put.startAgentId,
       asked: put.asked,
-      memoryLength: carried,
+      // A turn the ceiling refused keeps the memory its card counted, so a record read back counts it the same.
+      memoryLength: answered.wouldGo?.memory ?? answered.compressed?.carried ?? carried,
       answer: answered,
       saidId: randomUUID(),
       startedAt: put.startedAt,
@@ -620,7 +629,7 @@ export class WalkRunner implements RecordWatcher {
     await this.writer.settled();
 
     if (agent.memory === "shared") {
-      return this.sharedMemoryOf(runId, questionId);
+      return this.sharedMemoryOf(runId, questionId, agent.id);
     }
 
     const run = await this.record.read(runId);
@@ -629,14 +638,19 @@ export class WalkRunner implements RecordWatcher {
       throw new Error(RECORD_GONE_NOTE);
     }
 
+    // Where the thread was compressed, the composer's message stands in front of the pairs that came after it.
+    const composed = latestMemory(run.memories, agent.id, null);
+
     return {
-      thread: agentThread(run.walk, agent),
+      thread: agentThread(run.walk, agent, composed),
+      composed: composedMemory(composed?.text ?? null),
       shared: "",
+      covers: threadCovers(run.walk, agent, composed),
     };
   }
 
-  private async sharedMemoryOf(runId: string, questionId: string): Promise<TurnMemory> {
-    const shared = await this.record.sharedMemory(runId, questionId);
+  private async sharedMemoryOf(runId: string, questionId: string, agentId: string): Promise<TurnMemory> {
+    const shared = await this.record.sharedMemory(runId, questionId, agentId);
 
     if (shared === null) {
       throw new Error(RECORD_GONE_NOTE);
@@ -644,7 +658,9 @@ export class WalkRunner implements RecordWatcher {
 
     return {
       thread: [],
-      shared,
+      composed: "",
+      shared: shared.text,
+      covers: shared.coversPlace,
     };
   }
 

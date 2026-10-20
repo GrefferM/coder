@@ -13,6 +13,7 @@ import {
 import { RUN_STEP_TABLE_NAME } from "../constants";
 import { RunCallEntity } from "./run-call.entity";
 import { RunHandoffEntity } from "./run-handoff.entity";
+import { RunMemoryEntity } from "./run-memory.entity";
 import { RunQuestionEntity } from "./run-question.entity";
 import { RunStepAgentEntity } from "./run-step-agent.entity";
 import { RunStepModelEntity } from "./run-step-model.entity";
@@ -118,6 +119,10 @@ export class RunStepEntity implements RunStepRecord {
   /** The words and numbers it was given to run with. */
   @OneToOne(() => RunStepSettingEntity, (given) => given.step)
   declare given: RunStepSettingEntity;
+
+  /** The memory the composer wrote before this turn, where it paid for one. */
+  @OneToOne(() => RunMemoryEntity, (memory) => memory.step)
+  declare composed: RunMemoryEntity | null;
 
   @OneToMany(() => RunCallEntity, (call) => call.step)
   declare calls: RunCallEntity[];

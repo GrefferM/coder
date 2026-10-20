@@ -22,4 +22,11 @@ export interface Agent extends NamedAgent {
   maxCalls: number | null;
   /** 0 holds to what it was handed, 1 puts it more freely. */
   temperature: number | null;
+  /**
+   * The share of the model's context ceiling, in percent, at which the agent's memory is compressed before a turn.
+   * Null when the file carries no number; asked of an agent only while its memory is not switched off.
+   */
+  compressAt: number | null;
+  /** The share of the ceiling, in percent, the compressed memory is written down to; null as `compressAt` is. */
+  compressTo: number | null;
 }

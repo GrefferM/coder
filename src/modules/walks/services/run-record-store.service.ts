@@ -1,5 +1,5 @@
 import type { RunReader, RunWriter } from "../../runs";
-import type { AskedQuestion, OpenedRecord, WholeRun, WrittenStep } from "../../../contracts";
+import type { AskedQuestion, OpenedRecord, SharedMemory, WholeRun, WrittenStep } from "../../../contracts";
 import type { RunRecord } from "../interfaces";
 
 /** The record a walk writes, kept by the run services. */
@@ -51,7 +51,7 @@ export class RunRecordStore implements RunRecord {
     return this.reader.one(runId);
   }
 
-  async sharedMemory(runId: string, questionId: string): Promise<string | null> {
-    return this.reader.sharedMemory(runId, questionId);
+  async sharedMemory(runId: string, questionId: string, agentId: string): Promise<SharedMemory | null> {
+    return this.reader.sharedMemory(runId, questionId, agentId);
   }
 }

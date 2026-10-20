@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { RUN_QUESTION_TABLE_NAME } from "../constants";
 import { RunEntity } from "./run.entity";
+import { RunMemoryEntity } from "./run-memory.entity";
 import { RunQuestionAttachmentEntity } from "./run-question-attachment.entity";
 import { RunStepEntity } from "./run-step.entity";
 import type { RunQuestionRecord } from "../interfaces";
@@ -71,4 +72,8 @@ export class RunQuestionEntity implements RunQuestionRecord {
   /** The files and folders sent with it; none for words alone. */
   @OneToMany(() => RunQuestionAttachmentEntity, (attachment) => attachment.question)
   declare attachments: RunQuestionAttachmentEntity[];
+
+  /** The compressions of the shared memory of this question. */
+  @OneToMany(() => RunMemoryEntity, (memory) => memory.question)
+  declare memories: RunMemoryEntity[];
 }

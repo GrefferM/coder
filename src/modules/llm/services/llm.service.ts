@@ -96,6 +96,59 @@ export class LlmService {
     runId: string | null;
     questionId: string;
   }): Promise<AgentAnswer> {
+    return this.asked(payload, true);
+  }
+
+  /**
+   * The composer's call: one round of the same model with no tools and no system prompt, under the turn's own id so a stop reaches it, and
+   * with nothing said onward, since its words are a memory and not an answer. The model's own ceiling cuts it short.
+   */
+  async compose(payload: {
+    turnId: string;
+    providerId: string;
+    model: string;
+    temperature: number;
+    answerCeiling: number;
+    messages: ChatTurn[];
+    runId: string | null;
+    questionId: string;
+  }): Promise<AgentAnswer> {
+    return this.asked(
+      {
+        ...payload,
+        systemPrompt: null,
+        agentId: "",
+        directory: "",
+        maxCalls: 1,
+        tools: [],
+        servers: [],
+        agents: [],
+      },
+      false,
+    );
+  }
+
+  /** One turn of the model, said onward as it goes only where `isVoiced`. */
+  private async asked(
+    payload: {
+      turnId: string;
+      agentId: string;
+      providerId: string;
+      model: string;
+      directory: string;
+      maxCalls: number;
+      temperature: number;
+      answerCeiling: number;
+      systemPrompt: string | null;
+      messages: ChatTurn[];
+      tools: AgentTool[];
+      servers: ProjectMcpServer[];
+      agents: ReachableAgent[];
+      runId: string | null;
+      questionId: string;
+    },
+    isVoiced: boolean,
+  ): Promise<AgentAnswer> {
     const client = this.clients[payload.providerId] ?? null;
 
     if (client === null) {
@@ -109,7 +162,7 @@ export class LlmService {
 
     try {
       return await this.turn({
-        voicedAs: payload.turnId,
+        voicedAs: isVoiced ? payload.turnId : null,
         answering: this.bound(client, held, payload, payload.runId ?? payload.questionId),
         conversation: this.said(payload.systemPrompt, payload.messages),
         directory: payload.directory,
@@ -543,7 +596,7 @@ export class LlmService {
       return "";
     }
 
-    return this.memory.sharedMemory(question.runId, question.questionId);
+    return (await this.memory.sharedMemory(question.runId, question.questionId, agent.agentId))?.text ?? null;
   }
 
   /** What would have gone, against the agent's model's ceiling, in characters; `null` where it fits. */

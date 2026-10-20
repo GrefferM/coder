@@ -109,4 +109,56 @@ describe("agentThread", () => {
       [],
     );
   });
+
+  it("leaves out the steps a compression stands for and keeps those after it, without deleting any", () => {
+    const steps = [
+      aStep({
+        id: "step-1",
+        place: 1,
+        asked: "перше",
+        said: "перша",
+      }),
+      aStep({
+        id: "step-2",
+        place: 2,
+        asked: "друге",
+        said: "друга",
+      }),
+      aStep({
+        id: "step-3",
+        place: 3,
+        asked: "третє",
+        said: "третя",
+      }),
+    ];
+    const composed = {
+      id: "memory-1",
+      stepId: "step-3",
+      stepPlace: 3,
+      agentId: "agent-1",
+      questionId: null,
+      coversPlace: 2,
+      text: "Зміст",
+      lengthBefore: 100,
+      lengthAfter: 10,
+      compressAt: 90,
+      compressTo: 10,
+      inputTokens: 1,
+      outputTokens: 1,
+      money: null,
+    };
+
+    assert.deepEqual(agentThread(steps, anAgent(), composed), [
+      {
+        from: "person",
+        text: "третє",
+      },
+      {
+        from: "agent",
+        text: "третя",
+      },
+    ]);
+    // The steps themselves are as they were: with no compression the whole thread is still there.
+    assert.equal(agentThread(steps, anAgent()).length, 6);
+  });
 });

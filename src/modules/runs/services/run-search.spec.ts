@@ -70,6 +70,7 @@ function step(runId: string, patch: Partial<AddStep> = {}): AddStep {
     startedAt: 900,
     endedAt: 2_000,
     calls: [],
+    compressed: null,
     ...patch,
   };
 }

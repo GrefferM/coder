@@ -1,6 +1,7 @@
 export * from "./arrived-turn.interface";
 export * from "./memory-to-read.interface";
 export * from "./model-ask.interface";
+export * from "./model-compose.interface";
 export * from "./provider-lister.interface";
 export * from "./put-question.interface";
 export * from "./question-to-write.interface";

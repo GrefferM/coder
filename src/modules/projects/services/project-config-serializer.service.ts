@@ -17,6 +17,8 @@ import {
 } from "../dto";
 import type { ToolGrantDto } from "../dto";
 import {
+  AGENT_COMPRESS_AT_LEAST,
+  AGENT_COMPRESS_TO_LEAST,
   AGENT_MAX_CALLS_LEAST,
   AGENT_TEMPERATURE_LEAST,
   AGENT_TOOL_SOURCE,
@@ -208,6 +210,9 @@ export class ProjectConfigSerializer {
     agent.y = <number>source.y;
     agent.maxCalls = written(source.maxCalls, AGENT_MAX_CALLS_LEAST);
     agent.temperature = written(source.temperature, AGENT_TEMPERATURE_LEAST);
+    // Under the least reads as unwritten; over the most is left for the validator to refuse.
+    agent.compressAt = written(source.compressAt, AGENT_COMPRESS_AT_LEAST);
+    agent.compressTo = written(source.compressTo, AGENT_COMPRESS_TO_LEAST);
 
     return agent;
   }

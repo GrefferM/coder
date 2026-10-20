@@ -2,6 +2,7 @@ import type { Agent, ProjectModel } from "../project";
 import type { TurnCall, TurnHandoff } from "../runs";
 import type { ChatCost } from "./chat-cost.interface";
 import type { IncomingWork } from "./incoming-work.interface";
+import type { MemoryFacts } from "../runs";
 
 /** One finished turn as the record takes it: what it ran with, what it said, where it went. */
 export interface WrittenTurn {
@@ -19,4 +20,6 @@ export interface WrittenTurn {
   startedAt: number;
   endedAt: number;
   calls: TurnCall[];
+  /** The composer's message this turn paid for before it went; null where its memory was not compressed. */
+  compressed: MemoryFacts | null;
 }

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { turnWall } from "./turn-wall";
-import { NO_MCP_CALLS } from "../../../contracts";
+import { NO_MCP_CALLS, groupedNumber } from "../../../contracts";
 import { aCommand, aModel, aPrompt, anAgent } from "../../../utils/testing";
 import type { Agent, ProjectCommand, ProjectModel, ProjectPrompt, TurnToAsk } from "../../../contracts";
 
@@ -53,7 +53,9 @@ function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
     asked: "Прогони тести",
     memory: {
       thread: [],
+      composed: "",
       shared: "",
+      covers: 0,
     },
     catalogue: ONLY_COMMANDS,
     agents: [],
@@ -136,6 +138,11 @@ describe("turnWall", () => {
     // A ceiling of 20: the question «Прогони тести» takes 13 and the thread 16 more.
     const way = turnWall(
       turn({
+        // With the memory off there is nothing to compress, so a memory over the ceiling is a wall.
+        agent: {
+          ...AGENT,
+          memory: "none",
+        },
         stands: {
           model: aModel({
             contextCeiling: 20,
@@ -154,7 +161,9 @@ describe("turnWall", () => {
               text: "так",
             },
           ],
+          composed: "",
           shared: "",
+          covers: 0,
         },
       }),
     );
@@ -173,6 +182,11 @@ describe("turnWall", () => {
     // A ceiling of 20: the question takes 13 and the shared memory 11 more.
     const way = turnWall(
       turn({
+        // With the memory off there is nothing to compress, so a memory over the ceiling is a wall.
+        agent: {
+          ...AGENT,
+          memory: "none",
+        },
         stands: {
           model: aModel({
             contextCeiling: 20,
@@ -182,7 +196,9 @@ describe("turnWall", () => {
         },
         memory: {
           thread: [],
+          composed: "",
           shared: "ПАМ'ЯТЬ:\nА\n",
+          covers: 0,
         },
       }),
     );
@@ -193,6 +209,105 @@ describe("turnWall", () => {
       memory: 11,
       total: 24,
       ceiling: 20,
+    });
+  });
+
+  describe("a memory that is kept", () => {
+    const CEILING = 10_000;
+
+    function kept(memoryLength: number, patch: Partial<TurnToAsk> = {}) {
+      return turnWall(
+        turn({
+          stands: {
+            model: aModel({
+              contextCeiling: CEILING,
+            }),
+            provider: null,
+            prompt: null,
+          },
+          memory: {
+            thread: [
+              {
+                from: "person",
+                text: "а".repeat(memoryLength),
+              },
+            ],
+            composed: "",
+            shared: "",
+            covers: 3,
+          },
+          ...patch,
+        }),
+      );
+    }
+
+    it("goes as it stands while the turn is under the agent's threshold", () => {
+      const way = kept(8_000);
+
+      assert.equal("notStarted" in way, false);
+      assert.equal("compression" in way && way.compression, null);
+    });
+
+    it("is compressed first once the turn reaches the threshold, into the target's share of the ceiling", () => {
+      const way = kept(9_100);
+
+      assert.equal("notStarted" in way, false);
+      // The agent compresses at 90 percent down to 10: a thousand of ten thousand.
+      assert.deepEqual("compression" in way && way.compression, {
+        budget: 1_000,
+        at: 90,
+        to: 10,
+      });
+    });
+
+    it("compresses a memory however long it is, and is never a wall for the person to mend", () => {
+      const way = kept(50_000);
+
+      assert.equal("notStarted" in way, false);
+      assert.deepEqual("compression" in way && way.compression, {
+        budget: 1_000,
+        at: 90,
+        to: 10,
+      });
+    });
+
+    it("does not go when the words and the share held back reach the threshold, and says so", () => {
+      // The threshold is 9 000 of 10 000 and the share held back a thousand: the words may take under eight.
+      const way = kept(0, {
+        asked: "б".repeat(8_000),
+      });
+
+      assert.equal("notStarted" in way && way.notStarted, "tooLong");
+      assert.ok(
+        "text" in way &&
+          way.text.includes(`Промпт і питання — ${groupedNumber(8_000)} символів`) &&
+          way.text.includes(`${groupedNumber(1_000)} зарезервовано під пам'ять агента`) &&
+          way.text.includes(`поріг стиснення — ${groupedNumber(9_000)}`),
+      );
+      // The card tells the reserve in place of the memory.
+      assert.deepEqual("wouldGo" in way && way.wouldGo, {
+        prompt: 0,
+        asked: 8_000,
+        memory: 1_000,
+        total: 9_000,
+        ceiling: CEILING,
+      });
+    });
+
+    it("lets the words go up to the character before that", () => {
+      const way = kept(0, {
+        asked: "б".repeat(7_999),
+      });
+
+      assert.equal("notStarted" in way, false);
+    });
+
+    it("does not go for the words alone either, however little the memory is", () => {
+      const way = kept(100, {
+        asked: "б".repeat(CEILING + 1),
+      });
+
+      assert.equal("notStarted" in way && way.notStarted, "tooLong");
     });
   });
 

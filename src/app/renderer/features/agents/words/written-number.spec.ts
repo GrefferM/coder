@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { writtenNumber } from "./written-number";
+import { writtenNumber, writtenPercent } from "./written-number";
 
 describe("writtenNumber", () => {
   it("writes a whole number without any places asked for", () => {
@@ -21,5 +21,12 @@ describe("writtenNumber", () => {
     expect(writtenNumber(null)).toBe("—");
     expect(writtenNumber(null, 2)).toBe("—");
     expect(writtenNumber(0)).toBe("0");
+  });
+});
+
+describe("writtenPercent", () => {
+  it("writes a share with its sign, a dash where nobody wrote one", () => {
+    expect(writtenPercent(90)).toBe("90 %");
+    expect(writtenPercent(null)).toBe("—");
   });
 });

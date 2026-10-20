@@ -6,10 +6,10 @@ import {
   RUN_STEP_STOPPED,
   RUN_STEP_TOO_LONG,
 } from "../../record";
-import { notStartedOf, turnLength } from "../../../../../contracts";
+import { compressionOf, notStartedOf, turnLength } from "../../../../../contracts";
 import { answerCeilingNote, callsExhaustedNote, fellNote } from "../words";
 import { CHAT_SAID_NOTHING_NOTE, CHAT_STOPPED_NOTE } from "../constants";
-import type { ChatMessage } from "../interfaces";
+import type { ChatMessage, CompressionSettings } from "../interfaces";
 import type { WholeRun, WholeStep } from "../../record";
 import type { TurnCall } from "../../../interfaces";
 
@@ -54,6 +54,7 @@ function message(
     asked: null,
     fedBy: [],
     attached: [],
+    compressed: null,
     ...patch,
   };
 }
@@ -78,6 +79,13 @@ function noteOf(step: WholeStep): string | null {
   }
 
   return step.state === RUN_STEP_CALLS ? callsExhaustedNote(step.calls.length) : null;
+}
+
+/** How the agent was set when this step paid for a compression, as the record kept it; nothing for a step that paid for none. */
+function compressedOf(run: WholeRun, step: WholeStep): CompressionSettings | null {
+  const memory = run.memories.find((one) => one.stepId === step.id);
+
+  return memory === undefined ? null : compressionOf(memory);
 }
 
 /** Whether a link's work came to a turn of its own, drawn where the work arrived. */
@@ -175,6 +183,8 @@ export function runStream(run: WholeRun): ChatMessage[] {
                   money: step.money,
                 },
           calls: turnCall(step),
+          // The compression this step paid for, if it did, with the settings the agent had then.
+          compressed: compressedOf(run, step),
           // When the turn began and its step, for «КРОК 2 · 19:29»; the level is counted off `fedBy`.
           began: step.startedAt.toISOString(),
           stepId: step.id,

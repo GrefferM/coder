@@ -17,7 +17,15 @@ import {
   ValidateNested,
 } from "class-validator";
 import type { ToolGrantDto } from "./tool-grant.dto";
-import { AGENT_MAX_CALLS_LEAST, AGENT_TEMPERATURE_LEAST, AGENT_TEMPERATURE_MOST } from "../constants";
+import {
+  AGENT_COMPRESS_AT_LEAST,
+  AGENT_COMPRESS_AT_MOST,
+  AGENT_COMPRESS_TO_LEAST,
+  AGENT_COMPRESS_TO_MOST,
+  AGENT_MAX_CALLS_LEAST,
+  AGENT_TEMPERATURE_LEAST,
+  AGENT_TEMPERATURE_MOST,
+} from "../constants";
 
 export class ProjectAgentDto {
   @IsUUID()
@@ -78,6 +86,19 @@ export class ProjectAgentDto {
   @Min(AGENT_TEMPERATURE_LEAST)
   @Max(AGENT_TEMPERATURE_MOST)
   declare temperature: number | null;
+
+  // Percent of the model's context ceiling; null where the file never carried it, which the agent's memory decides.
+  @IsOptional()
+  @IsInt()
+  @Min(AGENT_COMPRESS_AT_LEAST)
+  @Max(AGENT_COMPRESS_AT_MOST)
+  declare compressAt: number | null;
+
+  @IsOptional()
+  @IsInt()
+  @Min(AGENT_COMPRESS_TO_LEAST)
+  @Max(AGENT_COMPRESS_TO_MOST)
+  declare compressTo: number | null;
 }
 
 /** Identity of a grant; the handle is the boundary's. */

@@ -13,3 +13,4 @@ export * from "./attach-refusal.constant";
 export * from "./attach-weight.constant";
 export * from "./attached-name.constant";
 export * from "./repeat-count.constant";
+export * from "./compressed-memory.constant";

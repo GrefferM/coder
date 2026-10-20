@@ -1,5 +1,6 @@
 import type { AddCall } from "./add-call.interface";
 import type { AddHandoff } from "./add-handoff.interface";
+import type { MemoryFacts } from "../../../contracts";
 
 /** One agent's turn, written when it ends: the agent as it then stood, what it said, every call. */
 export interface AddStep {
@@ -35,4 +36,6 @@ export interface AddStep {
   startedAt: number;
   endedAt: number;
   calls: AddCall[];
+  /** The composer's message this turn paid for before it went, or null when its memory was not compressed. */
+  compressed: MemoryFacts | null;
 }

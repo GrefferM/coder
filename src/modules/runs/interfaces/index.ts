@@ -2,6 +2,7 @@
 export * from "../../../contracts/runs";
 export * from "./run-call-record.interface";
 export * from "./run-handoff-record.interface";
+export * from "./run-memory-record.interface";
 export * from "./run-module.interface";
 export * from "./run-opened.interface";
 export * from "./run-question-attachment-record.interface";

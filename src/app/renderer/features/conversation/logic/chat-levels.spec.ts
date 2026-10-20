@@ -25,6 +25,7 @@ function said(patch: Partial<ChatMessage> & Pick<ChatMessage, "id">): ChatMessag
     asked: null,
     fedBy: [],
     attached: [],
+    compressed: null,
     ...patch,
   };
 }
@@ -51,11 +52,13 @@ describe("chatLevels", () => {
         id: "two",
         fedBy: ["one"],
         attached: [],
+        compressed: null,
       }),
       said({
         id: "three",
         fedBy: ["one", "two"],
         attached: [],
+        compressed: null,
       }),
     ]);
 
@@ -75,11 +78,13 @@ describe("chatLevels", () => {
         id: "two",
         fedBy: ["one"],
         attached: [],
+        compressed: null,
       }),
       said({
         id: "three",
         fedBy: ["one"],
         attached: [],
+        compressed: null,
       }),
     ]);
 
@@ -97,6 +102,7 @@ describe("chatLevels", () => {
         stepId: null,
         fedBy: ["one"],
         attached: [],
+        compressed: null,
       }),
     ]);
 
@@ -129,11 +135,13 @@ describe("chatLevels", () => {
         id: "one",
         fedBy: ["two"],
         attached: [],
+        compressed: null,
       }),
       said({
         id: "two",
         fedBy: ["one"],
         attached: [],
+        compressed: null,
       }),
     ]);
 

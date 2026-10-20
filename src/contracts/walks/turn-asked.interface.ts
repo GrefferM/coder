@@ -7,4 +7,6 @@ export interface TurnAsked {
   model: FilledModel;
   systemPrompt: string | null;
   tools: AgentTool[];
+  /** Where the memory is compressed before the turn goes, into how many characters at most; null where it is not. */
+  compression: { budget: number; at: number; to: number } | null;
 }

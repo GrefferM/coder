@@ -52,6 +52,7 @@ function run(walk: WholeStep[], state = RUN_DONE): WholeRun {
     money: 0.21,
     worked: 186_000,
     walk,
+    memories: [],
   };
 }
 

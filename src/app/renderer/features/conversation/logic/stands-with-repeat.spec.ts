@@ -28,6 +28,7 @@ function said(patch: Partial<ChatMessage> = {}): ChatMessage {
     asked: "Прогони тести",
     fedBy: [],
     attached: [],
+    compressed: null,
     ...patch,
   };
 }

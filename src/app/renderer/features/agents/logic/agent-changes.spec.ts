@@ -9,6 +9,8 @@ import {
   AGENT_MEMORY_CHANGE_LABEL,
   AGENT_MEMORY_DROPPED_LABEL,
   AGENT_MEMORY_WORDS,
+  AGENT_COMPRESS_AT_CHANGE_LABEL,
+  AGENT_COMPRESS_TO_CHANGE_LABEL,
 } from "../constants";
 import type { ProjectCommand, ProjectModel, ProjectPrompt } from "../../../interfaces";
 import type { AgentDraft, AgentNaming } from "../interfaces";
@@ -148,5 +150,39 @@ describe("agentChanges", () => {
         NAMING,
       ),
     ).toHaveLength(5);
+  });
+
+  it("names the compression's two numbers as percents where the memory is kept", () => {
+    const changes = agentChanges(
+      SAVED,
+      {
+        ...SAVED,
+        compressAt: 80,
+        compressTo: 20,
+      },
+      NAMING,
+    );
+
+    expect(changes.map((change) => [change.label, change.was, change.now])).toEqual([
+      [AGENT_COMPRESS_AT_CHANGE_LABEL, "90 %", "80 %"],
+      [AGENT_COMPRESS_TO_CHANGE_LABEL, "10 %", "20 %"],
+    ]);
+  });
+
+  it("leaves the compression out where the memory is off, since its rows are not on the screen", () => {
+    expect(
+      agentChanges(
+        {
+          ...SAVED,
+          memory: "none",
+        },
+        {
+          ...SAVED,
+          memory: "none",
+          compressAt: 80,
+        },
+        NAMING,
+      ),
+    ).toEqual([]);
   });
 });

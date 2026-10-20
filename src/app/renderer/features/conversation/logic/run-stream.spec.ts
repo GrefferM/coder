@@ -69,6 +69,7 @@ function run(walk: WholeStep[]): WholeRun {
     money: 0.0001,
     worked: 4_000,
     walk,
+    memories: [],
   };
 }
 
@@ -511,5 +512,42 @@ describe("runStream", () => {
       total: 14,
       ceiling: 10,
     });
+  });
+
+  it("says over the turn that paid for a compression the settings the agent had then, as the record kept them", () => {
+    const paid = step();
+    const said = runStream({
+      ...run([paid]),
+      memories: [
+        {
+          id: "memory-1",
+          stepId: paid.id,
+          stepPlace: 1,
+          agentId: "agent-1",
+          questionId: null,
+          coversPlace: 1,
+          text: "Зміст",
+          lengthBefore: 91_000,
+          lengthAfter: 9_400,
+          compressAt: 70,
+          compressTo: 30,
+          inputTokens: 10,
+          outputTokens: 5,
+          money: null,
+        },
+      ],
+    });
+    const turn = said.find((message) => message.from === "agent")!;
+
+    expect(turn.compressed).toEqual({
+      at: 70,
+      to: 30,
+    });
+  });
+
+  it("says nothing of a compression over a turn that paid for none", () => {
+    const said = runStream(run([step()]));
+
+    expect(said.find((message) => message.from === "agent")!.compressed).toBeNull();
   });
 });

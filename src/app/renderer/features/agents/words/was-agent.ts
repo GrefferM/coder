@@ -1,6 +1,6 @@
 import { grantedToolsLabel } from "./granted-tools-label";
 import { isAgentGrant, isCommandGrant, isServerGrant } from "../../../interfaces";
-import { writtenNumber } from "./written-number";
+import { writtenNumber, writtenPercent } from "./written-number";
 import {
   AGENT_ACTIVE_OFF_LABEL,
   AGENT_ACTIVE_ON_LABEL,
@@ -30,6 +30,8 @@ export function wasAgent(draft: AgentDraft, saved: AgentDraft | null, naming: Ag
       serverTools: null,
       agentTools: null,
       color: null,
+      compressAt: null,
+      compressTo: null,
       maxCalls: null,
       temperature: null,
       isActive: null,
@@ -57,6 +59,8 @@ export function wasAgent(draft: AgentDraft, saved: AgentDraft | null, naming: Ag
     serverTools: savedServers === saidOf(draft.tools, isServerGrant) ? null : savedServers,
     agentTools: savedAgents === saidOf(draft.tools, isAgentGrant) ? null : savedAgents,
     color: saved.color === draft.color ? null : saved.color,
+    compressAt: saved.compressAt === draft.compressAt ? null : writtenPercent(saved.compressAt),
+    compressTo: saved.compressTo === draft.compressTo ? null : writtenPercent(saved.compressTo),
     maxCalls: saved.maxCalls === draft.maxCalls ? null : writtenNumber(saved.maxCalls),
     temperature:
       saved.temperature === draft.temperature ? null : writtenNumber(saved.temperature, AGENT_TEMPERATURE_PLACES),

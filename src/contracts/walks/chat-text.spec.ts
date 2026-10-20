@@ -45,6 +45,7 @@ function message(patch: Partial<ChatMessage> = {}): ChatMessage {
     asked: null,
     fedBy: [],
     attached: [],
+    compressed: null,
     ...patch,
   };
 }

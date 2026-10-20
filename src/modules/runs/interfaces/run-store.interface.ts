@@ -3,6 +3,7 @@ import type {
   RunCallEntity,
   RunEntity,
   RunHandoffEntity,
+  RunMemoryEntity,
   RunQuestionAttachmentEntity,
   RunQuestionEntity,
   RunStepAgentEntity,
@@ -88,6 +89,24 @@ export interface NewGiven {
   temperature: number | null;
   maxCalls: number | null;
   memoryLength: number;
+  stepId: string;
+}
+
+/** What the composer wrote for a memory, with what it used; kept beside the step that paid for it. */
+export interface NewMemory {
+  agentId: string;
+  /** The question a shared memory belongs to; null for the agent's own thread. */
+  questionId: string | null;
+  coversPlace: number;
+  text: string;
+  lengthBefore: number;
+  lengthAfter: number;
+  compressAt: number;
+  compressTo: number;
+  inputTokens: number;
+  outputTokens: number;
+  money: number | null;
+  runId: string;
   stepId: string;
 }
 
@@ -185,8 +204,11 @@ export interface RunStore {
   /** The feeds of many steps at once, each with both ends; «КРОК N» is counted from these. */
   feedsIn(stepIds: string[]): Promise<RunStepFeedEntity[]>;
   addHandoff(handoff: NewHandoff): Promise<void>;
+  addMemory(memory: NewMemory): Promise<void>;
+  /** Every compression of one run, each with its question and the step that paid for it. */
+  memoriesOf(runId: string): Promise<RunMemoryEntity[]>;
   handoffsOf(stepId: string): Promise<RunHandoffEntity[]>;
 
-  /** Clears everything written beside one step: its calls, its two edges, the three frozen facts. */
+  /** Clears everything written beside one step: its calls, its two edges, the three frozen facts, its compression. */
   dropBesideStep(stepId: string): Promise<void>;
 }

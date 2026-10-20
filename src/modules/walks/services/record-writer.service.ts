@@ -220,6 +220,7 @@ export class RecordWriter {
         ...call,
         end: callEnd(call),
       })),
+      compressed: turn.compressed,
     });
 
     ledger.stepIdOf[turn.agent.id] = stepId;

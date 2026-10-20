@@ -30,6 +30,7 @@ export function handoffCard(said: HandoffSaid): ChatMessage {
     asked: null,
     fedBy: [],
     attached: [],
+    compressed: null,
     calls: [],
   };
 }

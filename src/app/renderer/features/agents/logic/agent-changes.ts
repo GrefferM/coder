@@ -1,6 +1,6 @@
 import { grantedToolsLabel } from "../words";
 import { isAgentGrant, isCommandGrant, isServerGrant } from "../../../interfaces";
-import { writtenNumber } from "../words";
+import { writtenNumber, writtenPercent } from "../words";
 import {
   AGENT_ACTIVE_CHANGE_LABEL,
   AGENT_ACTIVE_DROPPED_LABEL,
@@ -14,6 +14,10 @@ import {
   AGENT_MEMORY_DROPPED_LABEL,
   AGENT_MEMORY_WORDS,
   AGENT_COLOR_CHANGE_LABEL,
+  AGENT_COMPRESS_AT_CHANGE_LABEL,
+  AGENT_COMPRESS_AT_DROPPED_LABEL,
+  AGENT_COMPRESS_TO_CHANGE_LABEL,
+  AGENT_COMPRESS_TO_DROPPED_LABEL,
   AGENT_COLOR_DROPPED_LABEL,
   AGENT_MAX_CALLS_CHANGE_LABEL,
   AGENT_MAX_CALLS_DROPPED_LABEL,
@@ -137,7 +141,26 @@ export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: Agent
       was: AGENT_MEMORY_WORDS[saved.memory],
       now: AGENT_MEMORY_WORDS[draft.memory],
     },
+    {
+      label: AGENT_COMPRESS_AT_CHANGE_LABEL,
+      droppedLabel: AGENT_COMPRESS_AT_DROPPED_LABEL,
+      was: writtenPercent(saved.compressAt),
+      now: writtenPercent(draft.compressAt),
+    },
+    {
+      label: AGENT_COMPRESS_TO_CHANGE_LABEL,
+      droppedLabel: AGENT_COMPRESS_TO_DROPPED_LABEL,
+      was: writtenPercent(saved.compressTo),
+      now: writtenPercent(draft.compressTo),
+    },
   ];
 
-  return written.filter((change) => change.was !== change.now);
+  // The two rows are not on the screen where the memory is off, so what is left in them is not a change.
+  const isCompressionSeen = saved.memory !== "none" || draft.memory !== "none";
+
+  return written.filter(
+    (change) =>
+      change.was !== change.now &&
+      (isCompressionSeen || ![AGENT_COMPRESS_AT_CHANGE_LABEL, AGENT_COMPRESS_TO_CHANGE_LABEL].includes(change.label)),
+  );
 }

@@ -4,10 +4,12 @@ import { FIELD_INVALID_MS } from "../../../../../../components/field/constants";
 import { wasAgent } from "../../../../words";
 import { isModelLost, isPromptLost, lostProvider, mendedNumber, takesNoTools, withFunction } from "../../../../logic";
 import { NAME_TAKEN_AGENT_NOTE } from "../../../../../../constants";
+import { NEW_AGENT_COMPRESS_AT, NEW_AGENT_COMPRESS_TO } from "../../../../constants";
 
 import {
   AgentToolsSection,
   GrantView,
+  MemoryNumbers,
   MemorySection,
   ServerView,
   ServersSection,
@@ -252,9 +254,27 @@ export function AgentSettings({
           onMemoryChange={(memory) =>
             onDraftChange({
               memory,
+              // A memory turned on for an agent whose file never said how it is compressed starts at the usual numbers.
+              ...(memory === "none"
+                ? {}
+                : {
+                    compressAt: draft.compressAt ?? NEW_AGENT_COMPRESS_AT,
+                    compressTo: draft.compressTo ?? NEW_AGENT_COMPRESS_TO,
+                  }),
             })
           }
         />
+
+        {/* Where there is no memory kept there is nothing to compress. */}
+        {draft.memory !== "none" && (
+          <MemoryNumbers
+            draft={draft}
+            was={was}
+            mendedStepper={mendedStepper}
+            mendedRow={mendedRow === "compressAt" || mendedRow === "compressTo" ? mendedRow : null}
+            onDraftChange={onDraftChange}
+          />
+        )}
 
         {standing.suppliers.length > 0 && <SuppliersList suppliers={standing.suppliers} />}
 
@@ -262,7 +282,7 @@ export function AgentSettings({
           draft={draft}
           was={was}
           mendedStepper={mendedStepper}
-          mendedRow={mendedRow}
+          mendedRow={mendedRow === "maxCalls" || mendedRow === "temperature" ? mendedRow : null}
           isConverging={standing.suppliers.length > 1}
           onDraftChange={onDraftChange}
         />

@@ -27,6 +27,8 @@ const nothingMoved: WasAgent = {
   serverTools: null,
   agentTools: null,
   color: null,
+  compressAt: null,
+  compressTo: null,
   maxCalls: null,
   temperature: null,
   isActive: null,

@@ -9,6 +9,8 @@ export const RUN_STEP_TABLE_NAME = "run_steps";
 export const RUN_STEP_AGENT_TABLE_NAME = "run_step_agents";
 export const RUN_STEP_MODEL_TABLE_NAME = "run_step_models";
 export const RUN_STEP_SETTING_TABLE_NAME = "run_step_settings";
+// The composer's messages: what an agent's memory was compressed into, beside the step that paid for it.
+export const RUN_MEMORY_TABLE_NAME = "run_memories";
 export const RUN_CALL_TABLE_NAME = "run_calls";
 // Both edges of a walk: whose work came into a step and where its work went.
 export const RUN_STEP_FEED_TABLE_NAME = "run_step_feeds";

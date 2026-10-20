@@ -1,12 +1,14 @@
 import { agentReadiness } from "./agent-readiness";
 import { notStartedTurn } from "./not-started-turn";
-import { overCeilingNote } from "../words";
-import { agentTools, memoryLength, turnLength } from "../../../contracts";
+import { overCeilingNote, reservedNote } from "../words";
+import { agentTools, memoryLength, memoryPlan, turnLength } from "../../../contracts";
 import type { TurnAnswer, TurnAsked, TurnToAsk } from "../../../contracts";
 
 /**
- * Every wall a turn can meet before it is asked: the agent's own (`agentReadiness`), then words over the model's
- * ceiling, the memory counted with them. The first wall met is the answer; with none, what the turn carries to the model.
+ * Every wall a turn can meet before it is asked: the agent's own (`agentReadiness`), then words that leave the memory
+ * less than the ceiling holds back for it (or, where the agent keeps none, more than the ceiling). The first wall met is
+ * the answer; with none, what the turn carries to the model, and the budget its memory is first compressed into where it
+ * has to be.
  */
 export function turnWall(turn: TurnToAsk): TurnAnswer | TurnAsked {
   const { catalogue, asked, stands } = turn;
@@ -25,9 +27,17 @@ export function turnWall(turn: TurnToAsk): TurnAnswer | TurnAsked {
     ceiling: model.contextCeiling,
   });
 
-  // Over the ceiling the turn does not go at all.
-  if (length.total > length.ceiling) {
-    return notStartedTurn(overCeilingNote(model.title, length), "tooLong", length);
+  const plan = memoryPlan(agent, length);
+
+  // The turn does not go at all, and nothing is dropped to make it fit.
+  if (plan.kind === "wall") {
+    return plan.reserve === 0
+      ? notStartedTurn(overCeilingNote(model.title, length), "tooLong", length)
+      : notStartedTurn(reservedNote(model.title, length, plan.reserve, plan.limit), "tooLong", {
+          ...length,
+          memory: plan.reserve,
+          total: length.prompt + length.asked + plan.reserve,
+        });
   }
 
   return {
@@ -35,5 +45,13 @@ export function turnWall(turn: TurnToAsk): TurnAnswer | TurnAsked {
     model,
     systemPrompt,
     tools: agentTools(agent.tools, catalogue),
+    compression:
+      plan.kind === "compress"
+        ? {
+            budget: plan.budget,
+            at: plan.at,
+            to: plan.to,
+          }
+        : null,
   };
 }

@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { RUN_TABLE_NAME } from "../constants";
+import { RunMemoryEntity } from "./run-memory.entity";
 import { RunQuestionEntity } from "./run-question.entity";
 import { RunStepEntity } from "./run-step.entity";
 import type { RunRecord } from "../interfaces";
@@ -56,4 +57,8 @@ export class RunEntity implements RunRecord {
   /** Everything the person asked in this flow, in order. */
   @OneToMany(() => RunQuestionEntity, (question) => question.run)
   declare questions: RunQuestionEntity[];
+
+  /** Every compression of a memory in this run. */
+  @OneToMany(() => RunMemoryEntity, (memory) => memory.run)
+  declare memories: RunMemoryEntity[];
 }

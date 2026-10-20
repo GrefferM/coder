@@ -92,6 +92,8 @@ export class ProjectFileWriter {
       y: agent.y,
       maxCalls: agent.maxCalls,
       temperature: agent.temperature,
+      compressAt: agent.compressAt,
+      compressTo: agent.compressTo,
     };
   }
 

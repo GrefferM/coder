@@ -13,6 +13,8 @@ export interface WasAgent {
   /** Agents granted as tools, a field of their own. */
   agentTools: string | null;
   color: string | null;
+  compressAt: string | null;
+  compressTo: string | null;
   maxCalls: string | null;
   temperature: string | null;
   isActive: string | null;

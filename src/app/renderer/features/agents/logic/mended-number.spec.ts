@@ -47,4 +47,34 @@ describe("mendedNumber", () => {
       ),
     ).toBeNull();
   });
+
+  it("opens on the memory's numbers first, since they stand above the run's on the tab", () => {
+    expect(
+      mendedNumber(
+        draft({
+          compressTo: null,
+          maxCalls: null,
+        }),
+      ),
+    ).toBe("compressTo");
+    expect(
+      mendedNumber(
+        draft({
+          compressAt: null,
+        }),
+      ),
+    ).toBe("compressAt");
+  });
+
+  it("leaves the memory's numbers out where the memory is off", () => {
+    expect(
+      mendedNumber(
+        draft({
+          memory: "none",
+          compressAt: null,
+          compressTo: null,
+        }),
+      ),
+    ).toBeNull();
+  });
 });

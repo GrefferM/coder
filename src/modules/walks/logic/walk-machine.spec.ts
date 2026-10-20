@@ -114,6 +114,7 @@ function answer(patch: Partial<TurnAnswer> = {}): TurnAnswer {
     wouldGo: null,
     state: RUN_STEP_DONE,
     calls: [],
+    compressed: null,
     ...patch,
   };
 }
@@ -160,6 +161,7 @@ function broken(id: string, walkId: string): ChatMessage {
     asked: null,
     fedBy: [],
     attached: [],
+    compressed: null,
     calls: [],
   };
 }

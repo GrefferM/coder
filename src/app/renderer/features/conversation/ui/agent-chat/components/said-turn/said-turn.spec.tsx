@@ -53,6 +53,7 @@ function said(patch: Partial<ChatMessage> = {}): ChatMessage {
     asked: null,
     fedBy: [],
     attached: [],
+    compressed: null,
     ...patch,
   };
 }
@@ -255,6 +256,35 @@ describe("SaidTurn", () => {
     );
 
     expect(screen.getByText("МОДЕЛЬ НЕ СКАЗАЛА НІЧОГО")).toBeInTheDocument();
+  });
+
+  it("says on a rule ahead of the card that the memory was compressed first, and what the composer wrote not at all", () => {
+    draw(
+      said({
+        compressed: {
+          at: 90,
+          to: 10,
+        },
+      }),
+    );
+
+    expect(screen.getByText("ПАМ'ЯТЬ СТИСНУТО · 90 % → 10 %")).toBeInTheDocument();
+    expect(screen.getByText("Готово")).toBeInTheDocument();
+  });
+
+  it("draws the rule even over a turn that fell and has no card of its own", () => {
+    draw(
+      said({
+        text: "",
+        isFailure: true,
+        compressed: {
+          at: 90,
+          to: 10,
+        },
+      }),
+    );
+
+    expect(screen.getByText("ПАМ'ЯТЬ СТИСНУТО · 90 % → 10 %")).toBeInTheDocument();
   });
 
   it("stands the turns still out of this question at the end of its block, in their own names", () => {

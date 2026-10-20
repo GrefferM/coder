@@ -246,6 +246,36 @@ describe("ProjectConfigSerializer", () => {
     );
   });
 
+  it("reads an agent without the compression keys as unwritten, so an old file asks for them instead of inventing them", async () => {
+    const config = await serializer.parse(VALID_YAML);
+
+    assert.equal(config.agents[0].compressAt, null);
+    assert.equal(config.agents[0].compressTo, null);
+  });
+
+  it("keeps the threshold and the target an agent carries", async () => {
+    const config = await serializer.parse(
+      VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    compressAt: 80\n    compressTo: 20"),
+    );
+
+    assert.equal(config.agents[0].compressAt, 80);
+    assert.equal(config.agents[0].compressTo, 20);
+  });
+
+  it("reads a threshold or a target under its least as unwritten", async () => {
+    const config = await serializer.parse(
+      VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    compressAt: 69\n    compressTo: 9"),
+    );
+
+    assert.equal(config.agents[0].compressAt, null);
+    assert.equal(config.agents[0].compressTo, null);
+  });
+
+  it("refuses a threshold or a target over its most", async () => {
+    await assert.rejects(() => serializer.parse(VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    compressAt: 91")));
+    await assert.rejects(() => serializer.parse(VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    compressTo: 31")));
+  });
+
   it("reads a model without the ceiling key as a field nobody has written", async () => {
     const config = await serializer.parse(VALID_YAML);
 

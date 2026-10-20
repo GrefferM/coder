@@ -32,5 +32,6 @@ export function askedCards(said: AskedSaid): ChatMessage[] {
       name: file.name,
       kind: file.kind,
     })),
+    compressed: null,
   }));
 }

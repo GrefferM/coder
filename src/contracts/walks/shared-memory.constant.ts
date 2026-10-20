@@ -8,6 +8,8 @@ export const SHARED_MEMORY_NAME_SLOT = "{name}";
 export const SHARED_MEMORY_FROM_SLOT = "{from}";
 export const SHARED_MEMORY_QUESTION = "ПИТАННЯ ЛЮДИНИ → {name}:";
 export const SHARED_MEMORY_ANSWER = "ВІДПОВІДЬ {name} (отримав від: {from}):";
+/** The block that stands for the question and the answers a compression covers; the answers after it follow as they were. */
+export const SHARED_MEMORY_COMPOSED = "ПОПЕРЕДНЄ, СТИСЛО (питання людини і відповіді до цього моменту):";
 /** Whom a turn nobody fed got its work from. */
 export const SHARED_MEMORY_PERSON = "ЛЮДИНА";
 /** Between names of several suppliers. */

@@ -7,6 +7,7 @@ import { PersonCard } from "../person-card";
 import { SaidRow } from "../said-row";
 import { WorkingTurn } from "../working-turn";
 import { callEnd } from "../../../../logic";
+import { compressedMemoryWords } from "../../../../words";
 import { CHAT_STOP_REASON_LABELS } from "../../../../constants";
 import { dayLabel } from "../../../../../../utils/dates";
 import { AGENT_CHAT_ASKED_AGAIN_LABEL, AGENT_CHAT_LIST_GAP_PX } from "../../constants";
@@ -42,6 +43,7 @@ export function SaidTurn({
     message.text === "" &&
     words === null &&
     message.calls.length === 0 &&
+    message.compressed === null &&
     live.length === 0 &&
     !isNewDay &&
     !isAskedAgain;
@@ -79,6 +81,8 @@ export function SaidTurn({
       {isNewDay && <RuleWithWord>{dayLabel(said, new Date())}</RuleWithWord>}
       {/* A rule marks where the person asked again. */}
       {isAskedAgain && <RuleWithWord>{AGENT_CHAT_ASKED_AGAIN_LABEL}</RuleWithWord>}
+      {/* The memory was compressed before this turn went; the rule says so ahead of the card, and none of what was written. */}
+      {message.compressed !== null && <SaidRow words={compressedMemoryWords(message.compressed)} />}
       {isRow ? (
         <>
           {/* With no sender the row concerns one agent alone: the question that never went, or the turn. */}

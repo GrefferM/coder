@@ -178,6 +178,7 @@ function asked(questionId: string) {
     asked: null,
     fedBy: [],
     attached: [],
+    compressed: null,
   };
 }
 
@@ -284,6 +285,7 @@ describe("AgentChat", () => {
             asked: null,
             fedBy: [],
             attached: [],
+            compressed: null,
             note: null,
             calls: [],
           },
@@ -332,6 +334,7 @@ describe("AgentChat", () => {
             asked: null,
             fedBy: [],
             attached: [],
+            compressed: null,
             note: null,
             calls: [],
           },
@@ -471,6 +474,7 @@ describe("AgentChat", () => {
             asked: null,
             fedBy: [],
             attached: [],
+            compressed: null,
             note: null,
             calls: [
               {
@@ -579,6 +583,7 @@ describe("AgentChat", () => {
             asked: null,
             fedBy: [],
             attached: [],
+            compressed: null,
           },
         ],
       },
@@ -620,6 +625,7 @@ describe("AgentChat", () => {
               asked: "Підсумуй, що змінилось",
               fedBy: [],
               attached: [],
+              compressed: null,
             },
           ],
         },
@@ -664,6 +670,7 @@ describe("AgentChat", () => {
       asked: "Підсумуй, що змінилось",
       fedBy: [],
       attached: [],
+      compressed: null,
     });
 
     renderChat({
@@ -702,6 +709,7 @@ describe("AgentChat", () => {
       asked: "Підсумуй, що змінилось",
       fedBy: [],
       attached: [],
+      compressed: null,
     });
 
     renderChat({
@@ -746,6 +754,7 @@ describe("AgentChat", () => {
       asked: "Підсумуй, що змінилось",
       fedBy: [],
       attached: [],
+      compressed: null,
     });
 
     renderChat({
@@ -809,6 +818,7 @@ describe("AgentChat", () => {
       asked: "Підсумуй, що змінилось",
       fedBy: [],
       attached: [],
+      compressed: null,
     };
     const answered = {
       ...unbegun,
@@ -854,6 +864,7 @@ describe("AgentChat", () => {
       asked: "Прогони тести",
       fedBy: [],
       attached: [],
+      compressed: null,
     };
 
     renderChat({
@@ -906,6 +917,7 @@ describe("AgentChat", () => {
       asked: "Прогони тести",
       fedBy: [],
       attached: [],
+      compressed: null,
     };
 
     renderChat({
@@ -957,6 +969,7 @@ describe("AgentChat", () => {
       asked: null,
       fedBy: [],
       attached: [],
+      compressed: null,
     });
 
     renderChat({
@@ -1012,6 +1025,7 @@ describe("AgentChat", () => {
       asked: null,
       fedBy: [],
       attached: [],
+      compressed: null,
     });
 
     sayPiece("turn-first", "Перша робота", null);
@@ -1085,6 +1099,7 @@ describe("AgentChat", () => {
       asked: null,
       fedBy,
       attached: [],
+      compressed: null,
     });
 
     renderChat({
@@ -1128,6 +1143,7 @@ describe("AgentChat", () => {
       asked: null,
       fedBy: [],
       attached: [],
+      compressed: null,
     });
 
     renderChat({
@@ -1177,6 +1193,7 @@ describe("AgentChat", () => {
       asked: from === "agent" ? "Прогони тести" : null,
       fedBy: [],
       attached: [],
+      compressed: null,
     });
 
     renderChat({
@@ -1231,6 +1248,7 @@ describe("AgentChat", () => {
             asked: null,
             fedBy: [],
             attached: [],
+            compressed: null,
           },
         ],
       },
@@ -1275,6 +1293,7 @@ describe("AgentChat", () => {
             asked: "Підсумуй, що змінилось",
             fedBy: [],
             attached: [],
+            compressed: null,
           },
         ],
         saidAgain: ["silent"],
@@ -1312,6 +1331,7 @@ describe("AgentChat", () => {
             asked: "Підсумуй, що змінилось",
             fedBy: [],
             attached: [],
+            compressed: null,
           },
           {
             id: "next",
@@ -1336,6 +1356,7 @@ describe("AgentChat", () => {
             asked: null,
             fedBy: [],
             attached: [],
+            compressed: null,
           },
         ],
       },
@@ -1376,6 +1397,7 @@ describe("AgentChat", () => {
             asked: null,
             fedBy: [],
             attached: [],
+            compressed: null,
           },
         ],
       },
@@ -1419,6 +1441,7 @@ describe("AgentChat", () => {
             asked: null,
             fedBy: [],
             attached: [],
+            compressed: null,
           },
         ],
       },
@@ -1456,6 +1479,7 @@ describe("AgentChat", () => {
             asked: null,
             fedBy: [],
             attached: [],
+            compressed: null,
           },
         ],
       },

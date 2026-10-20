@@ -23,5 +23,6 @@ export function notStartedTurn(
     wouldGo,
     state: NOT_STARTED_STATES[notStarted],
     calls: [],
+    compressed: null,
   };
 }

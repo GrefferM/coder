@@ -97,7 +97,12 @@ function remembering(memory: string | null, asked: unknown[] = []): RunMemory {
     sharedMemory: async (runId, questionId) => {
       asked.push([runId, questionId]);
 
-      return memory;
+      return memory === null
+        ? null
+        : {
+            text: memory,
+            coversPlace: 0,
+          };
     },
   };
 }
@@ -1492,5 +1497,118 @@ describe("LlmService and the temperature", () => {
 
   it("opens the client with the temperature the person set", async () => {
     assert.equal((await openedWith(0.7)).temperature, 0.7);
+  });
+});
+
+describe("LlmService and the composer's call", () => {
+  const COMPOSING = {
+    turnId: "turn-1",
+    providerId: TEST_PROVIDER_ID,
+    model: "claude-sonnet-4-5",
+    temperature: 0.3,
+    answerCeiling: 2048,
+    messages: [
+      {
+        from: "person" as const,
+        text: "Усе, що вище",
+      },
+    ],
+    runId: "77777777-7777-4777-8777-777777777777",
+    questionId: "44444444-4444-4444-8444-444444444444",
+  };
+
+  function serviceOf(heard: AgentChunk[], clients: Record<string, AgentClient>): LlmService {
+    return new LlmService(keyStore("sk-1"), voice(heard), runner(), noServers(), noMemory(), toolArguments, clients);
+  }
+
+  it("asks the model once, with no tools, and says nothing onward since its words are a memory", async () => {
+    const provider = speaking([
+      new AIMessageChunk({
+        content: "Стисла пам'ять",
+      }),
+    ]);
+    const heard: AgentChunk[] = [];
+
+    const answer = await serviceOf(heard, provider.clients).compose(COMPOSING);
+
+    assert.equal(answer.text, "Стисла пам'ять");
+    assert.equal(answer.isStopped, false);
+    assert.equal(provider.conversations.length, 1);
+    assert.deepEqual(provider.boundTools, []);
+    assert.deepEqual(heard, []);
+  });
+
+  it("gives the model the one message and no system prompt before it", async () => {
+    const provider = speaking([
+      new AIMessageChunk({
+        content: "Зміст",
+      }),
+    ]);
+
+    await serviceOf([], provider.clients).compose(COMPOSING);
+
+    assert.deepEqual(
+      provider.conversations[0].map((message) => message.content),
+      ["Усе, що вище"],
+    );
+  });
+
+  it("hands the model's own ceiling and the agent's temperature to the client", async () => {
+    const provider = speaking([
+      new AIMessageChunk({
+        content: "Зміст",
+      }),
+    ]);
+
+    await serviceOf([], provider.clients).compose(COMPOSING);
+
+    assert.equal(provider.openings[0].answerTokens, 2048);
+    assert.equal(provider.openings[0].temperature, 0.3);
+  });
+
+  it("opens the client with no temperature where the person set zero", async () => {
+    const provider = speaking([
+      new AIMessageChunk({
+        content: "Зміст",
+      }),
+    ]);
+
+    await serviceOf([], provider.clients).compose({
+      ...COMPOSING,
+      temperature: 0,
+    });
+
+    assert.equal(provider.openings[0].temperature, undefined);
+  });
+
+  it("ends as stopped where a stop reaches it under the turn's own id", async () => {
+    let service: LlmService | null = null;
+    const model = {
+      bindTools: () => model,
+      stream: () => {
+        service?.stop({
+          turnId: COMPOSING.turnId,
+        });
+
+        throw new Error("aborted");
+      },
+    };
+
+    service = serviceOf([], {
+      [TEST_PROVIDER_ID]: {
+        needs: ["key"],
+        open: () => <BaseChatModel>(<unknown>model),
+      },
+    });
+
+    const answer = await service.compose(COMPOSING);
+
+    assert.equal(answer.isStopped, true);
+  });
+
+  it("throws the provider's fault as the app's refusal, as an answer's turn does", async () => {
+    await assert.rejects(serviceOf([], faulting(new Error("401"))).compose(COMPOSING), (failure: Error) =>
+      failure.message.startsWith(LLM_ASK_FAILED),
+    );
   });
 });

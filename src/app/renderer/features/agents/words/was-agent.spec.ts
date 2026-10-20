@@ -63,6 +63,8 @@ describe("wasAgent", () => {
       serverTools: null,
       agentTools: null,
       color: null,
+      compressAt: null,
+      compressTo: null,
       maxCalls: null,
       temperature: null,
       isActive: null,
@@ -101,6 +103,23 @@ describe("wasAgent", () => {
     );
 
     expect(was.memory).toBe(AGENT_MEMORY_WORDS.own);
+  });
+
+  it("says the compression's numbers as percents, a dash where the file never wrote one", () => {
+    const was = wasAgent(
+      draft({
+        compressAt: 80,
+        compressTo: 20,
+      }),
+      draft({
+        compressAt: null,
+        compressTo: 10,
+      }),
+      NAMING,
+    );
+
+    expect(was.compressAt).toBe("—");
+    expect(was.compressTo).toBe("10 %");
   });
 
   it("names a prompt the project no longer has by the word for none at all", () => {

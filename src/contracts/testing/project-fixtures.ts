@@ -17,6 +17,8 @@ export function anAgent(patch: Partial<Agent> = {}): Agent {
     y: 100,
     maxCalls: 8,
     temperature: 0,
+    compressAt: 90,
+    compressTo: 10,
     ...patch,
   };
 }

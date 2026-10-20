@@ -62,6 +62,7 @@ const RUN: WholeRun = {
       attached: [],
     },
   ],
+  memories: [],
   walk: [
     step({}),
     step({

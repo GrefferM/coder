@@ -31,6 +31,7 @@ function run(walk: WholeStep[], patch: Partial<WholeRun> = {}): WholeRun {
     worked: 5_000,
     questions: [],
     walk,
+    memories: [],
     ...patch,
   };
 }

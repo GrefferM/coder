@@ -1,5 +1,5 @@
 import type { RunQuestion } from "./run-question.interface";
-import type { WholeStep } from "../../../contracts/runs";
+import type { WholeMemory, WholeStep } from "../../../contracts/runs";
 
 /** One row of the history: a run without what happened inside it. */
 export interface Run {
@@ -32,4 +32,6 @@ export interface RunWhole extends Run {
   /** The flow's questions in asking order; each step names the one it grew from. */
   questions: RunQuestion[];
   walk: WholeStep[];
+  /** Every compression of a memory in the run, in the order of the steps that paid for them. */
+  memories: WholeMemory[];
 }

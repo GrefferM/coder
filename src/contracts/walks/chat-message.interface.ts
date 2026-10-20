@@ -2,6 +2,7 @@ import type { AttachedFile } from "./attached-file.interface";
 import type { ChatCost } from "./chat-cost.interface";
 import type { NotStartedReason } from "../llm";
 import type { TurnCall, ChatStopReason } from "../runs";
+import type { CompressionSettings } from "./compression-settings.interface";
 import type { TurnLength } from "./turn-length.interface";
 import type { ChatMessageFrom } from "./chat-message-from.type";
 
@@ -31,6 +32,8 @@ export interface ChatMessage {
   notStarted: NotStartedReason | null;
   /** What would have gone, in characters, on the one turn the ceiling refused. */
   wouldGo: TurnLength | null;
+  /** How the agent was set to compress when it did before this turn; the stream says it on a rule. */
+  compressed: CompressionSettings | null;
   /** Calls this turn made; they stay in the stream after the working card is gone. */
   calls: TurnCall[];
   /** When this turn began; «КРОК 2 · 19:29» reads its hour from here. */

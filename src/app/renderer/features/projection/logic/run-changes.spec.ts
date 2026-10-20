@@ -51,6 +51,7 @@ function run(walk: WholeStep[]): WholeRun {
     worked: 5_000,
     questions: [],
     walk,
+    memories: [],
   };
 }
 

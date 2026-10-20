@@ -42,6 +42,8 @@ export const BROKEN_PLACE_FIELD_WORDS: Record<string, string> = {
   color: "колір",
   temperature: "температура",
   maxCalls: "стеля викликів",
+  compressAt: "поріг стиснення",
+  compressTo: "ціль стиснення",
   contextCeiling: "стеля контексту",
   answerCeiling: "стеля відповіді",
   inputPrice: "ціна входу",

@@ -1,4 +1,5 @@
 import type { ChatCost } from "./chat-cost.interface";
+import type { CompressedMemory } from "./compressed-memory.interface";
 import type { NotStartedReason } from "../llm";
 import type { TurnCall } from "../runs";
 import type { TurnLength } from "./turn-length.interface";
@@ -23,4 +24,6 @@ export interface TurnAnswer {
   /** How the step ended, for the record; a turn that never began has an end of its own. */
   state: string;
   calls: TurnCall[];
+  /** The memory the composer compressed before this turn, whose cost is in `cost`; null where none was. */
+  compressed: CompressedMemory | null;
 }

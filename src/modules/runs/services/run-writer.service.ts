@@ -111,6 +111,15 @@ export class RunWriter {
         stepId: step.id,
       });
 
+      // What the composer wrote for this turn's memory, in the same write as the turn that paid for it.
+      if (payload.compressed !== null) {
+        await store.addMemory({
+          ...payload.compressed,
+          runId: payload.runId,
+          stepId: step.id,
+        });
+      }
+
       for (const [index, call] of payload.calls.entries()) {
         await this.saveCall(store, step.id, index + 1, call);
       }
