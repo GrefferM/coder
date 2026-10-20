@@ -57,6 +57,8 @@ export class CommandWay implements ToolWay {
       exitCode: result.exitCode,
       // A command reports failure by exit code, which the card reads; «ні» is a server's word.
       isFailed: false,
+      cost: null,
+      memories: [],
     };
   }
 }

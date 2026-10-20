@@ -36,6 +36,6 @@ export interface AddStep {
   startedAt: number;
   endedAt: number;
   calls: AddCall[];
-  /** The composer's message this turn paid for before it went, or null when its memory was not compressed. */
-  compressed: MemoryFacts | null;
+  /** The compressions this turn paid for before it went: its own memory's and its tools'; empty when none was made. */
+  memories: MemoryFacts[];
 }

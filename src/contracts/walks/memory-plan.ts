@@ -1,4 +1,4 @@
-import type { FilledAgent } from "../project";
+import type { MemorySettings } from "../project";
 import type { MemoryPlan } from "./memory-plan.interface";
 import type { TurnLength } from "./turn-length.interface";
 
@@ -26,7 +26,7 @@ export function memoryThreshold(compressAt: number, ceiling: number): number {
  *
  * Otherwise the turn goes as it stands below the threshold, and at it the memory is compressed to the target.
  */
-export function memoryPlan(agent: FilledAgent, length: TurnLength): MemoryPlan {
+export function memoryPlan(agent: MemorySettings, length: TurnLength): MemoryPlan {
   const { prompt, asked, total, ceiling } = length;
 
   if (agent.memory === "none") {

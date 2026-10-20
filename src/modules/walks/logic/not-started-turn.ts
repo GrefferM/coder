@@ -24,5 +24,6 @@ export function notStartedTurn(
     state: NOT_STARTED_STATES[notStarted],
     calls: [],
     compressed: null,
+    toolMemories: [],
   };
 }

@@ -545,6 +545,33 @@ describe("runStream", () => {
     });
   });
 
+  it("says nothing over a turn of a compression it paid for a tool's memory, whose agent is not the one that spoke", () => {
+    const paid = step();
+    const said = runStream({
+      ...run([paid]),
+      memories: [
+        {
+          id: "memory-1",
+          stepId: paid.id,
+          stepPlace: 1,
+          agentId: "tool-agent",
+          questionId: "question-1",
+          coversPlace: 1,
+          text: "Зміст",
+          lengthBefore: 91_000,
+          lengthAfter: 9_400,
+          compressAt: 70,
+          compressTo: 30,
+          inputTokens: 10,
+          outputTokens: 5,
+          money: null,
+        },
+      ],
+    });
+
+    expect(said.find((message) => message.from === "agent")!.compressed).toBeNull();
+  });
+
   it("says nothing of a compression over a turn that paid for none", () => {
     const said = runStream(run([step()]));
 

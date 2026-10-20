@@ -120,9 +120,9 @@ export class RunStepEntity implements RunStepRecord {
   @OneToOne(() => RunStepSettingEntity, (given) => given.step)
   declare given: RunStepSettingEntity;
 
-  /** The memory the composer wrote before this turn, where it paid for one. */
-  @OneToOne(() => RunMemoryEntity, (memory) => memory.step)
-  declare composed: RunMemoryEntity | null;
+  /** The memories the composers wrote that this turn paid for: its own, and its tools' where they had to be compressed. */
+  @OneToMany(() => RunMemoryEntity, (memory) => memory.step)
+  declare memories: RunMemoryEntity[];
 
   @OneToMany(() => RunCallEntity, (call) => call.step)
   declare calls: RunCallEntity[];

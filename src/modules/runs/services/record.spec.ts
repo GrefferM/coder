@@ -90,7 +90,7 @@ function step(runId: string, patch: Partial<AddStep> = {}): AddStep {
     startedAt: 900,
     endedAt: 2_000,
     calls: [],
-    compressed: null,
+    memories: [],
     ...patch,
   };
 }
@@ -1569,9 +1569,11 @@ describe("the record", () => {
           step(runId, {
             asked: "Ще раз",
             said: "ЗНАЙДЕНО\n- other.md",
-            compressed: composed({
-              questionId,
-            }),
+            memories: [
+              composed({
+                questionId,
+              }),
+            ],
           }),
         );
 
@@ -1593,9 +1595,11 @@ describe("the record", () => {
         await writer.step(step(runId));
         await writer.step(
           step(runId, {
-            compressed: composed({
-              questionId,
-            }),
+            memories: [
+              composed({
+                questionId,
+              }),
+            ],
           }),
         );
 
@@ -1612,20 +1616,24 @@ describe("the record", () => {
         await writer.step(
           step(runId, {
             said: "Друга",
-            compressed: composed({
-              questionId,
-              coversPlace: 1,
-            }),
+            memories: [
+              composed({
+                questionId,
+                coversPlace: 1,
+              }),
+            ],
           }),
         );
         await writer.step(
           step(runId, {
             said: "Третя",
-            compressed: composed({
-              questionId,
-              coversPlace: 2,
-              text: "Знайдено report.md і Друга",
-            }),
+            memories: [
+              composed({
+                questionId,
+                coversPlace: 2,
+                text: "Знайдено report.md і Друга",
+              }),
+            ],
           }),
         );
 
@@ -1644,9 +1652,11 @@ describe("the record", () => {
         await writer.step(step(runId));
         const paid = await writer.step(
           step(runId, {
-            compressed: composed({
-              questionId,
-            }),
+            memories: [
+              composed({
+                questionId,
+              }),
+            ],
           }),
         );
         const whole = await reader.one(runId);
@@ -1664,13 +1674,75 @@ describe("the record", () => {
         assert.equal(whole?.memories[0].money, 0.0004);
       });
 
+      it("tells a compression the record is yet to be told of in the place of the question and the answers it covers, then the answers after it", async () => {
+        const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000214");
+        const found = await writer.step(step(runId));
+
+        await writer.step(
+          step(runId, {
+            agentId: TELLER,
+            agentName: "Рев'юер",
+            asked: "ЗНАЙДЕНО\n- report.md",
+            said: "Перевірено",
+            fromStepIds: [found],
+          }),
+        );
+
+        const told = await reader.sharedMemory(runId, questionId, SEEKER, {
+          text: "Ще не записане стиснення",
+          coversPlace: 1,
+        });
+
+        assert.ok(
+          told?.text.includes(
+            "ПОПЕРЕДНЄ, СТИСЛО (питання людини і відповіді до цього моменту):\nЩе не записане стиснення",
+          ),
+        );
+        assert.ok(!told?.text.includes("ПИТАННЯ ЛЮДИНИ → Шукач:"));
+        assert.ok(told?.text.includes("ВІДПОВІДЬ Рев'юер"));
+        assert.equal(told?.coversPlace, 2);
+      });
+
+      it("leaves the written compression standing where it reaches further than one the record is yet to be told of", async () => {
+        const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000215");
+
+        await writer.step(step(runId));
+        await writer.step(
+          step(runId, {
+            said: "Друга",
+          }),
+        );
+        await writer.step(
+          step(runId, {
+            said: "Третя",
+            memories: [
+              composed({
+                questionId,
+                coversPlace: 2,
+                text: "Записане стиснення",
+              }),
+            ],
+          }),
+        );
+
+        const told = (
+          await reader.sharedMemory(runId, questionId, SEEKER, {
+            text: "Коротше стиснення",
+            coversPlace: 1,
+          })
+        )?.text;
+
+        assert.ok(told?.includes("Записане стиснення"));
+        assert.ok(!told?.includes("Коротше стиснення"));
+      });
+
       it("keeps an agent's own thread's compression apart, with no question", async () => {
         const { runId } = await opened("aaaaaaaa-0000-4000-8000-000000000210");
 
         await writer.step(step(runId));
         await writer.step(
           step(runId, {
-            compressed: composed(),
+            memories: [composed()],
           }),
         );
 
@@ -1678,6 +1750,35 @@ describe("the record", () => {
 
         assert.equal(whole?.memories[0].questionId, null);
         assert.equal(whole?.memories[0].agentId, SEEKER);
+      });
+
+      it("keeps both compressions a step paid for: its own memory's and a tool's", async () => {
+        const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000213");
+
+        await writer.step(step(runId));
+
+        const paid = await writer.step(
+          step(runId, {
+            memories: [
+              composed({
+                questionId,
+              }),
+              composed({
+                agentId: TELLER,
+                questionId,
+                text: "Рев'юер уже бачив report.md",
+              }),
+            ],
+          }),
+        );
+        const whole = await reader.one(runId);
+
+        assert.equal(whole?.memories.length, 2);
+        assert.deepEqual(
+          whole?.memories.map((one) => one.stepId),
+          [paid, paid],
+        );
+        assert.deepEqual(whole?.memories.map((one) => one.agentId).sort(), [SEEKER, TELLER].sort());
       });
 
       it("writes none for a step that compressed nothing", async () => {
@@ -1693,9 +1794,11 @@ describe("the record", () => {
 
         await writer.step(
           step(runId, {
-            compressed: composed({
-              questionId,
-            }),
+            memories: [
+              composed({
+                questionId,
+              }),
+            ],
           }),
         );
         await writer.close({

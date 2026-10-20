@@ -22,3 +22,13 @@ export const AGENT_PROMPT_SLOT = "{prompt}";
 export const AGENT_MEMORY_SLOT = "{memory}";
 export const AGENT_ASKED_SLOT = "{asked}";
 export const AGENT_CEILING_SLOT = "{ceiling}";
+/**
+ * The agent's own words leave its memory less than its model's ceiling holds back for it, so its call did not begin: what
+ * the words are, what is held back, and the threshold they must stay under. Nothing was cut.
+ */
+export const AGENT_RESERVED_NOTE =
+  "[агент «{name}» не почав: його промпт і запит — {words} символів, і ще {reserve} зарезервовано під його пам'ять, а поріг стиснення — {limit} (стеля моделі {model} — {ceiling}). Разом вони мають лишатися нижче порогу. Нічого не обрізали.]";
+/** The slots of the note above, besides the name and the model. */
+export const AGENT_WORDS_SLOT = "{words}";
+export const AGENT_RESERVE_SLOT = "{reserve}";
+export const AGENT_LIMIT_SLOT = "{limit}";

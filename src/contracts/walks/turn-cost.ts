@@ -1,5 +1,5 @@
-import { TOKENS_PER_PRICE_UNIT } from "../../../contracts";
-import type { ChatCost } from "../../../contracts";
+import { TOKENS_PER_PRICE_UNIT } from "../text";
+import type { ChatCost } from "./chat-cost.interface";
 
 /** A turn's cost: its tokens, and the money at the answering model's prices where it carried them. */
 export function turnCost(

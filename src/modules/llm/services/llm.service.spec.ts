@@ -21,8 +21,11 @@ import {
   LLM_NO_KEY,
   LLM_PROVIDER_NOT_BUILT,
   LLM_PROVIDER_SILENT,
+  COMPOSER_SAID_NOTHING_NOTE,
   RECORD_GONE_NOTE,
   REFUSAL_SAID_SEPARATOR,
+  composedMemory,
+  composedSharedMemory,
 } from "../../../contracts";
 import { LlmService } from "./llm.service";
 import { RunPodChat } from "./runpod-chat.service";
@@ -1124,7 +1127,11 @@ describe("LlmService and an agent called as a tool", () => {
     systemPrompt: "Ти рецензент.",
     tools: [],
     memory: "own",
+    compressAt: 70,
+    compressTo: 10,
     contextCeiling: 200_000,
+    inputPrice: 3,
+    outputPrice: 15,
   };
 
   const asking = (agent: string) =>
@@ -1357,6 +1364,9 @@ describe("LlmService and an agent called as a tool", () => {
         {
           ...REVIEWER_RUN,
           memory: "shared",
+          // Nothing is held back for the memory, so the ceiling is the whole wall.
+          compressAt: 100,
+          compressTo: 0,
           contextCeiling: 20,
         },
       ],
@@ -1610,5 +1620,474 @@ describe("LlmService and the composer's call", () => {
     await assert.rejects(serviceOf([], faulting(new Error("401"))).compose(COMPOSING), (failure: Error) =>
       failure.message.startsWith(LLM_ASK_FAILED),
     );
+  });
+});
+
+describe("LlmService and the memory of an agent called as a tool", () => {
+  const REVIEWER: AgentAgentTool = {
+    source: "agent",
+    name: "reviewer",
+    description: "Переглядає зміни",
+    agentId: "agent-2",
+  };
+
+  const REVIEWER_RUN: ReadyAgent = {
+    agentId: "agent-2",
+    name: "reviewer",
+    notReady: null,
+    providerId: TEST_PROVIDER_ID,
+    model: "claude-sonnet-4-5",
+    maxCalls: 5,
+    temperature: 0.3,
+    answerCeiling: 4096,
+    systemPrompt: "Ти рецензент.",
+    tools: [],
+    memory: "own",
+    compressAt: 70,
+    compressTo: 10,
+    contextCeiling: 10_000,
+    inputPrice: 3,
+    outputPrice: 15,
+  };
+
+  /** The caller asks the reviewer this. */
+  const asking = (request: string, id: string) =>
+    new AIMessageChunk({
+      content: "",
+      tool_calls: [
+        {
+          name: "reviewer",
+          args: {
+            request,
+          },
+          id,
+        },
+      ],
+    });
+
+  /** The composer's message, with what the provider counted for it. */
+  const composing = (content: string) =>
+    new AIMessageChunk({
+      content,
+      usage_metadata: {
+        input_tokens: 100,
+        output_tokens: 10,
+        total_tokens: 110,
+      },
+    });
+
+  const said = (content: string) =>
+    new AIMessageChunk({
+      content,
+    });
+
+  const serviceOf = (clients: Record<string, AgentClient>, record: RunMemory = noMemory()): LlmService =>
+    new LlmService(keyStore("sk-1"), voice([]), runner(), noServers(), record, toolArguments, clients);
+
+  const asked = (service: LlmService, agent: ReadyAgent = REVIEWER_RUN) =>
+    service.ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: [REVIEWER],
+      agents: [agent],
+    });
+
+  it("gives the agent, on its second call within the caller's turn, the first call and its answer ahead of the request", async () => {
+    const provider = speaking([
+      asking("Перше", "call-1"),
+      said("Відповідь 1"),
+      asking("Друге", "call-2"),
+      said("Відповідь 2"),
+      said("Готово."),
+    ]);
+
+    await asked(serviceOf(provider.clients));
+
+    assert.deepEqual(
+      provider.conversations[1].map((message) => message.content),
+      ["Ти рецензент.", "Перше"],
+    );
+    assert.deepEqual(
+      provider.conversations[3].map((message) => message.content),
+      ["Ти рецензент.", "Перше", "Відповідь 1", "Друге"],
+    );
+  });
+
+  it("forgets it when the caller's turn is over: the next turn opens with the request alone", async () => {
+    const provider = speaking([
+      asking("Перше", "call-1"),
+      said("Відповідь 1"),
+      said("Готово."),
+      asking("Друге", "call-2"),
+      said("Відповідь 2"),
+      said("Готово."),
+    ]);
+    const service = serviceOf(provider.clients);
+
+    await asked(service);
+    await asked(service);
+
+    assert.deepEqual(
+      provider.conversations[4].map((message) => message.content),
+      ["Ти рецензент.", "Друге"],
+    );
+  });
+
+  it("keeps no thread for an agent without memory", async () => {
+    const provider = speaking([
+      asking("Перше", "call-1"),
+      said("Відповідь 1"),
+      asking("Друге", "call-2"),
+      said("Відповідь 2"),
+      said("Готово."),
+    ]);
+
+    await asked(serviceOf(provider.clients), {
+      ...REVIEWER_RUN,
+      memory: "none",
+    });
+
+    assert.deepEqual(
+      provider.conversations[3].map((message) => message.content),
+      ["Ти рецензент.", "Друге"],
+    );
+  });
+
+  it("compresses the thread by the agent's composer before a call it would make too long, and goes with the message", async () => {
+    const long = "а".repeat(7_100);
+    const provider = speaking([
+      asking("Перше", "call-1"),
+      said(long),
+      asking("Друге", "call-2"),
+      composing("Перше питання, довга відповідь"),
+      said("Відповідь 2"),
+      said("Готово."),
+    ]);
+
+    const answer = await asked(serviceOf(provider.clients));
+
+    // The composer is asked once, with the whole thread fenced in one message and no system prompt.
+    const asked_ = provider.conversations[3].map((message) => String(message.content));
+
+    assert.equal(asked_.length, 1);
+    assert.ok(asked_[0].startsWith("<пам'ять>\n"));
+    assert.ok(asked_[0].includes(long));
+    // The agent then goes with the composed message ahead of the request.
+    assert.deepEqual(
+      provider.conversations[4].map((message) => message.content),
+      ["Ти рецензент.", `${composedMemory("Перше питання, довга відповідь")}Друге`],
+    );
+    assert.deepEqual(
+      answer.calls.map((call) => [call.output, call.isFailed]),
+      [
+        [long, false],
+        ["Відповідь 2", false],
+      ],
+    );
+  });
+
+  it("tells the caller what the composer cost at the agent's model's prices, and keeps no record of a memory that lived for the turn", async () => {
+    const provider = speaking([
+      asking("Перше", "call-1"),
+      said("а".repeat(7_100)),
+      asking("Друге", "call-2"),
+      composing("Стисло"),
+      said("Відповідь 2"),
+      said("Готово."),
+    ]);
+
+    const answer = await asked(serviceOf(provider.clients));
+
+    assert.equal(answer.memories.length, 1);
+    assert.equal(answer.memories[0].facts, null);
+    assert.equal(answer.memories[0].cost?.inputTokens, 100);
+    assert.equal(answer.memories[0].cost?.outputTokens, 10);
+    assert.ok(Math.abs((answer.memories[0].cost?.money ?? 0) - 0.00045) < 1e-12);
+  });
+
+  it("goes on with the composed message and the calls after it, not compressing again while they fit", async () => {
+    const provider = speaking([
+      asking("Перше", "call-1"),
+      said("а".repeat(7_100)),
+      asking("Друге", "call-2"),
+      composing("Стисло"),
+      said("Відповідь 2"),
+      asking("Третє", "call-3"),
+      said("Відповідь 3"),
+      said("Готово."),
+    ]);
+
+    const answer = await asked(serviceOf(provider.clients));
+
+    assert.deepEqual(
+      provider.conversations[6].map((message) => message.content),
+      ["Ти рецензент.", `${composedMemory("Стисло")}Друге`, "Відповідь 2", "Третє"],
+    );
+    assert.equal(answer.memories.length, 1);
+  });
+
+  it("does not begin a call whose words leave the memory no room below the threshold, and says so to the caller", async () => {
+    const provider = speaking([asking("Д".repeat(60), "call-1"), said("Готово.")]);
+
+    const answer = await asked(serviceOf(provider.clients), {
+      ...REVIEWER_RUN,
+      contextCeiling: 100,
+    });
+
+    assert.equal(provider.conversations.length, 2);
+    assert.deepEqual(
+      answer.calls.map((call) => [call.output, call.isFailed]),
+      [
+        [
+          "[агент «reviewer» не почав: його промпт і запит — 73 символів, і ще 10 зарезервовано під його пам'ять, а поріг стиснення — 70 (стеля моделі claude-sonnet-4-5 — 100). Разом вони мають лишатися нижче порогу. Нічого не обрізали.]",
+          true,
+        ],
+      ],
+    );
+    assert.equal(answer.text, "Готово.");
+  });
+
+  it("fails the call, and still tells what the composer cost, where it wrote nothing", async () => {
+    const provider = speaking([
+      asking("Перше", "call-1"),
+      said("а".repeat(7_100)),
+      asking("Друге", "call-2"),
+      composing(""),
+      said("Готово."),
+    ]);
+
+    const answer = await asked(serviceOf(provider.clients));
+
+    assert.deepEqual(
+      answer.calls.map((call) => call.isFailed),
+      [false, true],
+    );
+    assert.equal(answer.calls[1].output, COMPOSER_SAID_NOTHING_NOTE);
+    assert.equal(answer.memories.length, 1);
+    assert.equal(answer.memories[0].cost?.inputTokens, 100);
+  });
+
+  /** A record whose shared memory of the question is this long, up to the fifth step, and which keeps what it was asked. */
+  const recordOf = (memory: string, unwritten: unknown[] = []): RunMemory => ({
+    sharedMemory: async (_runId, _questionId, _agentId, standing) => {
+      unwritten.push(standing);
+
+      return {
+        text: standing === null ? memory : composedSharedMemory(standing.text),
+        coversPlace: 5,
+      };
+    },
+  });
+
+  const SHARED = {
+    ...REVIEWER_RUN,
+    memory: "shared" as const,
+  };
+
+  it("compresses the question's shared memory by the agent's composer before the call, and goes with it told in the shared memory's words", async () => {
+    const long = "б".repeat(7_100);
+    const provider = speaking([
+      asking("Перше", "call-1"),
+      composing("Стисло про питання"),
+      said("Відповідь 1"),
+      said("Готово."),
+    ]);
+
+    await asked(serviceOf(provider.clients, recordOf(long)), SHARED);
+
+    const composer = provider.conversations[1].map((message) => String(message.content));
+
+    assert.equal(composer.length, 1);
+    assert.ok(composer[0].includes(long));
+    assert.deepEqual(
+      provider.conversations[2].map((message) => message.content),
+      ["Ти рецензент.", `${composedSharedMemory("Стисло про питання")}Перше`],
+    );
+  });
+
+  it("hands the record the compression of the question's memory, under the agent's name and the question, with the lengths and what it cost", async () => {
+    const long = "б".repeat(7_100);
+    const provider = speaking([
+      asking("Перше", "call-1"),
+      composing("Стисло про питання"),
+      said("Відповідь 1"),
+      said("Готово."),
+    ]);
+
+    const answer = await asked(serviceOf(provider.clients, recordOf(long)), SHARED);
+
+    assert.equal(answer.memories.length, 1);
+    assert.deepEqual(answer.memories[0].facts, {
+      agentId: "agent-2",
+      questionId: TURN.questionId,
+      coversPlace: 5,
+      text: "Стисло про питання",
+      lengthBefore: 7_100,
+      lengthAfter: [..."Стисло про питання"].length,
+      compressAt: 70,
+      compressTo: 10,
+      inputTokens: 100,
+      outputTokens: 10,
+      money: answer.memories[0].cost?.money,
+    });
+  });
+
+  it("reads the record again for a second call of the turn with its compression put in the record's place, and does not compress it twice", async () => {
+    const long = "б".repeat(7_100);
+    const read: unknown[] = [];
+    const provider = speaking([
+      asking("Перше", "call-1"),
+      composing("Стисло про питання"),
+      said("Відповідь 1"),
+      asking("Друге", "call-2"),
+      said("Відповідь 2"),
+      said("Готово."),
+    ]);
+
+    const answer = await asked(serviceOf(provider.clients, recordOf(long, read)), SHARED);
+
+    assert.deepEqual(read, [
+      null,
+      {
+        text: "Стисло про питання",
+        coversPlace: 5,
+      },
+    ]);
+    assert.equal(answer.memories.length, 1);
+    assert.deepEqual(
+      provider.conversations[4].map((message) => message.content),
+      ["Ти рецензент.", `${composedSharedMemory("Стисло про питання")}Друге`],
+    );
+  });
+
+  it("goes with the shared memory as it stands while it is under the threshold, no composer asked", async () => {
+    const provider = speaking([asking("Перше", "call-1"), said("Відповідь 1"), said("Готово.")]);
+
+    const answer = await asked(serviceOf(provider.clients, recordOf("коротка")), SHARED);
+
+    assert.equal(provider.conversations.length, 3);
+    assert.deepEqual(answer.memories, []);
+  });
+
+  it("makes a compression of a shared memory under the call of another agent that one called, and tells it up to the first caller", async () => {
+    const long = "б".repeat(7_100);
+    const OUTER: ReadyAgent = {
+      ...SHARED,
+      agentId: "agent-3",
+      name: "outer",
+      tools: [
+        {
+          source: "agent",
+          name: "reviewer",
+          description: "Переглядає зміни",
+          agentId: "agent-2",
+        },
+      ],
+      memory: "none",
+    };
+    const OUTER_TOOL: AgentAgentTool = {
+      source: "agent",
+      name: "outer",
+      description: "Зовнішній",
+      agentId: "agent-3",
+    };
+    const provider = speaking([
+      new AIMessageChunk({
+        content: "",
+        tool_calls: [
+          {
+            name: "outer",
+            args: {
+              request: "Попроси",
+            },
+            id: "call-0",
+          },
+        ],
+      }),
+      asking("Перше", "call-1"),
+      composing("Стисло про питання"),
+      said("Відповідь 1"),
+      said("Зовнішній готовий"),
+      said("Готово."),
+    ]);
+
+    const answer = await serviceOf(provider.clients, recordOf(long)).ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: [OUTER_TOOL],
+      agents: [OUTER, SHARED],
+    });
+
+    assert.equal(answer.memories.length, 1);
+    assert.equal(answer.memories[0].facts?.agentId, "agent-2");
+  });
+
+  /** A round of the model that the provider counted: so many tokens in, so many out. */
+  const counted = (content: string, input: number, output: number) =>
+    new AIMessageChunk({
+      content,
+      usage_metadata: {
+        input_tokens: input,
+        output_tokens: output,
+        total_tokens: input + output,
+      },
+    });
+
+  it("tells up what the called agent's own turn cost at its model's prices", async () => {
+    const provider = speaking([asking("Перше", "call-1"), counted("Відповідь 1", 1_000, 100), said("Готово.")]);
+
+    const answer = await asked(serviceOf(provider.clients));
+
+    // A thousand tokens in at three per million, a hundred out at fifteen.
+    assert.equal(answer.called?.inputTokens, 1_000);
+    assert.equal(answer.called?.outputTokens, 100);
+    assert.ok(Math.abs((answer.called?.money ?? 0) - 0.0045) < 1e-12);
+    assert.deepEqual(answer.memories, []);
+  });
+
+  it("adds the turns of every call of the caller's turn, and the turns of the agents they called in turn", async () => {
+    const OUTER: ReadyAgent = {
+      ...REVIEWER_RUN,
+      agentId: "agent-3",
+      name: "outer",
+      memory: "none",
+      tools: [REVIEWER],
+    };
+    const OUTER_TOOL: AgentAgentTool = {
+      source: "agent",
+      name: "outer",
+      description: "Зовнішній",
+      agentId: "agent-3",
+    };
+    const provider = speaking([
+      new AIMessageChunk({
+        content: "",
+        tool_calls: [
+          {
+            name: "outer",
+            args: {
+              request: "Попроси",
+            },
+            id: "call-0",
+          },
+        ],
+      }),
+      // The outer agent asks the reviewer; the reviewer answers; the outer agent answers.
+      asking("Перше", "call-1"),
+      counted("Відповідь рев'юера", 1_000, 100),
+      counted("Відповідь зовнішнього", 2_000, 200),
+      said("Готово."),
+    ]);
+
+    const answer = await serviceOf(provider.clients).ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: [OUTER_TOOL],
+      agents: [OUTER, REVIEWER_RUN],
+    });
+
+    // The reviewer's turn is counted once, with the outer agent's own turn, on the caller's step.
+    assert.equal(answer.called?.inputTokens, 3_000);
+    assert.equal(answer.called?.outputTokens, 300);
   });
 });

@@ -20,6 +20,6 @@ export interface WrittenTurn {
   startedAt: number;
   endedAt: number;
   calls: TurnCall[];
-  /** The composer's message this turn paid for before it went; null where its memory was not compressed. */
-  compressed: MemoryFacts | null;
+  /** The compressions this turn paid for before it went: its own memory's and its tools'; empty where none was made. */
+  memories: MemoryFacts[];
 }

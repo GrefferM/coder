@@ -1,4 +1,5 @@
-import type { ChatTurn, TurnMemory } from "../../../contracts";
+import type { TurnMemory } from "./turn-memory.interface";
+import type { ChatTurn } from "../llm";
 
 /**
  * What the model is given, in order: the agent's own thread, then the turn's words, opened by the shared memory where the

@@ -1,3 +1,5 @@
+import type { ToolMemory } from "../../../contracts/llm";
+import type { ChatCost } from "../../../contracts/walks/chat-cost.interface";
 import type { ToolSource } from "../../../contracts/project";
 
 /**
@@ -19,6 +21,10 @@ export interface CallResult {
   output: string;
   exitCode: number | null;
   isFailed: boolean;
+  /** What an agent's turn cost; a command and a server's function cost the turn nothing of its own. */
+  cost: ChatCost | null;
+  /** What an agent's call had compressed on the way; a command and a server's function compress nothing. */
+  memories: ToolMemory[];
 }
 
 /**

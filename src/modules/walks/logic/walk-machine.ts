@@ -1065,7 +1065,10 @@ function writtenStep(event: WalkFact<"answered">, config: ProjectConfig, said: s
       // Nothing went, so the turn took no time at all.
       endedAt: event.answer.notStarted === null ? event.endedAt : event.startedAt,
       calls: event.answer.calls,
-      compressed: event.answer.compressed?.facts ?? null,
+      memories: [
+        ...(event.answer.compressed === null ? [] : [event.answer.compressed.facts]),
+        ...event.answer.toolMemories,
+      ],
     },
   };
 }

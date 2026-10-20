@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { turnMessages } from "./turn-messages";
-import type { TurnMemory } from "../../../contracts";
+import type { TurnMemory } from "./turn-memory.interface";
 
 function memory(patch: Partial<TurnMemory> = {}): TurnMemory {
   return {

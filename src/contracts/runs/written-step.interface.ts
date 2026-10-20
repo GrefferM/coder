@@ -8,6 +8,9 @@ export interface WrittenStep extends StepFacts {
   startedAt: number;
   endedAt: number;
   calls: WrittenCall[];
-  /** The composer's message this turn paid for before it went, or null when its memory was not compressed. */
-  compressed: MemoryFacts | null;
+  /**
+   * The memories this turn paid to have compressed: its own before it went, then those of the agents it called as tools.
+   * Empty where none was.
+   */
+  memories: MemoryFacts[];
 }

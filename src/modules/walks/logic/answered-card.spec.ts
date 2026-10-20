@@ -18,6 +18,7 @@ function answer(patch: Partial<TurnAnswer> = {}): TurnAnswer {
     state: RUN_STEP_DONE,
     calls: [],
     compressed: null,
+    toolMemories: [],
     ...patch,
   };
 }

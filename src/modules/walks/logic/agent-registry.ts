@@ -1,6 +1,6 @@
 import { agentReadiness } from "./agent-readiness";
 
-import { agentStands, agentTools, isAgentGrant } from "../../../contracts";
+import { agentStands, agentTools, isAgentGrant, memorySettingsOf } from "../../../contracts";
 import type { Agent, GrantTargets, ProjectConfig, ProviderState, ReachableAgent } from "../../../contracts";
 
 /**
@@ -75,8 +75,10 @@ function reachableOf(
     answerCeiling: model.answerCeiling,
     systemPrompt: stands.prompt?.text ?? null,
     tools: agentTools(agent.tools, targets),
-    // Called as a tool it is given the question's shared memory, or the request alone; both weighed against this.
-    memory: agent.memory,
+    // Called as a tool it keeps what the rule of its memory says, and is compressed as a walking agent is.
+    ...memorySettingsOf(readiness.agent),
     contextCeiling: model.contextCeiling,
+    inputPrice: model.inputPrice,
+    outputPrice: model.outputPrice,
   };
 }

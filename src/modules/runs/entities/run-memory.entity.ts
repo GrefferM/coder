@@ -5,7 +5,6 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -104,7 +103,7 @@ export class RunMemoryEntity implements RunMemoryRecord {
 
   /** The step whose turn paid for this compression. */
   @Index()
-  @OneToOne(() => RunStepEntity, (step) => step.composed, {
+  @ManyToOne(() => RunStepEntity, (step) => step.memories, {
     onDelete: "CASCADE",
   })
   @JoinColumn()

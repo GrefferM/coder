@@ -15,3 +15,4 @@ export * from "./reachable-agent.type";
 export * from "./live-call.interface";
 export * from "./not-started-reason.type";
 export * from "./said-turn.interface";
+export * from "./tool-memory.interface";

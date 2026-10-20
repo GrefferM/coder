@@ -81,9 +81,12 @@ function noteOf(step: WholeStep): string | null {
   return step.state === RUN_STEP_CALLS ? callsExhaustedNote(step.calls.length) : null;
 }
 
-/** How the agent was set when this step paid for a compression, as the record kept it; nothing for a step that paid for none. */
+/**
+ * How the agent was set when this step paid for a compression of its own memory, as the record kept it; nothing for a
+ * step that paid for none. What the agents it called as tools had compressed under the same step is not the stream's to say.
+ */
 function compressedOf(run: WholeRun, step: WholeStep): CompressionSettings | null {
-  const memory = run.memories.find((one) => one.stepId === step.id);
+  const memory = run.memories.find((one) => one.stepId === step.id && one.agentId === step.agentId);
 
   return memory === undefined ? null : compressionOf(memory);
 }

@@ -1,24 +1,22 @@
 import {
-  COMPOSER_SAID_NOTHING_NOTE,
   RUN_STEP_DONE,
   RUN_STEP_FAILED,
-  addedMoney,
+  addedCost,
   codePoints,
-  composedMemory,
-  composedSharedMemory,
-  composerLength,
-  composerMessage,
-  cutComposed,
+  composedOutcome,
+  composerAsk,
+  composerBudget,
   fellNote,
   memoryLength,
-  memoryText,
-  newestText,
+  turnCost,
+  turnMessages,
 } from "../../../contracts";
-import { cutEnd, notStartedReason, notStartedTurn, turnCost, turnMessages, turnWall } from "../logic";
+import { cutEnd, notStartedReason, notStartedTurn, turnWall } from "../logic";
 import { notStartedNote } from "../words";
 import type {
   ChatCost,
   CompressedMemory,
+  CompressionSettings,
   FilledModel,
   SaidTurn,
   TurnAnswer,
@@ -30,7 +28,6 @@ import type { TurnLlm } from "../interfaces";
 
 /** A memory the composer wrote on the way to a turn, with what the call cost and what the turn then goes with. */
 interface Composed {
-  said: SaidTurn;
   cost: ChatCost | null;
   compressed: CompressedMemory;
   memory: TurnMemory;
@@ -61,7 +58,7 @@ export class TurnAsker {
 
     try {
       if (wall.compression !== null) {
-        const budget = this.written(wall, wall.compression.budget);
+        const budget = composerBudget(wall.agent.memory, wall.compression.budget);
         const said = await this.compose(turn, wall, budget);
 
         // A stop is the person's act, not the composer's fall; what it had written is not a memory, but what it used is spent.
@@ -97,24 +94,9 @@ export class TurnAsker {
     }
   }
 
-  /**
-   * What the composer may write, in characters: the compression's budget less what the memory is told in around it,
-   * since the ceiling counts that too.
-   */
-  private written(wall: TurnAsked, budget: number): number {
-    const told = wall.agent.memory === "shared" ? composedSharedMemory("") : composedMemory("");
-
-    return Math.max(1, budget - codePoints(told));
-  }
-
-  /**
-   * The composer, asked for the main of the whole memory in no more than so many words, the most important first. It is
-   * one message, the memory fenced in and then the instruction, with no system prompt. A memory too long to be read with
-   * its instruction is read from its newest end.
-   */
+  /** The composer, asked for the main of the whole memory in no more than so many words, the most important first. */
   private async compose(turn: TurnToAsk, wall: TurnAsked, budget: number): Promise<SaidTurn> {
     const { agent, model } = wall;
-    const memory = newestText(memoryText(turn.memory), model.contextCeiling - composerLength(model.contextCeiling));
 
     return this.llm.compose({
       turnId: turn.turnId,
@@ -122,52 +104,31 @@ export class TurnAsker {
       model: model.title,
       temperature: agent.temperature,
       answerCeiling: model.answerCeiling,
-      messages: [
-        {
-          from: "person",
-          text: composerMessage(memory, budget),
-        },
-      ],
+      messages: composerAsk(turn.memory, model.contextCeiling, budget),
       runId: turn.runId,
       questionId: turn.questionId,
     });
   }
 
-  /**
-   * What the composer wrote, held to its budget by cutting the end off, and what the turn goes with in place of the
-   * memory it read; nothing written is a fall.
-   */
+  /** What the composer wrote, with the memory the turn goes with in place of the one it read, and what it cost. */
   private composed(
     turn: TurnToAsk,
     wall: TurnAsked,
     said: SaidTurn,
     budget: number,
-    compression: { at: number; to: number },
+    compression: CompressionSettings,
   ): Composed {
     const { agent, model } = wall;
-    const text = cutComposed(said.text, budget);
-
-    if (text === "") {
-      throw new Error(COMPOSER_SAID_NOTHING_NOTE);
-    }
-
-    const isShared = agent.memory === "shared";
-    const memory: TurnMemory = {
-      thread: [],
-      composed: isShared ? "" : composedMemory(text),
-      shared: isShared ? composedSharedMemory(text) : "",
-      covers: turn.memory.covers,
-    };
+    const { text, memory } = composedOutcome(said.text, budget, agent.memory, turn.memory.covers);
     const cost = turnCost(said.inputTokens, said.outputTokens, model);
 
     return {
-      said,
       cost,
       memory,
       compressed: {
         facts: {
           agentId: agent.id,
-          questionId: isShared ? turn.questionId : null,
+          questionId: agent.memory === "shared" ? turn.questionId : null,
           coversPlace: turn.memory.covers,
           text,
           lengthBefore: memoryLength(turn.memory),
@@ -213,7 +174,13 @@ export class TurnAsker {
     return {
       text: said.text,
       note: cut?.note ?? null,
-      cost: this.added(composed?.cost ?? null, turnCost(said.inputTokens, said.outputTokens, model)),
+      // The turn's own bill, the composer's before it, and what the agents it called cost, theirs and their composers'.
+      cost: [
+        composed?.cost ?? null,
+        turnCost(said.inputTokens, said.outputTokens, model),
+        said.called,
+        ...said.memories.map((one) => one.cost),
+      ].reduce<ChatCost | null>(addedCost, null),
       answerCeiling: model.answerCeiling,
       isFailure: false,
       fell: null,
@@ -223,6 +190,8 @@ export class TurnAsker {
       state: cut?.state ?? RUN_STEP_DONE,
       calls: said.calls ?? [],
       compressed: composed?.compressed ?? null,
+      // Those of the agents it called whose memory the record keeps; the rest are only paid for, above.
+      toolMemories: said.memories.flatMap((one) => (one.facts === null ? [] : [one.facts])),
     };
   }
 
@@ -251,19 +220,7 @@ export class TurnAsker {
       state: RUN_STEP_FAILED,
       calls: [],
       compressed: composed?.compressed ?? null,
-    };
-  }
-
-  /** Two bills as one: tokens added, money added where either is known. */
-  private added(one: ChatCost | null, other: ChatCost | null): ChatCost | null {
-    if (one === null || other === null) {
-      return one ?? other;
-    }
-
-    return {
-      inputTokens: one.inputTokens + other.inputTokens,
-      outputTokens: one.outputTokens + other.outputTokens,
-      money: addedMoney([one.money, other.money]),
+      toolMemories: [],
     };
   }
 }

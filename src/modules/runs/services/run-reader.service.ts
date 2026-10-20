@@ -32,7 +32,7 @@ import type {
   RunQuestionEntity,
   RunStepEntity,
 } from "../entities";
-import type { AttachmentKind, PackedAttachment, SharedMemory, WholeMemory } from "../../../contracts";
+import type { AttachmentKind, PackedAttachment, SharedMemory, UnwrittenMemory, WholeMemory } from "../../../contracts";
 import type { CallPlace, ChatStopReason, Run, RunStore, RunWhole, WholeCall, WholeStep } from "../interfaces";
 
 /** The record read back: the run list and one run whole. */
@@ -91,10 +91,16 @@ export class RunReader {
    * What has happened to one question so far, as an agent with the shared memory reads it: the question with its files,
    * then every answered turn in the order it landed and whom its work came from; fallen, cut or stopped turns and calls
    * are left out. Where the agent's memory of this question was compressed, the composer's message stands for the
-   * question and every answer up to the place it covers, and the answers after it follow as they were. Empty while
+   * question and every answer up to the place it covers, and the answers after it follow as they were; so does one
+   * the caller's turn has made and the record is yet to be told of (`unwritten`). Empty while
    * nothing has answered; null for a run or a question the record does not hold.
    */
-  async sharedMemory(runId: string, questionId: string, agentId: string): Promise<SharedMemory | null> {
+  async sharedMemory(
+    runId: string,
+    questionId: string,
+    agentId: string,
+    unwritten: UnwrittenMemory | null = null,
+  ): Promise<SharedMemory | null> {
     const row = await this.store.runById(runId);
 
     if (row === null) {
@@ -108,7 +114,9 @@ export class RunReader {
     }
 
     const walk = (await this.store.walkOf(runId)).sort((one, other) => one.place - other.place);
-    const composed = latestMemory(await this.memoriesOf(runId), agentId, questionId);
+    const written = latestMemory(await this.memoriesOf(runId), agentId, questionId);
+    // A compression the record does not hold yet stands in its place where it reaches as far as the one it holds.
+    const composed = unwritten !== null && unwritten.coversPlace >= (written?.coversPlace ?? 0) ? unwritten : written;
     // What the composer's message stands for is not told again.
     const answered = walk.filter(
       (step) =>

@@ -55,6 +55,8 @@ export class ServerWay implements ToolWay {
       exitCode: null,
       // «функція є, але сервер сказав "ні"»: its words go to the model whole, and the call says so.
       isFailed: result.isFailed,
+      cost: null,
+      memories: [],
     };
   }
 }

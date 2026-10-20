@@ -7,7 +7,11 @@ import {
   AGENT_MEMORY_SLOT,
   AGENT_MODEL_SLOT,
   AGENT_NAME_SLOT,
+  AGENT_LIMIT_SLOT,
   AGENT_PROMPT_SLOT,
+  AGENT_RESERVE_SLOT,
+  AGENT_RESERVED_NOTE,
+  AGENT_WORDS_SLOT,
   AGENT_TOO_LONG_NOTE,
   AGENT_TOTAL_SLOT,
   AGENT_TOOL_INPUT_DESCRIPTION,
@@ -22,6 +26,16 @@ import {
 } from "../constants";
 import {
   LLM_NO_ADDRESS,
+  addedCost,
+  codePoints,
+  composerAsk,
+  composerBudget,
+  composedOutcome,
+  memoryLength,
+  memoryPlan,
+  turnCost,
+  turnLength,
+  turnMessages,
   LLM_NO_KEY,
   LLM_PROVIDER_NOT_BUILT,
   LLM_PROVIDER_SILENT,
@@ -35,6 +49,7 @@ import { CommandWay } from "./command-way.service";
 import { ServerWay } from "./server-way.service";
 import { TurnLedger } from "./turn-ledger.service";
 import { isAgentTool, isCommandTool } from "../interfaces";
+import type { ChatCost, ComposedOutcome, TurnLength, TurnMemory } from "../../../contracts";
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import type { AIMessageChunk, BaseMessage } from "@langchain/core/messages";
 import type { Runnable } from "@langchain/core/runnables";
@@ -57,9 +72,28 @@ import type {
   RunMemory,
   RunningTurn,
   SubTurn,
+  ToolMemory,
   ToolRunner,
-  TurnQuestion,
 } from "../interfaces";
+
+/** One turn of the model as it is asked: the agent's run and what it is given. */
+interface AskedPayload {
+  turnId: string;
+  agentId: string;
+  providerId: string;
+  model: string;
+  directory: string;
+  maxCalls: number;
+  temperature: number;
+  answerCeiling: number;
+  systemPrompt: string | null;
+  messages: ChatTurn[];
+  tools: AgentTool[];
+  servers: ProjectMcpServer[];
+  agents: ReachableAgent[];
+  runId: string | null;
+  questionId: string;
+}
 
 /** Runs one turn of an agent's chat: loops over calls up to the agent's maximum, streaming each piece. */
 export class LlmService {
@@ -113,42 +147,48 @@ export class LlmService {
     runId: string | null;
     questionId: string;
   }): Promise<AgentAnswer> {
-    return this.asked(
-      {
-        ...payload,
-        systemPrompt: null,
-        agentId: "",
-        directory: "",
-        maxCalls: 1,
-        tools: [],
-        servers: [],
-        agents: [],
-      },
-      false,
-    );
+    return this.asked(this.composerPayload(payload), false);
   }
 
-  /** One turn of the model, said onward as it goes only where `isVoiced`. */
-  private async asked(
-    payload: {
-      turnId: string;
-      agentId: string;
-      providerId: string;
-      model: string;
-      directory: string;
-      maxCalls: number;
-      temperature: number;
-      answerCeiling: number;
-      systemPrompt: string | null;
-      messages: ChatTurn[];
-      tools: AgentTool[];
-      servers: ProjectMcpServer[];
-      agents: ReachableAgent[];
-      runId: string | null;
-      questionId: string;
-    },
-    isVoiced: boolean,
-  ): Promise<AgentAnswer> {
+  /** What the composer's call is, whoever asks it: one round, no tools, no system prompt, no agent of its own. */
+  private composerPayload(payload: {
+    turnId?: string;
+    providerId: string;
+    model: string;
+    temperature: number;
+    answerCeiling: number;
+    messages: ChatTurn[];
+    runId: string | null;
+    questionId: string;
+  }): AskedPayload {
+    return {
+      ...payload,
+      turnId: payload.turnId ?? "",
+      systemPrompt: null,
+      agentId: "",
+      directory: "",
+      maxCalls: 1,
+      tools: [],
+      servers: [],
+      agents: [],
+    };
+  }
+
+  /** One turn of the model, said onward as it goes only where `isVoiced`; the turn's own id is what stops it. */
+  private async asked(payload: AskedPayload, isVoiced: boolean): Promise<AgentAnswer> {
+    const stopping = new AbortController();
+
+    this.running.set(payload.turnId, stopping);
+
+    try {
+      return await this.run(payload, isVoiced, stopping.signal);
+    } finally {
+      this.running.delete(payload.turnId);
+    }
+  }
+
+  /** One turn of the model under a stop that is not its own: the caller's, where an agent is called as a tool. */
+  private async run(payload: AskedPayload, isVoiced: boolean, signal: AbortSignal): Promise<AgentAnswer> {
     const client = this.clients[payload.providerId] ?? null;
 
     if (client === null) {
@@ -156,31 +196,26 @@ export class LlmService {
     }
 
     const held = await this.opened(client, payload.providerId);
-    const stopping = new AbortController();
 
-    this.running.set(payload.turnId, stopping);
-
-    try {
-      return await this.turn({
-        voicedAs: isVoiced ? payload.turnId : null,
-        answering: this.bound(client, held, payload, payload.runId ?? payload.questionId),
-        conversation: this.said(payload.systemPrompt, payload.messages),
-        directory: payload.directory,
-        maxCalls: payload.maxCalls,
-        answerCeiling: payload.answerCeiling,
-        byName: new Map(payload.tools.map((tool) => [tool.name, tool])),
-        servers: payload.servers,
-        signal: stopping.signal,
-        reachable: new Map(payload.agents.map((agent) => [agent.agentId, agent])),
-        stack: new Set([payload.agentId]),
-        question: {
-          runId: payload.runId,
-          questionId: payload.questionId,
-        },
-      });
-    } finally {
-      this.running.delete(payload.turnId);
-    }
+    return this.turn({
+      voicedAs: isVoiced ? payload.turnId : null,
+      answering: this.bound(client, held, payload, payload.runId ?? payload.questionId),
+      conversation: this.said(payload.systemPrompt, payload.messages),
+      directory: payload.directory,
+      maxCalls: payload.maxCalls,
+      answerCeiling: payload.answerCeiling,
+      byName: new Map(payload.tools.map((tool) => [tool.name, tool])),
+      servers: payload.servers,
+      signal,
+      reachable: new Map(payload.agents.map((agent) => [agent.agentId, agent])),
+      stack: new Set([payload.agentId]),
+      question: {
+        runId: payload.runId,
+        questionId: payload.questionId,
+      },
+      threads: new Map(),
+      unwritten: new Map(),
+    });
   }
 
   /**
@@ -308,6 +343,8 @@ export class LlmService {
       const ran = await this.called(turn, tool, call);
 
       turn.conversation.push(ran.message);
+      ledger.composed(ran.memories);
+      ledger.billedFor(ran.cost);
 
       if (ran.made !== null) {
         ledger.ran(ran.made);
@@ -402,7 +439,7 @@ export class LlmService {
     turn: RunningTurn,
     tool: AgentTool | null,
     call: { id?: string; name: string; args: Record<string, unknown> },
-  ): Promise<{ message: ToolMessage; made: TurnCall | null }> {
+  ): Promise<{ message: ToolMessage; made: TurnCall | null; memories: ToolMemory[]; cost: ChatCost | null }> {
     if (tool === null) {
       return this.notCalled(call, `[${call.name}: такої команди в агента немає]`);
     }
@@ -441,13 +478,15 @@ export class LlmService {
       return {
         message: new ToolMessage(refused.refusal, call.id ?? call.name, call.name),
         made: refused,
+        cost: null,
+        memories: [],
       };
     }
 
     // Said when it goes out and again when it is over.
     this.sayCall(turn, standing, RUN_CALL_RUNNING);
 
-    const result = await way.make(standing.id, turn.directory, turn.signal);
+    const { memories, cost, ...result } = await way.make(standing.id, turn.directory, turn.signal);
     const made = {
       ...standing,
       ...result,
@@ -459,6 +498,8 @@ export class LlmService {
     return {
       message: new ToolMessage(result.output, call.id ?? call.name, call.name),
       made,
+      cost,
+      memories,
     };
   }
 
@@ -520,8 +561,10 @@ export class LlmService {
   }
 
   /**
-   * A sub-agent's whole turn for the one request: silent, under the caller's stop, added to the watched ring. With the
-   * shared memory it reads the caller's question; otherwise it gets the request alone. Whatever stops it — the record,
+   * A sub-agent's whole turn for the one request: silent, under the caller's stop, added to the watched ring. It keeps
+   * what its memory says, as an agent that walks does: its own calls within this turn of the caller, or the question's
+   * shared memory, or nothing. The memory is weighed first, and compressed by its composer where it has to be, before the
+   * agent is asked; what that cost goes up with the outcome, whatever came of the call. Whatever stops it — the record,
    * the ceiling, the provider — is the call's outcome in its own words, not the caller's fall.
    */
   private async subTurn(asked: SubTurn): Promise<AgentTurnOutcome> {
@@ -538,30 +581,102 @@ export class LlmService {
       return this.failed(LLM_PROVIDER_NOT_BUILT);
     }
 
-    try {
-      const memory = await this.sharedFor(agent, turn.question);
+    // Spent from the moment the composer is paid, and so told up whichever way the call ends.
+    const spent: ToolMemory[] = [];
 
-      if (memory === null) {
+    try {
+      const read = await this.memoryOf(agent, turn);
+
+      if (read === null) {
         return this.failed(RECORD_GONE_NOTE);
       }
 
-      const tooLong = this.tooLong(agent, memory, request);
+      const length = turnLength({
+        systemPrompt: agent.systemPrompt,
+        asked: request,
+        memoryLength: memoryLength(read),
+        ceiling: agent.contextCeiling,
+      });
+      const plan = memoryPlan(agent, length);
 
-      if (tooLong !== null) {
-        return this.failed(tooLong);
+      if (plan.kind === "wall") {
+        return this.failed(this.walled(agent, length, plan.reserve, plan.limit));
+      }
+
+      let memory = read;
+
+      if (plan.kind === "compress") {
+        const budget = composerBudget(agent.memory, plan.budget);
+        const said = await this.composing(turn, agent, read, budget, signal);
+        const cost = turnCost(said.inputTokens, said.outputTokens, agent);
+
+        // A stop is the caller's act; what the composer used is spent, and what it wrote is not a memory.
+        if (said.isStopped || signal.aborted) {
+          spent.push({
+            cost,
+            facts: null,
+          });
+
+          return this.outcome("", false, spent);
+        }
+
+        let composed: ComposedOutcome;
+
+        try {
+          composed = composedOutcome(said.text, budget, agent.memory, read.covers);
+        } catch (failure) {
+          // Nothing written is no memory, but what the composer used is spent.
+          spent.push({
+            cost,
+            facts: null,
+          });
+
+          throw failure;
+        }
+
+        memory = composed.memory;
+
+        // The question's memory is every agent's of it and the record's to keep; an own thread dies with the turn.
+        spent.push({
+          cost,
+          facts:
+            agent.memory === "shared"
+              ? {
+                  agentId: agent.agentId,
+                  questionId: turn.question.questionId,
+                  coversPlace: read.covers,
+                  text: composed.text,
+                  lengthBefore: memoryLength(read),
+                  lengthAfter: codePoints(composed.text),
+                  compressAt: plan.at,
+                  compressTo: plan.to,
+                  inputTokens: cost?.inputTokens ?? 0,
+                  outputTokens: cost?.outputTokens ?? 0,
+                  money: cost?.money ?? null,
+                }
+              : null,
+        });
+
+        if (agent.memory === "shared") {
+          turn.unwritten.set(agent.agentId, {
+            text: composed.text,
+            coversPlace: read.covers,
+          });
+        }
+
+        if (agent.memory === "own") {
+          turn.threads.set(agent.agentId, {
+            thread: [],
+            composed: memory.composed,
+          });
+        }
       }
 
       const held = await this.opened(client, agent.providerId);
       const answer = await this.turn({
         voicedAs: null,
         answering: this.bound(client, held, agent, turn.question.runId ?? turn.question.questionId),
-        conversation: this.said(agent.systemPrompt, [
-          {
-            from: "person",
-            // One input: the memory opens the request.
-            text: `${memory}${request}`,
-          },
-        ]),
+        conversation: this.said(agent.systemPrompt, turnMessages(memory, request)),
         directory: turn.directory,
         maxCalls: agent.maxCalls,
         answerCeiling: agent.answerCeiling,
@@ -571,59 +686,163 @@ export class LlmService {
         reachable: turn.reachable,
         stack: new Set([...turn.stack, agent.agentId]),
         question: turn.question,
+        threads: new Map(),
+        unwritten: turn.unwritten,
       });
 
-      return {
-        text: answer.text,
-        isFailed: false,
-      };
+      // What an agent that keeps its own remembers of this turn: what it was asked and what it said, if it said it.
+      if (agent.memory === "own" && !answer.isStopped) {
+        const kept = turn.threads.get(agent.agentId) ?? {
+          thread: [],
+          composed: memory.composed,
+        };
+
+        turn.threads.set(agent.agentId, {
+          composed: kept.composed,
+          thread: [
+            ...kept.thread,
+            {
+              from: "person",
+              text: request,
+            },
+            {
+              from: "agent",
+              text: answer.text,
+            },
+          ],
+        });
+      }
+
+      return this.outcome(
+        answer.text,
+        false,
+        [...spent, ...answer.memories],
+        addedCost(turnCost(answer.inputTokens, answer.outputTokens, agent), answer.called),
+      );
     } catch (failure) {
       // A stop is the caller's, not this agent's fault; the caller's loop ends on it next.
       if (signal.aborted) {
-        return {
-          text: "",
-          isFailed: false,
-        };
+        return this.outcome("", false, spent);
       }
 
-      return this.failed(messageOf(failure));
+      return this.outcome(messageOf(failure), true, spent);
     }
   }
 
-  /** The question's shared memory, read now, for an agent that has it; nothing otherwise. Null where the record lost it. */
-  private async sharedFor(agent: ReadyAgent, question: TurnQuestion): Promise<string | null> {
-    if (agent.memory !== "shared" || question.runId === null) {
-      return "";
+  /**
+   * What the agent called as a tool remembers of this: the question's shared memory, read now, its own calls within the
+   * caller's turn so far, or nothing. Null where the record lost the shared memory.
+   */
+  private async memoryOf(agent: ReadyAgent, turn: RunningTurn): Promise<TurnMemory | null> {
+    if (agent.memory === "none") {
+      return {
+        thread: [],
+        composed: "",
+        shared: "",
+        covers: 0,
+      };
     }
 
-    return (await this.memory.sharedMemory(question.runId, question.questionId, agent.agentId))?.text ?? null;
+    if (agent.memory === "own") {
+      const kept = turn.threads.get(agent.agentId) ?? null;
+
+      return {
+        thread: kept?.thread ?? [],
+        composed: kept?.composed ?? "",
+        shared: "",
+        covers: 0,
+      };
+    }
+
+    if (turn.question.runId === null) {
+      return {
+        thread: [],
+        composed: "",
+        shared: "",
+        covers: 0,
+      };
+    }
+
+    const shared = await this.memory.sharedMemory(
+      turn.question.runId,
+      turn.question.questionId,
+      agent.agentId,
+      turn.unwritten.get(agent.agentId) ?? null,
+    );
+
+    return shared === null
+      ? null
+      : {
+          thread: [],
+          composed: "",
+          shared: shared.text,
+          covers: shared.coversPlace,
+        };
   }
 
-  /** What would have gone, against the agent's model's ceiling, in characters; `null` where it fits. */
-  private tooLong(agent: ReadyAgent, memory: string, request: string): string | null {
-    const prompt = characters(agent.systemPrompt ?? "");
-    const remembered = characters(memory);
-    const asked = characters(request);
-    const total = prompt + remembered + asked;
+  /**
+   * The composer's call for a tool agent's memory: the same model and temperature as the agent's, no tools, no system
+   * prompt, nothing said onward, under the caller's own stop so that stopping the caller stops it too.
+   */
+  private async composing(
+    turn: RunningTurn,
+    agent: ReadyAgent,
+    memory: TurnMemory,
+    budget: number,
+    signal: AbortSignal,
+  ): Promise<AgentAnswer> {
+    return this.run(
+      this.composerPayload({
+        providerId: agent.providerId,
+        model: agent.model,
+        temperature: agent.temperature,
+        answerCeiling: agent.answerCeiling,
+        messages: composerAsk(memory, agent.contextCeiling, budget),
+        runId: turn.question.runId,
+        questionId: turn.question.questionId,
+      }),
+      false,
+      signal,
+    );
+  }
 
-    if (total <= agent.contextCeiling) {
-      return null;
+  /** Why the agent's call does not begin: all of it is longer than its model takes, or its words leave no room for its memory. */
+  private walled(agent: ReadyAgent, length: TurnLength, reserve: number, limit: number): string {
+    if (reserve > 0) {
+      return AGENT_RESERVED_NOTE.replace(AGENT_NAME_SLOT, agent.name)
+        .replace(AGENT_WORDS_SLOT, String(length.prompt + length.asked))
+        .replace(AGENT_RESERVE_SLOT, String(reserve))
+        .replace(AGENT_LIMIT_SLOT, String(limit))
+        .replace(AGENT_MODEL_SLOT, agent.model)
+        .replace(AGENT_CEILING_SLOT, String(length.ceiling));
     }
 
     return AGENT_TOO_LONG_NOTE.replace(AGENT_NAME_SLOT, agent.name)
       .replace(AGENT_MODEL_SLOT, agent.model)
-      .replace(AGENT_TOTAL_SLOT, String(total))
-      .replace(AGENT_PROMPT_SLOT, String(prompt))
-      .replace(AGENT_MEMORY_SLOT, String(remembered))
-      .replace(AGENT_ASKED_SLOT, String(asked))
-      .replace(AGENT_CEILING_SLOT, String(agent.contextCeiling));
+      .replace(AGENT_TOTAL_SLOT, String(length.total))
+      .replace(AGENT_PROMPT_SLOT, String(length.prompt))
+      .replace(AGENT_MEMORY_SLOT, String(length.memory))
+      .replace(AGENT_ASKED_SLOT, String(length.asked))
+      .replace(AGENT_CEILING_SLOT, String(length.ceiling));
   }
 
   /** A sub-agent's call that came to nothing, with the words of whatever stopped it. */
   private failed(said: string): AgentTurnOutcome {
+    return this.outcome(said, true, []);
+  }
+
+  /** What a sub-agent's call came to, with what was compressed for it on the way. */
+  private outcome(
+    text: string,
+    isFailed: boolean,
+    memories: ToolMemory[],
+    cost: ChatCost | null = null,
+  ): AgentTurnOutcome {
     return {
-      text: said,
-      isFailed: true,
+      text,
+      isFailed,
+      cost,
+      memories,
     };
   }
 
@@ -651,10 +870,12 @@ export class LlmService {
   private notCalled(
     call: { id?: string; name: string },
     note: string,
-  ): { message: ToolMessage; made: TurnCall | null } {
+  ): { message: ToolMessage; made: TurnCall | null; memories: ToolMemory[]; cost: ChatCost | null } {
     return {
       message: new ToolMessage(note, call.id ?? call.name, call.name),
       made: null,
+      cost: null,
+      memories: [],
     };
   }
 
@@ -761,11 +982,6 @@ export class LlmService {
       .map((part) => (typeof part === "object" && part !== null && "text" in part ? String(part.text) : ""))
       .join("");
   }
-}
-
-/** A text's length in code points, as the ceiling is counted on the screen. */
-function characters(text: string): number {
-  return [...text].length;
 }
 
 /** What a caught failure says: an error's message alone, never the object behind it. */

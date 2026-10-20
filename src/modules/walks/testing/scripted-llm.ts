@@ -31,6 +31,8 @@ export class ScriptedLlm implements TurnLlm {
       inputTokens: 10,
       outputTokens: 5,
       calls: [],
+      called: null,
+      memories: [],
     };
   }
 
@@ -49,6 +51,8 @@ export class ScriptedLlm implements TurnLlm {
       inputTokens: 20,
       outputTokens: 4,
       calls: [],
+      called: null,
+      memories: [],
     };
   }
 

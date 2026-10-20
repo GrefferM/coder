@@ -31,6 +31,8 @@ export class AgentWay implements ToolWay {
       output: outcome.text,
       exitCode: null,
       isFailed: outcome.isFailed,
+      cost: outcome.cost,
+      memories: outcome.memories,
     };
   }
 }

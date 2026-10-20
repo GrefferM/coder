@@ -22,6 +22,8 @@ function said(patch: Partial<SaidTurn> = {}): SaidTurn {
     inputTokens: 400,
     outputTokens: 200,
     calls: [],
+    called: null,
+    memories: [],
     ...patch,
   };
 }

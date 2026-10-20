@@ -32,6 +32,8 @@ describe("TurnLedger", () => {
       inputTokens: 0,
       outputTokens: 0,
       calls: [],
+      called: null,
+      memories: [],
     });
   });
 
@@ -126,5 +128,51 @@ describe("TurnLedger", () => {
     assert.equal(stopped.isStopped, true);
     assert.equal(stopped.isCeilingHit, false);
     assert.equal(stopped.isCallsExhausted, false);
+  });
+
+  it("keeps the compressions the agents it called made, in the order they were made, whatever else the turn did", () => {
+    const ledger = new TurnLedger();
+    const one = {
+      cost: {
+        inputTokens: 1,
+        outputTokens: 1,
+        money: null,
+      },
+      facts: null,
+    };
+    const other = {
+      cost: null,
+      facts: null,
+    };
+
+    ledger.composed([one]);
+    ledger.composed([other]);
+
+    assert.deepEqual(ledger.answer().memories, [one, other]);
+  });
+
+  it("adds up what the agents it called cost, and names nothing while none has cost anything", () => {
+    const ledger = new TurnLedger();
+
+    ledger.billedFor(null);
+
+    assert.equal(ledger.answer().called, null);
+
+    ledger.billedFor({
+      inputTokens: 10,
+      outputTokens: 1,
+      money: 0.001,
+    });
+    ledger.billedFor({
+      inputTokens: 5,
+      outputTokens: 2,
+      money: null,
+    });
+
+    assert.deepEqual(ledger.answer().called, {
+      inputTokens: 15,
+      outputTokens: 3,
+      money: 0.001,
+    });
   });
 });

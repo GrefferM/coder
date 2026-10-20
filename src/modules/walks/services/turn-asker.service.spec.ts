@@ -16,7 +16,7 @@ import {
   memoryText,
 } from "../../../contracts";
 import { aModel, anAgent } from "../../../utils/testing";
-import type { SaidTurn, TurnMemory, TurnToAsk } from "../../../contracts";
+import type { MemoryFacts, SaidTurn, TurnMemory, TurnToAsk } from "../../../contracts";
 import type { ModelAsk, ModelCompose, TurnLlm } from "../interfaces";
 
 const CEILING = 100_000;
@@ -211,6 +211,8 @@ describe("TurnAsker", () => {
             inputTokens: 20,
             outputTokens: 2,
             calls: [],
+            called: null,
+            memories: [],
           };
         },
         stop: () => undefined,
@@ -222,6 +224,70 @@ describe("TurnAsker", () => {
       assert.equal(answer.compressed, null);
       assert.equal(answer.cost?.inputTokens, 20);
     });
+  });
+
+  it("adds what the agents it called cost, their turns and their composers, to the step's cost, and hands the record only the memories it keeps", async () => {
+    const kept: MemoryFacts = {
+      agentId: "archivist",
+      questionId: "question-1",
+      coversPlace: 2,
+      text: "Зміст питання",
+      lengthBefore: 9_000,
+      lengthAfter: 900,
+      compressAt: 70,
+      compressTo: 10,
+      inputTokens: 100,
+      outputTokens: 10,
+      money: 0.001,
+    };
+    const llm: TurnLlm = {
+      async ask(_payload: ModelAsk): Promise<SaidTurn> {
+        return {
+          text: "Готово",
+          isStopped: false,
+          isCallsExhausted: false,
+          isCeilingHit: false,
+          inputTokens: 10,
+          outputTokens: 5,
+          calls: [],
+          // What the turns of the agents it called cost, theirs and those they called in turn.
+          called: {
+            inputTokens: 200,
+            outputTokens: 20,
+            money: 0.002,
+          },
+          memories: [
+            {
+              cost: {
+                inputTokens: 100,
+                outputTokens: 10,
+                money: 0.001,
+              },
+              facts: kept,
+            },
+            {
+              cost: {
+                inputTokens: 50,
+                outputTokens: 5,
+                money: 0.0005,
+              },
+              facts: null,
+            },
+          ],
+        };
+      },
+      async compose(_payload: ModelCompose): Promise<SaidTurn> {
+        throw new Error("не мало бути");
+      },
+      stop: () => undefined,
+    };
+    const answer = await new TurnAsker(llm).answer(turn(thread(100)));
+
+    assert.equal(answer.cost?.inputTokens, 360);
+    assert.equal(answer.cost?.outputTokens, 40);
+    assert.ok(Math.abs((answer.cost?.money ?? 0) - 0.003515) < 1e-12);
+    assert.deepEqual(answer.toolMemories, [kept]);
+    assert.equal(answer.compressed, null);
   });
 
   it("falls with the composer's message kept and its cost counted when the model fails after it", async () => {

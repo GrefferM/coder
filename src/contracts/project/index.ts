@@ -36,6 +36,8 @@ export * from "./server-grant.guard";
 export * from "./grant-handle.constant";
 export * from "./broken-grant-cause.type";
 export * from "./filled-agent.interface";
+export * from "./memory-settings.type";
+export * from "./memory-settings-of";
 export * from "./filled-model.interface";
 export * from "./grant-targets.interface";
 export * from "./field-names.constant";

@@ -80,7 +80,12 @@ describe("agentRegistry", () => {
         },
       ],
       memory: "own",
+      // How far it is compressed, and what its model costs: the composer's call is paid at those.
+      compressAt: 90,
+      compressTo: 10,
       contextCeiling: 700_000,
+      inputPrice: 3,
+      outputPrice: 15,
     });
   });
 
@@ -101,6 +106,24 @@ describe("agentRegistry", () => {
     assert.partialDeepStrictEqual(leaf, {
       memory: "shared",
     });
+  });
+
+  it("names no threshold or target for an agent without memory, since it has nothing to compress", () => {
+    const config = aConfig({
+      models: [aModel()],
+      agents: [
+        granting("root", ["leaf"]),
+        granting("leaf", [], {
+          memory: "none",
+        }),
+      ],
+    });
+    const [root] = config.agents;
+
+    const [, leaf] = agentRegistry(root, config, [], targetsOf(config));
+
+    assert.equal("compressAt" in leaf, false);
+    assert.equal("compressTo" in leaf, false);
   });
 
   it("says why an agent that cannot run cannot, and carries no run for it", () => {
