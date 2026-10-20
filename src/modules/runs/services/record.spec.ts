@@ -1532,6 +1532,36 @@ describe("the record", () => {
       assert.equal((await reader.sharedMemory(runId, questionId, SEEKER))?.text ?? null, "");
     });
 
+    it("names a supplier from an earlier question by whom it was then", async () => {
+      const { runId } = await opened("aaaaaaaa-0000-4000-8000-000000000216");
+      const found = await writer.step(step(runId));
+      const again = "aaaaaaaa-0000-4000-8000-000000000217";
+
+      await writer.askAgain({
+        runId,
+        questionId: again,
+        asked: "Перевір знайдене",
+        askedAgentId: TELLER,
+        askedAgentName: "Рев'юер",
+        attached: [],
+        askedAt: ASKED_AT + 1_000,
+      });
+      await writer.step(
+        step(runId, {
+          questionId: again,
+          agentId: TELLER,
+          agentName: "Рев'юер",
+          said: "Перевірено",
+          fromStepIds: [found],
+        }),
+      );
+
+      const told = (await reader.sharedMemory(runId, again, TELLER))?.text ?? "";
+
+      assert.ok(told.includes("ВІДПОВІДЬ Рев'юер (отримав від: Шукач):\nПеревірено"));
+      assert.ok(!told.includes("ЗНАЙДЕНО"));
+    });
+
     describe("compressed by the composer", () => {
       /** What the composer wrote for the Seeker's memory of the question, covering the first answer. */
       function composed(patch: Partial<MemoryFacts> = {}): MemoryFacts {
@@ -1823,6 +1853,138 @@ describe("the record", () => {
         ),
         null,
       );
+    });
+  });
+
+  describe("an agent's own thread", () => {
+    /** A compression of the Seeker's own thread, covering up to `coversPlace`. */
+    function own(coversPlace: number, text: string, patch: Partial<MemoryFacts> = {}): MemoryFacts {
+      return {
+        agentId: SEEKER,
+        questionId: null,
+        coversPlace,
+        text,
+        lengthBefore: 900,
+        lengthAfter: text.length,
+        compressAt: 80,
+        compressTo: 20,
+        inputTokens: 500,
+        outputTokens: 20,
+        money: 0.0004,
+        ...patch,
+      };
+    }
+
+    async function opened(questionId: string): Promise<RunOpened> {
+      return openRun({
+        directory: DIRECTORY,
+        questionId,
+        startedByAgentId: SEEKER,
+        startedByAgentName: "Шукач",
+        startedByAgentColor: "#6fd3d8",
+        attached: [],
+        startedAt: ASKED_AT,
+        asked: "Знайди md-файли",
+      });
+    }
+
+    it("reads the latest compression of the thread and only the agent's steps after the place it covers", async () => {
+      const { runId, questionId } = await opened("aaaaaaaa-0000-4000-8000-000000000301");
+
+      await writer.step(
+        step(runId, {
+          said: "Перша",
+        }),
+      );
+      await writer.step(
+        step(runId, {
+          agentId: TELLER,
+          agentName: "Рев'юер",
+          said: "Чужа",
+        }),
+      );
+      await writer.step(
+        step(runId, {
+          said: "Друга",
+          memories: [own(1, "Стиснення до першої")],
+        }),
+      );
+      await writer.step(
+        step(runId, {
+          said: "Третя",
+          // The shared memory of the question is another memory, and does not stand for the thread.
+          memories: [
+            own(3, "Стиснення до другої"),
+            own(4, "Спільна пам'ять питання", {
+              questionId,
+            }),
+          ],
+        }),
+      );
+      await writer.step(
+        step(runId, {
+          said: "",
+          state: "failed",
+        }),
+      );
+      await writer.step(
+        step(runId, {
+          agentId: TELLER,
+          agentName: "Рев'юер",
+          said: "Ще чужа",
+        }),
+      );
+
+      const thread = await reader.ownThread(runId, SEEKER);
+
+      assert.equal(thread?.composed?.text, "Стиснення до другої");
+      assert.equal(thread?.composed?.coversPlace, 3);
+      // Every step of the agent after the covered place, however it ended; the thread itself keeps only the answered.
+      assert.deepEqual(
+        thread?.steps.map((one) => [one.place, one.agentId, one.state, one.said]),
+        [
+          [4, SEEKER, "done", "Третя"],
+          [5, SEEKER, "failed", ""],
+        ],
+      );
+    });
+
+    it("reads every step of the agent while its thread was never compressed", async () => {
+      const { runId } = await opened("aaaaaaaa-0000-4000-8000-000000000302");
+
+      await writer.step(
+        step(runId, {
+          said: "Перша",
+        }),
+      );
+      await writer.step(
+        step(runId, {
+          agentId: TELLER,
+          agentName: "Рев'юер",
+          said: "Чужа",
+        }),
+      );
+      await writer.step(
+        step(runId, {
+          asked: "Ще раз",
+          said: "Друга",
+        }),
+      );
+
+      const thread = await reader.ownThread(runId, SEEKER);
+
+      assert.equal(thread?.composed, null);
+      assert.deepEqual(
+        thread?.steps.map((one) => [one.place, one.asked, one.said]),
+        [
+          [1, "Знайди md-файли", "Перша"],
+          [3, "Ще раз", "Друга"],
+        ],
+      );
+    });
+
+    it("names no thread for a run the record does not hold, rather than an empty one", async () => {
+      assert.equal(await reader.ownThread("aaaaaaaa-0000-4000-8000-000000000399", SEEKER), null);
     });
   });
 });

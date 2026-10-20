@@ -2,6 +2,7 @@ import type { RunReader, RunWriter } from "../../runs";
 import type {
   AskedQuestion,
   OpenedRecord,
+  OwnThread,
   SharedMemory,
   UnwrittenMemory,
   WholeRun,
@@ -56,6 +57,10 @@ export class RunRecordStore implements RunRecord {
 
   async read(runId: string): Promise<WholeRun | null> {
     return this.reader.one(runId);
+  }
+
+  async ownThread(runId: string, agentId: string): Promise<OwnThread | null> {
+    return this.reader.ownThread(runId, agentId);
   }
 
   async sharedMemory(

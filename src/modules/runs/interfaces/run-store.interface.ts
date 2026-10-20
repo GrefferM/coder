@@ -181,6 +181,10 @@ export interface RunStore {
   walkOf(runId: string): Promise<RunStepEntity[]>;
   /** The walks of many flows at once, each step with its run and question. */
   walksOf(runIds: string[]): Promise<RunStepEntity[]>;
+  /** One question's steps after a place, however they ended, in the order they ran. */
+  stepsOfQuestion(runId: string, questionId: string, afterPlace: number): Promise<RunStepEntity[]>;
+  /** One agent's steps of a run after a place, however they ended, in the order they ran; each with who it was. */
+  stepsOfAgent(runId: string, agentId: string, afterPlace: number): Promise<RunStepEntity[]>;
   addStep(step: NewStep): Promise<RunStepEntity>;
   dropStepsOf(runId: string): Promise<void>;
 
@@ -207,6 +211,11 @@ export interface RunStore {
   addMemory(memory: NewMemory): Promise<void>;
   /** Every compression of one run, each with its question and the step that paid for it. */
   memoriesOf(runId: string): Promise<RunMemoryEntity[]>;
+  /**
+   * The compression that stands for one memory, with its question and step: of an agent's own thread (`questionId`
+   * null) or of its shared memory of one question, the one paid in the latest step. Null while none has been written.
+   */
+  latestMemoryOf(runId: string, agentId: string, questionId: string | null): Promise<RunMemoryEntity | null>;
   handoffsOf(stepId: string): Promise<RunHandoffEntity[]>;
 
   /** Clears everything written beside one step: its calls, its two edges, the three frozen facts, its compression. */

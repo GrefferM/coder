@@ -18,7 +18,6 @@ import {
   SHARED_MEMORY_NAME_SLOT,
   SHARED_MEMORY_PERSON,
   SHARED_MEMORY_QUESTION,
-  latestMemory,
   sharedMemoryBlock,
   sharedMemoryText,
 } from "../../../contracts";
@@ -30,7 +29,14 @@ import type {
   RunQuestionEntity,
   RunStepEntity,
 } from "../entities";
-import type { AttachmentKind, PackedAttachment, SharedMemory, UnwrittenMemory, WholeMemory } from "../../../contracts";
+import type {
+  AttachmentKind,
+  OwnThread,
+  PackedAttachment,
+  SharedMemory,
+  UnwrittenMemory,
+  WholeMemory,
+} from "../../../contracts";
 import type { CallPlace, ChatStopReason, Run, RunStore, RunWhole, WholeCall, WholeStep } from "../interfaces";
 
 /** The record read back: the run list and one run whole. */
@@ -111,15 +117,13 @@ export class RunReader {
       return null;
     }
 
-    const walk = (await this.store.walkOf(runId)).sort((one, other) => one.place - other.place);
-    const written = latestMemory(await this.memoriesOf(runId), agentId, questionId);
+    const written = await this.latestMemoryOf(runId, agentId, questionId);
     // A compression the record does not hold yet stands in its place where it reaches as far as the one it holds.
     const composed = unwritten !== null && unwritten.coversPlace >= (written?.coversPlace ?? 0) ? unwritten : written;
-    // What the composer's message stands for is not told again.
-    const answered = walk.filter(
-      (step) =>
-        step.question.id === questionId && step.state === RUN_STEP_DONE && step.place > (composed?.coversPlace ?? 0),
-    );
+    // What the composer's message stands for is not told again, so only the steps after it are read.
+    const answered = (await this.store.stepsOfQuestion(runId, questionId, composed?.coversPlace ?? 0))
+      .filter((step) => step.state === RUN_STEP_DONE)
+      .sort((one, other) => one.place - other.place);
 
     if (answered.length === 0 && composed === null) {
       return {
@@ -128,9 +132,13 @@ export class RunReader {
       };
     }
 
-    // Names as they stood when each turn ran; a supplier may be any step of the run.
-    const names = new Map((await this.store.whoIn(walk.map((step) => step.id))).map((who) => [who.step.id, who.name]));
     const feeds = await this.store.feedsIn(answered.map((step) => step.id));
+    // Names as they stood when each turn ran; a supplier may be any step of the run, so its row is read with theirs.
+    const names = new Map(
+      (await this.store.whoIn([...answered.map((step) => step.id), ...feeds.map((feed) => feed.from.id)])).map(
+        (who) => [who.step.id, who.name],
+      ),
+    );
     const attached = this.attachedOf(await this.store.attachedTo([questionId]), questionId);
     const asked =
       composed === null
@@ -159,6 +167,39 @@ export class RunReader {
       // The last place the words stand for or tell: what a compression of them would cover.
       coversPlace: Math.max(composed?.coversPlace ?? 0, ...answered.map((step) => step.place)),
     };
+  }
+
+  /**
+   * An agent's own thread in one run: the compression of it paid in the latest step, and its steps after the place that
+   * compression covers, however they ended; null for a run the record does not hold.
+   */
+  async ownThread(runId: string, agentId: string): Promise<OwnThread | null> {
+    if ((await this.store.runById(runId)) === null) {
+      return null;
+    }
+
+    const composed = await this.latestMemoryOf(runId, agentId, null);
+    const steps = await this.store.stepsOfAgent(runId, agentId, composed?.coversPlace ?? 0);
+
+    return {
+      composed,
+      steps: steps
+        .sort((one, other) => one.place - other.place)
+        .map((step) => ({
+          agentId: step.who.agentId,
+          place: step.place,
+          state: step.state,
+          asked: step.asked,
+          said: step.said,
+        })),
+    };
+  }
+
+  /** The compression that stands for one memory, as the record reads it back; null while none has been written. */
+  private async latestMemoryOf(runId: string, agentId: string, questionId: string | null): Promise<WholeMemory | null> {
+    const row = await this.store.latestMemoryOf(runId, agentId, questionId);
+
+    return row === null ? null : this.toMemory(row);
   }
 
   /** Every compression of a memory in one run, with the step that paid for each. */

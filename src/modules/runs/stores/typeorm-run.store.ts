@@ -1,4 +1,4 @@
-import { In, IsNull } from "typeorm";
+import { In, IsNull, MoreThan } from "typeorm";
 import type {
   RunCallEntity,
   RunEntity,
@@ -220,6 +220,41 @@ export class TypeormRunStore implements RunStore {
         question: true,
       },
     });
+  }
+
+  async stepsOfQuestion(runId: string, questionId: string, afterPlace: number): Promise<RunStepEntity[]> {
+    return this.tables.steps.find({
+      where: {
+        run: {
+          id: runId,
+        },
+        question: {
+          id: questionId,
+        },
+        place: MoreThan(afterPlace),
+      },
+      order: {
+        place: "ASC",
+      },
+    });
+  }
+
+  async stepsOfAgent(runId: string, agentId: string, afterPlace: number): Promise<RunStepEntity[]> {
+    return this.tables.steps
+      .createQueryBuilder("step")
+      .innerJoin("step.run", "run")
+      .innerJoinAndSelect("step.who", "who")
+      .where("run.id = :runId", {
+        runId,
+      })
+      .andWhere("who.agentId = :agentId", {
+        agentId,
+      })
+      .andWhere("step.place > :afterPlace", {
+        afterPlace,
+      })
+      .orderBy("step.place", "ASC")
+      .getMany();
   }
 
   async addStep(step: NewStep): Promise<RunStepEntity> {
@@ -505,6 +540,31 @@ export class TypeormRunStore implements RunStore {
         step: true,
       },
     });
+  }
+
+  async latestMemoryOf(runId: string, agentId: string, questionId: string | null): Promise<RunMemoryEntity | null> {
+    const query = this.tables.memories
+      .createQueryBuilder("memory")
+      .innerJoin("memory.run", "run")
+      .innerJoinAndSelect("memory.step", "step")
+      .leftJoinAndSelect("memory.question", "question")
+      .where("run.id = :runId", {
+        runId,
+      })
+      .andWhere("memory.agentId = :agentId", {
+        agentId,
+      });
+
+    return (
+      questionId === null
+        ? query.andWhere("question.id IS NULL")
+        : query.andWhere("question.id = :questionId", {
+            questionId,
+          })
+    )
+      .orderBy("step.place", "DESC")
+      .limit(1)
+      .getOne();
   }
 
   async dropBesideStep(stepId: string): Promise<void> {

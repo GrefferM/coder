@@ -5,7 +5,6 @@ import {
   agentStands,
   composedMemory,
   isWalking,
-  latestMemory,
   memoryLength,
   keepsMemory,
   sharesMemory,
@@ -634,20 +633,19 @@ export class WalkRunner implements RecordWatcher {
       return this.sharedMemoryOf(runId, questionId, agent.id);
     }
 
-    const run = await this.record.read(runId);
+    // Only the latest compression and the agent's steps after it are read, not the whole run.
+    const own = await this.record.ownThread(runId, agent.id);
 
-    if (run === null) {
+    if (own === null) {
       throw new Error(RECORD_GONE_NOTE);
     }
 
     // Where the thread was compressed, the composer's message stands in front of the pairs that came after it.
-    const composed = latestMemory(run.memories, agent.id, null);
-
     return {
-      thread: agentThread(run.walk, agent, composed),
-      composed: composedMemory(composed?.text ?? null),
+      thread: agentThread(own.steps, agent, own.composed),
+      composed: composedMemory(own.composed?.text ?? null),
       shared: "",
-      covers: threadCovers(run.walk, agent, composed),
+      covers: threadCovers(own.steps, agent, own.composed),
     };
   }
 
