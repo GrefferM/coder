@@ -1,4 +1,4 @@
-import type { ToolMemory } from "../../../contracts/llm";
+import type { RouteChoice, ToolMemory } from "../../../contracts/llm";
 import type { ChatCost } from "../../../contracts/walks/chat-cost.interface";
 import type { TurnCall } from "../../../contracts/runs";
 
@@ -16,4 +16,6 @@ export interface AgentAnswer {
   called: ChatCost | null;
   /** Every compression the agents it called made of their memories, and what each cost. */
   memories: ToolMemory[];
+  /** Where the agent chose to send its answer; null where it chose nothing, and the answer goes down every line. */
+  route: RouteChoice | null;
 }

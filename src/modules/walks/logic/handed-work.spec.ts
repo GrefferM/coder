@@ -38,4 +38,32 @@ describe("handedWork", () => {
       "14 тестів зелені.\n\nЗауважень немає.",
     );
   });
+
+  it("tells how many of the suppliers gave nothing, when some did not", () => {
+    assert.equal(
+      handedWork(
+        [
+          {
+            text: "Зауважень немає.",
+          },
+        ],
+        2,
+      ),
+      "Зауважень немає.\n\nНе передали нічого: 2 з 3 постачальників роботи.",
+    );
+  });
+
+  it("says nothing of the missing when none is", () => {
+    assert.equal(
+      handedWork(
+        [
+          {
+            text: "Готово.",
+          },
+        ],
+        0,
+      ),
+      "Готово.",
+    );
+  });
 });

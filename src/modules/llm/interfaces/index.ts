@@ -12,6 +12,7 @@ export * from "./run-memory.interface";
 export * from "./running-turn.interface";
 export * from "./agent-key-store.interface";
 export * from "./agent-voice.interface";
+export * from "./call-outcome.interface";
 export * from "./llm-module.interface";
 export * from "./server-runner.interface";
 export * from "./sub-turn.interface";

@@ -11,7 +11,7 @@ import {
 import { RUN_CALL_TABLE_NAME } from "../constants";
 import { RunStepEntity } from "./run-step.entity";
 import type { RunCallRecord } from "../interfaces";
-import type { ToolSource } from "../../../contracts";
+import type { CallSource } from "../../../contracts";
 
 @Entity(RUN_CALL_TABLE_NAME)
 export class RunCallEntity implements RunCallRecord {
@@ -21,7 +21,7 @@ export class RunCallEntity implements RunCallRecord {
   @Column({
     type: "varchar",
   })
-  declare source: ToolSource;
+  declare source: CallSource;
 
   @Column({
     type: "integer",

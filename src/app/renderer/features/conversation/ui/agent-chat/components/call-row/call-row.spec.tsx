@@ -5,6 +5,9 @@ import { CallRow } from "./call-row";
 import { useOpenCalls } from "../../../../hooks";
 import {
   CALL_ROW_ANSWERED_LABEL,
+  CALL_ROW_ROUTE_KIND,
+  CALL_ROW_ROUTE_LABEL,
+  CALL_ROW_ROUTE_REFUSED_LABEL,
   CALL_ROW_BREATH_CLASS,
   CALL_ROW_SAID_NO_COLOR,
   CALL_ROW_SAID_NO_LABEL,
@@ -62,6 +65,24 @@ function onServer(patch: Partial<LiveCall> = {}): LiveCall {
     serverName: "playwright-mcp",
     startedAt: 1_000,
     endedAt: 1_420,
+    ...patch,
+  });
+}
+
+/** A route call: the agent's decision about where its answer goes; nothing ran. */
+function onRoute(patch: Partial<LiveCall> = {}): LiveCall {
+  return call({
+    name: "pass_to",
+    arguments: {
+      to: "КОДЕР",
+    },
+    pinned: [],
+    line: "",
+    output: "Передам: КОДЕР.",
+    exitCode: null,
+    source: "route",
+    startedAt: 1_000,
+    endedAt: 1_000,
     ...patch,
   });
 }
@@ -308,5 +329,48 @@ describe("CallRow", () => {
 
     expect(screen.getByText(CALL_ROW_PINNED_LABEL)).toBeInTheDocument();
     expect(screen.getByText(CALL_ROW_FROM_MODEL_LABEL)).toBeInTheDocument();
+  });
+});
+
+describe("CallRow · a route call", () => {
+  it("says it is a route, with no code and no time of a process that never ran", () => {
+    render(<Row call={onRoute()} />);
+
+    expect(screen.getByText(CALL_ROW_ROUTE_LABEL)).toBeInTheDocument();
+    expect(
+      screen.queryByText(CALL_ROW_ANSWERED_LABEL, {
+        exact: false,
+      }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(CALL_ROW_CODE_LABEL, {
+        exact: false,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("opens on the route as its source, the name it chose and the words given back, with no copy of a server's answer", async () => {
+    render(<Row call={onRoute()} />);
+    await userEvent.click(screen.getByRole("button"));
+
+    expect(screen.getByText(CALL_ROW_SOURCE_LABEL)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`· ${CALL_ROW_ROUTE_KIND}`))).toBeInTheDocument();
+    expect(screen.getByText(/· КОДЕР/)).toBeInTheDocument();
+    expect(screen.getByText("Передам: КОДЕР.")).toBeInTheDocument();
+    expect(screen.queryByText(COPY_ACTION_LABEL)).not.toBeInTheDocument();
+  });
+
+  it("says the route was not accepted where the name was none it was given", () => {
+    render(
+      <Row
+        call={onRoute({
+          state: RUN_CALL_REFUSED,
+          output: "",
+          refusal: "Невідоме ім'я",
+        })}
+      />,
+    );
+
+    expect(screen.getByText(CALL_ROW_ROUTE_REFUSED_LABEL)).toBeInTheDocument();
   });
 });

@@ -1,10 +1,10 @@
-import type { ToolSource } from "../../../contracts";
+import type { CallSource } from "../../../contracts";
 
 /** One call as it happened; a refused call has `refusal` and no code, a command that ran has a code. */
 export interface AddCall {
   /** The call's id from the stream, also the one a server's failure count points at. */
   id: string;
-  source: ToolSource;
+  source: CallSource;
   name: string;
   arguments: Record<string, string>;
   /** Names the person pinned, to tell them from the model's choices. */

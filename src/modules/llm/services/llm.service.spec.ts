@@ -26,6 +26,7 @@ import {
   REFUSAL_SAID_SEPARATOR,
   composedMemory,
   composedSharedMemory,
+  routeTools,
   sharedMemoryWithTask,
 } from "../../../contracts";
 import { LlmService } from "./llm.service";
@@ -893,6 +894,254 @@ describe("LlmService when the check refuses a call", () => {
       (thrown: unknown) =>
         thrown instanceof Error && thrown.message === `${LLM_ASK_FAILED}${REFUSAL_SAID_SEPARATOR}User not found.`,
     );
+  });
+});
+
+describe("LlmService when the agent chooses its route", () => {
+  const STORYTELLER = "aaaaaaaa-0000-4000-8000-0000000000a1";
+  const TRANSLATOR = "aaaaaaaa-0000-4000-8000-0000000000a2";
+  const ROUTE = routeTools([
+    {
+      agentId: STORYTELLER,
+      name: "КОДЕР",
+      purpose: "Пише код",
+    },
+    {
+      agentId: TRANSLATOR,
+      name: "ПЕРЕВІРНИК",
+      purpose: null,
+    },
+  ]);
+
+  const calling = (...calls: [string, Record<string, unknown>][]) =>
+    new AIMessageChunk({
+      content: "",
+      tool_calls: calls.map(([name, args], index) => ({
+        name,
+        args,
+        id: `call-${index + 1}`,
+      })),
+    });
+
+  function service(provider: ReturnType<typeof speaking>, heard: AgentChunk[] = []): LlmService {
+    return new LlmService(
+      keyStore("sk-1"),
+      voice(heard),
+      runner(),
+      noServers(),
+      noMemory(),
+      toolArguments,
+      provider.clients,
+    );
+  }
+
+  it("hands the model both functions, the choice of whom to pass to being one of the names it was given", async () => {
+    const provider = speaking([
+      new AIMessageChunk({
+        content: "Готово",
+      }),
+    ]);
+
+    await service(provider).ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: ROUTE,
+    });
+
+    const [pass, finish] = <{ function: { name: string; parameters: Record<string, unknown> } }[]>provider.boundTools;
+
+    assert.equal(pass.function.name, "pass_to");
+    assert.deepEqual(pass.function.parameters, {
+      type: "object",
+      properties: {
+        to: {
+          type: "string",
+          description: "Кому передати свою відповідь — одне зі слів списку.",
+          enum: ["КОДЕР", "ПЕРЕВІРНИК"],
+        },
+      },
+      required: ["to"],
+    });
+    assert.equal(finish.function.name, "finish_here");
+    assert.deepEqual(finish.function.parameters, {
+      type: "object",
+      properties: {},
+    });
+  });
+
+  it("carries the choice up with the answer: whom it named, once each and in the order named", async () => {
+    const provider = speaking([
+      calling(
+        [
+          "pass_to",
+          {
+            to: "ПЕРЕВІРНИК",
+          },
+        ],
+        [
+          "pass_to",
+          {
+            to: "КОДЕР",
+          },
+        ],
+        [
+          "pass_to",
+          {
+            to: "ПЕРЕВІРНИК",
+          },
+        ],
+      ),
+      new AIMessageChunk({
+        content: "Відповідь",
+      }),
+    ]);
+    const answer = await service(provider).ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: ROUTE,
+    });
+
+    assert.deepEqual(answer.route, {
+      toAgentIds: [TRANSLATOR, STORYTELLER],
+      isFinished: false,
+    });
+    assert.equal(answer.text, "Відповідь");
+  });
+
+  it("tells the model what it chose, and records the call as the app's own, with no line and no code", async () => {
+    const provider = speaking([
+      calling([
+        "pass_to",
+        {
+          to: "КОДЕР",
+        },
+      ]),
+      new AIMessageChunk({
+        content: "Відповідь",
+      }),
+    ]);
+    const heard: AgentChunk[] = [];
+    const answer = await service(provider, heard).ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: ROUTE,
+    });
+
+    assert.equal(provider.conversations[1]?.at(-1)?.content, "Передам: КОДЕР.");
+    assert.deepEqual(
+      answer.calls.map((one) => [one.source, one.name, one.arguments, one.line, one.exitCode, one.isFailed]),
+      [
+        [
+          "route",
+          "pass_to",
+          {
+            to: "КОДЕР",
+          },
+          "",
+          null,
+          false,
+        ],
+      ],
+    );
+    // Said twice under one id, as any call: out, then over.
+    assert.deepEqual(
+      heard.map((chunk) => chunk.call?.state).filter((state) => state !== undefined && state !== null),
+      ["running", "ran"],
+    );
+    // It costs nothing of its own.
+    assert.equal(answer.called, null);
+  });
+
+  it("ends the branch when the agent says so, whomever it named besides", async () => {
+    const provider = speaking([
+      calling(
+        [
+          "pass_to",
+          {
+            to: "КОДЕР",
+          },
+        ],
+        ["finish_here", {}],
+      ),
+      new AIMessageChunk({
+        content: "Остаточно",
+      }),
+    ]);
+    const answer = await service(provider).ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: ROUTE,
+    });
+
+    assert.equal(answer.route?.isFinished, true);
+    assert.equal(provider.conversations[1]?.at(-1)?.content, "Далі не передаю: відповідь остаточна.");
+  });
+
+  it("refuses a name that is none of those given, tells the model which are, and chooses nothing by it", async () => {
+    const provider = speaking([
+      calling([
+        "pass_to",
+        {
+          to: "РЕЦЕНЗЕНТ",
+        },
+      ]),
+      new AIMessageChunk({
+        content: "Гаразд",
+      }),
+    ]);
+    const heard: AgentChunk[] = [];
+    const answer = await service(provider, heard).ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: ROUTE,
+    });
+    const note = "[pass_to не запустилась: to — має бути одним зі списку (КОДЕР, ПЕРЕВІРНИК), прийшло «РЕЦЕНЗЕНТ»]";
+
+    assert.equal(provider.conversations[1]?.at(-1)?.content, note);
+    assert.deepEqual(
+      answer.calls.map((one) => [one.name, one.refusal]),
+      [["pass_to", note]],
+    );
+    assert.equal(answer.route, null);
+  });
+
+  it("has no route where the agent called none, so its answer goes down every line", async () => {
+    const provider = speaking([
+      new AIMessageChunk({
+        content: "Просто відповідь",
+      }),
+    ]);
+    const answer = await service(provider).ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: ROUTE,
+    });
+
+    assert.equal(answer.route, null);
+  });
+
+  it("spends a call on each choice, as on any call", async () => {
+    const provider = speaking([
+      calling([
+        "pass_to",
+        {
+          to: "КОДЕР",
+        },
+      ]),
+      new AIMessageChunk({
+        content: "Не дійде",
+      }),
+    ]);
+    const answer = await service(provider).ask({
+      ...TURN,
+      maxCalls: 2,
+      providerId: TEST_PROVIDER_ID,
+      tools: ROUTE,
+    });
+
+    // A round and the choice are two calls; the third, the round that would say the answer, is over the ceiling.
+    assert.equal(answer.isCallsExhausted, true);
+    assert.equal(answer.route?.toAgentIds[0], STORYTELLER);
   });
 });
 

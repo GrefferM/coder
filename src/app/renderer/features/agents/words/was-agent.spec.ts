@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { wasAgent } from "./was-agent";
-import { AGENT_ACTIVE_ON_LABEL, AGENT_MEMORY_WORDS, AGENT_NO_PROMPT_LABEL } from "../constants";
+import { AGENT_ACTIVE_ON_LABEL, AGENT_MEMORY_WORDS, AGENT_NO_PROMPT_LABEL, AGENT_ROUTE_OFF_LABEL } from "../constants";
 import type { AgentDraft, AgentNaming } from "../interfaces";
 import type { ProjectModel, ProjectPrompt } from "../../../interfaces";
 import { aDraft, aModel, aPrompt } from "../../../testing";
@@ -69,6 +69,7 @@ describe("wasAgent", () => {
       temperature: null,
       isActive: null,
       waitsForAll: null,
+      choosesRoute: null,
       memory: null,
     });
   });
@@ -91,6 +92,18 @@ describe("wasAgent", () => {
     expect(was.maxCalls).toBe("10");
     // The word says what the field was: the draft switched the agent off, so it was on.
     expect(was.isActive).toBe(AGENT_ACTIVE_ON_LABEL);
+  });
+
+  it("says the answer went down every line, where the draft made the agent choose its route", () => {
+    const was = wasAgent(
+      draft({
+        choosesRoute: true,
+      }),
+      draft(),
+      NAMING,
+    );
+
+    expect(was.choosesRoute).toBe(AGENT_ROUTE_OFF_LABEL);
   });
 
   it("says the agent's memory was its own, where the draft made it shared", () => {

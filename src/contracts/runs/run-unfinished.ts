@@ -34,6 +34,7 @@ export function runUnfinished(run: WholeRun, questionId: string | null): RunUnfi
           fromStepId: step.id,
           fromAgentId: step.agentId,
           text: step.said,
+          stopReason: handoff.stopReason,
         })),
     ),
   };

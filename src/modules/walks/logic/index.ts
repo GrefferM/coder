@@ -2,6 +2,7 @@ export * from "./awaited-suppliers";
 export * from "./begun-walk";
 export * from "./empty-walk";
 export * from "./fed-step-ids";
+export * from "./followers-of";
 export * from "./forgotten";
 export * from "./handed-work";
 export * from "./leads-back";

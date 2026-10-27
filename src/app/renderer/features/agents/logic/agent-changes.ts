@@ -10,6 +10,10 @@ import {
   AGENT_WAIT_CHANGE_LABEL,
   AGENT_WAIT_DROPPED_LABEL,
   AGENT_WAIT_ON_LABEL,
+  AGENT_ROUTE_CHANGE_LABEL,
+  AGENT_ROUTE_DROPPED_LABEL,
+  AGENT_ROUTE_OFF_LABEL,
+  AGENT_ROUTE_ON_LABEL,
   AGENT_WAIT_OFF_LABEL,
   AGENT_MEMORY_CHANGE_LABEL,
   AGENT_MEMORY_DROPPED_LABEL,
@@ -135,6 +139,12 @@ export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: Agent
       droppedLabel: AGENT_WAIT_DROPPED_LABEL,
       was: saved.waitsForAll ? AGENT_WAIT_ON_LABEL : AGENT_WAIT_OFF_LABEL,
       now: draft.waitsForAll ? AGENT_WAIT_ON_LABEL : AGENT_WAIT_OFF_LABEL,
+    },
+    {
+      label: AGENT_ROUTE_CHANGE_LABEL,
+      droppedLabel: AGENT_ROUTE_DROPPED_LABEL,
+      was: saved.choosesRoute ? AGENT_ROUTE_ON_LABEL : AGENT_ROUTE_OFF_LABEL,
+      now: draft.choosesRoute ? AGENT_ROUTE_ON_LABEL : AGENT_ROUTE_OFF_LABEL,
     },
     {
       label: AGENT_MEMORY_CHANGE_LABEL,

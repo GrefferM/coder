@@ -1,6 +1,6 @@
 import { addedCost } from "../../../contracts/runs/added-cost";
 import type { ChatCost } from "../../../contracts/walks/chat-cost.interface";
-import type { AgentAnswer, ToolMemory, TurnCall } from "../interfaces";
+import type { AgentAnswer, RouteChoice, ToolMemory, TurnCall } from "../interfaces";
 
 /**
  * What a turn has said, spent and run so far; every end of the turn is counted from it. A turn cut by the ceiling or
@@ -11,6 +11,7 @@ export class TurnLedger {
   private readonly made: TurnCall[] = [];
   private readonly compressed: ToolMemory[] = [];
   private billed: ChatCost | null = null;
+  private route: RouteChoice | null = null;
   private inputTokens = 0;
   private outputTokens = 0;
   private calls = 0;
@@ -50,6 +51,20 @@ export class TurnLedger {
     this.compressed.push(...memories);
   }
 
+  /** Where the agent has sent its answer so far: whom it named, and whether it ended the branch; what one call decides adds to the rest. */
+  routed(choice: RouteChoice | null): void {
+    if (choice === null) {
+      return;
+    }
+
+    const named = this.route?.toAgentIds ?? [];
+
+    this.route = {
+      toAgentIds: [...named, ...choice.toAgentIds.filter((id) => !named.includes(id))],
+      isFinished: (this.route?.isFinished ?? false) || choice.isFinished,
+    };
+  }
+
   /** The answer as the turn stands; each end names itself, an ordinary answer names none. */
   answer(end: { isCallsExhausted?: boolean; isCeilingHit?: boolean; isStopped?: boolean } = {}): AgentAnswer {
     return {
@@ -62,6 +77,7 @@ export class TurnLedger {
       calls: this.made,
       called: this.billed,
       memories: this.compressed,
+      route: this.route,
     };
   }
 }

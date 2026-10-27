@@ -29,6 +29,7 @@ const nothingMoved: WasAgent = {
   temperature: null,
   isActive: null,
   waitsForAll: null,
+  choosesRoute: null,
   memory: null,
 };
 

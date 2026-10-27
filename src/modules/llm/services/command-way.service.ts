@@ -59,6 +59,7 @@ export class CommandWay implements ToolWay {
       isFailed: false,
       cost: null,
       memories: [],
+      route: null,
     };
   }
 }

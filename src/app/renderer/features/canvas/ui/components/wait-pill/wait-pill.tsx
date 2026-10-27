@@ -18,13 +18,17 @@ import {
   WAIT_PILL_PADDING,
   WAIT_PILL_REPEAT_WORD,
   WAIT_PILL_SEPARATOR,
+  WAIT_PILL_SILENT_LABEL,
 } from "./constants";
 import type { WaitPillProps } from "./interfaces";
 
-/** «●●● ЧЕКАЄ LINTER · ВІДПОВІВ 1 З 2» under the sphere's labels; catches no pointer. */
-export function WaitPill({ awaitedNames, isAwaitingRepeat, answered, ofSuppliers, color }: WaitPillProps) {
+/** «●●● ЧЕКАЄ LINTER · ВІДПОВІВ 1 З 3 · НЕ ПЕРЕДАВ 1» under the sphere's labels; catches no pointer. */
+export function WaitPill({ awaitedNames, isAwaitingRepeat, answered, silent, ofSuppliers, color }: WaitPillProps) {
   // When the walk is broken no supplier is coming; the pill names the repeat.
   const awaited = isAwaitingRepeat ? WAIT_PILL_REPEAT_WORD : awaitedNames.join(WAIT_PILL_NAME_SEPARATOR);
+
+  // Those who passed nothing on are counted only when there are some.
+  const passedNothing = silent > 0 ? `${WAIT_PILL_SEPARATOR}${WAIT_PILL_SILENT_LABEL} ${silent}` : "";
 
   return (
     <div
@@ -52,7 +56,7 @@ export function WaitPill({ awaitedNames, isAwaitingRepeat, answered, ofSuppliers
           <Dot key={percent} color={mixWithTransparent(color, percent)} size={WAIT_PILL_DOT_SIZE_PX} />
         ))}
       </span>
-      {`${WAIT_PILL_LABEL} ${awaited}${WAIT_PILL_SEPARATOR}${WAIT_PILL_ANSWERED_LABEL} ${answered} ${WAIT_PILL_OF_WORD} ${ofSuppliers}`}
+      {`${WAIT_PILL_LABEL} ${awaited}${WAIT_PILL_SEPARATOR}${WAIT_PILL_ANSWERED_LABEL} ${answered} ${WAIT_PILL_OF_WORD} ${ofSuppliers}${passedNothing}`}
     </div>
   );
 }

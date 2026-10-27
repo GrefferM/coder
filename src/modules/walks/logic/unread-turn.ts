@@ -17,5 +17,6 @@ export function unreadTurn(failure: string): TurnAnswer {
     calls: [],
     compressed: null,
     toolMemories: [],
+    route: null,
   };
 }

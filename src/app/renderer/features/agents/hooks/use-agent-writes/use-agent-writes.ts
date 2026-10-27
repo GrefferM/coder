@@ -33,6 +33,7 @@ export function useAgentWrites(project: OpenProject, write: ProjectWrite): Agent
         color: NEW_AGENT_COLOR,
         isActive: true,
         waitsForAll: true,
+        choosesRoute: false,
         memory: "own",
         x: at.x,
         y: at.y,

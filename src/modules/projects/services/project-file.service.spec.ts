@@ -390,6 +390,24 @@ describe("ProjectFileService", () => {
     assert.match(await readFile(path.join(projectDirectory, "agents", `${AGENT_ID}.yaml`), "utf8"), /name: EDITOR/);
   });
 
+  it("keeps the agent's choice of route in its own file, and reads it back as written", async () => {
+    const serializer = new ProjectConfigSerializer();
+    const source = fullConfig();
+    const [agent] = <Record<string, unknown>[]>source.agents;
+
+    agent.choosesRoute = true;
+
+    const written = await serializer.toValidConfig(source);
+
+    await projectFileService.write(projectDirectory, written);
+
+    assert.match(
+      await readFile(path.join(projectDirectory, "agents", `${AGENT_ID}.yaml`), "utf8"),
+      /choosesRoute: true/,
+    );
+    assert.equal((await projectFileService.read(projectDirectory)).agents[0].choosesRoute, true);
+  });
+
   it("takes the file of a deleted agent away with it", async () => {
     const serializer = new ProjectConfigSerializer();
     const held = fullConfig();

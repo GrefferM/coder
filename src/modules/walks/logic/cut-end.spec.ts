@@ -24,6 +24,7 @@ function said(patch: Partial<SaidTurn> = {}): SaidTurn {
     calls: [],
     called: null,
     memories: [],
+    route: null,
     ...patch,
   };
 }

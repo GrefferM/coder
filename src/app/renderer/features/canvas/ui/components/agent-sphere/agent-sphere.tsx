@@ -45,6 +45,7 @@ export function AgentSphere({ agent, place, wearing, doing, acts }: AgentSphereP
                 .map((supplier) => doing.agents.find((one) => one.id === supplier.agentId)?.name ?? "")}
               isAwaitingRepeat={doing.waiting.isAwaitingRepeat}
               answered={doing.waiting.suppliers.filter((supplier) => supplier.state === "answered").length}
+              silent={doing.waiting.suppliers.filter((supplier) => supplier.state === "silent").length}
               ofSuppliers={doing.waiting.suppliers.length}
               color={agent.color}
             />

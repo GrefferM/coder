@@ -38,6 +38,8 @@ export type WalkEvent =
       viaLinkIds: string[];
       runKey: string;
       isAgain: boolean;
+      /** How many suppliers of a converging point passed nothing on. */
+      missing: number;
       /** The turn's id and hour, minted by the adapter. */
       turnId: string;
       startedAt: number;

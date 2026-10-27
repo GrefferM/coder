@@ -1,12 +1,13 @@
 import { awaitedSuppliers } from "./awaited-suppliers";
 import { begunWalk } from "./begun-walk";
 import { fedStepIds } from "./fed-step-ids";
-import { cannotTake, linkOuts } from "./link-outs";
+import { cannotTake, linkOuts, routedOuts } from "./link-outs";
 import { handedWork } from "./handed-work";
-import { isWaitOver, settledWait } from "./settled-wait";
+import { isWaitOver, missingSuppliers, settledWait } from "./settled-wait";
 import {
   RECORD_FAILURE_SEPARATOR,
   isOnScreen,
+  isRouteStop,
   isWalking,
   RECORD_UNCLOSED_NOTE,
   RECORD_UNREAD_NOTE,
@@ -227,6 +228,7 @@ function settled(state: WalkState, event: WalkFact<"settled">): WalkNext {
               viaLinkIds: event.via === null ? [] : [event.via],
               runKey: event.runKey,
               isAgain: false,
+              missing: 0,
             },
           ];
 
@@ -313,6 +315,7 @@ function settled(state: WalkState, event: WalkFact<"settled">): WalkNext {
         viaLinkIds: stood.viaLinkIds,
         runKey: event.runKey,
         isAgain: false,
+        missing: missingSuppliers(stood),
       },
     ],
   };
@@ -488,6 +491,7 @@ function handedOn(state: WalkState, event: WalkFact<"handedOn">, config: Project
         viaLinkIds: [linkId],
         runKey: event.runKey,
         isAgain: false,
+        missing: 0,
       });
 
       continue;
@@ -553,6 +557,7 @@ function put(state: WalkState, event: WalkFact<"put">): WalkNext {
     viaLinkIds: [],
     runKey: event.runKey,
     isAgain: event.isAgain,
+    missing: 0,
     turnId: event.turnId,
     startedAt: event.askedAt,
   };
@@ -694,6 +699,7 @@ function turnPut(event: WalkFact<"asked">, first: IncomingWork, walk: Walk): Wal
             event.incoming.map((one) => ({
               text: one.text,
             })),
+            event.missing,
           ),
   };
 }
@@ -750,9 +756,12 @@ function answered(state: WalkState, event: WalkFact<"answered">, config: Project
   };
 }
 
-/** The lines out of a turn that answered; none for a fall, a cut turn or one that never began. */
+/**
+ * The lines out of a turn that answered, as the agent chose them where it chose its route; none for a fall, a cut turn
+ * or one that never began.
+ */
 function outOf(event: WalkFact<"answered">, config: ProjectConfig): LinkOut[] {
-  return goesOn(event) ? linkOuts(config, event.agent) : [];
+  return goesOn(event) ? routedOuts(linkOuts(config, event.agent), event.answer.route) : [];
 }
 
 /** Whether the walk goes on through this turn: only through the agent's own words. */
@@ -1249,8 +1258,30 @@ function workThatArrived(state: WalkState, event: WalkFact<"repeated">, config: 
       continue;
     }
 
-    const stopReason = cannotTake(to);
     const awaited = awaitedSuppliers(config, event.startAgentId, to.id);
+
+    // A line the agent did not choose, or ended, stays cut: its row already stands, and whoever waits at the point
+    // is only told once more that nothing comes down it.
+    if (isRouteStop(arrival.stopReason)) {
+      const next = notTaken(
+        standing,
+        {
+          fromId: arrival.fromAgentId,
+          to,
+          awaited,
+          startAgentId: event.startAgentId,
+          runKey: event.runKey,
+        },
+        config,
+      );
+
+      standing = next.state;
+      effects.push(...next.effects);
+
+      continue;
+    }
+
+    const stopReason = cannotTake(to);
 
     if (stopReason !== null) {
       effects.push({
@@ -1300,6 +1331,7 @@ function workThatArrived(state: WalkState, event: WalkFact<"repeated">, config: 
         viaLinkIds: via === null ? [] : [via],
         runKey: event.runKey,
         isAgain: false,
+        missing: 0,
       });
 
       continue;
@@ -1359,6 +1391,7 @@ function questionNeverPut(event: WalkFact<"repeated">, config: ProjectConfig): W
       viaLinkIds: [],
       runKey: event.runKey,
       isAgain: true,
+      missing: 0,
     },
   ];
 }
@@ -1429,6 +1462,7 @@ function turnsToRunAgain(state: WalkState, event: WalkFact<"repeated">, config: 
       viaLinkIds: fed.map((step) => lineTo(config, step.agentId, agent.id)).filter((id): id is string => id !== null),
       runKey: event.runKey,
       isAgain: true,
+      missing: 0,
     });
   }
 

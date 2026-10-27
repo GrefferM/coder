@@ -24,3 +24,10 @@ export function isWaitOver(stood: WaitedWork): boolean {
 
   return stood.awaitedIds.every((supplierId) => stood.settledIds.includes(supplierId));
 }
+
+/** How many awaited suppliers passed nothing on: settled, yet no work of theirs arrived. */
+export function missingSuppliers(stood: WaitedWork): number {
+  const gave = new Set(stood.arrived.map((work) => work.fromAgentId));
+
+  return stood.awaitedIds.filter((supplierId) => !gave.has(supplierId)).length;
+}

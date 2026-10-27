@@ -158,6 +158,7 @@ describe("runUnfinished", () => {
         fromStepId: "step-1",
         fromAgentId: "agent-1",
         text: "- Починай з малого",
+        stopReason: "busy",
       },
     ]);
   });
@@ -243,8 +244,37 @@ describe("runUnfinished", () => {
         fromStepId: "step-1",
         fromAgentId: "agent-1",
         text: "- Починай з малого",
+        stopReason: null,
       },
     ]);
     assert.deepEqual(said.again, []);
+  });
+
+  it("carries the reason a link was cut with its arrival, so a repeat knows a line the agent did not choose", () => {
+    const said = runUnfinished(
+      run([
+        step({
+          handoffs: [
+            {
+              toAgentId: "agent-2",
+              stopReason: "notChosen",
+            },
+            {
+              toAgentId: "agent-3",
+              stopReason: "finished",
+            },
+          ],
+        }),
+      ]),
+      "question-1",
+    );
+
+    assert.deepEqual(
+      said.arrivals.map((one) => [one.toAgentId, one.stopReason]),
+      [
+        ["agent-2", "notChosen"],
+        ["agent-3", "finished"],
+      ],
+    );
   });
 });

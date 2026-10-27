@@ -363,6 +363,24 @@ describe("chatFileName", () => {
     assert.ok(out.includes("[14:05] роботу не передано: Рецензент → Редактор (вимкнений)"));
   });
 
+  it("says why a line was not taken where the agent chose another way", () => {
+    const line = (stopReason: "notChosen" | "finished"): string =>
+      chatText(
+        [
+          message({
+            from: "handoff",
+            agentId: "a1",
+            otherAgentId: "a2",
+            stopReason,
+          }),
+        ],
+        AGENTS,
+      );
+
+    assert.ok(line("notChosen").includes("[14:05] роботу не передано: Рецензент → Редактор (не обрано)"));
+    assert.ok(line("finished").includes("[14:05] роботу не передано: Рецензент → Редактор (гілку завершено)"));
+  });
+
   it("is «розмова-РРРР-ММ-ДД.txt» by the day it is written", () => {
     assert.equal(chatFileName(new Date(2026, 8, 7)), "розмова-2026-09-07.txt");
   });

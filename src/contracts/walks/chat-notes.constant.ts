@@ -27,4 +27,6 @@ export const CHAT_ANSWER_CEILING_UNIT = " ткн";
 export const CHAT_STOP_REASON_LABELS: Record<ChatStopReason, string> = {
   off: "вимкнений",
   busy: "зайнятий",
+  notChosen: "не обрано",
+  finished: "гілку завершено",
 };

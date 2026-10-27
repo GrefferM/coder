@@ -7,6 +7,10 @@ import {
   AGENT_PROMPT_CHANGE_LABEL,
   AGENT_PROMPT_DROPPED_LABEL,
   AGENT_MEMORY_CHANGE_LABEL,
+  AGENT_ROUTE_CHANGE_LABEL,
+  AGENT_ROUTE_DROPPED_LABEL,
+  AGENT_ROUTE_OFF_LABEL,
+  AGENT_ROUTE_ON_LABEL,
   AGENT_MEMORY_DROPPED_LABEL,
   AGENT_MEMORY_WORDS,
   AGENT_COMPRESS_AT_CHANGE_LABEL,
@@ -75,6 +79,26 @@ describe("agentChanges", () => {
         droppedLabel: AGENT_NAME_DROPPED_LABEL,
         was: "EDITOR",
         now: "REVIEWER",
+      },
+    ]);
+  });
+
+  it("names the route turned on by both its words", () => {
+    expect(
+      agentChanges(
+        SAVED,
+        {
+          ...SAVED,
+          choosesRoute: true,
+        },
+        NAMING,
+      ),
+    ).toEqual([
+      {
+        label: AGENT_ROUTE_CHANGE_LABEL,
+        droppedLabel: AGENT_ROUTE_DROPPED_LABEL,
+        was: AGENT_ROUTE_OFF_LABEL,
+        now: AGENT_ROUTE_ON_LABEL,
       },
     ]);
   });

@@ -6,6 +6,8 @@ import {
   AGENT_ACTIVE_ON_LABEL,
   AGENT_WAIT_OFF_LABEL,
   AGENT_WAIT_ON_LABEL,
+  AGENT_ROUTE_OFF_LABEL,
+  AGENT_ROUTE_ON_LABEL,
   AGENT_MEMORY_WORDS,
   AGENT_NO_PROMPT_LABEL,
   AGENT_TEMPERATURE_PLACES,
@@ -36,6 +38,7 @@ export function wasAgent(draft: AgentDraft, saved: AgentDraft | null, naming: Ag
       temperature: null,
       isActive: null,
       waitsForAll: null,
+      choosesRoute: null,
       memory: null,
     };
   }
@@ -68,6 +71,12 @@ export function wasAgent(draft: AgentDraft, saved: AgentDraft | null, naming: Ag
       saved.isActive === draft.isActive ? null : saved.isActive ? AGENT_ACTIVE_ON_LABEL : AGENT_ACTIVE_OFF_LABEL,
     waitsForAll:
       saved.waitsForAll === draft.waitsForAll ? null : saved.waitsForAll ? AGENT_WAIT_ON_LABEL : AGENT_WAIT_OFF_LABEL,
+    choosesRoute:
+      saved.choosesRoute === draft.choosesRoute
+        ? null
+        : saved.choosesRoute
+          ? AGENT_ROUTE_ON_LABEL
+          : AGENT_ROUTE_OFF_LABEL,
     memory: saved.memory === draft.memory ? null : AGENT_MEMORY_WORDS[saved.memory],
   };
 }

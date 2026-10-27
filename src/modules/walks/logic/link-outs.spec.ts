@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { cannotTake, linkOuts } from "./link-outs";
+import { cannotTake, linkOuts, routedOuts } from "./link-outs";
 import type { Agent, ProjectConfig } from "../../../contracts";
 import { aConfig, aLink, anAgent } from "../../../utils/testing";
 
@@ -169,5 +169,90 @@ describe("linkOuts", () => {
       out.map((one) => one.linkId),
       ["link-2", "link-1"],
     );
+  });
+});
+
+describe("routedOuts", () => {
+  const FIRST = agent({
+    id: "first",
+  });
+  const SECOND = agent({
+    id: "second",
+  });
+  const OFF = agent({
+    id: "off",
+    isActive: false,
+  });
+  const OUTS = [
+    {
+      linkId: "l1",
+      to: FIRST,
+      stopReason: null,
+    },
+    {
+      linkId: "l2",
+      to: SECOND,
+      stopReason: null,
+    },
+    {
+      linkId: "l3",
+      to: OFF,
+      stopReason: <const>"off",
+    },
+  ];
+
+  const reasons = (route: Parameters<typeof routedOuts>[1]) => routedOuts(OUTS, route).map((out) => out.stopReason);
+
+  it("takes every line where the agent chose nothing", () => {
+    assert.deepEqual(reasons(null), [null, null, "off"]);
+  });
+
+  it("takes only the lines to the agents it named, and leaves the others not chosen", () => {
+    assert.deepEqual(
+      reasons({
+        toAgentIds: ["second"],
+        isFinished: false,
+      }),
+      ["notChosen", null, "off"],
+    );
+  });
+
+  it("takes no line where it ended the branch, whomever it named besides", () => {
+    assert.deepEqual(
+      reasons({
+        toAgentIds: ["first"],
+        isFinished: true,
+      }),
+      ["finished", "finished", "off"],
+    );
+  });
+
+  it("leaves a line that could not be taken for its own reason with that reason, whatever the agent chose", () => {
+    assert.deepEqual(
+      reasons({
+        toAgentIds: ["off"],
+        isFinished: false,
+      }),
+      ["notChosen", "notChosen", "off"],
+    );
+  });
+
+  it("reads a choice that names nobody and ends nothing as no choice", () => {
+    assert.deepEqual(
+      reasons({
+        toAgentIds: [],
+        isFinished: false,
+      }),
+      [null, null, "off"],
+    );
+  });
+
+  it("keeps the lines themselves as they were, and changes only the reason", () => {
+    const [first] = routedOuts(OUTS, {
+      toAgentIds: [],
+      isFinished: true,
+    });
+
+    assert.deepEqual([first.linkId, first.to], ["l1", FIRST]);
   });
 });

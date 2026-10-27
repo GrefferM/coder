@@ -1,12 +1,12 @@
-import type { ToolMemory } from "../../../contracts/llm";
+import type { RouteChoice, ToolMemory } from "../../../contracts/llm";
 import type { ChatCost } from "../../../contracts/walks/chat-cost.interface";
-import type { ToolSource } from "../../../contracts/project";
+import type { CallSource } from "../../../contracts/runs";
 
 /**
  * What one call says of itself when minted: where it went, what it was given, and which arguments the person pinned.
  */
 export interface CallStanding {
-  source: ToolSource;
+  source: CallSource;
   name: string;
   arguments: Record<string, string>;
   pinned: string[];
@@ -25,6 +25,8 @@ export interface CallResult {
   cost: ChatCost | null;
   /** What an agent's call had compressed on the way; a command and a server's function compress nothing. */
   memories: ToolMemory[];
+  /** What a route call decided; the other kinds of call decide nothing. */
+  route: RouteChoice | null;
 }
 
 /**

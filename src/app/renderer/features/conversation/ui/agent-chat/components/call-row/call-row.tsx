@@ -39,6 +39,9 @@ import {
   CALL_ROW_PINNED_LABEL,
   CALL_ROW_CODE_LABEL,
   CALL_ROW_REFUSED_LABEL,
+  CALL_ROW_ROUTE_KIND,
+  CALL_ROW_ROUTE_LABEL,
+  CALL_ROW_ROUTE_REFUSED_LABEL,
   CALL_ROW_RUNNING_LABEL,
   CALL_ROW_SAID_GAP_PX,
   CALL_ROW_SAID_LABEL,
@@ -63,6 +66,7 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
   const saidNo = call.state === RUN_CALL_SAID_NO;
   const isCommand = call.source === "command";
   const isAgent = call.source === "agent";
+  const isRoute = call.source === "route";
 
   /** How long a server took to answer, in place of an exit code. */
   function answeredIn(): string {
@@ -77,7 +81,12 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
     }
 
     if (call.state === RUN_CALL_REFUSED) {
-      return CALL_ROW_REFUSED_LABEL;
+      return isRoute ? CALL_ROW_ROUTE_REFUSED_LABEL : CALL_ROW_REFUSED_LABEL;
+    }
+
+    // A decision has no code and no time of its own to tell.
+    if (isRoute && !saidNo) {
+      return CALL_ROW_ROUTE_LABEL;
     }
 
     // A refusal is an answer; its time is shown like any other.
@@ -182,9 +191,11 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
               >
                 {CALL_ROW_SOURCE_LABEL}
               </span>
-              {isAgent
-                ? `${CALL_ROW_ARGUMENT_SEPARATOR}${CALL_ROW_AGENT_KIND}`
-                : `${CALL_ROW_ARGUMENT_SEPARATOR}${CALL_ROW_SOURCE_KIND}${CALL_ROW_SEPARATOR}${call.serverName}`}
+              {isRoute
+                ? `${CALL_ROW_ARGUMENT_SEPARATOR}${CALL_ROW_ROUTE_KIND}`
+                : isAgent
+                  ? `${CALL_ROW_ARGUMENT_SEPARATOR}${CALL_ROW_AGENT_KIND}`
+                  : `${CALL_ROW_ARGUMENT_SEPARATOR}${CALL_ROW_SOURCE_KIND}${CALL_ROW_SEPARATOR}${call.serverName}`}
             </div>
           )}
           {Object.entries(call.arguments).map(([name, value]) => (
@@ -217,7 +228,7 @@ export function CallRow({ call, agentColor, openCalls }: CallRowProps) {
             </div>
           )}
           {/* A server's or an agent's answer is named and offers «СКОПІЮВАТИ» for the whole of it. */}
-          {call.output !== "" && !isCommand && (
+          {call.output !== "" && !isCommand && !isRoute && (
             <div
               className="d-flex align-items-center"
               style={{

@@ -16,6 +16,7 @@ import {
   answeredCard,
   askedCards,
   emptyWalk,
+  followersOf,
   grantedServerIds,
   handoffCard,
   repeatOf,
@@ -286,6 +287,7 @@ export class WalkRunner implements RecordWatcher {
       viaLinkIds: act.viaLinkIds,
       runKey: act.runKey,
       isAgain: act.isAgain,
+      missing: act.missing,
       turnId: randomUUID(),
       startedAt: Date.now(),
     });
@@ -574,6 +576,7 @@ export class WalkRunner implements RecordWatcher {
       memory,
       catalogue,
       agents: agentRegistry(put.agent, config, providers, catalogue),
+      followers: followersOf(config, put.agent),
       directory: this.project.directory,
       runId: row,
       questionId: put.questionId,

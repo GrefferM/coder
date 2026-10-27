@@ -193,6 +193,7 @@ export class TurnAsker {
       compressed: composed?.compressed ?? null,
       // Those of the agents it called whose memory the record keeps; the rest are only paid for, above.
       toolMemories: said.memories.flatMap((one) => (one.facts === null ? [] : [one.facts])),
+      route: said.route,
     };
   }
 
@@ -222,6 +223,7 @@ export class TurnAsker {
       calls: [],
       compressed: composed?.compressed ?? null,
       toolMemories: [],
+      route: null,
     };
   }
 }

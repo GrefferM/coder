@@ -57,6 +57,7 @@ export class ServerWay implements ToolWay {
       isFailed: result.isFailed,
       cost: null,
       memories: [],
+      route: null,
     };
   }
 }

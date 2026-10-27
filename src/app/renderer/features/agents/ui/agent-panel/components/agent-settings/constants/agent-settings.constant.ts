@@ -16,6 +16,11 @@ export const AGENT_SETTINGS_SWITCH_LABEL = "Увімкнено";
 export const AGENT_SETTINGS_WAIT_LABEL = "Очікувати всіх";
 export const AGENT_SETTINGS_WAIT_HINT = "УВІМК — ЧЕКАЄ ВСІХ, ХТО СХОДИТЬСЯ · ВИМК — НА КОЖНОМУ ВХОДІ ОКРЕМО";
 
+/** The route toggle and the line under it. */
+export const AGENT_SETTINGS_ROUTE_LABEL = "Обирає маршрут";
+export const AGENT_SETTINGS_ROUTE_HINT =
+  "УВІМК — САМ ВИРІШУЄ, КОМУ ПЕРЕДАТИ ВІДПОВІДЬ, АБО ЗАВЕРШУЄ ГІЛКУ · ВИМК — ВІДПОВІДЬ ЙДЕ ПО ВСІХ ЛІНІЯХ";
+
 /** Footer actions; the first is «Видалити» until the draft changes, then «Скасувати». */
 export const AGENT_SETTINGS_FOOTER_BORDER_COLOR = "#1c202c";
 export const AGENT_SETTINGS_ACTION_GAP_PX = 10;

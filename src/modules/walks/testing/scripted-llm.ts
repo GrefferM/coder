@@ -33,6 +33,7 @@ export class ScriptedLlm implements TurnLlm {
       calls: [],
       called: null,
       memories: [],
+      route: null,
     };
   }
 
@@ -53,6 +54,7 @@ export class ScriptedLlm implements TurnLlm {
       calls: [],
       called: null,
       memories: [],
+      route: null,
     };
   }
 

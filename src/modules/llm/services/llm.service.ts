@@ -31,15 +31,18 @@ import {
   LLM_PROVIDER_NOT_BUILT,
   LLM_PROVIDER_SILENT,
   RECORD_GONE_NOTE,
+  ROUTE_TO_DESCRIPTION,
+  ROUTE_TO_NAME,
 } from "../../../contracts";
 import { RUN_CALL_RAN, RUN_CALL_REFUSED, RUN_CALL_RUNNING, RUN_CALL_SAID_NO } from "../../../contracts";
 import { Refusal } from "../../../utils/refusals";
 import { AgentWay } from "./agent-way.service";
 import { ToolArguments } from "./tool-arguments.service";
 import { CommandWay } from "./command-way.service";
+import { RouteWay } from "./route-way.service";
 import { ServerWay } from "./server-way.service";
 import { TurnLedger } from "./turn-ledger.service";
-import { isAgentTool, isCommandTool } from "../interfaces";
+import { isAgentTool, isCommandTool, isRouteTool } from "../interfaces";
 import type { ChatCost, ComposedOutcome, TurnMemory } from "../../../contracts";
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import type { AIMessageChunk, BaseMessage } from "@langchain/core/messages";
@@ -53,6 +56,7 @@ import type {
   AgentTool,
   AgentTurnOutcome,
   AgentVoice,
+  CallOutcome,
   ChatTurn,
   ProjectMcpServer,
   ToolWay,
@@ -342,6 +346,7 @@ export class LlmService {
       turn.conversation.push(ran.message);
       ledger.composed(ran.memories);
       ledger.billedFor(ran.cost);
+      ledger.routed(ran.route);
 
       if (ran.made !== null) {
         ledger.ran(ran.made);
@@ -384,6 +389,33 @@ export class LlmService {
             },
             required: [AGENT_TOOL_INPUT_NAME],
           },
+        },
+      };
+    }
+
+    if (isRouteTool(tool)) {
+      return {
+        type: "function",
+        function: {
+          name: tool.name,
+          description: tool.description,
+          parameters:
+            tool.action === "passTo"
+              ? {
+                  type: TOOL_SCHEMA_OBJECT,
+                  properties: {
+                    [ROUTE_TO_NAME]: {
+                      type: TOOL_SCHEMA_TYPES.text,
+                      description: ROUTE_TO_DESCRIPTION,
+                      enum: tool.options.map((option) => option.label),
+                    },
+                  },
+                  required: [ROUTE_TO_NAME],
+                }
+              : {
+                  type: TOOL_SCHEMA_OBJECT,
+                  properties: {},
+                },
         },
       };
     }
@@ -436,7 +468,7 @@ export class LlmService {
     turn: RunningTurn,
     tool: AgentTool | null,
     call: { id?: string; name: string; args: Record<string, unknown> },
-  ): Promise<{ message: ToolMessage; made: TurnCall | null; memories: ToolMemory[]; cost: ChatCost | null }> {
+  ): Promise<CallOutcome> {
     if (tool === null) {
       return this.notCalled(call, `[${call.name}: такої команди в агента немає]`);
     }
@@ -477,13 +509,14 @@ export class LlmService {
         made: refused,
         cost: null,
         memories: [],
+        route: null,
       };
     }
 
     // Said when it goes out and again when it is over.
     this.sayCall(turn, standing, RUN_CALL_RUNNING);
 
-    const { memories, cost, ...result } = await way.make(standing.id, turn.directory, turn.signal);
+    const { memories, cost, route, ...result } = await way.make(standing.id, turn.directory, turn.signal);
     const made = {
       ...standing,
       ...result,
@@ -497,6 +530,7 @@ export class LlmService {
       made,
       cost,
       memories,
+      route,
     };
   }
 
@@ -508,6 +542,10 @@ export class LlmService {
 
     if (isAgentTool(tool)) {
       return this.agentWay(turn, tool, said);
+    }
+
+    if (isRouteTool(tool)) {
+      return new RouteWay(tool, said, this.arguments_);
     }
 
     const server = turn.servers.find((held) => held.id === tool.serverId) ?? null;
@@ -804,15 +842,13 @@ export class LlmService {
   }
 
   /** A call that never happened: the model gets a note, nothing is recorded. */
-  private notCalled(
-    call: { id?: string; name: string },
-    note: string,
-  ): { message: ToolMessage; made: TurnCall | null; memories: ToolMemory[]; cost: ChatCost | null } {
+  private notCalled(call: { id?: string; name: string }, note: string): CallOutcome {
     return {
       message: new ToolMessage(note, call.id ?? call.name, call.name),
       made: null,
       cost: null,
       memories: [],
+      route: null,
     };
   }
 

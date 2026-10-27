@@ -204,6 +204,8 @@ export class ProjectConfigSerializer {
     agent.isActive = <boolean>source.isActive;
     // An absent mode defaults to waiting for all.
     agent.waitsForAll = typeof source.waitsForAll === "boolean" ? source.waitsForAll : true;
+    // An absent choice leaves the answer to go down every line; any other word is left for the validator to refuse.
+    agent.choosesRoute = <boolean>(source.choosesRoute ?? false);
     // An absent memory is the agent's own; any other word is left for the validator to refuse.
     agent.memory = <AgentMemory>(source.memory ?? "own");
     agent.x = <number>source.x;

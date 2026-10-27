@@ -1,4 +1,4 @@
-import type { ToolSource } from "../../../contracts";
+import type { CallSource } from "../../../contracts";
 import type {
   RunCallEntity,
   RunEntity,
@@ -114,7 +114,7 @@ export interface NewMemory {
 export interface NewCall {
   /** The call's existing id; the record keeps it and mints none. */
   id: string;
-  source: ToolSource;
+  source: CallSource;
   place: number;
   name: string;
   arguments: string;

@@ -6,6 +6,8 @@ export const WAIT_PILL_LABEL = "Чекає";
 export const WAIT_PILL_REPEAT_WORD = "повтору";
 export const WAIT_PILL_ANSWERED_LABEL = "Відповів";
 export const WAIT_PILL_OF_WORD = "з";
+/** Suppliers that passed nothing on: chose another way, ended their branch, or were off. */
+export const WAIT_PILL_SILENT_LABEL = "Не передав";
 export const WAIT_PILL_SEPARATOR = " · ";
 export const WAIT_PILL_NAME_SEPARATOR = ", ";
 export const WAIT_PILL_GAP_PX = 7;

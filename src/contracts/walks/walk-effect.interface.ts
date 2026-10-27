@@ -36,6 +36,8 @@ export type WalkEffect =
       runKey: string;
       /** A walk resumed from the record, whose words already stand in the stream. */
       isAgain: boolean;
+      /** How many suppliers of a converging point passed nothing on; the turn is told. */
+      missing: number;
     }
   /** This point has nothing to give, so whoever waits behind it is let down. */
   | { kind: "letDown"; fromId: string; startAgentId: string; runKey: string }

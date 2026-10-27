@@ -50,6 +50,7 @@ function turn(memory: TurnMemory, patch: Partial<TurnToAsk> = {}): TurnToAsk {
       looks: {},
     },
     agents: [],
+    followers: [],
     directory: "/tmp/coder",
     runId: "run-1",
     questionId: "question-1",
@@ -217,6 +218,7 @@ describe("TurnAsker", () => {
             calls: [],
             called: null,
             memories: [],
+            route: null,
           };
         },
         stop: () => undefined,
@@ -278,6 +280,7 @@ describe("TurnAsker", () => {
               facts: null,
             },
           ],
+          route: null,
         };
       },
       async compose(_payload: ModelCompose): Promise<SaidTurn> {

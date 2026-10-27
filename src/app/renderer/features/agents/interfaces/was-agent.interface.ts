@@ -19,5 +19,6 @@ export interface WasAgent {
   temperature: string | null;
   isActive: string | null;
   waitsForAll: string | null;
+  choosesRoute: string | null;
   memory: string | null;
 }

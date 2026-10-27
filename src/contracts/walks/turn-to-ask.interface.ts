@@ -1,4 +1,5 @@
 import type { AgentStands } from "./agent-stands.interface";
+import type { RouteFollower } from "./route-follower.interface";
 import type { TurnMemory } from "./turn-memory.interface";
 import type { ReachableAgent } from "../llm";
 import type { Agent, GrantTargets } from "../project";
@@ -21,6 +22,8 @@ export interface TurnToAsk {
   catalogue: GrantTargets;
   /** Every agent reachable as a tool from this one, by id. */
   agents: ReachableAgent[];
+  /** The agents the lines out of this one lead to that can take work: whom an agent that chooses its route chooses from. */
+  followers: RouteFollower[];
   /** The project's folder, which is where a command runs. */
   directory: string;
   /** The row and the question the turn works under; an agent it calls with the shared memory reads that question. */

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { isWaitOver, settledWait } from "./settled-wait";
+import { isWaitOver, missingSuppliers, settledWait } from "./settled-wait";
 import type { IncomingWork, WaitedWork } from "../../../contracts";
 
 function work(text: string): IncomingWork {
@@ -159,6 +159,38 @@ describe("isWaitOver", () => {
         }),
       ),
       true,
+    );
+  });
+});
+
+describe("missingSuppliers", () => {
+  it("counts the awaited suppliers whose work did not arrive", () => {
+    assert.equal(
+      missingSuppliers(
+        waiting({
+          settledIds: ["agent-1", "agent-2"],
+          arrived: [work("Готово.")],
+        }),
+      ),
+      1,
+    );
+  });
+
+  it("counts none when every awaited supplier gave work", () => {
+    assert.equal(
+      missingSuppliers(
+        waiting({
+          settledIds: ["agent-1", "agent-2"],
+          arrived: [
+            work("Готово."),
+            {
+              ...work("Теж."),
+              fromAgentId: "agent-2",
+            },
+          ],
+        }),
+      ),
+      0,
     );
   });
 });

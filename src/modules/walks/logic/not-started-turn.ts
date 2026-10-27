@@ -25,5 +25,6 @@ export function notStartedTurn(
     calls: [],
     compressed: null,
     toolMemories: [],
+    route: null,
   };
 }

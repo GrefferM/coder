@@ -24,6 +24,7 @@ import type {
   TurnOut,
   WaitedWork,
   Walk,
+  WalkEffect,
   WalkEvent,
   WalkState,
 } from "../../../contracts";
@@ -116,6 +117,7 @@ function answer(patch: Partial<TurnAnswer> = {}): TurnAnswer {
     calls: [],
     compressed: null,
     toolMemories: [],
+    route: null,
     ...patch,
   };
 }
@@ -522,6 +524,7 @@ describe("walkMachine · a supplier of a converging point settled", () => {
         viaLinkIds: ["link-1", "link-2"],
         runKey: "walk-1",
         isAgain: false,
+        missing: 0,
       },
     ]);
   });
@@ -613,6 +616,7 @@ describe("walkMachine · a converging point that does not wait", () => {
         viaLinkIds: ["link-1"],
         runKey: "walk-1",
         isAgain: false,
+        missing: 0,
       },
     ]);
     // The tally only spots an all-silent run; the other supplier is still awaited.
@@ -662,6 +666,7 @@ describe("walkMachine · a converging point that does not wait", () => {
         viaLinkIds: ["link-2"],
         runKey: "walk-1",
         isAgain: false,
+        missing: 0,
       },
     ]);
     assert.equal(state.walks["walk-1"]?.waiting.titler, undefined);
@@ -896,6 +901,7 @@ describe("walkMachine · the answer takes its lines out", () => {
           viaLinkIds: ["link-0"],
           runKey: "walk-1",
           isAgain: false,
+          missing: 0,
         },
       ],
     );
@@ -1090,6 +1096,7 @@ describe("walkMachine · the answer takes its lines out", () => {
           viaLinkIds: ["link-1"],
           runKey: "walk-2",
           isAgain: false,
+          missing: 1,
         },
       ],
     );
@@ -1110,6 +1117,7 @@ describe("walkMachine · work put to an agent", () => {
         viaLinkIds: [],
         runKey: "walk-1",
         isAgain: false,
+        missing: 0,
         turnId: "turn-1",
         startedAt: 100,
         ...patch,
@@ -1418,6 +1426,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
           viaLinkIds: [],
           runKey: "walk-2",
           isAgain: true,
+          missing: 0,
         },
       ],
     );
@@ -1453,6 +1462,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
         viaLinkIds: [],
         runKey: "walk-2",
         isAgain: true,
+        missing: 0,
       },
     ]);
   });
@@ -1466,6 +1476,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
           fromStepId: "step-1",
           fromAgentId: "thesaurus",
           text: "Готово",
+          stopReason: null,
         },
       ],
     });
@@ -1488,8 +1499,72 @@ describe("walkMachine · a walk picked up where it broke", () => {
         viaLinkIds: ["link-0"],
         runKey: "walk-2",
         isAgain: false,
+        missing: 0,
       },
     ]);
+  });
+
+  it("does not put work down a line the agent did not choose, and closes the point behind it with nothing", () => {
+    const { effects } = repeated({
+      again: [],
+      arrivals: [
+        {
+          toAgentId: "shortener",
+          fromStepId: "step-1",
+          fromAgentId: "thesaurus",
+          text: "Готово",
+          stopReason: "notChosen",
+        },
+      ],
+    });
+
+    // Shortener is the only one who would have fed titler; with it cut nothing goes anywhere, and the row stands already.
+    assert.deepEqual(
+      effects.filter((effect) => effect.kind === "askAgent" || effect.kind === "sayHandoff"),
+      [],
+    );
+  });
+
+  it("gives a point the work that did arrive and tells it how many lines were cut", () => {
+    const { effects } = repeatedIn(
+      {
+        again: [],
+        arrivals: [
+          {
+            toAgentId: "titler",
+            fromStepId: "step-1",
+            fromAgentId: "thesaurus",
+            text: "Готово",
+            stopReason: null,
+          },
+          {
+            toAgentId: "shortener",
+            fromStepId: "step-1",
+            fromAgentId: "thesaurus",
+            text: "Готово",
+            stopReason: "finished",
+          },
+        ],
+      },
+      config(
+        [thesaurus, shortener, titler],
+        [
+          ["thesaurus", "shortener"],
+          ["thesaurus", "titler"],
+          ["shortener", "titler"],
+        ],
+      ),
+    );
+    const given = effects.filter((effect) => effect.kind === "askAgent");
+
+    assert.deepEqual(
+      given.map((effect) => effect.kind === "askAgent" && [effect.agent.id, effect.missing]),
+      [["titler", 1]],
+    );
+    assert.equal(
+      effects.some((effect) => effect.kind === "sayHandoff"),
+      false,
+    );
   });
 
   it("says a neighbour the repeat cannot reach, and lets down whoever waited behind it", () => {
@@ -1563,6 +1638,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
         viaLinkIds: [],
         runKey: "walk-2",
         isAgain: true,
+        missing: 0,
       },
     ]);
   });
@@ -1734,6 +1810,375 @@ describe("walkMachine · the turn that came back", () => {
 
     assert.equal(written?.kind === "writeTurn" && written.turn.said, "404 page not found");
     assert.equal(card?.kind === "sayAnswer" && card.turn.said, "");
+  });
+});
+
+describe("walkMachine · the agent chose its route", () => {
+  const dispatcher = "dispatcher";
+  const teller = "teller";
+  const translator = "translator";
+  const editor = "editor";
+
+  /** The dispatcher's turn back, its choice set, in a walk the writer does not hold. */
+  function chose(
+    route: TurnAnswer["route"],
+    lines: ProjectConfig,
+    standing: WalkState = walk({
+      out: working(turn("turn-1", dispatcher, "walk-1")),
+    }),
+  ) {
+    return walkMachine(
+      standing,
+      back(dispatcher, {
+        route,
+      }),
+      lines,
+    );
+  }
+
+  const asked = (effects: WalkEffect[]) =>
+    effects.flatMap((effect) => (effect.kind === "askAgent" ? [effect.agent.id] : []));
+
+  const said = (effects: WalkEffect[]) =>
+    effects.flatMap((effect) => (effect.kind === "sayHandoff" ? [[effect.toAgentId, effect.stopReason]] : []));
+
+  const FORK = config(
+    [agent(dispatcher), agent(teller), agent(translator)],
+    [
+      [dispatcher, teller],
+      [dispatcher, translator],
+    ],
+  );
+  const JOIN = config(
+    [agent(dispatcher), agent(teller), agent(translator), agent(editor)],
+    [
+      [dispatcher, teller],
+      [dispatcher, translator],
+      [teller, editor],
+      [translator, editor],
+    ],
+  );
+
+  it("puts the work only to the agents it named, and says of the others that it was not chosen", () => {
+    const { effects } = chose(
+      {
+        toAgentIds: [teller],
+        isFinished: false,
+      },
+      FORK,
+    );
+
+    assert.deepEqual(said(effects), [
+      [teller, null],
+      [translator, "notChosen"],
+    ]);
+    assert.deepEqual(asked(effects), [teller]);
+  });
+
+  it("puts the work to every line where it chose nothing", () => {
+    const { effects } = chose(null, FORK);
+
+    assert.deepEqual(asked(effects), [teller, translator]);
+  });
+
+  it("puts the work to no line where it ended the branch, and says so of each", () => {
+    const { effects } = chose(
+      {
+        toAgentIds: [],
+        isFinished: true,
+      },
+      FORK,
+    );
+
+    assert.deepEqual(said(effects), [
+      [teller, "finished"],
+      [translator, "finished"],
+    ]);
+    assert.deepEqual(asked(effects), []);
+  });
+
+  it("leaves a switched-off agent it named to the wall, which is its own reason", () => {
+    const off = anAgent({
+      id: "off",
+      name: "OFF",
+      isActive: false,
+    });
+    const { effects } = chose(
+      {
+        toAgentIds: ["off", teller],
+        isFinished: false,
+      },
+      config(
+        [agent(dispatcher), off, agent(teller)],
+        [
+          [dispatcher, "off"],
+          [dispatcher, teller],
+        ],
+      ),
+    );
+
+    assert.deepEqual(said(effects), [
+      ["off", "off"],
+      [teller, null],
+    ]);
+    assert.deepEqual(asked(effects), [teller]);
+  });
+
+  it("settles the point below with nothing from the line not chosen, so it waits for those that were", () => {
+    const { state } = chose(
+      {
+        toAgentIds: [teller],
+        isFinished: false,
+      },
+      JOIN,
+    );
+
+    // The translator will never answer: the editor's wait counts it settled with nothing, and still waits for the teller.
+    const wait = state.walks["walk-1"].waiting[editor];
+
+    assert.deepEqual(wait?.settledIds, [translator]);
+    assert.deepEqual(wait?.arrived, []);
+  });
+
+  it("goes on at the point below with what the agents chosen answered, once they have", () => {
+    const afterChoice = chose(
+      {
+        toAgentIds: [teller],
+        isFinished: false,
+      },
+      JOIN,
+    );
+    const { effects, state } = walkMachine(
+      {
+        ...afterChoice.state,
+        out: working(turn("turn-2", teller, "walk-1")),
+      },
+      {
+        ...back(teller),
+        turnId: "turn-2",
+        startAgentId: dispatcher,
+        saidId: "said-2",
+      },
+      JOIN,
+    );
+
+    assert.deepEqual(asked(effects), [editor]);
+    assert.equal(state.walks["walk-1"].waiting[editor], undefined);
+
+    const given = <{ incoming: IncomingWork[]; missing: number }>effects.find((effect) => effect.kind === "askAgent");
+
+    // The editor works on the teller's words alone, and is told that one supplier of two gave nothing.
+    assert.deepEqual(
+      given.incoming.map((one) => one.fromAgentId),
+      [teller],
+    );
+    assert.equal(given.missing, 1);
+  });
+
+  it("tells the point nobody is missing when every supplier passed its work on", () => {
+    const afterChoice = chose(
+      {
+        toAgentIds: [teller, translator],
+        isFinished: false,
+      },
+      JOIN,
+    );
+    const first = walkMachine(
+      {
+        ...afterChoice.state,
+        out: working(turn("turn-2", teller, "walk-1"), turn("turn-3", translator, "walk-1")),
+      },
+      {
+        ...back(teller),
+        turnId: "turn-2",
+        startAgentId: dispatcher,
+        saidId: "said-2",
+      },
+      JOIN,
+    );
+    const { effects } = walkMachine(
+      first.state,
+      {
+        ...back(translator),
+        turnId: "turn-3",
+        startAgentId: dispatcher,
+        saidId: "said-3",
+      },
+      JOIN,
+    );
+    const given = <{ missing: number; incoming: IncomingWork[] }>effects.find((effect) => effect.kind === "askAgent");
+
+    assert.equal(given.incoming.length, 2);
+    assert.equal(given.missing, 0);
+  });
+
+  it("puts the count of suppliers that gave nothing under the work the point is asked on", () => {
+    const put = (missing: number) => {
+      const { effects } = walkMachine(
+        walk(),
+        {
+          kind: "asked",
+          agent: agent(editor),
+          incoming: [
+            {
+              text: "Функція сортування.",
+              cost: null,
+              fromAgentId: teller,
+              fromStepIds: [],
+              seconds: 2,
+              attached: [],
+            },
+          ],
+          startAgentId: dispatcher,
+          viaLinkIds: [],
+          runKey: "walk-1",
+          isAgain: false,
+          missing,
+          turnId: "turn-9",
+          startedAt: 100,
+        },
+        JOIN,
+      );
+      const machine = effects.find((effect) => effect.kind === "askMachine");
+
+      return machine?.kind === "askMachine" ? machine.asked : null;
+    };
+
+    assert.equal(put(0), "Функція сортування.");
+    assert.equal(put(1), "Функція сортування.\n\nНе передали нічого: 1 з 2 постачальників роботи.");
+  });
+
+  it("carries the cut down a line with one supplier until it meets a point, and settles that point with nothing", () => {
+    // dispatcher → teller → editor, dispatcher → middle → translator → editor: not naming the middle cuts the translator too.
+    const lines = config(
+      [agent(dispatcher), agent(teller), agent("middle"), agent(translator), agent(editor)],
+      [
+        [dispatcher, teller],
+        [dispatcher, "middle"],
+        ["middle", translator],
+        [teller, editor],
+        [translator, editor],
+      ],
+    );
+    const { state, effects } = chose(
+      {
+        toAgentIds: [teller],
+        isFinished: false,
+      },
+      lines,
+    );
+
+    assert.deepEqual(asked(effects), [teller]);
+    assert.deepEqual(state.walks["walk-1"].waiting[editor]?.settledIds, [translator]);
+  });
+
+  it("lets down whoever waits behind a point that no line chosen reaches", () => {
+    const { effects } = chose(
+      {
+        toAgentIds: [],
+        isFinished: true,
+      },
+      JOIN,
+    );
+
+    // Both suppliers of the editor are cut, so it gathers nothing and does not run.
+    assert.deepEqual(asked(effects), []);
+  });
+
+  it("goes down the same lines at a point that does not wait, and runs it on what came", () => {
+    const loose = config(
+      [
+        agent(dispatcher),
+        agent(teller),
+        agent(translator),
+        anAgent({
+          id: editor,
+          name: "EDITOR",
+          waitsForAll: false,
+        }),
+      ],
+      [
+        [dispatcher, teller],
+        [dispatcher, translator],
+        [teller, editor],
+        [translator, editor],
+      ],
+    );
+    const afterChoice = chose(
+      {
+        toAgentIds: [teller],
+        isFinished: false,
+      },
+      loose,
+    );
+    const { effects } = walkMachine(
+      {
+        ...afterChoice.state,
+        out: working(turn("turn-2", teller, "walk-1")),
+      },
+      {
+        ...back(teller),
+        turnId: "turn-2",
+        startAgentId: dispatcher,
+        saidId: "said-2",
+      },
+      loose,
+    );
+
+    assert.deepEqual(asked(effects), [editor]);
+  });
+
+  it("writes the reasons of the lines into the step, beside the lines it took", () => {
+    const { effects } = walkMachine(
+      walk({
+        out: working(turn("turn-1", dispatcher, "walk-1")),
+        ledgers: {
+          "walk-1": ledger(),
+        },
+      }),
+      back(dispatcher, {
+        route: {
+          toAgentIds: [teller],
+          isFinished: false,
+        },
+      }),
+      FORK,
+    );
+    const written = <{ turn: { handoffs: { toAgentId: string; stopReason: string | null }[] } }>(
+      effects.find((effect) => effect.kind === "writeTurn")
+    );
+
+    assert.deepEqual(written.turn.handoffs, [
+      {
+        toAgentId: teller,
+        stopReason: null,
+      },
+      {
+        toAgentId: translator,
+        stopReason: "notChosen",
+      },
+    ]);
+  });
+
+  it("does not choose for a turn that fell: nothing goes down any line, whatever it named", () => {
+    const { effects } = walkMachine(
+      walk({
+        out: working(turn("turn-1", dispatcher, "walk-1")),
+      }),
+      back(dispatcher, {
+        isFailure: true,
+        state: RUN_STEP_FAILED,
+        text: "",
+        route: {
+          toAgentIds: [teller],
+          isFinished: false,
+        },
+      }),
+      FORK,
+    );
+
+    assert.deepEqual(asked(effects), []);
+    assert.deepEqual(said(effects), []);
   });
 });
 

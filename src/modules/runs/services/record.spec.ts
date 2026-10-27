@@ -1247,6 +1247,44 @@ describe("the record", () => {
     ]);
   });
 
+  it("keeps why a line was not taken when the agent chose another way, and reads the words back as they were written", async () => {
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000026",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      attached: [],
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+    const only = await writer.step(
+      step(id, {
+        handoffs: [
+          {
+            toAgentId: SEEKER,
+            stopReason: "notChosen",
+          },
+          {
+            toAgentId: TELLER,
+            stopReason: "finished",
+          },
+        ],
+      }),
+    );
+
+    assert.deepEqual((await reader.one(id))?.walk.find((one) => one.id === only)?.handoffs, [
+      {
+        toAgentId: SEEKER,
+        stopReason: "notChosen",
+      },
+      {
+        toAgentId: TELLER,
+        stopReason: "finished",
+      },
+    ]);
+  });
+
   it("closes a run the app was shut on, at the last thing that actually happened", async () => {
     const { runId: walked } = await openRun({
       directory: DIRECTORY,

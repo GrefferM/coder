@@ -1,8 +1,8 @@
-import type { ToolSource } from "../../../contracts";
+import type { CallSource } from "../../../contracts";
 
 export interface RunCallRecord {
   id: string;
-  source: ToolSource;
+  source: CallSource;
   place: number;
   name: string;
   arguments: string;

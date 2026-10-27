@@ -19,6 +19,7 @@ function answer(patch: Partial<TurnAnswer> = {}): TurnAnswer {
     calls: [],
     compressed: null,
     toolMemories: [],
+    route: null,
     ...patch,
   };
 }

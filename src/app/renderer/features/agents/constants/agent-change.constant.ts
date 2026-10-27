@@ -43,6 +43,12 @@ export const AGENT_WAIT_DROPPED_LABEL = "очікування";
 export const AGENT_WAIT_ON_LABEL = "чекає всіх";
 export const AGENT_WAIT_OFF_LABEL = "на кожному окремо";
 
+/** Who the answer goes to, as a moved field says it. */
+export const AGENT_ROUTE_CHANGE_LABEL = "маршрут";
+export const AGENT_ROUTE_DROPPED_LABEL = "маршрут";
+export const AGENT_ROUTE_ON_LABEL = "обирає сам";
+export const AGENT_ROUTE_OFF_LABEL = "усіма лініями";
+
 /** The memory, as a moved field says it. */
 export const AGENT_MEMORY_CHANGE_LABEL = "пам'ять";
 export const AGENT_MEMORY_DROPPED_LABEL = "пам'ять";

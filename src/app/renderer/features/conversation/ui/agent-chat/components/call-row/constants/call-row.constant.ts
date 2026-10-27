@@ -54,6 +54,11 @@ export const CALL_ROW_SOURCE_KIND = "сервер";
 /** Stands where a server's name would on the source line of an agent call. */
 export const CALL_ROW_AGENT_KIND = "агент";
 
+/** A route call (`pass_to`, `finish_here`) runs nothing: it is the agent's decision about where its answer goes. */
+export const CALL_ROW_ROUTE_LABEL = "МАРШРУТ";
+export const CALL_ROW_ROUTE_REFUSED_LABEL = "МАРШРУТ НЕ ПРИЙНЯТО";
+export const CALL_ROW_ROUTE_KIND = "маршрут";
+
 export const CALL_ROW_BODY_BACKGROUND_COLOR = "#0d0f16";
 export const CALL_ROW_BODY_BORDER_RADIUS_PX = 6;
 export const CALL_ROW_BODY_PADDING = "7px 8px";

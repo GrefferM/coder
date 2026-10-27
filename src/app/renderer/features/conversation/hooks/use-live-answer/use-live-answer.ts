@@ -67,10 +67,10 @@ function markCallOut(turnId: string, call: LiveCall | null): void {
   const was = callsOut[turnId] ?? null;
   /**
    * A call to a server is named by the server; a command or an agent has no server and is named by its own name. The call
-   * carries both.
+   * carries both. A choice of route runs nothing and takes no time, so it is no call out.
    */
   const now =
-    call === null
+    call === null || call.source === "route"
       ? null
       : {
           name: call.serverId === null ? call.name : call.serverName,

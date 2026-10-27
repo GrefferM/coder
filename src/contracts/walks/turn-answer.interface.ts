@@ -1,7 +1,7 @@
 import type { ChatCost } from "./chat-cost.interface";
 import type { CompressedMemory } from "./compressed-memory.interface";
 import type { MemoryFacts } from "../runs";
-import type { NotStartedReason } from "../llm";
+import type { NotStartedReason, RouteChoice } from "../llm";
 import type { TurnCall } from "../runs";
 import type { TurnLength } from "./turn-length.interface";
 
@@ -32,4 +32,6 @@ export interface TurnAnswer {
    * the step that paid for them, and the stream says nothing of them.
    */
   toolMemories: MemoryFacts[];
+  /** Where the agent chose to send its answer; null where it chose nothing, and the answer goes down every line. */
+  route: RouteChoice | null;
 }

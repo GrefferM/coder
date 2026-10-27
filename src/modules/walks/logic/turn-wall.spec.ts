@@ -59,6 +59,7 @@ function turn(patch: Partial<TurnToAsk> = {}): TurnToAsk {
     },
     catalogue: ONLY_COMMANDS,
     agents: [],
+    followers: [],
     directory: "/tmp/coder",
     runId: "run-1",
     questionId: "question-1",
@@ -510,5 +511,131 @@ describe("turnWall", () => {
 
     assert.equal("notStarted" in stood && stood.notStarted, "tooLong");
     assert.notEqual("wouldGo" in stood && stood.wouldGo, null);
+  });
+
+  describe("an agent that chooses its route", () => {
+    const FOLLOWERS = [
+      {
+        agentId: "b",
+        name: "КОДЕР",
+        purpose: "Пише код",
+      },
+    ];
+
+    /** The names of the tools the turn goes with. */
+    function toolsOf(stood: ReturnType<typeof turnWall>): string[] {
+      return "tools" in stood ? stood.tools.map((tool) => tool.name) : [];
+    }
+
+    it("goes with pass_to and finish_here after its own tools", () => {
+      const stood = turnWall(
+        turn({
+          agent: {
+            ...AGENT,
+            choosesRoute: true,
+            tools: [
+              {
+                id: "grant-1",
+                source: "command",
+                commandId: COMMAND.id,
+                pinned: [],
+              },
+            ],
+          },
+          followers: FOLLOWERS,
+        }),
+      );
+
+      assert.deepEqual(toolsOf(stood), ["find_deep", "pass_to", "finish_here"]);
+    });
+
+    it("goes with none of them where it does not choose, though lines lead out of it", () => {
+      assert.deepEqual(
+        toolsOf(
+          turnWall(
+            turn({
+              followers: FOLLOWERS,
+            }),
+          ),
+        ),
+        [],
+      );
+    });
+
+    it("goes with none of them where no line leads to an agent that can take the work", () => {
+      assert.deepEqual(
+        toolsOf(
+          turnWall(
+            turn({
+              agent: {
+                ...AGENT,
+                choosesRoute: true,
+              },
+            }),
+          ),
+        ),
+        [],
+      );
+    });
+
+    it("lets its own tool of the same name give way to the app's", () => {
+      const stood = turnWall(
+        turn({
+          agent: {
+            ...AGENT,
+            choosesRoute: true,
+            tools: [
+              {
+                id: "grant-1",
+                source: "command",
+                commandId: COMMAND.id,
+                pinned: [],
+              },
+            ],
+          },
+          catalogue: {
+            ...ONLY_COMMANDS,
+            commands: [
+              {
+                ...COMMAND,
+                name: "pass_to",
+              },
+            ],
+          },
+          followers: FOLLOWERS,
+        }),
+      );
+
+      assert.deepEqual(toolsOf(stood), ["pass_to", "finish_here"]);
+      assert.equal("tools" in stood && stood.tools[0].source, "route");
+    });
+
+    it("goes without them on a provider that carries no functions, its answer going down every line", () => {
+      const stood = turnWall(
+        turn({
+          agent: {
+            ...AGENT,
+            choosesRoute: true,
+          },
+          stands: {
+            model: MODEL,
+            provider: {
+              id: "runpod",
+              name: "RunPod",
+              kind: "remote",
+              needs: ["key", "address"],
+              takesTools: false,
+              customaryAddress: null,
+              keyHint: "rpa_lon•••",
+              address: "https://api.runpod.ai/v2/z5x8c1v4b7n2m6",
+            },
+            prompt: null,
+          },
+          followers: FOLLOWERS,
+        }),
+      );
+
+      assert.deepEqual(toolsOf(stood), []);
+    });
   });
 });

@@ -33,6 +33,17 @@ export class ToolArguments {
     return `${TOOL_NOT_RUN_OPEN}${toolName}${TOOL_NOT_RUN_MIDDLE}${said.join(TOOL_COMPLAINT_SEPARATOR)}${TOOL_NOT_RUN_CLOSE}`;
   }
 
+  /** What the model is handed in place of a choice that is not one of the words it was given. */
+  choiceNote(toolName: string, parameterName: string, allowed: string[], value: string): string {
+    return this.notRunNote(toolName, [
+      {
+        name: parameterName,
+        wrong: TOOL_COMPLAINT_ENUM,
+        told: `${TOOL_COMPLAINT_ENUM_OPEN}${allowed.join(TOOL_COMPLAINT_VALUES_SEPARATOR)}${TOOL_COMPLAINT_ENUM_CLOSE}${this.got(value)}`,
+      },
+    ]);
+  }
+
   /** The same refusal for the person: names as written, the app's words. */
   refusedLine(toolName: string, complaints: ToolComplaint[]): string {
     const said = complaints.map(

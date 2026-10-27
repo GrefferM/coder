@@ -34,7 +34,49 @@ describe("TurnLedger", () => {
       calls: [],
       called: null,
       memories: [],
+      route: null,
     });
+  });
+
+  it("adds what each call decided of the route: whom it named once each in order, and the branch ended if any ended it", () => {
+    const ledger = new TurnLedger();
+
+    ledger.routed(null);
+    ledger.routed({
+      toAgentIds: ["a"],
+      isFinished: false,
+    });
+    ledger.routed({
+      toAgentIds: ["b", "a"],
+      isFinished: false,
+    });
+
+    assert.deepEqual(ledger.answer().route, {
+      toAgentIds: ["a", "b"],
+      isFinished: false,
+    });
+
+    ledger.routed({
+      toAgentIds: [],
+      isFinished: true,
+    });
+    ledger.routed({
+      toAgentIds: ["c"],
+      isFinished: false,
+    });
+
+    assert.deepEqual(ledger.answer().route, {
+      toAgentIds: ["a", "b", "c"],
+      isFinished: true,
+    });
+  });
+
+  it("has no route where no call decided one", () => {
+    const ledger = new TurnLedger();
+
+    ledger.routed(null);
+
+    assert.equal(ledger.answer().route, null);
   });
 
   it("joins the pieces as they arrive and adds up what the provider counted for them", () => {

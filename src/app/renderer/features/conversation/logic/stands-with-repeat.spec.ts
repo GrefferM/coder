@@ -79,4 +79,34 @@ describe("standsWithRepeat", () => {
     // The asked words are kept for a repeat further down the walk, not here.
     expect(standsWithRepeat(said())).toBe(false);
   });
+
+  it("does not stand under a line the agent chose not to take, which is no accident", () => {
+    expect(
+      standsWithRepeat(
+        said({
+          from: "handoff",
+          stopReason: "notChosen",
+        }),
+      ),
+    ).toBe(false);
+    expect(
+      standsWithRepeat(
+        said({
+          from: "handoff",
+          stopReason: "finished",
+        }),
+      ),
+    ).toBe(false);
+  });
+
+  it("stands under a line cut because the neighbour was off", () => {
+    expect(
+      standsWithRepeat(
+        said({
+          from: "handoff",
+          stopReason: "off",
+        }),
+      ),
+    ).toBe(true);
+  });
 });

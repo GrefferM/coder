@@ -1,9 +1,9 @@
-import type { ToolSource } from "../project";
+import type { CallSource } from "./call-source.type";
 
 /** One call of a step read back from the record; a refused one has no output and no code. */
 export interface WholeCall {
   id: string;
-  source: ToolSource;
+  source: CallSource;
   place: number;
   name: string;
   arguments: Record<string, string>;
