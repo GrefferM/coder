@@ -5,4 +5,6 @@ export interface TurnHandoff {
   toAgentId: string;
   /** Null where the work went through. */
   stopReason: ChatStopReason | null;
+  /** What the line carried: the agent's answer, or what `pass_to` handed this agent; empty where it was handed nothing. */
+  text: string;
 }

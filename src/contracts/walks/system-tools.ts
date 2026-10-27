@@ -17,7 +17,7 @@ import type { ToolGrant } from "../project/tool-grant.type";
 import type { RouteFollower } from "./route-follower.interface";
 
 /**
- * What an agent is given of the system commands it was granted: `pass_to` to name whom its answer goes to, `finish_here` to
+ * What an agent is given of the system commands it was granted: `pass_to` to hand its followers a text, `finish_here` to
  * end the branch. None where nobody can take its answer, since there is then nothing to pass or end, and none for a
  * command it was not granted. They come in the order of the grants.
  */

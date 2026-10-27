@@ -38,52 +38,76 @@ describe("TurnLedger", () => {
     });
   });
 
-  it("adds what each call decided of the route: whom it named once each in order, naming beating the end of the branch", () => {
+  it("gathers what each pass handed on: each agent once in the order first named, a second text after the first", () => {
     const ledger = new TurnLedger();
 
     ledger.routed(null);
     ledger.routed({
-      toAgentIds: ["a"],
+      passes: [
+        {
+          agentId: "a",
+          text: "Напиши функцію",
+        },
+      ],
       isFinished: false,
     });
     ledger.routed({
-      toAgentIds: ["b", "a"],
+      passes: [
+        {
+          agentId: "b",
+          text: "Перевір",
+        },
+        {
+          agentId: "a",
+          text: "Про сортування",
+        },
+      ],
       isFinished: false,
     });
 
     assert.deepEqual(ledger.answer().route, {
-      toAgentIds: ["a", "b"],
-      isFinished: false,
-    });
-
-    ledger.routed({
-      toAgentIds: [],
-      isFinished: true,
-    });
-    ledger.routed({
-      toAgentIds: ["c"],
-      isFinished: false,
-    });
-
-    assert.deepEqual(ledger.answer().route, {
-      toAgentIds: ["a", "b", "c"],
+      passes: [
+        {
+          agentId: "a",
+          text: "Напиши функцію\n\nПро сортування",
+        },
+        {
+          agentId: "b",
+          text: "Перевір",
+        },
+      ],
       isFinished: false,
     });
   });
 
-  it("ends the branch only where nobody was named, and takes the end of the turn from the first command", () => {
+  it("does not end the turn on a pass, only on the end of the branch, which keeps what was passed", () => {
     const ledger = new TurnLedger();
+
+    ledger.routed({
+      passes: [
+        {
+          agentId: "a",
+          text: "Напиши функцію",
+        },
+      ],
+      isFinished: false,
+    });
 
     assert.equal(ledger.isEnded(), false);
 
     ledger.routed({
-      toAgentIds: [],
+      passes: [],
       isFinished: true,
     });
 
     assert.equal(ledger.isEnded(), true);
     assert.deepEqual(ledger.answer().route, {
-      toAgentIds: [],
+      passes: [
+        {
+          agentId: "a",
+          text: "Напиши функцію",
+        },
+      ],
       isFinished: true,
     });
   });

@@ -284,6 +284,7 @@ export class RunReader {
         .map((link) => ({
           toAgentId: link.toAgentId,
           stopReason: stopReasonOf(link.stopReason),
+          text: link.text,
         })),
       startedAt: row.startedAt,
       endedAt: row.endedAt,

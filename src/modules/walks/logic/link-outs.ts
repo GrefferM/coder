@@ -1,5 +1,6 @@
 import { leadsBack } from "./leads-back";
-import type { Agent, ProjectConfig, ChatStopReason, LinkOut, RouteChoice } from "../../../contracts";
+import { isRouteDecided } from "../../../contracts";
+import type { Agent, ProjectConfig, ChatStopReason, HandedLine, LinkOut, RouteChoice } from "../../../contracts";
 
 /** Whether a neighbour can take work, and the word when it cannot; switched off is the one word. */
 export function cannotTake(to: Agent): ChatStopReason | null {
@@ -32,32 +33,35 @@ export function linkOuts(config: ProjectConfig, from: Agent): LinkOut[] {
 }
 
 /**
- * The lines out as the answering agent chose them: where it ended the branch none is taken, where it named agents only
- * theirs are. A line that could not be taken for its own reason keeps that reason; an agent that chose nothing takes all.
+ * The lines out as the answering agent handed them on. An agent that called no command hands its answer down every line.
+ * One that called `pass_to` hands each agent it named what it passed it, and nothing down the others; one that only
+ * ended the branch hands nothing anywhere. A line that could not be taken for its own reason keeps that reason.
  */
-export function routedOuts(outs: LinkOut[], route: RouteChoice | null): LinkOut[] {
-  // A choice that names nobody and ends nothing chooses nothing.
-  if (route === null || (!route.isFinished && route.toAgentIds.length === 0)) {
-    return outs;
+export function routedOuts(outs: LinkOut[], route: RouteChoice | null, said: string): HandedLine[] {
+  return outs.map((out) => routedOut(out, route, said));
+}
+
+/** One line as the turn hands it on. */
+function routedOut(out: LinkOut, route: RouteChoice | null, said: string): HandedLine {
+  if (route === null || !isRouteDecided(route)) {
+    return {
+      ...out,
+      text: said,
+    };
   }
 
-  return outs.map((out) => {
-    if (out.stopReason !== null) {
-      return out;
-    }
+  const pass = route.passes.find((one) => one.agentId === out.to.id) ?? null;
 
-    if (route.isFinished) {
-      return {
-        ...out,
-        stopReason: "finished",
-      };
-    }
+  if (pass !== null) {
+    return {
+      ...out,
+      text: pass.text,
+    };
+  }
 
-    return route.toAgentIds.includes(out.to.id)
-      ? out
-      : {
-          ...out,
-          stopReason: "notChosen",
-        };
-  });
+  return {
+    ...out,
+    stopReason: out.stopReason ?? (route.passes.length > 0 ? "notChosen" : "finished"),
+    text: "",
+  };
 }

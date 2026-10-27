@@ -124,13 +124,18 @@ describe("cutEnd", () => {
     );
   });
 
-  it("does not call a turn silent where it decided its route by a command, since it needed no words", () => {
+  it("does not call a turn silent where it passed something on or ended the branch, since it needed no words", () => {
     assert.equal(
       cutEnd(
         said({
           text: "",
           route: {
-            toAgentIds: ["a"],
+            passes: [
+              {
+                agentId: "a",
+                text: "Напиши функцію",
+              },
+            ],
             isFinished: false,
           },
         }),
@@ -144,7 +149,7 @@ describe("cutEnd", () => {
         said({
           text: "",
           route: {
-            toAgentIds: [],
+            passes: [],
             isFinished: true,
           },
         }),

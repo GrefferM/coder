@@ -7,27 +7,32 @@ describe("isRouteDecided", () => {
     assert.equal(isRouteDecided(null), false);
   });
 
-  it("is yes where agents were named, and yes where the branch was ended", () => {
+  it("is yes where something was passed on, and yes where the branch was ended", () => {
     assert.equal(
       isRouteDecided({
-        toAgentIds: ["a"],
+        passes: [
+          {
+            agentId: "a",
+            text: "Напиши функцію",
+          },
+        ],
         isFinished: false,
       }),
       true,
     );
     assert.equal(
       isRouteDecided({
-        toAgentIds: [],
+        passes: [],
         isFinished: true,
       }),
       true,
     );
   });
 
-  it("is no for a choice that names nobody and ends nothing", () => {
+  it("is no for a choice that passes nothing and ends nothing", () => {
     assert.equal(
       isRouteDecided({
-        toAgentIds: [],
+        passes: [],
         isFinished: false,
       }),
       false,

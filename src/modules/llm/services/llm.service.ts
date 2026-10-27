@@ -33,6 +33,8 @@ import {
   LLM_PROVIDER_SILENT,
   RECORD_GONE_NOTE,
   PASS_TO_COMMAND,
+  ROUTE_TEXT_DESCRIPTION,
+  ROUTE_TEXT_NAME,
   ROUTE_TO_DESCRIPTION,
   ROUTE_TO_NAME,
 } from "../../../contracts";
@@ -266,8 +268,8 @@ export class LlmService {
 
         await this.ranCalls(turn, asked, ledger);
 
-        // A system command that went through was the agent's last word: the turn ends after its round, with no further
-        // round to ask the model for words it was told it need not write.
+        // `finish_here` was the agent's last word: the turn ends after its round, with no further round to ask the model
+        // for words it was told it need not write.
         if (ledger.isEnded()) {
           return ledger.answer();
         }
@@ -422,8 +424,12 @@ export class LlmService {
                       },
                       minItems: 1,
                     },
+                    [ROUTE_TEXT_NAME]: {
+                      type: TOOL_SCHEMA_TYPES.text,
+                      description: ROUTE_TEXT_DESCRIPTION,
+                    },
                   },
-                  required: [ROUTE_TO_NAME],
+                  required: [ROUTE_TO_NAME, ROUTE_TEXT_NAME],
                 }
               : {
                   type: TOOL_SCHEMA_OBJECT,

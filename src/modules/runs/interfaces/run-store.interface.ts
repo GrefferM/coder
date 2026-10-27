@@ -144,6 +144,7 @@ export interface NewHandoff {
   place: number;
   toAgentId: string;
   stopReason: string | null;
+  text: string;
   stepId: string;
 }
 

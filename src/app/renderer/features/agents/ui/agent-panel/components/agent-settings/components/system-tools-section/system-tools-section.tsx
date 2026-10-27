@@ -15,7 +15,7 @@ import {
 import { isSystemGrant } from "../../../../../../../../interfaces";
 import type { SystemToolsSectionProps } from "./interfaces";
 
-/** The system commands field: each granted like any tool; the agent writes nothing, it only calls them. */
+/** The system commands field: the app's own commands, each granted like any tool. */
 export function SystemToolsSection({
   grants,
   followerCount,

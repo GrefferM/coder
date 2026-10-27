@@ -31,7 +31,7 @@ export class FinishWay implements ToolWay {
       cost: null,
       memories: [],
       route: {
-        toAgentIds: [],
+        passes: [],
         isFinished: true,
       },
     };

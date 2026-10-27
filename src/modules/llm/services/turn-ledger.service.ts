@@ -1,4 +1,5 @@
 import { addedCost } from "../../../contracts/runs/added-cost";
+import { WORK_BLOCK_SEPARATOR } from "../../../contracts/walks/work-block.constant";
 import type { ChatCost } from "../../../contracts/walks/chat-cost.interface";
 import type { AgentAnswer, RouteChoice, ToolMemory, TurnCall } from "../interfaces";
 
@@ -52,24 +53,38 @@ export class TurnLedger {
     this.compressed.push(...memories);
   }
 
-  /** Where the agent has sent its answer so far: whom it named, and whether it ended the branch; what one call decides adds to the rest. */
+  /**
+   * What the agent has handed on so far and whether it ended the branch; each call adds to the rest. A second text for
+   * an agent already named follows the first.
+   */
   routed(choice: RouteChoice | null): void {
     if (choice === null) {
       return;
     }
 
-    const named = this.route?.toAgentIds ?? [];
-    const toAgentIds = [...named, ...choice.toAgentIds.filter((id) => !named.includes(id))];
+    const passes = [...(this.route?.passes ?? [])];
+
+    for (const pass of choice.passes) {
+      const held = passes.findIndex((one) => one.agentId === pass.agentId);
+
+      if (held === -1) {
+        passes.push(pass);
+      } else {
+        passes[held] = {
+          agentId: pass.agentId,
+          text: `${passes[held].text}${WORK_BLOCK_SEPARATOR}${pass.text}`,
+        };
+      }
+    }
 
     this.route = {
-      toAgentIds,
-      // Naming beats ending: where the agent did both, the answer goes to those named.
-      isFinished: toAgentIds.length === 0 && ((this.route?.isFinished ?? false) || choice.isFinished),
+      passes,
+      isFinished: (this.route?.isFinished ?? false) || choice.isFinished,
     };
-    this.ended = true;
+    this.ended = this.ended || choice.isFinished;
   }
 
-  /** Whether a system command went through, which is the agent's last word of the turn. */
+  /** Whether `finish_here` went through, which is the agent's last word of the turn; `pass_to` ends nothing. */
   isEnded(): boolean {
     return this.ended;
   }

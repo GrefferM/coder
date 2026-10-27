@@ -1221,10 +1221,12 @@ describe("the record", () => {
           {
             toAgentId: SEEKER,
             stopReason: null,
+            text: "Знайдено три файли",
           },
           {
             toAgentId: TELLER,
             stopReason: "busy",
+            text: "Знайдено три файли",
           },
         ],
       }),
@@ -1239,10 +1241,12 @@ describe("the record", () => {
       {
         toAgentId: SEEKER,
         stopReason: null,
+        text: "Знайдено три файли",
       },
       {
         toAgentId: TELLER,
         stopReason: "busy",
+        text: "Знайдено три файли",
       },
     ]);
   });
@@ -1264,10 +1268,12 @@ describe("the record", () => {
           {
             toAgentId: SEEKER,
             stopReason: "notChosen",
+            text: "",
           },
           {
             toAgentId: TELLER,
             stopReason: "finished",
+            text: "",
           },
         ],
       }),
@@ -1277,10 +1283,12 @@ describe("the record", () => {
       {
         toAgentId: SEEKER,
         stopReason: "notChosen",
+        text: "",
       },
       {
         toAgentId: TELLER,
         stopReason: "finished",
+        text: "",
       },
     ]);
   });

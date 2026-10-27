@@ -138,6 +138,7 @@ export class RunWriter {
           place: index + 1,
           toAgentId: handoff.toAgentId,
           stopReason: handoff.stopReason,
+          text: handoff.text,
           stepId: step.id,
         });
       }

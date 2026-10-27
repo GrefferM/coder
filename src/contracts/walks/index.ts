@@ -5,6 +5,7 @@ export * from "./chat-message-from.type";
 export * from "./chat-message.interface";
 export * from "./incoming-work.interface";
 export * from "./line-not-taken.interface";
+export * from "./handed-line.interface";
 export * from "./link-out.interface";
 export * from "./run-ledger.interface";
 export * from "./turn-answer.interface";

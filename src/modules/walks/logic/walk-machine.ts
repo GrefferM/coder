@@ -23,7 +23,7 @@ import type {
   ProjectConfig,
   IncomingWork,
   LineNotTaken,
-  LinkOut,
+  HandedLine,
   RunLedger,
   Walk,
   WalkEffect,
@@ -441,7 +441,7 @@ function handedOn(state: WalkState, event: WalkFact<"handedOn">, config: Project
     };
   }
 
-  for (const { linkId, to, stopReason } of event.out) {
+  for (const { linkId, to, stopReason, text } of event.out) {
     effects.push({
       kind: "sayHandoff",
       runKey: event.runKey,
@@ -474,7 +474,7 @@ function handedOn(state: WalkState, event: WalkFact<"handedOn">, config: Project
     }
 
     const work: IncomingWork = {
-      text: event.text,
+      text,
       cost: event.cost,
       fromAgentId: event.from.id,
       fromStepIds: [],
@@ -768,11 +768,13 @@ function answered(state: WalkState, event: WalkFact<"answered">, config: Project
 }
 
 /**
- * The lines out of a turn that answered, as the agent chose them where it chose its route; none for a fall, a cut turn
- * or one that never began.
+ * The lines out of a turn that answered, as the agent handed them on; none for a fall, a cut turn or one that never
+ * began.
  */
-function outOf(event: WalkFact<"answered">, config: ProjectConfig): LinkOut[] {
-  return goesOn(event) ? routedOuts(linkOuts(config, event.agent), event.answer.route) : [];
+function outOf(event: WalkFact<"answered">, config: ProjectConfig): HandedLine[] {
+  return goesOn(event)
+    ? routedOuts(linkOuts(config, event.agent), event.answer.route, tidyAnswer(event.answer.text))
+    : [];
 }
 
 /** Whether the walk goes on through this turn: through the agent's own words, or through a route it decided by a command. */
@@ -788,22 +790,12 @@ function goesOn(event: WalkFact<"answered">): boolean {
 }
 
 /**
- * What the lines out of a turn carry: the agent's own words, or, where it passed on without writing any, the work it was
- * given — without the count of its own suppliers that sent nothing, which is no news to the next agent.
- */
-function carried(event: WalkFact<"answered">): string {
-  const said = tidyAnswer(event.answer.text);
-
-  return said === "" ? workGiven(event.incoming, 0) : said;
-}
-
-/**
  * What a turn back sets going: its lines out, or the break; then, with the writer still holding the walk, the turn
  * counts as back.
  */
 function proceeded(state: WalkState, event: WalkFact<"answered">, config: ProjectConfig): WalkNext {
   const next = goesOn(event)
-    ? handedOn(state, handOut(event, carried(event), outOf(event, config)), config)
+    ? handedOn(state, handOut(event, outOf(event, config)), config)
     : brokeOff(state, event, config);
 
   // Everything this turn set going is going now; if nothing else is out, the walk is over.
@@ -1077,7 +1069,7 @@ function answerCard(event: WalkFact<"answered">, walk: Walk, ledger: RunLedger |
 }
 
 /** The turn as the record takes it: what it ran with, as it stood then, and where it handed on. */
-function writtenStep(event: WalkFact<"answered">, config: ProjectConfig, said: string, out: LinkOut[]): WalkEffect {
+function writtenStep(event: WalkFact<"answered">, config: ProjectConfig, said: string, out: HandedLine[]): WalkEffect {
   return {
     kind: "writeTurn",
     runKey: event.runKey,
@@ -1092,9 +1084,10 @@ function writtenStep(event: WalkFact<"answered">, config: ProjectConfig, said: s
       state: event.answer.state,
       cost: event.answer.cost,
       incoming: event.incoming,
-      handoffs: out.map(({ to, stopReason }) => ({
+      handoffs: out.map(({ to, stopReason, text }) => ({
         toAgentId: to.id,
         stopReason,
+        text,
       })),
       startedAt: event.startedAt,
       // Nothing went, so the turn took no time at all.
@@ -1108,12 +1101,11 @@ function writtenStep(event: WalkFact<"answered">, config: ProjectConfig, said: s
   };
 }
 
-/** The answer as the lines out of it receive it: the words, their cost, and their duration. */
-function handOut(event: WalkFact<"answered">, said: string, out: LinkOut[]): WalkFact<"handedOn"> {
+/** The turn as the lines out of it receive it: each line's text, the cost, and the duration. */
+function handOut(event: WalkFact<"answered">, out: HandedLine[]): WalkFact<"handedOn"> {
   return {
     kind: "handedOn",
     from: event.agent,
-    text: said,
     cost: event.answer.cost,
     seconds: Math.round((event.endedAt - event.startedAt) / MS_IN_SECOND),
     startAgentId: event.startAgentId,

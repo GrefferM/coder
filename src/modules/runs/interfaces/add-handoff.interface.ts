@@ -2,4 +2,6 @@
 export interface AddHandoff {
   toAgentId: string;
   stopReason: string | null;
+  /** What the line carried; empty where it was handed nothing. */
+  text: string;
 }

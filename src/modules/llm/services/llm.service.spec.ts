@@ -949,7 +949,7 @@ describe("LlmService when the agent calls a system command", () => {
     );
   }
 
-  it("hands the model both functions, the choice of whom to pass to being a list of the names it was given", async () => {
+  it("hands the model both functions, pass_to taking a list of the names it was given and the text they get", async () => {
     const provider = speaking([
       new AIMessageChunk({
         content: "Готово",
@@ -977,8 +977,12 @@ describe("LlmService when the agent calls a system command", () => {
           },
           minItems: 1,
         },
+        text: {
+          type: "string",
+          description: "Що отримають названі — повний текст завдання чи результату для них.",
+        },
       },
-      required: ["to"],
+      required: ["to", "text"],
     });
     assert.equal(finish.function.name, "finish_here");
     assert.deepEqual(finish.function.parameters, {
@@ -987,16 +991,17 @@ describe("LlmService when the agent calls a system command", () => {
     });
   });
 
-  it("carries the choice up with the answer, and ends the turn there with no round for words", async () => {
+  it("carries what it passed up with the answer, each agent once, and goes on to a round for its own words", async () => {
     const provider = speaking([
       calling([
         "pass_to",
         {
           to: ["ПЕРЕВІРНИК", "КОДЕР", "ПЕРЕВІРНИК"],
+          text: "Функція сортування",
         },
       ]),
       new AIMessageChunk({
-        content: "Не буде сказано",
+        content: "Розподілив",
       }),
     ]);
     const answer = await service(provider).ask({
@@ -1006,28 +1011,40 @@ describe("LlmService when the agent calls a system command", () => {
     });
 
     assert.deepEqual(answer.route, {
-      toAgentIds: [TRANSLATOR, STORYTELLER],
+      passes: [
+        {
+          agentId: TRANSLATOR,
+          text: "Функція сортування",
+        },
+        {
+          agentId: STORYTELLER,
+          text: "Функція сортування",
+        },
+      ],
       isFinished: false,
     });
-    assert.equal(answer.text, "");
-    assert.equal(answer.isCallsExhausted, false);
-    assert.equal(provider.conversations.length, 1);
+    assert.equal(answer.text, "Розподілив");
+    assert.equal(provider.conversations.length, 2);
   });
 
-  it("keeps what the agent said before it called the command", async () => {
+  it("hands different agents different texts by separate calls", async () => {
     const provider = speaking([
-      new AIMessageChunk({
-        content: "Ось результат",
-        tool_calls: [
+      calling(
+        [
+          "pass_to",
           {
-            name: "pass_to",
-            args: {
-              to: ["КОДЕР"],
-            },
-            id: "call-1",
+            to: ["КОДЕР"],
+            text: "Напиши функцію сортування",
           },
         ],
-      }),
+        [
+          "pass_to",
+          {
+            to: ["ПЕРЕВІРНИК"],
+            text: "Перевір англійською",
+          },
+        ],
+      ),
     ]);
     const answer = await service(provider).ask({
       ...TURN,
@@ -1035,8 +1052,16 @@ describe("LlmService when the agent calls a system command", () => {
       tools: ROUTE,
     });
 
-    assert.equal(answer.text, "Ось результат");
-    assert.deepEqual(answer.route?.toAgentIds, [STORYTELLER]);
+    assert.deepEqual(answer.route?.passes, [
+      {
+        agentId: STORYTELLER,
+        text: "Напиши функцію сортування",
+      },
+      {
+        agentId: TRANSLATOR,
+        text: "Перевір англійською",
+      },
+    ]);
   });
 
   it("takes one name given bare where the model did not make a list of it", async () => {
@@ -1045,6 +1070,7 @@ describe("LlmService when the agent calls a system command", () => {
         "pass_to",
         {
           to: "КОДЕР",
+          text: "Напиши функцію",
         },
       ]),
     ]);
@@ -1054,15 +1080,19 @@ describe("LlmService when the agent calls a system command", () => {
       tools: ROUTE,
     });
 
-    assert.deepEqual(answer.route?.toAgentIds, [STORYTELLER]);
+    assert.deepEqual(
+      answer.route?.passes.map((pass) => pass.agentId),
+      [STORYTELLER],
+    );
   });
 
-  it("tells the model what it chose, and records the call as the app's own, with no line and no code", async () => {
+  it("tells the model whom it passed to, and records the call as the app's own with its text, no line and no code", async () => {
     const provider = speaking([
       calling([
         "pass_to",
         {
           to: ["КОДЕР", "ПЕРЕВІРНИК"],
+          text: "Функція",
         },
       ]),
     ]);
@@ -1081,6 +1111,7 @@ describe("LlmService when the agent calls a system command", () => {
           "pass_to",
           {
             to: "КОДЕР, ПЕРЕВІРНИК",
+            text: "Функція",
           },
           "",
           null,
@@ -1097,7 +1128,7 @@ describe("LlmService when the agent calls a system command", () => {
     assert.equal(answer.called, null);
   });
 
-  it("passes to those named where it also asked to finish: naming beats ending", async () => {
+  it("keeps what was passed where it also ended the branch, and ends the turn there", async () => {
     const provider = speaking([
       calling(
         ["finish_here", {}],
@@ -1105,9 +1136,13 @@ describe("LlmService when the agent calls a system command", () => {
           "pass_to",
           {
             to: ["КОДЕР"],
+            text: "Напиши функцію",
           },
         ],
       ),
+      new AIMessageChunk({
+        content: "Не буде сказано",
+      }),
     ]);
     const answer = await service(provider).ask({
       ...TURN,
@@ -1116,9 +1151,15 @@ describe("LlmService when the agent calls a system command", () => {
     });
 
     assert.deepEqual(answer.route, {
-      toAgentIds: [STORYTELLER],
-      isFinished: false,
+      passes: [
+        {
+          agentId: STORYTELLER,
+          text: "Напиши функцію",
+        },
+      ],
+      isFinished: true,
     });
+    assert.equal(provider.conversations.length, 1);
   });
 
   it("ends the branch when the agent calls finish_here alone, and ends the turn", async () => {
@@ -1130,7 +1171,7 @@ describe("LlmService when the agent calls a system command", () => {
     });
 
     assert.deepEqual(answer.route, {
-      toAgentIds: [],
+      passes: [],
       isFinished: true,
     });
     assert.equal(answer.text, "");
@@ -1143,6 +1184,7 @@ describe("LlmService when the agent calls a system command", () => {
         "pass_to",
         {
           to: ["РЕЦЕНЗЕНТ"],
+          text: "Відредагуй",
         },
       ]),
       new AIMessageChunk({
@@ -1171,6 +1213,7 @@ describe("LlmService when the agent calls a system command", () => {
         "pass_to",
         {
           to: [],
+          text: "Функція",
         },
       ]),
       new AIMessageChunk({
@@ -1185,6 +1228,29 @@ describe("LlmService when the agent calls a system command", () => {
 
     assert.equal(answer.route, null);
     assert.notEqual(answer.calls[0]?.refusal, null);
+  });
+
+  it("refuses an empty text, telling the model the text is required", async () => {
+    const provider = speaking([
+      calling([
+        "pass_to",
+        {
+          to: ["КОДЕР"],
+          text: "  ",
+        },
+      ]),
+      new AIMessageChunk({
+        content: "Гаразд",
+      }),
+    ]);
+    const answer = await service(provider).ask({
+      ...TURN,
+      providerId: TEST_PROVIDER_ID,
+      tools: ROUTE,
+    });
+
+    assert.equal(answer.route, null);
+    assert.equal(answer.calls[0]?.refusal, "[pass_to не запустилась: text — обов'язковий, а не прийшов]");
   });
 
   it("has no route where the agent called none, so its answer goes down every line", async () => {
@@ -1208,6 +1274,7 @@ describe("LlmService when the agent calls a system command", () => {
         "pass_to",
         {
           to: ["КОДЕР"],
+          text: "Функція",
         },
       ]),
     ]);

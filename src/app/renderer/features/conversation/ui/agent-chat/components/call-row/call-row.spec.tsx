@@ -70,12 +70,13 @@ function onServer(patch: Partial<LiveCall> = {}): LiveCall {
   });
 }
 
-/** A route call: the agent's decision about where its answer goes; nothing ran. */
+/** A system command: what the agent handed on and to whom; nothing ran. */
 function onRoute(patch: Partial<LiveCall> = {}): LiveCall {
   return call({
     name: "pass_to",
     arguments: {
       to: "КОДЕР",
+      text: "Напиши функцію сортування",
     },
     pinned: [],
     line: "",
@@ -350,13 +351,14 @@ describe("CallRow · a system command", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("opens on the system command as its source, the name it chose and the words given back, with no copy of a server's answer", async () => {
+  it("opens on the system command as its source, whom it passed to, the text it handed on and the words given back, with no copy of a server's answer", async () => {
     render(<Row call={onRoute()} />);
     await userEvent.click(screen.getByRole("button"));
 
     expect(screen.getByText(CALL_ROW_SOURCE_LABEL)).toBeInTheDocument();
     expect(screen.getByText(new RegExp(`· ${CALL_ROW_SYSTEM_KIND}`))).toBeInTheDocument();
     expect(screen.getByText(/· КОДЕР/)).toBeInTheDocument();
+    expect(screen.getByText(/· Напиши функцію сортування/)).toBeInTheDocument();
     expect(screen.getByText("Передам: КОДЕР.")).toBeInTheDocument();
     expect(screen.queryByText(COPY_ACTION_LABEL)).not.toBeInTheDocument();
   });

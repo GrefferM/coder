@@ -3,4 +3,5 @@ export interface RunHandoffRecord {
   place: number;
   toAgentId: string;
   stopReason: string | null;
+  text: string;
 }

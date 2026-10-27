@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Initial1789371935222 implements MigrationInterface {
-  name = "Initial1789371935222";
+export class Initial1793112189384 implements MigrationInterface {
+  name = "Initial1793112189384";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -17,7 +17,7 @@ export class Initial1789371935222 implements MigrationInterface {
       'CREATE TABLE "mcp_server_looks" ("serverId" varchar PRIMARY KEY NOT NULL, "names" text NOT NULL, "changedAt" integer, "wasCount" integer, "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')))',
     );
     await queryRunner.query(
-      'CREATE TABLE "run_handoffs" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "toAgentId" varchar NOT NULL, "stopReason" varchar, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar)',
+      'CREATE TABLE "run_handoffs" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "toAgentId" varchar NOT NULL, "stopReason" varchar, "text" text NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar)',
     );
     await queryRunner.query('CREATE INDEX "IDX_503cb5169ad98f938167fbffb1" ON "run_handoffs" ("stepId") ');
     await queryRunner.query(
@@ -25,9 +25,21 @@ export class Initial1789371935222 implements MigrationInterface {
     );
     await queryRunner.query('CREATE INDEX "IDX_ae857110534ca2ea2030dd23be" ON "runs" ("directory") ');
     await queryRunner.query(
+      'CREATE TABLE "run_question_attachments" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "path" text NOT NULL, "name" varchar NOT NULL, "kind" varchar NOT NULL, "text" text NOT NULL, "binaries" text NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "questionId" varchar)',
+    );
+    await queryRunner.query(
+      'CREATE INDEX "IDX_27e55be18041d68addb473e534" ON "run_question_attachments" ("questionId") ',
+    );
+    await queryRunner.query(
       'CREATE TABLE "run_questions" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "asked" text NOT NULL, "askedAt" datetime NOT NULL, "askedAgentId" varchar, "askedAgentName" varchar, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar)',
     );
     await queryRunner.query('CREATE INDEX "IDX_d6362a6951182a1457278e4e44" ON "run_questions" ("runId") ');
+    await queryRunner.query(
+      'CREATE TABLE "run_memories" ("id" varchar PRIMARY KEY NOT NULL, "agentId" varchar NOT NULL, "coversPlace" integer NOT NULL, "text" text NOT NULL, "lengthBefore" integer NOT NULL, "lengthAfter" integer NOT NULL, "compressAt" integer NOT NULL, "compressTo" integer NOT NULL, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "money" float, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, "questionId" varchar, "stepId" varchar)',
+    );
+    await queryRunner.query('CREATE INDEX "IDX_48943a80562423f216988372a9" ON "run_memories" ("runId") ');
+    await queryRunner.query('CREATE INDEX "IDX_ed6fe8cdbc0593e9d34e6ddd14" ON "run_memories" ("questionId") ');
+    await queryRunner.query('CREATE INDEX "IDX_926120e9297f9fd01eef794936" ON "run_memories" ("stepId") ');
     await queryRunner.query(
       'CREATE TABLE "run_step_agents" ("id" varchar PRIMARY KEY NOT NULL, "agentId" varchar NOT NULL, "name" varchar NOT NULL, "color" varchar NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "REL_b95c266b940dc60fa2d93c423a" UNIQUE ("stepId"))',
     );
@@ -56,14 +68,26 @@ export class Initial1789371935222 implements MigrationInterface {
     await queryRunner.query('CREATE INDEX "IDX_a272800cd4cd6b0ea2262db21e" ON "run_calls" ("stepId") ');
     await queryRunner.query('DROP INDEX "IDX_503cb5169ad98f938167fbffb1"');
     await queryRunner.query(
-      'CREATE TABLE "temporary_run_handoffs" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "toAgentId" varchar NOT NULL, "stopReason" varchar, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "FK_503cb5169ad98f938167fbffb11" FOREIGN KEY ("stepId") REFERENCES "run_steps" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
+      'CREATE TABLE "temporary_run_handoffs" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "toAgentId" varchar NOT NULL, "stopReason" varchar, "text" text NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "FK_503cb5169ad98f938167fbffb11" FOREIGN KEY ("stepId") REFERENCES "run_steps" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
     );
     await queryRunner.query(
-      'INSERT INTO "temporary_run_handoffs"("id", "place", "toAgentId", "stopReason", "createdAt", "updatedAt", "stepId") SELECT "id", "place", "toAgentId", "stopReason", "createdAt", "updatedAt", "stepId" FROM "run_handoffs"',
+      'INSERT INTO "temporary_run_handoffs"("id", "place", "toAgentId", "stopReason", "text", "createdAt", "updatedAt", "stepId") SELECT "id", "place", "toAgentId", "stopReason", "text", "createdAt", "updatedAt", "stepId" FROM "run_handoffs"',
     );
     await queryRunner.query('DROP TABLE "run_handoffs"');
     await queryRunner.query('ALTER TABLE "temporary_run_handoffs" RENAME TO "run_handoffs"');
     await queryRunner.query('CREATE INDEX "IDX_503cb5169ad98f938167fbffb1" ON "run_handoffs" ("stepId") ');
+    await queryRunner.query('DROP INDEX "IDX_27e55be18041d68addb473e534"');
+    await queryRunner.query(
+      'CREATE TABLE "temporary_run_question_attachments" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "path" text NOT NULL, "name" varchar NOT NULL, "kind" varchar NOT NULL, "text" text NOT NULL, "binaries" text NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "questionId" varchar, CONSTRAINT "FK_27e55be18041d68addb473e5345" FOREIGN KEY ("questionId") REFERENCES "run_questions" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
+    );
+    await queryRunner.query(
+      'INSERT INTO "temporary_run_question_attachments"("id", "place", "path", "name", "kind", "text", "binaries", "createdAt", "updatedAt", "questionId") SELECT "id", "place", "path", "name", "kind", "text", "binaries", "createdAt", "updatedAt", "questionId" FROM "run_question_attachments"',
+    );
+    await queryRunner.query('DROP TABLE "run_question_attachments"');
+    await queryRunner.query('ALTER TABLE "temporary_run_question_attachments" RENAME TO "run_question_attachments"');
+    await queryRunner.query(
+      'CREATE INDEX "IDX_27e55be18041d68addb473e534" ON "run_question_attachments" ("questionId") ',
+    );
     await queryRunner.query('DROP INDEX "IDX_d6362a6951182a1457278e4e44"');
     await queryRunner.query(
       'CREATE TABLE "temporary_run_questions" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "asked" text NOT NULL, "askedAt" datetime NOT NULL, "askedAgentId" varchar, "askedAgentName" varchar, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, CONSTRAINT "FK_d6362a6951182a1457278e4e443" FOREIGN KEY ("runId") REFERENCES "runs" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
@@ -74,6 +98,20 @@ export class Initial1789371935222 implements MigrationInterface {
     await queryRunner.query('DROP TABLE "run_questions"');
     await queryRunner.query('ALTER TABLE "temporary_run_questions" RENAME TO "run_questions"');
     await queryRunner.query('CREATE INDEX "IDX_d6362a6951182a1457278e4e44" ON "run_questions" ("runId") ');
+    await queryRunner.query('DROP INDEX "IDX_48943a80562423f216988372a9"');
+    await queryRunner.query('DROP INDEX "IDX_ed6fe8cdbc0593e9d34e6ddd14"');
+    await queryRunner.query('DROP INDEX "IDX_926120e9297f9fd01eef794936"');
+    await queryRunner.query(
+      'CREATE TABLE "temporary_run_memories" ("id" varchar PRIMARY KEY NOT NULL, "agentId" varchar NOT NULL, "coversPlace" integer NOT NULL, "text" text NOT NULL, "lengthBefore" integer NOT NULL, "lengthAfter" integer NOT NULL, "compressAt" integer NOT NULL, "compressTo" integer NOT NULL, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "money" float, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, "questionId" varchar, "stepId" varchar, CONSTRAINT "FK_48943a80562423f216988372a99" FOREIGN KEY ("runId") REFERENCES "runs" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_ed6fe8cdbc0593e9d34e6ddd142" FOREIGN KEY ("questionId") REFERENCES "run_questions" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_926120e9297f9fd01eef7949368" FOREIGN KEY ("stepId") REFERENCES "run_steps" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
+    );
+    await queryRunner.query(
+      'INSERT INTO "temporary_run_memories"("id", "agentId", "coversPlace", "text", "lengthBefore", "lengthAfter", "compressAt", "compressTo", "inputTokens", "outputTokens", "money", "createdAt", "updatedAt", "runId", "questionId", "stepId") SELECT "id", "agentId", "coversPlace", "text", "lengthBefore", "lengthAfter", "compressAt", "compressTo", "inputTokens", "outputTokens", "money", "createdAt", "updatedAt", "runId", "questionId", "stepId" FROM "run_memories"',
+    );
+    await queryRunner.query('DROP TABLE "run_memories"');
+    await queryRunner.query('ALTER TABLE "temporary_run_memories" RENAME TO "run_memories"');
+    await queryRunner.query('CREATE INDEX "IDX_48943a80562423f216988372a9" ON "run_memories" ("runId") ');
+    await queryRunner.query('CREATE INDEX "IDX_ed6fe8cdbc0593e9d34e6ddd14" ON "run_memories" ("questionId") ');
+    await queryRunner.query('CREATE INDEX "IDX_926120e9297f9fd01eef794936" ON "run_memories" ("stepId") ');
     await queryRunner.query('DROP INDEX "IDX_b95c266b940dc60fa2d93c423a"');
     await queryRunner.query(
       'CREATE TABLE "temporary_run_step_agents" ("id" varchar PRIMARY KEY NOT NULL, "agentId" varchar NOT NULL, "name" varchar NOT NULL, "color" varchar NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar, CONSTRAINT "REL_b95c266b940dc60fa2d93c423a" UNIQUE ("stepId"), CONSTRAINT "FK_b95c266b940dc60fa2d93c423a0" FOREIGN KEY ("stepId") REFERENCES "run_steps" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
@@ -138,27 +176,9 @@ export class Initial1789371935222 implements MigrationInterface {
     await queryRunner.query('DROP TABLE "run_calls"');
     await queryRunner.query('ALTER TABLE "temporary_run_calls" RENAME TO "run_calls"');
     await queryRunner.query('CREATE INDEX "IDX_a272800cd4cd6b0ea2262db21e" ON "run_calls" ("stepId") ');
-    await queryRunner.query(
-      'CREATE TABLE "run_question_attachments" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "path" text NOT NULL, "name" varchar NOT NULL, "kind" varchar NOT NULL, "text" text NOT NULL, "binaries" text NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "questionId" varchar, CONSTRAINT "FK_27e55be18041d68addb473e5345" FOREIGN KEY ("questionId") REFERENCES "run_questions" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
-    );
-    await queryRunner.query(
-      'CREATE INDEX "IDX_27e55be18041d68addb473e534" ON "run_question_attachments" ("questionId") ',
-    );
-    await queryRunner.query(
-      'CREATE TABLE "run_memories" ("id" varchar PRIMARY KEY NOT NULL, "agentId" varchar NOT NULL, "coversPlace" integer NOT NULL, "text" text NOT NULL, "lengthBefore" integer NOT NULL, "lengthAfter" integer NOT NULL, "compressAt" integer NOT NULL, "compressTo" integer NOT NULL, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "money" float, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, "questionId" varchar, "stepId" varchar, CONSTRAINT "FK_48943a80562423f216988372a99" FOREIGN KEY ("runId") REFERENCES "runs" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_ed6fe8cdbc0593e9d34e6ddd142" FOREIGN KEY ("questionId") REFERENCES "run_questions" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_926120e9297f9fd01eef7949368" FOREIGN KEY ("stepId") REFERENCES "run_steps" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
-    );
-    await queryRunner.query('CREATE INDEX "IDX_48943a80562423f216988372a9" ON "run_memories" ("runId") ');
-    await queryRunner.query('CREATE INDEX "IDX_ed6fe8cdbc0593e9d34e6ddd14" ON "run_memories" ("questionId") ');
-    await queryRunner.query('CREATE INDEX "IDX_926120e9297f9fd01eef794936" ON "run_memories" ("stepId") ');
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query('DROP INDEX "IDX_926120e9297f9fd01eef794936"');
-    await queryRunner.query('DROP INDEX "IDX_ed6fe8cdbc0593e9d34e6ddd14"');
-    await queryRunner.query('DROP INDEX "IDX_48943a80562423f216988372a9"');
-    await queryRunner.query('DROP TABLE "run_memories"');
-    await queryRunner.query('DROP INDEX "IDX_27e55be18041d68addb473e534"');
-    await queryRunner.query('DROP TABLE "run_question_attachments"');
     await queryRunner.query('DROP INDEX "IDX_a272800cd4cd6b0ea2262db21e"');
     await queryRunner.query('ALTER TABLE "run_calls" RENAME TO "temporary_run_calls"');
     await queryRunner.query(
@@ -223,6 +243,20 @@ export class Initial1789371935222 implements MigrationInterface {
     );
     await queryRunner.query('DROP TABLE "temporary_run_step_agents"');
     await queryRunner.query('CREATE INDEX "IDX_b95c266b940dc60fa2d93c423a" ON "run_step_agents" ("stepId") ');
+    await queryRunner.query('DROP INDEX "IDX_926120e9297f9fd01eef794936"');
+    await queryRunner.query('DROP INDEX "IDX_ed6fe8cdbc0593e9d34e6ddd14"');
+    await queryRunner.query('DROP INDEX "IDX_48943a80562423f216988372a9"');
+    await queryRunner.query('ALTER TABLE "run_memories" RENAME TO "temporary_run_memories"');
+    await queryRunner.query(
+      'CREATE TABLE "run_memories" ("id" varchar PRIMARY KEY NOT NULL, "agentId" varchar NOT NULL, "coversPlace" integer NOT NULL, "text" text NOT NULL, "lengthBefore" integer NOT NULL, "lengthAfter" integer NOT NULL, "compressAt" integer NOT NULL, "compressTo" integer NOT NULL, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "money" float, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, "questionId" varchar, "stepId" varchar)',
+    );
+    await queryRunner.query(
+      'INSERT INTO "run_memories"("id", "agentId", "coversPlace", "text", "lengthBefore", "lengthAfter", "compressAt", "compressTo", "inputTokens", "outputTokens", "money", "createdAt", "updatedAt", "runId", "questionId", "stepId") SELECT "id", "agentId", "coversPlace", "text", "lengthBefore", "lengthAfter", "compressAt", "compressTo", "inputTokens", "outputTokens", "money", "createdAt", "updatedAt", "runId", "questionId", "stepId" FROM "temporary_run_memories"',
+    );
+    await queryRunner.query('DROP TABLE "temporary_run_memories"');
+    await queryRunner.query('CREATE INDEX "IDX_926120e9297f9fd01eef794936" ON "run_memories" ("stepId") ');
+    await queryRunner.query('CREATE INDEX "IDX_ed6fe8cdbc0593e9d34e6ddd14" ON "run_memories" ("questionId") ');
+    await queryRunner.query('CREATE INDEX "IDX_48943a80562423f216988372a9" ON "run_memories" ("runId") ');
     await queryRunner.query('DROP INDEX "IDX_d6362a6951182a1457278e4e44"');
     await queryRunner.query('ALTER TABLE "run_questions" RENAME TO "temporary_run_questions"');
     await queryRunner.query(
@@ -233,13 +267,25 @@ export class Initial1789371935222 implements MigrationInterface {
     );
     await queryRunner.query('DROP TABLE "temporary_run_questions"');
     await queryRunner.query('CREATE INDEX "IDX_d6362a6951182a1457278e4e44" ON "run_questions" ("runId") ');
+    await queryRunner.query('DROP INDEX "IDX_27e55be18041d68addb473e534"');
+    await queryRunner.query('ALTER TABLE "run_question_attachments" RENAME TO "temporary_run_question_attachments"');
+    await queryRunner.query(
+      'CREATE TABLE "run_question_attachments" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "path" text NOT NULL, "name" varchar NOT NULL, "kind" varchar NOT NULL, "text" text NOT NULL, "binaries" text NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "questionId" varchar)',
+    );
+    await queryRunner.query(
+      'INSERT INTO "run_question_attachments"("id", "place", "path", "name", "kind", "text", "binaries", "createdAt", "updatedAt", "questionId") SELECT "id", "place", "path", "name", "kind", "text", "binaries", "createdAt", "updatedAt", "questionId" FROM "temporary_run_question_attachments"',
+    );
+    await queryRunner.query('DROP TABLE "temporary_run_question_attachments"');
+    await queryRunner.query(
+      'CREATE INDEX "IDX_27e55be18041d68addb473e534" ON "run_question_attachments" ("questionId") ',
+    );
     await queryRunner.query('DROP INDEX "IDX_503cb5169ad98f938167fbffb1"');
     await queryRunner.query('ALTER TABLE "run_handoffs" RENAME TO "temporary_run_handoffs"');
     await queryRunner.query(
-      'CREATE TABLE "run_handoffs" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "toAgentId" varchar NOT NULL, "stopReason" varchar, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar)',
+      'CREATE TABLE "run_handoffs" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "toAgentId" varchar NOT NULL, "stopReason" varchar, "text" text NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "stepId" varchar)',
     );
     await queryRunner.query(
-      'INSERT INTO "run_handoffs"("id", "place", "toAgentId", "stopReason", "createdAt", "updatedAt", "stepId") SELECT "id", "place", "toAgentId", "stopReason", "createdAt", "updatedAt", "stepId" FROM "temporary_run_handoffs"',
+      'INSERT INTO "run_handoffs"("id", "place", "toAgentId", "stopReason", "text", "createdAt", "updatedAt", "stepId") SELECT "id", "place", "toAgentId", "stopReason", "text", "createdAt", "updatedAt", "stepId" FROM "temporary_run_handoffs"',
     );
     await queryRunner.query('DROP TABLE "temporary_run_handoffs"');
     await queryRunner.query('CREATE INDEX "IDX_503cb5169ad98f938167fbffb1" ON "run_handoffs" ("stepId") ');
@@ -257,8 +303,14 @@ export class Initial1789371935222 implements MigrationInterface {
     await queryRunner.query('DROP TABLE "run_step_models"');
     await queryRunner.query('DROP INDEX "IDX_b95c266b940dc60fa2d93c423a"');
     await queryRunner.query('DROP TABLE "run_step_agents"');
+    await queryRunner.query('DROP INDEX "IDX_926120e9297f9fd01eef794936"');
+    await queryRunner.query('DROP INDEX "IDX_ed6fe8cdbc0593e9d34e6ddd14"');
+    await queryRunner.query('DROP INDEX "IDX_48943a80562423f216988372a9"');
+    await queryRunner.query('DROP TABLE "run_memories"');
     await queryRunner.query('DROP INDEX "IDX_d6362a6951182a1457278e4e44"');
     await queryRunner.query('DROP TABLE "run_questions"');
+    await queryRunner.query('DROP INDEX "IDX_27e55be18041d68addb473e534"');
+    await queryRunner.query('DROP TABLE "run_question_attachments"');
     await queryRunner.query('DROP INDEX "IDX_ae857110534ca2ea2030dd23be"');
     await queryRunner.query('DROP TABLE "runs"');
     await queryRunner.query('DROP INDEX "IDX_503cb5169ad98f938167fbffb1"');

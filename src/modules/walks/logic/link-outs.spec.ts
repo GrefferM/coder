@@ -201,57 +201,100 @@ describe("routedOuts", () => {
     },
   ];
 
-  const reasons = (route: Parameters<typeof routedOuts>[1]) => routedOuts(OUTS, route).map((out) => out.stopReason);
+  const pass = (agentId: string, text: string) => ({
+    agentId,
+    text,
+  });
+  const routed = (route: Parameters<typeof routedOuts>[1]) =>
+    routedOuts(OUTS, route, "Відповідь").map((out) => [out.stopReason, out.text]);
 
-  it("takes every line where the agent chose nothing", () => {
-    assert.deepEqual(reasons(null), [null, null, "off"]);
+  it("hands the answer down every line where the agent called no command", () => {
+    assert.deepEqual(routed(null), [
+      [null, "Відповідь"],
+      [null, "Відповідь"],
+      ["off", "Відповідь"],
+    ]);
   });
 
-  it("takes only the lines to the agents it named, and leaves the others not chosen", () => {
+  it("hands each agent it passed to what it passed it, and leaves the others not chosen with nothing", () => {
     assert.deepEqual(
-      reasons({
-        toAgentIds: ["second"],
+      routed({
+        passes: [pass("second", "Напиши функцію")],
         isFinished: false,
       }),
-      ["notChosen", null, "off"],
+      [
+        ["notChosen", ""],
+        [null, "Напиши функцію"],
+        ["off", ""],
+      ],
     );
   });
 
-  it("takes no line where it ended the branch, whomever it named besides", () => {
+  it("hands different texts to different agents", () => {
     assert.deepEqual(
-      reasons({
-        toAgentIds: ["first"],
+      routed({
+        passes: [pass("first", "Напиши функцію"), pass("second", "Перевір")],
+        isFinished: false,
+      }),
+      [
+        [null, "Напиши функцію"],
+        [null, "Перевір"],
+        ["off", ""],
+      ],
+    );
+  });
+
+  it("takes no line where it only ended the branch", () => {
+    assert.deepEqual(
+      routed({
+        passes: [],
         isFinished: true,
       }),
-      ["finished", "finished", "off"],
+      [
+        ["finished", ""],
+        ["finished", ""],
+        ["off", ""],
+      ],
     );
   });
 
-  it("leaves a line that could not be taken for its own reason with that reason, whatever the agent chose", () => {
+  it("still hands on what was passed where it also ended the branch, the rest not chosen", () => {
     assert.deepEqual(
-      reasons({
-        toAgentIds: ["off"],
+      routed({
+        passes: [pass("first", "Напиши функцію")],
+        isFinished: true,
+      }),
+      [
+        [null, "Напиши функцію"],
+        ["notChosen", ""],
+        ["off", ""],
+      ],
+    );
+  });
+
+  it("leaves a line that could not be taken for its own reason with that reason, and its text", () => {
+    assert.deepEqual(
+      routed({
+        passes: [pass("off", "Перевір")],
         isFinished: false,
       }),
-      ["notChosen", "notChosen", "off"],
+      [
+        ["notChosen", ""],
+        ["notChosen", ""],
+        ["off", "Перевір"],
+      ],
     );
   });
 
-  it("reads a choice that names nobody and ends nothing as no choice", () => {
-    assert.deepEqual(
-      reasons({
-        toAgentIds: [],
-        isFinished: false,
-      }),
-      [null, null, "off"],
+  it("keeps the lines themselves as they were", () => {
+    const [first] = routedOuts(
+      OUTS,
+      {
+        passes: [],
+        isFinished: true,
+      },
+      "",
     );
-  });
-
-  it("keeps the lines themselves as they were, and changes only the reason", () => {
-    const [first] = routedOuts(OUTS, {
-      toAgentIds: [],
-      isFinished: true,
-    });
 
     assert.deepEqual([first.linkId, first.to], ["l1", FIRST]);
   });

@@ -3,7 +3,7 @@ import type { PackedAttachment } from "../attachments";
 import type { ChatMessage } from "./chat-message.interface";
 import type { ChatCost } from "./chat-cost.interface";
 import type { IncomingWork } from "./incoming-work.interface";
-import type { LinkOut } from "./link-out.interface";
+import type { HandedLine } from "./handed-line.interface";
 import type { TurnAnswer } from "./turn-answer.interface";
 import type { WalkClosing } from "./walk-closing.interface";
 import type { RunUnfinished, WholeStep } from "../runs";
@@ -67,12 +67,11 @@ export type WalkEvent =
   | {
       kind: "handedOn";
       from: Agent;
-      text: string;
       cost: ChatCost | null;
       seconds: number;
       startAgentId: string;
       runKey: string;
-      out: LinkOut[];
+      out: HandedLine[];
     }
   /** One supplier of a converging point settled, with work or with nothing. */
   | {

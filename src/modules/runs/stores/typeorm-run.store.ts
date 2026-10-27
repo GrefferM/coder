@@ -485,6 +485,7 @@ export class TypeormRunStore implements RunStore {
       place: handoff.place,
       toAgentId: handoff.toAgentId,
       stopReason: handoff.stopReason,
+      text: handoff.text,
       step: {
         id: handoff.stepId,
       },

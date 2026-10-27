@@ -36,6 +36,12 @@ export class RunHandoffEntity implements RunHandoffRecord {
   })
   declare stopReason: string | null;
 
+  /** What the line carried: the agent's answer, or what `pass_to` handed this agent; empty where it was handed nothing. */
+  @Column({
+    type: "text",
+  })
+  declare text: string;
+
   @CreateDateColumn()
   declare createdAt: Date;
 

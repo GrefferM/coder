@@ -44,6 +44,17 @@ export class ToolArguments {
     ]);
   }
 
+  /** What the model is handed in place of a call that left a required parameter empty. */
+  missingNote(toolName: string, parameterName: string): string {
+    return this.notRunNote(toolName, [
+      {
+        name: parameterName,
+        wrong: TOOL_COMPLAINT_MISSING,
+        told: "",
+      },
+    ]);
+  }
+
   /** The same refusal for the person: names as written, the app's words. */
   refusedLine(toolName: string, complaints: ToolComplaint[]): string {
     const said = complaints.map(

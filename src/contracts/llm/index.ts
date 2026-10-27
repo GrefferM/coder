@@ -5,6 +5,7 @@ export * from "./agent-agent-tool.interface";
 export * from "./agent-system-tool.interface";
 export * from "./route-option.interface";
 export * from "./route-choice.interface";
+export * from "./route-pass.interface";
 export * from "./route-decided";
 export * from "./system-tool.guard";
 export * from "./agent-server-tool.interface";

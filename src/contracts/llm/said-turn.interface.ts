@@ -16,6 +16,6 @@ export interface SaidTurn {
   called: ChatCost | null;
   /** Every compression the agents it called as tools made for their memories, and what each cost. */
   memories: ToolMemory[];
-  /** Where the agent chose to send its answer; null where it chose nothing, and the answer goes down every line. */
+  /** What the agent handed on or ended by its commands; null where it called none, and the answer goes down every line. */
   route: RouteChoice | null;
 }

@@ -1,10 +1,12 @@
-/** The one parameter of `pass_to`: a list of whom it goes to, each by the word the options give. */
+/** The parameters of `pass_to`: whom it goes to, each by the word the options give, and what they get. */
 export const ROUTE_TO_NAME = "to";
 export const ROUTE_TO_DESCRIPTION = "Кому передати — одне чи кілька слів зі списку.";
+export const ROUTE_TEXT_NAME = "text";
+export const ROUTE_TEXT_DESCRIPTION = "Що отримають названі — повний текст завдання чи результату для них.";
 
 /** What the model reads of `pass_to`; the options follow, one to a line. */
 export const ROUTE_PASS_DESCRIPTION =
-  "Передати далі. Виклич, коли твоя робота зроблена: у `to` назви одного чи кількох зі списку — тільки вони отримають результат, решта ні. Писати нічого не треба. Після виклику твій хід завершено. Можна передати:";
+  "Передати далі. У `to` назви одного чи кількох зі списку, у `text` напиши, що вони отримають. Різним — різний текст: виклич кілька разів. Якщо ти викликав цю команду, далі йде лише те, що ти передав нею, а твоя відповідь — ні. Можна передати:";
 /** What the model reads of `finish_here`. */
 export const ROUTE_FINISH_DESCRIPTION =
   "Завершити гілку. Виклич, коли продовжувати не потрібно: далі нічого не піде. Писати нічого не треба. Після виклику твій хід завершено.";

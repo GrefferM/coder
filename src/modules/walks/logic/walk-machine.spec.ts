@@ -844,12 +844,14 @@ describe("walkMachine · the answer takes its lines out", () => {
       {
         kind: "handedOn",
         from: thesaurus,
-        text: "Готово",
         cost: null,
         seconds: 3,
         startAgentId: "thesaurus",
         runKey: "walk-1",
-        out,
+        out: out.map((one) => ({
+          ...one,
+          text: "Готово",
+        })),
       },
       lines,
     );
@@ -958,7 +960,6 @@ describe("walkMachine · the answer takes its lines out", () => {
       {
         kind: "handedOn",
         from: thesaurus,
-        text: "Готово",
         cost: null,
         seconds: 3,
         startAgentId: "thesaurus",
@@ -968,11 +969,13 @@ describe("walkMachine · the answer takes its lines out", () => {
             linkId: "link-0",
             to: shortener,
             stopReason: null,
+            text: "Готово",
           },
           {
             linkId: "link-1",
             to: titler,
             stopReason: "off",
+            text: "Готово",
           },
         ],
       },
@@ -991,7 +994,6 @@ describe("walkMachine · the answer takes its lines out", () => {
       {
         kind: "handedOn",
         from: shortener,
-        text: "Стисло",
         cost: null,
         seconds: 2,
         startAgentId: "thesaurus",
@@ -1001,6 +1003,7 @@ describe("walkMachine · the answer takes its lines out", () => {
             linkId: "link-2",
             to: titler,
             stopReason: null,
+            text: "Стисло",
           },
         ],
       },
@@ -1051,7 +1054,6 @@ describe("walkMachine · the answer takes its lines out", () => {
       {
         kind: "handedOn",
         from: thesaurus,
-        text: "Готово вдруге",
         cost: null,
         seconds: 3,
         startAgentId: "thesaurus",
@@ -1061,11 +1063,13 @@ describe("walkMachine · the answer takes its lines out", () => {
             linkId: "link-0",
             to: shortener,
             stopReason: "off",
+            text: "Готово вдруге",
           },
           {
             linkId: "link-1",
             to: titler,
             stopReason: null,
+            text: "Готово вдруге",
           },
         ],
       },
@@ -1813,7 +1817,7 @@ describe("walkMachine · the turn that came back", () => {
   });
 });
 
-describe("walkMachine · the agent chose its route", () => {
+describe("walkMachine · the agent handed its work on by command", () => {
   const dispatcher = "dispatcher";
   const teller = "teller";
   const translator = "translator";
@@ -1842,6 +1846,13 @@ describe("walkMachine · the agent chose its route", () => {
     );
   }
 
+  /** What `pass_to` handed each agent named: a text of its own. */
+  const passed = (...agentIds: string[]) =>
+    agentIds.map((agentId) => ({
+      agentId,
+      text: `Завдання для ${agentId}`,
+    }));
+
   const asked = (effects: WalkEffect[]) =>
     effects.flatMap((effect) => (effect.kind === "askAgent" ? [effect.agent.id] : []));
 
@@ -1868,7 +1879,7 @@ describe("walkMachine · the agent chose its route", () => {
   it("puts the work only to the agents it named, and says of the others that it was not chosen", () => {
     const { effects } = chose(
       {
-        toAgentIds: [teller],
+        passes: passed(teller),
         isFinished: false,
       },
       FORK,
@@ -1890,7 +1901,7 @@ describe("walkMachine · the agent chose its route", () => {
   it("puts the work to no line where it ended the branch, and says so of each", () => {
     const { effects } = chose(
       {
-        toAgentIds: [],
+        passes: [],
         isFinished: true,
       },
       FORK,
@@ -1903,10 +1914,10 @@ describe("walkMachine · the agent chose its route", () => {
     assert.deepEqual(asked(effects), []);
   });
 
-  it("puts the work on without a word of its own, handing the next agent what it was itself given", () => {
+  it("hands the agent it passed to the text it wrote for it, not the turn's input", () => {
     const { effects } = chose(
       {
-        toAgentIds: [teller],
+        passes: passed(teller),
         isFinished: false,
       },
       FORK,
@@ -1916,30 +1927,27 @@ describe("walkMachine · the agent chose its route", () => {
     const given = <{ incoming: IncomingWork[] }>effects.find((effect) => effect.kind === "askAgent");
 
     assert.deepEqual(asked(effects), [teller]);
-    assert.equal(given.incoming[0].text, "Прогони тести");
+    assert.equal(given.incoming[0].text, `Завдання для ${teller}`);
   });
 
-  it("hands on the work it was given without the count of its own suppliers that sent nothing", () => {
-    const { effects } = walkMachine(
-      walk({
-        out: working(turn("turn-1", dispatcher, "walk-1")),
-      }),
+  it("hands different agents the different texts it passed them", () => {
+    const { effects } = chose(
       {
-        ...back(dispatcher, {
-          text: "",
-          route: {
-            toAgentIds: [teller],
-            isFinished: false,
-          },
-        }),
-        incoming: [work(editor)],
-        asked: "from editor\n\nНе передали нічого: 1 з 2 постачальників роботи.",
+        passes: passed(teller, translator),
+        isFinished: false,
       },
       FORK,
+      undefined,
+      "Розподілив",
     );
-    const given = <{ incoming: IncomingWork[] }>effects.find((effect) => effect.kind === "askAgent");
 
-    assert.equal(given.incoming[0].text, "from editor");
+    assert.deepEqual(
+      effects.flatMap((effect) => (effect.kind === "askAgent" ? [[effect.agent.id, effect.incoming[0]?.text]] : [])),
+      [
+        [teller, `Завдання для ${teller}`],
+        [translator, `Завдання для ${translator}`],
+      ],
+    );
   });
 
   it("writes the step of a turn that only passed on as a finished one with nothing said, not a silent one", () => {
@@ -1953,7 +1961,7 @@ describe("walkMachine · the agent chose its route", () => {
       back(dispatcher, {
         text: "",
         route: {
-          toAgentIds: [teller],
+          passes: passed(teller),
           isFinished: false,
         },
       }),
@@ -1967,18 +1975,20 @@ describe("walkMachine · the agent chose its route", () => {
       {
         toAgentId: teller,
         stopReason: null,
+        text: `Завдання для ${teller}`,
       },
       {
         toAgentId: translator,
         stopReason: "notChosen",
+        text: "",
       },
     ]);
   });
 
-  it("hands on its own words rather than its input where it wrote some and named agents", () => {
+  it("keeps its own words off the lines where it passed something on", () => {
     const { effects } = chose(
       {
-        toAgentIds: [teller],
+        passes: passed(teller),
         isFinished: false,
       },
       FORK,
@@ -1987,13 +1997,13 @@ describe("walkMachine · the agent chose its route", () => {
     );
     const given = <{ incoming: IncomingWork[] }>effects.find((effect) => effect.kind === "askAgent");
 
-    assert.equal(given.incoming[0].text, "Ось результат");
+    assert.equal(given.incoming[0].text, `Завдання для ${teller}`);
   });
 
   it("ends the branch without a word of its own, saying so of each line and asking nobody", () => {
     const { effects } = chose(
       {
-        toAgentIds: [],
+        passes: [],
         isFinished: true,
       },
       FORK,
@@ -2022,7 +2032,7 @@ describe("walkMachine · the agent chose its route", () => {
     });
     const { effects } = chose(
       {
-        toAgentIds: ["off", teller],
+        passes: passed("off", teller),
         isFinished: false,
       },
       config(
@@ -2044,7 +2054,7 @@ describe("walkMachine · the agent chose its route", () => {
   it("settles the point below with nothing from the line not chosen, so it waits for those that were", () => {
     const { state } = chose(
       {
-        toAgentIds: [teller],
+        passes: passed(teller),
         isFinished: false,
       },
       JOIN,
@@ -2060,7 +2070,7 @@ describe("walkMachine · the agent chose its route", () => {
   it("goes on at the point below with what the agents chosen answered, once they have", () => {
     const afterChoice = chose(
       {
-        toAgentIds: [teller],
+        passes: passed(teller),
         isFinished: false,
       },
       JOIN,
@@ -2095,7 +2105,7 @@ describe("walkMachine · the agent chose its route", () => {
   it("tells the point nobody is missing when every supplier passed its work on", () => {
     const afterChoice = chose(
       {
-        toAgentIds: [teller, translator],
+        passes: passed(teller, translator),
         isFinished: false,
       },
       JOIN,
@@ -2179,7 +2189,7 @@ describe("walkMachine · the agent chose its route", () => {
     );
     const { state, effects } = chose(
       {
-        toAgentIds: [teller],
+        passes: passed(teller),
         isFinished: false,
       },
       lines,
@@ -2192,7 +2202,7 @@ describe("walkMachine · the agent chose its route", () => {
   it("lets down whoever waits behind a point that no line chosen reaches", () => {
     const { effects } = chose(
       {
-        toAgentIds: [],
+        passes: [],
         isFinished: true,
       },
       JOIN,
@@ -2223,7 +2233,7 @@ describe("walkMachine · the agent chose its route", () => {
     );
     const afterChoice = chose(
       {
-        toAgentIds: [teller],
+        passes: passed(teller),
         isFinished: false,
       },
       loose,
@@ -2255,13 +2265,13 @@ describe("walkMachine · the agent chose its route", () => {
       }),
       back(dispatcher, {
         route: {
-          toAgentIds: [teller],
+          passes: passed(teller),
           isFinished: false,
         },
       }),
       FORK,
     );
-    const written = <{ turn: { handoffs: { toAgentId: string; stopReason: string | null }[] } }>(
+    const written = <{ turn: { handoffs: { toAgentId: string; stopReason: string | null; text: string }[] } }>(
       effects.find((effect) => effect.kind === "writeTurn")
     );
 
@@ -2269,10 +2279,12 @@ describe("walkMachine · the agent chose its route", () => {
       {
         toAgentId: teller,
         stopReason: null,
+        text: `Завдання для ${teller}`,
       },
       {
         toAgentId: translator,
         stopReason: "notChosen",
+        text: "",
       },
     ]);
   });
@@ -2287,7 +2299,7 @@ describe("walkMachine · the agent chose its route", () => {
         state: RUN_STEP_FAILED,
         text: "",
         route: {
-          toAgentIds: [teller],
+          passes: passed(teller),
           isFinished: false,
         },
       }),

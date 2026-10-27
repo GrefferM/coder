@@ -294,10 +294,12 @@ describe("runStream", () => {
             {
               toAgentId: "agent-2",
               stopReason: null,
+              text: "- Починай з малого",
             },
             {
               toAgentId: "agent-3",
               stopReason: "busy",
+              text: "- Починай з малого",
             },
           ],
         }),

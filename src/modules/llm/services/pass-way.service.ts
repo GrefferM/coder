@@ -1,4 +1,4 @@
-import { ROUTE_LABEL_SLOT, ROUTE_PASSED_NOTE, ROUTE_TO_NAME } from "../../../contracts";
+import { ROUTE_LABEL_SLOT, ROUTE_PASSED_NOTE, ROUTE_TEXT_NAME, ROUTE_TO_NAME } from "../../../contracts";
 import type { AgentSystemTool, RouteOption } from "../../../contracts";
 import type { CallResult, CallStanding, ToolWay } from "../interfaces";
 import type { ToolArguments } from "./tool-arguments.service";
@@ -7,12 +7,14 @@ import type { ToolArguments } from "./tool-arguments.service";
 const NAMES_SEPARATOR = ", ";
 
 /**
- * One call of `pass_to`: the agent names whom its work goes to. Nothing runs; the call is the decision, which the turn
- * carries up with its answer.
+ * One call of `pass_to`: the agent names whom it hands a text of its own. Nothing runs; the call is the hand-over, which
+ * the turn gathers and gives out once it ends.
  */
 export class PassWay implements ToolWay {
   /** The words the model named, in its order. */
   private readonly named: string[];
+  /** What those named get, as the model wrote it. */
+  private readonly text: string;
 
   constructor(
     private readonly tool: AgentSystemTool,
@@ -20,6 +22,7 @@ export class PassWay implements ToolWay {
     private readonly arguments_: ToolArguments,
   ) {
     this.named = this.namesOf(said[ROUTE_TO_NAME]);
+    this.text = typeof said[ROUTE_TEXT_NAME] === "string" ? said[ROUTE_TEXT_NAME].trim() : "";
   }
 
   standing(): CallStanding {
@@ -28,6 +31,7 @@ export class PassWay implements ToolWay {
       name: this.tool.name,
       arguments: {
         [ROUTE_TO_NAME]: this.named.join(NAMES_SEPARATOR),
+        [ROUTE_TEXT_NAME]: this.text,
       },
       pinned: [],
       serverId: null,
@@ -35,20 +39,24 @@ export class PassWay implements ToolWay {
     };
   }
 
-  /** Naming nobody is as wrong as naming one that is not there: the call would pass nothing. */
+  /** Naming nobody is as wrong as naming one that is not there, and an empty text passes nothing either. */
   refusal(): string | null {
     const unknown = this.named.filter((word) => !this.tool.options.some((option) => option.label === word));
 
-    if (this.named.length > 0 && unknown.length === 0) {
-      return null;
+    if (this.named.length === 0 || unknown.length > 0) {
+      return this.arguments_.choiceNote(
+        this.tool.name,
+        ROUTE_TO_NAME,
+        this.tool.options.map((option) => option.label),
+        unknown.join(NAMES_SEPARATOR),
+      );
     }
 
-    return this.arguments_.choiceNote(
-      this.tool.name,
-      ROUTE_TO_NAME,
-      this.tool.options.map((option) => option.label),
-      unknown.join(NAMES_SEPARATOR),
-    );
+    if (this.text === "") {
+      return this.arguments_.missingNote(this.tool.name, ROUTE_TEXT_NAME);
+    }
+
+    return null;
   }
 
   async make(): Promise<CallResult> {
@@ -61,7 +69,10 @@ export class PassWay implements ToolWay {
       cost: null,
       memories: [],
       route: {
-        toAgentIds: this.chosen().map((option) => option.agentId),
+        passes: this.chosen().map((option) => ({
+          agentId: option.agentId,
+          text: this.text,
+        })),
         isFinished: false,
       },
     };
