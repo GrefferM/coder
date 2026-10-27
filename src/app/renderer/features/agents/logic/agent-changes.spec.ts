@@ -7,14 +7,12 @@ import {
   AGENT_PROMPT_CHANGE_LABEL,
   AGENT_PROMPT_DROPPED_LABEL,
   AGENT_MEMORY_CHANGE_LABEL,
-  AGENT_ROUTE_CHANGE_LABEL,
-  AGENT_ROUTE_DROPPED_LABEL,
-  AGENT_ROUTE_OFF_LABEL,
-  AGENT_ROUTE_ON_LABEL,
   AGENT_MEMORY_DROPPED_LABEL,
   AGENT_MEMORY_WORDS,
   AGENT_COMPRESS_AT_CHANGE_LABEL,
   AGENT_COMPRESS_TO_CHANGE_LABEL,
+  AGENT_SYSTEM_CHANGE_LABEL,
+  AGENT_SYSTEM_DROPPED_LABEL,
 } from "../constants";
 import type { ProjectCommand, ProjectModel, ProjectPrompt } from "../../../interfaces";
 import type { AgentDraft, AgentNaming } from "../interfaces";
@@ -79,26 +77,6 @@ describe("agentChanges", () => {
         droppedLabel: AGENT_NAME_DROPPED_LABEL,
         was: "EDITOR",
         now: "REVIEWER",
-      },
-    ]);
-  });
-
-  it("names the route turned on by both its words", () => {
-    expect(
-      agentChanges(
-        SAVED,
-        {
-          ...SAVED,
-          choosesRoute: true,
-        },
-        NAMING,
-      ),
-    ).toEqual([
-      {
-        label: AGENT_ROUTE_CHANGE_LABEL,
-        droppedLabel: AGENT_ROUTE_DROPPED_LABEL,
-        was: AGENT_ROUTE_OFF_LABEL,
-        now: AGENT_ROUTE_ON_LABEL,
       },
     ]);
   });
@@ -208,5 +186,31 @@ describe("agentChanges", () => {
         NAMING,
       ),
     ).toEqual([]);
+  });
+
+  it("names the system commands moved, in their own words", () => {
+    const grant = {
+      id: "grant-s",
+      source: "system" as const,
+      command: "finish_here" as const,
+    };
+
+    expect(
+      agentChanges(
+        SAVED,
+        {
+          ...SAVED,
+          tools: [grant],
+        },
+        NAMING,
+      ),
+    ).toEqual([
+      {
+        label: AGENT_SYSTEM_CHANGE_LABEL,
+        droppedLabel: AGENT_SYSTEM_DROPPED_LABEL,
+        was: "без інструментів",
+        now: "системна · finish_here",
+      },
+    ]);
   });
 });

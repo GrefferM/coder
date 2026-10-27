@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { AimPicker, ChatIcon, useAgentChat, useLookAfterCall } from "../../../../features/conversation";
-import { AgentsIcon, agentStates, suppliersOf } from "../../../../features/agents";
+import { AgentsIcon, agentStates, followersOf, suppliersOf } from "../../../../features/agents";
 import { useOpenedPass } from "../../../../features/projection";
 import { useRailStanding } from "../use-rail-standing";
 import { useShowCall } from "../use-show-call";
@@ -104,6 +104,7 @@ export function usePageParts(
           state={states[agents.selectedAgentId ?? ""] ?? NO_AGENT_STATE}
           providers={machine.providers}
           suppliers={suppliersOf(project.config, agents.selectedAgentId)}
+          followers={followersOf(project.config, agents.selectedAgentId)}
           startedAt={chat.startedAt}
           isNamingCopy={isNamingCopy}
           mending={rail.agentMend}

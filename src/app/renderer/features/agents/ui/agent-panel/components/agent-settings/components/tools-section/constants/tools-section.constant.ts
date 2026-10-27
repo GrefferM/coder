@@ -4,13 +4,9 @@ export const TOOLS_SECTION_COMMANDS_LABEL = "КОМАНДИ";
 export const TOOLS_SECTION_COUNT_SEPARATOR = " · ";
 export const TOOLS_SECTION_GAP_PX = 8;
 
-/** Closed field: granted count of total; names listed under it. */
-export const TOOLS_SECTION_CHOSEN_JOIN = " з ";
+/** The closed field's words: «N з M» and this after it, or the label while nothing is granted. */
 export const TOOLS_SECTION_CHOSEN_TAIL = " функцій";
 export const TOOLS_SECTION_CHOOSE_LABEL = "Обрати функції";
-
-/** Open list shows four rows plus head; the rest scrolls. */
-export const TOOLS_SECTION_LIST_MAX_HEIGHT_PX = 150;
 
 export const TOOLS_SECTION_EMPTY_NOTE = "Інструментів у проєкті ще немає. Оголосіть команду або підключіть MCP-сервер.";
 export const TOOLS_SECTION_EMPTY_PADDING = "16px 10px";

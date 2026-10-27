@@ -26,6 +26,7 @@ import {
   SettingsNumbers,
   SettingsTies,
   SuppliersList,
+  SystemToolsSection,
   ToolsSection,
 } from "./components";
 import { useToolsStep } from "./hooks";
@@ -251,6 +252,18 @@ export function AgentSettings({
           selfId={agentId}
           grants={draft.tools}
           wasValue={was.agentTools}
+          onGrantsChange={(tools) =>
+            onDraftChange({
+              tools,
+            })
+          }
+        />
+
+        <SystemToolsSection
+          isLocked={isToolless}
+          grants={draft.tools}
+          followerCount={standing.followers.length}
+          wasValue={was.systemTools}
           onGrantsChange={(tools) =>
             onDraftChange({
               tools,

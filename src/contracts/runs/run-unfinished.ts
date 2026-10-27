@@ -1,4 +1,5 @@
 import { RUN_STEP_DONE } from "./run-step-end.constant";
+import { WORK_BLOCK_SEPARATOR } from "../walks/work-block.constant";
 import type { RunUnfinished } from "./run-unfinished.interface";
 import type { WholeRun } from "./whole-run.interface";
 import type { WholeStep } from "./whole-step.interface";
@@ -6,6 +7,24 @@ import type { WholeStep } from "./whole-step.interface";
 /** Whether a link's work became a turn: the step it fed is in the walk. */
 function ledOn(walk: WholeStep[], step: WholeStep, toAgentId: string): boolean {
   return walk.some((other) => other.agentId === toAgentId && other.fromStepIds.includes(step.id));
+}
+
+/**
+ * What a step's lines carried: its own words, or, where it passed on without any, what was handed to it — the words the
+ * steps that fed it carried, or its own ask where no step fed it.
+ */
+function carriedBy(walk: WholeStep[], step: WholeStep): string {
+  if (step.said !== "") {
+    return step.said;
+  }
+
+  const feeders = walk.filter((other) => step.fromStepIds.includes(other.id));
+
+  if (feeders.length === 0) {
+    return step.asked;
+  }
+
+  return feeders.map((feeder) => carriedBy(walk, feeder)).join(WORK_BLOCK_SEPARATOR);
 }
 
 /**
@@ -33,7 +52,7 @@ export function runUnfinished(run: WholeRun, questionId: string | null): RunUnfi
           toAgentId: handoff.toAgentId,
           fromStepId: step.id,
           fromAgentId: step.agentId,
-          text: step.said,
+          text: carriedBy(walk, step),
           stopReason: handoff.stopReason,
         })),
     ),

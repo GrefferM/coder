@@ -68,6 +68,7 @@ function props(patch: PanelOverrides = {}): AgentPanelProps {
       state,
       startedAt: null,
       suppliers: [],
+      followers: [],
       ...patch.standing,
     },
     presses: {

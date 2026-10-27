@@ -14,6 +14,7 @@ import {
   RECORD_UNSAVED_NOTE,
   recordNote,
   askedWithAttached,
+  isRouteDecided,
   tidyAnswer,
 } from "../../../contracts";
 import { MS_IN_SECOND } from "../constants";
@@ -610,7 +611,7 @@ function asked(state: WalkState, event: WalkFact<"asked">): WalkNext {
     };
   }
 
-  const going = goes(state, event, walk, first);
+  const going = goes(state, event, walk);
 
   return {
     state: going.state,
@@ -619,7 +620,7 @@ function asked(state: WalkState, event: WalkFact<"asked">): WalkNext {
 }
 
 /** The turn goes to the provider, with its words already said in the stream. */
-function goes(state: WalkState, event: WalkFact<"asked">, walk: Walk, first: IncomingWork): WalkNext {
+function goes(state: WalkState, event: WalkFact<"asked">, walk: Walk): WalkNext {
   /**
    * Only the person's question reaches a switched-off agent; work down a line stops at the link. The words stand in the
    * stream with the row saying why they stayed, and the walk ends before it began.
@@ -659,7 +660,7 @@ function goes(state: WalkState, event: WalkFact<"asked">, walk: Walk, first: Inc
         },
       },
     },
-    effects: [turnPut(event, first, walk)],
+    effects: [turnPut(event, walk)],
   };
 }
 
@@ -678,7 +679,7 @@ function wordsGiven(event: WalkFact<"asked">, walk: Walk): WalkEffect {
 }
 
 /** The turn itself, put to the provider with the words it works on. */
-function turnPut(event: WalkFact<"asked">, first: IncomingWork, walk: Walk): WalkEffect {
+function turnPut(event: WalkFact<"asked">, walk: Walk): WalkEffect {
   return {
     kind: "askMachine",
     agent: event.agent,
@@ -691,17 +692,27 @@ function turnPut(event: WalkFact<"asked">, first: IncomingWork, walk: Walk): Wal
     runKey: event.runKey,
     isAgain: event.isAgain,
     startedAt: event.startedAt,
-    // A person's words go in as typed; work that came by a line as it was said.
-    asked:
-      first.fromAgentId === null
-        ? askedWithAttached(first.text, first.attached)
-        : handedWork(
-            event.incoming.map((one) => ({
-              text: one.text,
-            })),
-            event.missing,
-          ),
+    asked: workGiven(event.incoming, event.missing),
   };
+}
+
+/**
+ * The words a turn works on: a person's as typed, with what they attached; work that came by a line as it was said, and
+ * the count of suppliers that sent nothing where some did not.
+ */
+function workGiven(incoming: IncomingWork[], missing: number): string {
+  const [first] = incoming;
+
+  if (first !== undefined && first.fromAgentId === null) {
+    return askedWithAttached(first.text, first.attached);
+  }
+
+  return handedWork(
+    incoming.map((one) => ({
+      text: one.text,
+    })),
+    missing,
+  );
 }
 
 /**
@@ -764,11 +775,26 @@ function outOf(event: WalkFact<"answered">, config: ProjectConfig): LinkOut[] {
   return goesOn(event) ? routedOuts(linkOuts(config, event.agent), event.answer.route) : [];
 }
 
-/** Whether the walk goes on through this turn: only through the agent's own words. */
+/** Whether the walk goes on through this turn: through the agent's own words, or through a route it decided by a command. */
 function goesOn(event: WalkFact<"answered">): boolean {
   const said = tidyAnswer(event.answer.text);
 
-  return !event.answer.isFailure && !event.answer.isCut && event.answer.notStarted === null && said !== "";
+  return (
+    !event.answer.isFailure &&
+    !event.answer.isCut &&
+    event.answer.notStarted === null &&
+    (said !== "" || isRouteDecided(event.answer.route))
+  );
+}
+
+/**
+ * What the lines out of a turn carry: the agent's own words, or, where it passed on without writing any, the work it was
+ * given — without the count of its own suppliers that sent nothing, which is no news to the next agent.
+ */
+function carried(event: WalkFact<"answered">): string {
+  const said = tidyAnswer(event.answer.text);
+
+  return said === "" ? workGiven(event.incoming, 0) : said;
 }
 
 /**
@@ -777,7 +803,7 @@ function goesOn(event: WalkFact<"answered">): boolean {
  */
 function proceeded(state: WalkState, event: WalkFact<"answered">, config: ProjectConfig): WalkNext {
   const next = goesOn(event)
-    ? handedOn(state, handOut(event, tidyAnswer(event.answer.text), outOf(event, config)), config)
+    ? handedOn(state, handOut(event, carried(event), outOf(event, config)), config)
     : brokeOff(state, event, config);
 
   // Everything this turn set going is going now; if nothing else is out, the walk is over.
@@ -885,7 +911,7 @@ function questionWritten(state: WalkState, event: WalkFact<"questionWritten">): 
     };
   }
 
-  return goes(standing, ask, walk, first);
+  return goes(standing, ask, walk);
 }
 
 /**

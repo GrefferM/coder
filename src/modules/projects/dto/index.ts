@@ -1,5 +1,6 @@
 export * from "./command-tool-grant.dto";
 export * from "./agent-tool-grant.dto";
+export * from "./system-tool-grant.dto";
 export * from "./mcp-tool-grant.dto";
 export * from "./project-mcp-server.dto";
 export * from "./tool-grant.dto";

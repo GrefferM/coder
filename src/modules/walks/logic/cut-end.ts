@@ -7,13 +7,14 @@ import {
   RUN_STEP_CEILING,
   RUN_STEP_SILENT,
   RUN_STEP_STOPPED,
+  isRouteDecided,
   tidyAnswer,
 } from "../../../contracts";
 import type { CutEnd, SaidTurn } from "../../../contracts";
 
 /**
  * The four ways a turn ends without the agent saying its piece, each with its own end; otherwise null and its own words
- * stand.
+ * stand. Words are not required of a turn that decided its route by a system command.
  */
 export function cutEnd(said: SaidTurn, maxCalls: number, answerCeiling: number): CutEnd | null {
   if (said.isStopped) {
@@ -37,7 +38,8 @@ export function cutEnd(said: SaidTurn, maxCalls: number, answerCeiling: number):
     };
   }
 
-  if (tidyAnswer(said.text) === "") {
+  // A turn that called a system command did its part without words: it passed on, or ended the branch.
+  if (tidyAnswer(said.text) === "" && !isRouteDecided(said.route)) {
     return {
       note: CHAT_SAID_NOTHING_NOTE,
       state: RUN_STEP_SILENT,

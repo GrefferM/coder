@@ -1826,11 +1826,17 @@ describe("walkMachine · the agent chose its route", () => {
     standing: WalkState = walk({
       out: working(turn("turn-1", dispatcher, "walk-1")),
     }),
+    text?: string,
   ) {
     return walkMachine(
       standing,
       back(dispatcher, {
         route,
+        ...(text === undefined
+          ? {}
+          : {
+              text,
+            }),
       }),
       lines,
     );
@@ -1894,6 +1900,117 @@ describe("walkMachine · the agent chose its route", () => {
       [teller, "finished"],
       [translator, "finished"],
     ]);
+    assert.deepEqual(asked(effects), []);
+  });
+
+  it("puts the work on without a word of its own, handing the next agent what it was itself given", () => {
+    const { effects } = chose(
+      {
+        toAgentIds: [teller],
+        isFinished: false,
+      },
+      FORK,
+      undefined,
+      "",
+    );
+    const given = <{ incoming: IncomingWork[] }>effects.find((effect) => effect.kind === "askAgent");
+
+    assert.deepEqual(asked(effects), [teller]);
+    assert.equal(given.incoming[0].text, "Прогони тести");
+  });
+
+  it("hands on the work it was given without the count of its own suppliers that sent nothing", () => {
+    const { effects } = walkMachine(
+      walk({
+        out: working(turn("turn-1", dispatcher, "walk-1")),
+      }),
+      {
+        ...back(dispatcher, {
+          text: "",
+          route: {
+            toAgentIds: [teller],
+            isFinished: false,
+          },
+        }),
+        incoming: [work(editor)],
+        asked: "from editor\n\nНе передали нічого: 1 з 2 постачальників роботи.",
+      },
+      FORK,
+    );
+    const given = <{ incoming: IncomingWork[] }>effects.find((effect) => effect.kind === "askAgent");
+
+    assert.equal(given.incoming[0].text, "from editor");
+  });
+
+  it("writes the step of a turn that only passed on as a finished one with nothing said, not a silent one", () => {
+    const { effects } = walkMachine(
+      walk({
+        out: working(turn("turn-1", dispatcher, "walk-1")),
+        ledgers: {
+          "walk-1": ledger(),
+        },
+      }),
+      back(dispatcher, {
+        text: "",
+        route: {
+          toAgentIds: [teller],
+          isFinished: false,
+        },
+      }),
+      FORK,
+    );
+    const written = effects.find((effect) => effect.kind === "writeTurn");
+
+    assert.equal(written?.kind === "writeTurn" && written.turn.said, "");
+    assert.equal(written?.kind === "writeTurn" && written.turn.state, RUN_STEP_DONE);
+    assert.deepEqual(written?.kind === "writeTurn" && written.turn.handoffs, [
+      {
+        toAgentId: teller,
+        stopReason: null,
+      },
+      {
+        toAgentId: translator,
+        stopReason: "notChosen",
+      },
+    ]);
+  });
+
+  it("hands on its own words rather than its input where it wrote some and named agents", () => {
+    const { effects } = chose(
+      {
+        toAgentIds: [teller],
+        isFinished: false,
+      },
+      FORK,
+      undefined,
+      "Ось результат",
+    );
+    const given = <{ incoming: IncomingWork[] }>effects.find((effect) => effect.kind === "askAgent");
+
+    assert.equal(given.incoming[0].text, "Ось результат");
+  });
+
+  it("ends the branch without a word of its own, saying so of each line and asking nobody", () => {
+    const { effects } = chose(
+      {
+        toAgentIds: [],
+        isFinished: true,
+      },
+      FORK,
+      undefined,
+      "",
+    );
+
+    assert.deepEqual(said(effects), [
+      [teller, "finished"],
+      [translator, "finished"],
+    ]);
+    assert.deepEqual(asked(effects), []);
+  });
+
+  it("still ends the walk on a turn that said nothing and decided nothing", () => {
+    const { effects } = chose(null, FORK, undefined, "");
+
     assert.deepEqual(asked(effects), []);
   });
 

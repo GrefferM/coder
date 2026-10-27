@@ -6,6 +6,7 @@ import {
   ARMED_COMMANDS_COLOR,
   ARMED_MARKS_EACH,
   ARMED_SERVERS_COLOR,
+  ARMED_SYSTEM_COLOR,
 } from "../constants";
 import type { GrantTargets } from "../../../interfaces";
 import type { ToolGrant } from "../../../interfaces";
@@ -326,5 +327,39 @@ describe("armedWith", () => {
 
     expect(orb.source).toBe("agent");
     expect(orb.color).toBe(ARMED_BROKEN_COLOR);
+  });
+
+  it("stands the system commands last, a mark each in their own colour, never broken, and says what each is", () => {
+    const arc = armedWith(
+      [
+        ...granted(1),
+        {
+          id: "grant-s1",
+          source: "system",
+          command: "pass_to",
+        },
+        {
+          id: "grant-s2",
+          source: "system",
+          command: "finish_here",
+        },
+      ],
+      SAID,
+    );
+
+    expect(arc.map((orb) => [orb.source, orb.group])).toEqual([
+      ["command", "commands"],
+      ["system", "system"],
+      ["system", "system"],
+    ]);
+    expect(arc.filter((orb) => orb.source === "system").map((orb) => orb.color)).toEqual([
+      ARMED_SYSTEM_COLOR,
+      ARMED_SYSTEM_COLOR,
+    ]);
+    expect(arc.filter((orb) => orb.source === "system").map((orb) => orb.hint.name)).toEqual([
+      "pass_to",
+      "finish_here",
+    ]);
+    expect(arc.some((orb) => orb.isBroken)).toBe(false);
   });
 });

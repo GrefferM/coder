@@ -1,5 +1,5 @@
 import { handleOf, sourceOf } from "../../../../../../../../../interfaces";
-import type { ToolGrant } from "../../../../../../../../../interfaces";
+import type { SystemCommandId, ToolGrant } from "../../../../../../../../../interfaces";
 import type { ToolChoice } from "../../../../../../../interfaces";
 
 /** The grant this row stands for, or null if the agent does not hold it. */
@@ -15,6 +15,14 @@ export function grantFor(option: ToolChoice): ToolGrant {
       source: "command",
       commandId: <string>option.commandId,
       pinned: [],
+    };
+  }
+
+  if (option.source === "system") {
+    return {
+      id: crypto.randomUUID(),
+      source: "system",
+      command: <SystemCommandId>option.systemCommand,
     };
   }
 

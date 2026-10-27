@@ -3,7 +3,7 @@ import { before, describe, it } from "node:test";
 import { PROJECT_CONFIG_VERSION } from "../constants";
 import { LINKS_MAKE_RING, LINKS_REPEAT, PROJECT_FROM_NEWER_BUILD } from "../../../contracts";
 import { ProjectConfigSerializer } from "./project-config-serializer.service";
-import type { CommandToolGrantDto, McpToolGrantDto } from "../dto";
+import type { CommandToolGrantDto, McpToolGrantDto, SystemToolGrantDto } from "../dto";
 
 const MODEL_ID = "11111111-1111-4111-8111-111111111111";
 const AGENT_ID = "22222222-2222-4222-8222-222222222222";
@@ -224,22 +224,11 @@ describe("ProjectConfigSerializer", () => {
     assert.equal(config.agents[0].waitsForAll, false);
   });
 
-  it("reads an agent without the route key as letting its answer go down every line, so an old file needs no migration", async () => {
-    const config = await serializer.parse(VALID_YAML);
-
-    assert.equal(config.agents[0].choosesRoute, false);
-  });
-
-  it("keeps an agent set to choose its route", async () => {
+  it("skips the old route switch of an agent without a word, and never writes it back", async () => {
     const config = await serializer.parse(VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    choosesRoute: true"));
 
-    assert.equal(config.agents[0].choosesRoute, true);
-  });
-
-  it("refuses a route that is not yes or no, rather than reading it as one", async () => {
-    await assert.rejects(
-      serializer.parse(VALID_YAML.replace("maxCalls: 8", "maxCalls: 8\n    choosesRoute: sometimes")),
-    );
+    assert.equal("choosesRoute" in config.agents[0], false);
+    assert.doesNotMatch(serializer.text(config.agents[0]), /choosesRoute/);
   });
 
   it("reads an agent without the memory key as keeping its own", async () => {
@@ -593,6 +582,44 @@ describe("ProjectConfigSerializer", () => {
     assert.equal(grant.source, "mcp");
     assert.equal((<McpToolGrantDto>grant).serverId, SERVER_ID);
     assert.equal((<McpToolGrantDto>grant).functionName, "read_file");
+  });
+
+  it("reads a system command granted to an agent", async () => {
+    const config = await serializer.parse(
+      VALID_YAML.replace(
+        "    maxCalls: 8",
+        `    maxCalls: 8
+    tools:\n      - id: ${GRANT_ID}\n        source: system\n        command: pass_to\n`,
+      ),
+    );
+    const [grant] = config.agents[0].tools;
+
+    assert.equal(grant.source, "system");
+    assert.equal((<SystemToolGrantDto>grant).command, "pass_to");
+  });
+
+  it("refuses a system command nobody declared", async () => {
+    await assert.rejects(() =>
+      serializer.parse(
+        VALID_YAML.replace(
+          "    maxCalls: 8",
+          `    maxCalls: 8
+    tools:\n      - id: ${GRANT_ID}\n        source: system\n        command: rm_rf\n`,
+        ),
+      ),
+    );
+  });
+
+  it("refuses one system command granted to an agent twice", async () => {
+    await assert.rejects(() =>
+      serializer.parse(
+        VALID_YAML.replace(
+          "    maxCalls: 8",
+          `    maxCalls: 8
+    tools:\n      - id: ${GRANT_ID}\n        source: system\n        command: pass_to\n      - id: ${COMMAND_ID}\n        source: system\n        command: pass_to\n`,
+        ),
+      ),
+    );
   });
 
   it("takes the same function name on two servers as two different things", async () => {

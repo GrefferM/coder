@@ -12,6 +12,8 @@ export interface WasAgent {
   serverTools: string | null;
   /** Agents granted as tools, a field of their own. */
   agentTools: string | null;
+  /** System commands granted, a field of their own. */
+  systemTools: string | null;
   color: string | null;
   compressAt: string | null;
   compressTo: string | null;
@@ -19,6 +21,5 @@ export interface WasAgent {
   temperature: string | null;
   isActive: string | null;
   waitsForAll: string | null;
-  choosesRoute: string | null;
   memory: string | null;
 }

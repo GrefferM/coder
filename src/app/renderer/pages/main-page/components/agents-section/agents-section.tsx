@@ -10,6 +10,7 @@ export function AgentsSection({
   state,
   providers,
   suppliers,
+  followers,
   startedAt,
   isNamingCopy,
   mending,
@@ -43,6 +44,7 @@ export function AgentsSection({
         state: state,
         startedAt: startedAt,
         suppliers: suppliers,
+        followers: followers,
       }}
       presses={{
         mending: mending,

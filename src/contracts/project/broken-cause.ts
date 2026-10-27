@@ -1,5 +1,6 @@
 import { isAgentGrant } from "./agent-grant.guard";
 import { isCommandGrant } from "./command-grant.guard";
+import { isSystemGrant } from "./system-grant.guard";
 import type { BrokenGrantCause } from "./broken-grant-cause.type";
 import type { GrantTargets } from "./grant-targets.interface";
 import type { ToolGrant } from "./tool-grant.type";
@@ -13,6 +14,11 @@ export function brokenCause(grant: ToolGrant, targets: GrantTargets): BrokenGran
 
   if (isCommandGrant(grant)) {
     return commands.some((command) => command.id === grant.commandId) ? null : "command";
+  }
+
+  // The app's own commands are always there.
+  if (isSystemGrant(grant)) {
+    return null;
   }
 
   if (isAgentGrant(grant)) {

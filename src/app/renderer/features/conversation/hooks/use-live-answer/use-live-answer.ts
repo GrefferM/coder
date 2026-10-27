@@ -70,7 +70,7 @@ function markCallOut(turnId: string, call: LiveCall | null): void {
    * carries both. A choice of route runs nothing and takes no time, so it is no call out.
    */
   const now =
-    call === null || call.source === "route"
+    call === null || call.source === "system"
       ? null
       : {
           name: call.serverId === null ? call.name : call.serverName,

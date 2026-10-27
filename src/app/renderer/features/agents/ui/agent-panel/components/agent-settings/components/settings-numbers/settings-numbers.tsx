@@ -9,8 +9,6 @@ import {
   AGENT_SETTINGS_MAX_CALLS_HINT,
   AGENT_SETTINGS_MAX_CALLS_LABEL,
   AGENT_SETTINGS_MAX_CALLS_UNLIMITED,
-  AGENT_SETTINGS_ROUTE_HINT,
-  AGENT_SETTINGS_ROUTE_LABEL,
   AGENT_SETTINGS_SWITCH_LABEL,
   AGENT_SETTINGS_WAIT_HINT,
   AGENT_SETTINGS_WAIT_LABEL,
@@ -80,18 +78,6 @@ export function SettingsNumbers({
           />
         </SettingRow>
       )}
-
-      <SettingRow label={AGENT_SETTINGS_ROUTE_LABEL} wasValue={was.choosesRoute} hint={AGENT_SETTINGS_ROUTE_HINT}>
-        <Toggle
-          label={AGENT_SETTINGS_ROUTE_LABEL}
-          isOn={draft.choosesRoute}
-          onChange={(choosesRoute) =>
-            onDraftChange({
-              choosesRoute,
-            })
-          }
-        />
-      </SettingRow>
 
       <SettingRow label={AGENT_SETTINGS_SWITCH_LABEL} wasValue={was.isActive}>
         <Toggle

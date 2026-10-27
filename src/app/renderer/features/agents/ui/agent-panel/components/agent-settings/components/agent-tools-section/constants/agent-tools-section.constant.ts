@@ -3,13 +3,9 @@ export const AGENT_TOOLS_SECTION_LABEL = "АГЕНТИ";
 export const AGENT_TOOLS_SECTION_COUNT_SEPARATOR = " · ";
 export const AGENT_TOOLS_SECTION_GAP_PX = 8;
 
-/** Closed field: granted count of total; names listed under it. */
-export const AGENT_TOOLS_SECTION_CHOSEN_JOIN = " з ";
+/** The closed field's words: «N з M» and this after it, or the label while nothing is granted. */
 export const AGENT_TOOLS_SECTION_CHOSEN_TAIL = " агентів";
 export const AGENT_TOOLS_SECTION_CHOOSE_LABEL = "Обрати агентів";
-
-/** Open list shows four rows plus head; the rest scrolls. */
-export const AGENT_TOOLS_SECTION_LIST_MAX_HEIGHT_PX = 150;
 
 /** Said where the agent is the only one in the project. */
 export const AGENT_TOOLS_SECTION_EMPTY_NOTE = "Інших агентів у проєкті ще немає — нема кого підключити як інструмент.";

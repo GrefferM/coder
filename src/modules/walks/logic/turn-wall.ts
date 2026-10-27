@@ -1,7 +1,7 @@
 import { agentReadiness } from "./agent-readiness";
 import { notStartedTurn } from "./not-started-turn";
 import { overCeilingNote, reservedNote } from "../words";
-import { agentTools, memoryLength, memoryPlan, routeTools, turnLength } from "../../../contracts";
+import { agentTools, memoryLength, memoryPlan, systemTools, turnLength } from "../../../contracts";
 import type { TurnAnswer, TurnAsked, TurnToAsk } from "../../../contracts";
 
 /**
@@ -40,17 +40,18 @@ export function turnWall(turn: TurnToAsk): TurnAnswer | TurnAsked {
         });
   }
 
-  // An agent that chooses its route is given the functions for it, unless its provider carries none: the answer then
-  // goes down every line, as it does for an agent that does not choose. A tool of its own by the same name gives way.
-  const routes = agent.choosesRoute && (stands.provider?.takesTools ?? true) ? routeTools(turn.followers) : [];
+  // The system commands the agent was granted become functions, with the agents its lines lead to as the options. A provider
+  // without function calls never gets here with a grant (the readiness wall stops it). A tool of its own by the same name
+  // gives way.
+  const system = systemTools(agent.tools, turn.followers);
 
   return {
     agent,
     model,
     systemPrompt,
     tools: [
-      ...agentTools(agent.tools, catalogue).filter((tool) => !routes.some((route) => route.name === tool.name)),
-      ...routes,
+      ...agentTools(agent.tools, catalogue).filter((tool) => !system.some((held) => held.name === tool.name)),
+      ...system,
     ],
     compression:
       plan.kind === "compress"

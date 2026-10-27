@@ -245,3 +245,23 @@ describe("hasBrokenGrant", () => {
     );
   });
 });
+
+describe("brokenCause of a system command", () => {
+  it("never calls a system grant broken, since it points at nothing the project could drop", () => {
+    const grant: ToolGrant = {
+      id: "grant-9",
+      source: "system",
+      command: "pass_to",
+    };
+
+    assert.equal(
+      brokenCause(grant, {
+        commands: [],
+        servers: [],
+        looks: {},
+        agents: [],
+      }),
+      null,
+    );
+  });
+});

@@ -5,8 +5,6 @@ import { describe, expect, it, vi } from "vitest";
 import { SettingsNumbers } from "./settings-numbers";
 import {
   AGENT_SETTINGS_MAX_CALLS_LABEL,
-  AGENT_SETTINGS_ROUTE_HINT,
-  AGENT_SETTINGS_ROUTE_LABEL,
   AGENT_SETTINGS_SWITCH_LABEL,
   AGENT_SETTINGS_TEMPERATURE_HINT,
   AGENT_SETTINGS_TEMPERATURE_LABEL,
@@ -28,6 +26,7 @@ const nothingMoved: WasAgent = {
   commandTools: null,
   serverTools: null,
   agentTools: null,
+  systemTools: null,
   color: null,
   compressAt: null,
   compressTo: null,
@@ -35,7 +34,6 @@ const nothingMoved: WasAgent = {
   temperature: null,
   isActive: null,
   waitsForAll: null,
-  choosesRoute: null,
   memory: null,
 };
 
@@ -115,31 +113,6 @@ describe("SettingsNumbers", () => {
     expect(onDraftChange).toHaveBeenCalledWith({
       isActive: false,
     });
-  });
-
-  it("lets the agent choose its route by its own switch, and says what the switch does", async () => {
-    const onDraftChange = vi.fn();
-
-    render(
-      <SettingsNumbers
-        draft={draft}
-        was={nothingMoved}
-        mendedStepper={createRef<HTMLButtonElement>()}
-        mendedRow={null}
-        isConverging={false}
-        onDraftChange={onDraftChange}
-      />,
-    );
-    await userEvent.click(
-      screen.getByRole("switch", {
-        name: AGENT_SETTINGS_ROUTE_LABEL,
-      }),
-    );
-
-    expect(onDraftChange).toHaveBeenCalledWith({
-      choosesRoute: true,
-    });
-    expect(screen.getByText(AGENT_SETTINGS_ROUTE_HINT)).toBeInTheDocument();
   });
 
   it("says under a row what it was, where the draft has moved it", () => {

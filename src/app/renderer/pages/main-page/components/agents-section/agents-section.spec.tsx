@@ -70,6 +70,7 @@ function props(patch: Partial<AgentsSectionProps> = {}): AgentsSectionProps {
     state,
     providers: [],
     suppliers: [],
+    followers: [],
     startedAt: null,
     isNamingCopy: false,
     mending: null,

@@ -24,6 +24,7 @@ export function SourceGlyph({ source }: SourceGlyphProps) {
           <path d="M12 17v4" />
         </>
       )}
+      {source === "system" && <path d="M13 3 5 14h6l-1 7 8-11h-6Z" />}
       {source === "agent" && (
         <>
           <circle cx="6.5" cy="12" r="3" />

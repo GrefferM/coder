@@ -1,5 +1,6 @@
-import { AGENTS_GROUP_KEY, COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX } from "../../../constants";
-import { handleOf } from "../../../interfaces";
+import { AGENTS_GROUP_KEY, COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX, SYSTEM_GROUP_KEY } from "../../../constants";
+import { SYSTEM_COMMAND_IDS, handleOf } from "../../../interfaces";
+import { SYSTEM_COMMAND_DESCRIPTIONS } from "../constants";
 import type { Agent, McpLook, ProjectCommand, ProjectMcpServer } from "../../../interfaces";
 import type { ToolChoice } from "../interfaces";
 
@@ -27,6 +28,7 @@ export function toolChoices(
       commandId: command.id,
       serverId: null,
       agentId: null,
+      systemCommand: null,
     }));
 
   for (const server of servers) {
@@ -44,6 +46,7 @@ export function toolChoices(
         commandId: null,
         serverId: server.id,
         agentId: null,
+        systemCommand: null,
       });
     }
   }
@@ -69,5 +72,25 @@ export function agentChoices(agents: Agent[], selfId: string | null): ToolChoice
       commandId: null,
       serverId: null,
       agentId: agent.id,
+      systemCommand: null,
     }));
+}
+
+/** Every system command the app has, in its own order; they are the same for every agent. */
+export function systemChoices(): ToolChoice[] {
+  return SYSTEM_COMMAND_IDS.map((command) => ({
+    key: handleOf({
+      kind: "system",
+      id: command,
+      functionName: null,
+    }),
+    group: SYSTEM_GROUP_KEY,
+    name: command,
+    description: SYSTEM_COMMAND_DESCRIPTIONS[command],
+    source: "system" as const,
+    commandId: null,
+    serverId: null,
+    agentId: null,
+    systemCommand: command,
+  }));
 }

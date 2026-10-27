@@ -5,6 +5,7 @@ import {
   AgentToolGrantDto,
   CommandToolGrantDto,
   McpToolGrantDto,
+  SystemToolGrantDto,
   PinnedArgumentDto,
   ProjectAgentDto,
   ProjectCommandDto,
@@ -24,6 +25,7 @@ import {
   AGENT_TOOL_SOURCE,
   COMMAND_TOOL_SOURCE,
   MCP_TOOL_SOURCE,
+  SYSTEM_TOOL_SOURCE,
   MODEL_ANSWER_CEILING_LEAST,
   MODEL_CONTEXT_CEILING_LEAST,
   PROJECT_CONFIG_VERSION,
@@ -204,8 +206,6 @@ export class ProjectConfigSerializer {
     agent.isActive = <boolean>source.isActive;
     // An absent mode defaults to waiting for all.
     agent.waitsForAll = typeof source.waitsForAll === "boolean" ? source.waitsForAll : true;
-    // An absent choice leaves the answer to go down every line; any other word is left for the validator to refuse.
-    agent.choosesRoute = <boolean>(source.choosesRoute ?? false);
     // An absent memory is the agent's own; any other word is left for the validator to refuse.
     agent.memory = <AgentMemory>(source.memory ?? "own");
     agent.x = <number>source.x;
@@ -253,7 +253,22 @@ export class ProjectConfigSerializer {
       return this.toAgentToolGrant(source);
     }
 
+    if (grantSource === SYSTEM_TOOL_SOURCE) {
+      return this.toSystemToolGrant(source);
+    }
+
     throw new Error("Unknown tool source.");
+  }
+
+  /** One of the app's own commands; a word it does not know is left for the validator to refuse. */
+  private toSystemToolGrant(source: Record<string, unknown>): SystemToolGrantDto {
+    const grant = new SystemToolGrantDto();
+
+    grant.id = <string>source.id;
+    grant.source = SYSTEM_TOOL_SOURCE;
+    grant.command = <SystemToolGrantDto["command"]>source.command;
+
+    return grant;
   }
 
   private toAgentToolGrant(source: Record<string, unknown>): AgentToolGrantDto {

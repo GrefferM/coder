@@ -13,3 +13,6 @@ export * from "./server-view";
 export * from "./servers-section";
 export * from "./tools-section";
 export * from "./agent-tools-section";
+export * from "./system-tools-section";
+export * from "./grant-picker";
+export * from "./granted-row";

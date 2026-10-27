@@ -65,10 +65,6 @@ export class ProjectAgentDto {
   @IsBoolean()
   declare waitsForAll: boolean;
 
-  // Where true, the agent chooses which of its lines the answer goes down.
-  @IsBoolean()
-  declare choosesRoute: boolean;
-
   @IsIn(AGENT_MEMORIES)
   declare memory: AgentMemory;
 

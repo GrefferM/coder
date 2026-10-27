@@ -1,18 +1,12 @@
-import { FieldSlot, PickerShell, Words } from "../../../../../../../../components";
-import {
-  PICKER_PLACEHOLDER_COLOR,
-  PICKER_VALUE_COLOR,
-} from "../../../../../../../../components/picker-shell/constants";
+import { FieldSlot, Words } from "../../../../../../../../components";
 import { ToolRow } from "./components";
+import { GrantPicker, grantedOf } from "../grant-picker";
 import { LostGrants } from "../lost-grants";
 import { SourceGlyph } from "../source-glyph";
-import { ToolOption } from "../tool-option";
-import { grantFor, grantedOf } from "./logic";
 import { brokenGrants } from "../../logic";
 import { toolChoices } from "../../../../../../logic";
 import {
   TOOLS_SECTION_CHOOSE_LABEL,
-  TOOLS_SECTION_CHOSEN_JOIN,
   TOOLS_SECTION_CHOSEN_TAIL,
   TOOLS_SECTION_COMMANDS_LABEL,
   TOOLS_SECTION_COUNT_SEPARATOR,
@@ -22,11 +16,9 @@ import {
   TOOLS_SECTION_EMPTY_NOTE,
   TOOLS_SECTION_EMPTY_PADDING,
   TOOLS_SECTION_GAP_PX,
-  TOOLS_SECTION_LIST_MAX_HEIGHT_PX,
   TOOLS_SECTION_LOCKED_NOTE,
 } from "./constants";
 import { isCommandGrant } from "../../../../../../../../interfaces";
-import type { ToolChoice } from "../../../../../../interfaces";
 import type { ToolsSectionProps } from "./interfaces";
 
 /**
@@ -57,15 +49,6 @@ export function ToolsSection({
     agents: [],
   });
   const brokenIds = new Set(broken.flatMap((group) => group.rows.map((row) => row.id)));
-
-  /** Grants if not held, revokes if held; writes the whole draft, so the servers' grants stand. */
-  function toggle(option: ToolChoice) {
-    const granted = grantedOf(option, grants);
-
-    onGrantsChange(
-      granted === null ? [...grants, grantFor(option)] : grants.filter((grant) => grant.id !== granted.id),
-    );
-  }
 
   // The lost group shows even when there is nothing to give.
   if (options.length === 0) {
@@ -130,32 +113,15 @@ export function ToolsSection({
         {isLocked ? (
           <Words isQuiet>{TOOLS_SECTION_LOCKED_NOTE}</Words>
         ) : (
-          <PickerShell
-            fieldRef={fieldRef}
-            field={
-              <span className="flex-fill text-truncate">
-                {chosen.length === 0
-                  ? TOOLS_SECTION_CHOOSE_LABEL
-                  : `${chosen.length}${TOOLS_SECTION_CHOSEN_JOIN}${options.length}${TOOLS_SECTION_CHOSEN_TAIL}`}
-              </span>
-            }
-            fieldColor={chosen.length === 0 ? PICKER_PLACEHOLDER_COLOR : PICKER_VALUE_COLOR}
-            listMaxHeightPx={TOOLS_SECTION_LIST_MAX_HEIGHT_PX}
+          <GrantPicker
+            options={options}
+            grants={grants}
+            chooseLabel={TOOLS_SECTION_CHOOSE_LABEL}
+            chosenTail={TOOLS_SECTION_CHOSEN_TAIL}
             isChanged={wasValue !== null}
-            items={options}
-            matches={(option, query) =>
-              option.name.toLowerCase().includes(query) || option.description.toLowerCase().includes(query)
-            }
+            fieldRef={fieldRef}
             openedBy={mine}
-            choose={(option) => toggle(option)}
-            row={(option) => (
-              <ToolOption
-                key={option.key}
-                name={option.name}
-                isGranted={grantedOf(option, grants) !== null}
-                onToggle={() => toggle(option)}
-              />
-            )}
+            onGrantsChange={onGrantsChange}
           />
         )}
 

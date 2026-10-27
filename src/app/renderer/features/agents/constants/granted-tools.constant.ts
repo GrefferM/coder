@@ -13,3 +13,6 @@ export const GRANTED_TOOLS_SERVER_SIGN = " · ";
 
 /** Marks an agent granted as a tool. */
 export const GRANTED_TOOLS_AGENT_SIGN = "агент · ";
+
+/** Marks a system command granted to an agent. */
+export const GRANTED_TOOLS_SYSTEM_SIGN = "системна · ";

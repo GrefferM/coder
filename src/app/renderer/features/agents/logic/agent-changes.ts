@@ -1,6 +1,6 @@
 import { grantedToolsLabel } from "../words";
 import { keepsMemory } from "../../../../../contracts";
-import { isAgentGrant, isCommandGrant, isServerGrant } from "../../../interfaces";
+import { isAgentGrant, isCommandGrant, isServerGrant, isSystemGrant } from "../../../interfaces";
 import { writtenNumber, writtenPercent } from "../words";
 import {
   AGENT_ACTIVE_CHANGE_LABEL,
@@ -10,10 +10,6 @@ import {
   AGENT_WAIT_CHANGE_LABEL,
   AGENT_WAIT_DROPPED_LABEL,
   AGENT_WAIT_ON_LABEL,
-  AGENT_ROUTE_CHANGE_LABEL,
-  AGENT_ROUTE_DROPPED_LABEL,
-  AGENT_ROUTE_OFF_LABEL,
-  AGENT_ROUTE_ON_LABEL,
   AGENT_WAIT_OFF_LABEL,
   AGENT_MEMORY_CHANGE_LABEL,
   AGENT_MEMORY_DROPPED_LABEL,
@@ -44,6 +40,8 @@ import {
   AGENT_MCP_DROPPED_LABEL,
   AGENT_AGENTS_CHANGE_LABEL,
   AGENT_AGENTS_DROPPED_LABEL,
+  AGENT_SYSTEM_CHANGE_LABEL,
+  AGENT_SYSTEM_DROPPED_LABEL,
 } from "../constants";
 import type { FieldChange, ProjectModel, ProjectPrompt, ToolGrant } from "../../../interfaces";
 import type { AgentDraft, AgentNaming } from "../interfaces";
@@ -111,6 +109,12 @@ export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: Agent
       now: saidOf(draft.tools, isAgentGrant),
     },
     {
+      label: AGENT_SYSTEM_CHANGE_LABEL,
+      droppedLabel: AGENT_SYSTEM_DROPPED_LABEL,
+      was: saidOf(saved.tools, isSystemGrant),
+      now: saidOf(draft.tools, isSystemGrant),
+    },
+    {
       label: AGENT_COLOR_CHANGE_LABEL,
       droppedLabel: AGENT_COLOR_DROPPED_LABEL,
       was: saved.color,
@@ -139,12 +143,6 @@ export function agentChanges(saved: AgentDraft, draft: AgentDraft, naming: Agent
       droppedLabel: AGENT_WAIT_DROPPED_LABEL,
       was: saved.waitsForAll ? AGENT_WAIT_ON_LABEL : AGENT_WAIT_OFF_LABEL,
       now: draft.waitsForAll ? AGENT_WAIT_ON_LABEL : AGENT_WAIT_OFF_LABEL,
-    },
-    {
-      label: AGENT_ROUTE_CHANGE_LABEL,
-      droppedLabel: AGENT_ROUTE_DROPPED_LABEL,
-      was: saved.choosesRoute ? AGENT_ROUTE_ON_LABEL : AGENT_ROUTE_OFF_LABEL,
-      now: draft.choosesRoute ? AGENT_ROUTE_ON_LABEL : AGENT_ROUTE_OFF_LABEL,
     },
     {
       label: AGENT_MEMORY_CHANGE_LABEL,

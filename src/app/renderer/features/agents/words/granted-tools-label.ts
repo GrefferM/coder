@@ -6,9 +6,10 @@ import {
   GRANTED_TOOLS_AGENT_SIGN,
   GRANTED_TOOLS_SEPARATOR,
   GRANTED_TOOLS_SERVER_SIGN,
+  GRANTED_TOOLS_SYSTEM_SIGN,
   NO_TOOLS_LABEL,
 } from "../constants";
-import { isAgentGrant, isCommandGrant } from "../../../interfaces";
+import { isAgentGrant, isCommandGrant, isSystemGrant } from "../../../interfaces";
 import type {
   Agent,
   AgentToolGrant,
@@ -44,6 +45,10 @@ function grantSaid(grant: ToolGrant, naming: Pick<GrantTargets, "commands" | "se
 
   if (isAgentGrant(grant)) {
     return agentSaid(grant, naming.agents);
+  }
+
+  if (isSystemGrant(grant)) {
+    return `${GRANTED_TOOLS_SYSTEM_SIGN}${grant.command}`;
   }
 
   return serverSaid(grant, naming.servers);

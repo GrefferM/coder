@@ -22,7 +22,7 @@ export interface TurnToAsk {
   catalogue: GrantTargets;
   /** Every agent reachable as a tool from this one, by id. */
   agents: ReachableAgent[];
-  /** The agents the lines out of this one lead to that can take work: whom an agent that chooses its route chooses from. */
+  /** The agents the lines out of this one lead to that can take work: whom `pass_to` names from. */
   followers: RouteFollower[];
   /** The project's folder, which is where a command runs. */
   directory: string;

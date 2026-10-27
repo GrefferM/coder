@@ -162,6 +162,7 @@ function renderSettings(overrides: SettingsOverrides = {}) {
         },
         startedAt: null,
         suppliers: [],
+        followers: [],
         ...overrides.standing,
       }}
       presses={{

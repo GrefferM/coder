@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { toolChoices } from "./tool-choices";
+import { systemChoices, toolChoices } from "./tool-choices";
 import { aCommand } from "../../../testing";
 import { handleOf, sourceOf } from "../../../interfaces";
 import type { McpLook, ProjectMcpServer } from "../../../interfaces";
@@ -156,5 +156,18 @@ describe("toolChoices", () => {
 
     expect(choices).toHaveLength(2);
     expect(new Set(choices.map((choice) => choice.key)).size).toBe(2);
+  });
+});
+
+describe("systemChoices", () => {
+  it("offers both system commands, by the names the model calls them", () => {
+    expect(systemChoices().map((choice) => [choice.name, choice.source, choice.systemCommand])).toEqual([
+      ["pass_to", "system", "pass_to"],
+      ["finish_here", "system", "finish_here"],
+    ]);
+  });
+
+  it("keys each by its kind and name, the way a grant of it is found", () => {
+    expect(systemChoices().map((choice) => choice.key)).toEqual(["system:pass_to", "system:finish_here"]);
   });
 });

@@ -8,4 +8,6 @@ export interface AgentStanding {
   startedAt: number | null;
   /** Agents whose links come in, switched-off included. */
   suppliers: Agent[];
+  /** Agents this one's lines lead to; a system command has nobody to pass to without them. */
+  followers: Agent[];
 }

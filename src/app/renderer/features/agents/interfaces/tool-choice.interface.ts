@@ -1,4 +1,4 @@
-import type { ToolSource } from "../../../interfaces";
+import type { SystemCommandId, ToolSource } from "../../../interfaces";
 
 /** One function an agent may be given, from a command, a server or an agent. */
 export interface ToolChoice {
@@ -15,4 +15,6 @@ export interface ToolChoice {
   serverId: string | null;
   /** Set for an agent granted as a tool only. */
   agentId: string | null;
+  /** Set for a system command only. */
+  systemCommand: SystemCommandId | null;
 }

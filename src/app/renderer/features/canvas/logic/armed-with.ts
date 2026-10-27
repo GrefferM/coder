@@ -1,19 +1,25 @@
-import { isAgentGrant, isCommandGrant, sourceOf } from "../../../interfaces";
+import { isAgentGrant, isCommandGrant, isSystemGrant, sourceOf } from "../../../interfaces";
 import { ARMED_BROKEN_COLOR, ARMED_MARKS_EACH, ARMED_REST_PREFIX, ARMED_SOURCE_COLOR } from "../constants";
 import { brokenCause } from "../../../logic";
 import { foldHint, orbHint } from "./orb-hint";
 import { sourceOfGroup } from "./source-of-group";
 import type { ArmedFold, ArmedOrb } from "../interfaces";
 import type { GrantTargets } from "../../../interfaces";
-import { AGENTS_GROUP_KEY, COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX, groupOfGrant } from "../../../constants";
+import {
+  AGENTS_GROUP_KEY,
+  COMMANDS_GROUP_KEY,
+  SERVER_GROUP_PREFIX,
+  SYSTEM_GROUP_KEY,
+  groupOfGrant,
+} from "../../../constants";
 import type { ToolGrant } from "../../../interfaces";
 
 /**
  * The arc of mini-spheres over an agent: what it is armed with, not which functions. Each mark wears its source's
  * colour.
  *
- * Nine places by kind, not by number: two commands, two servers, two agents, and a third place under each kind's «+». A
- * kind never takes another's places, so the arc may be shorter. A source whose every grant points at nothing takes the
+ * Twelve places by kind, not by number: two commands, two servers, two agents, two system commands, and a third place
+ * under each kind's «+». A kind never takes another's places, so the arc may be shorter. A source whose every grant points at nothing takes the
  * trouble tone; if folded, its kind's «+» takes it.
  */
 export function armedWith(tools: ToolGrant[], said: GrantTargets): ArmedOrb[] {
@@ -21,10 +27,11 @@ export function armedWith(tools: ToolGrant[], said: GrantTargets): ArmedOrb[] {
     ...sideOf(commandMarks(tools, said), said),
     ...sideOf(serverMarks(tools, said), said),
     ...sideOf(agentMarks(tools, said), said),
+    ...sideOf(systemMarks(tools), said),
   ];
 }
 
-/** One mini-sphere before it is drawn: a command, a whole server, or an agent granted as a tool. */
+/** One mini-sphere before it is drawn: a command, a whole server, an agent granted as a tool, or a system command. */
 interface ArmedMark extends ArmedFold {
   /** A command's or agent's mark names its own grant; a server names none. */
   grantId: string | null;
@@ -78,6 +85,16 @@ function agentMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
   }));
 }
 
+/** One mark per system command, in the order they were granted; a system grant never points at nothing. */
+function systemMarks(tools: ToolGrant[]): ArmedMark[] {
+  return tools.filter(isSystemGrant).map((grant) => ({
+    group: SYSTEM_GROUP_KEY,
+    grantId: grant.id,
+    granted: [grant],
+    isBroken: false,
+  }));
+}
+
 /** One mark per server, in the project's server order (gone ones last), whatever it hands over. */
 function serverMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
   const byServer = new Map<string, ToolGrant[]>();
@@ -85,7 +102,7 @@ function serverMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
   for (const tool of tools) {
     const group = groupOfGrant(tool);
 
-    if (group !== COMMANDS_GROUP_KEY && group !== AGENTS_GROUP_KEY) {
+    if (group.startsWith(SERVER_GROUP_PREFIX)) {
       byServer.set(group, [...(byServer.get(group) ?? []), tool]);
     }
   }

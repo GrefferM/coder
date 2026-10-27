@@ -29,25 +29,21 @@ export const AGENT_MAX_CALLS_DROPPED_LABEL = "максимум викликів"
 export const AGENT_TEMPERATURE_CHANGE_LABEL = "температура";
 export const AGENT_TEMPERATURE_DROPPED_LABEL = "температура";
 
-/** The three tool fields, named as their heads on the tab. */
+/** The four tool fields, named as their heads on the tab. */
 export const AGENT_COMMANDS_CHANGE_LABEL = "команди";
 export const AGENT_COMMANDS_DROPPED_LABEL = "команди";
 export const AGENT_MCP_CHANGE_LABEL = "MCP";
 export const AGENT_MCP_DROPPED_LABEL = "MCP";
 export const AGENT_AGENTS_CHANGE_LABEL = "агенти";
 export const AGENT_AGENTS_DROPPED_LABEL = "агенти";
+export const AGENT_SYSTEM_CHANGE_LABEL = "системні";
+export const AGENT_SYSTEM_DROPPED_LABEL = "системні";
 
 /** The converging-wait mode, as a moved field says it. */
 export const AGENT_WAIT_CHANGE_LABEL = "очікування";
 export const AGENT_WAIT_DROPPED_LABEL = "очікування";
 export const AGENT_WAIT_ON_LABEL = "чекає всіх";
 export const AGENT_WAIT_OFF_LABEL = "на кожному окремо";
-
-/** Who the answer goes to, as a moved field says it. */
-export const AGENT_ROUTE_CHANGE_LABEL = "маршрут";
-export const AGENT_ROUTE_DROPPED_LABEL = "маршрут";
-export const AGENT_ROUTE_ON_LABEL = "обирає сам";
-export const AGENT_ROUTE_OFF_LABEL = "усіма лініями";
 
 /** The memory, as a moved field says it. */
 export const AGENT_MEMORY_CHANGE_LABEL = "пам'ять";

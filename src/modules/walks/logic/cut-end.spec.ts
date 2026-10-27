@@ -123,4 +123,35 @@ describe("cutEnd", () => {
       },
     );
   });
+
+  it("does not call a turn silent where it decided its route by a command, since it needed no words", () => {
+    assert.equal(
+      cutEnd(
+        said({
+          text: "",
+          route: {
+            toAgentIds: ["a"],
+            isFinished: false,
+          },
+        }),
+        8,
+        4096,
+      ),
+      null,
+    );
+    assert.equal(
+      cutEnd(
+        said({
+          text: "",
+          route: {
+            toAgentIds: [],
+            isFinished: true,
+          },
+        }),
+        8,
+        4096,
+      ),
+      null,
+    );
+  });
 });

@@ -12,6 +12,7 @@ export class TurnLedger {
   private readonly compressed: ToolMemory[] = [];
   private billed: ChatCost | null = null;
   private route: RouteChoice | null = null;
+  private ended = false;
   private inputTokens = 0;
   private outputTokens = 0;
   private calls = 0;
@@ -58,11 +59,19 @@ export class TurnLedger {
     }
 
     const named = this.route?.toAgentIds ?? [];
+    const toAgentIds = [...named, ...choice.toAgentIds.filter((id) => !named.includes(id))];
 
     this.route = {
-      toAgentIds: [...named, ...choice.toAgentIds.filter((id) => !named.includes(id))],
-      isFinished: (this.route?.isFinished ?? false) || choice.isFinished,
+      toAgentIds,
+      // Naming beats ending: where the agent did both, the answer goes to those named.
+      isFinished: toAgentIds.length === 0 && ((this.route?.isFinished ?? false) || choice.isFinished),
     };
+    this.ended = true;
+  }
+
+  /** Whether a system command went through, which is the agent's last word of the turn. */
+  isEnded(): boolean {
+    return this.ended;
   }
 
   /** The answer as the turn stands; each end names itself, an ordinary answer names none. */

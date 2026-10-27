@@ -42,6 +42,36 @@ describe("sourceOf", () => {
   });
 });
 
+describe("sourceOf a system command", () => {
+  it("gives a system grant its command's name as the id and no function", () => {
+    assert.deepEqual(
+      sourceOf({
+        id: "grant-3",
+        source: "system",
+        command: "pass_to",
+      }),
+      {
+        kind: "system",
+        id: "pass_to",
+        functionName: null,
+      },
+    );
+  });
+
+  it("names a system command by its kind and name", () => {
+    assert.equal(
+      handleOf(
+        sourceOf({
+          id: "grant-3",
+          source: "system",
+          command: "finish_here",
+        }),
+      ),
+      "system:finish_here",
+    );
+  });
+});
+
 describe("pointsAt", () => {
   it("answers for a command by the command's id", () => {
     assert.equal(pointsAt(aCommandGrant(), COMMAND_ID), true);

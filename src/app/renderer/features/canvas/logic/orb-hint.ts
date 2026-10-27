@@ -1,7 +1,8 @@
 import { ukrainianPlural } from "../../../utils/text";
-import { isAgentGrant, pointsAt } from "../../../interfaces";
+import { isAgentGrant, isSystemGrant, pointsAt } from "../../../interfaces";
 import {
   ORB_HINT_AGENT_KIND,
+  ORB_HINT_SYSTEM_KIND,
   ORB_HINT_BROKEN_FORMS,
   ORB_HINT_COMMAND_KIND,
   ORB_HINT_FUNCTION_FORMS,
@@ -14,7 +15,7 @@ import {
   ORB_HINT_SERVER_KIND,
   ORB_HINT_SOURCE_FORMS,
 } from "../constants";
-import { AGENTS_GROUP_KEY, COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX } from "../../../constants";
+import { AGENTS_GROUP_KEY, COMMANDS_GROUP_KEY, SERVER_GROUP_PREFIX, SYSTEM_GROUP_KEY } from "../../../constants";
 import { sourceOfGroup } from "./source-of-group";
 import type { ArmedFold, OrbHint } from "../interfaces";
 import type { GrantTargets } from "../../../interfaces";
@@ -30,6 +31,16 @@ export function orbHint(group: string, granted: ToolGrant[], said: GrantTargets)
       kind: ORB_HINT_COMMAND_KIND,
       // A command is just its name, one line in the project file.
       name: nameOfCommand(granted[0] ?? null, said) ?? ORB_HINT_GONE_COMMAND,
+      count: "",
+      lines: [],
+    };
+  }
+
+  if (group === SYSTEM_GROUP_KEY) {
+    return {
+      kind: ORB_HINT_SYSTEM_KIND,
+      // A system command is one mark, named by the command.
+      name: nameOfSystem(granted[0] ?? null),
       count: "",
       lines: [],
     };
@@ -101,6 +112,11 @@ function nameOfAgent(grant: ToolGrant | null, said: GrantTargets): string | null
   }
 
   return said.agents.find((one) => one.id === grant.agentId)?.name ?? null;
+}
+
+/** A system command by its name: `pass_to`, `finish_here`. */
+function nameOfSystem(grant: ToolGrant | null): string {
+  return grant !== null && isSystemGrant(grant) ? grant.command : "";
 }
 
 /** «2 з 33 функцій»: granted against what the server offers. */

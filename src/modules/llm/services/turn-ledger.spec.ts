@@ -38,7 +38,7 @@ describe("TurnLedger", () => {
     });
   });
 
-  it("adds what each call decided of the route: whom it named once each in order, and the branch ended if any ended it", () => {
+  it("adds what each call decided of the route: whom it named once each in order, naming beating the end of the branch", () => {
     const ledger = new TurnLedger();
 
     ledger.routed(null);
@@ -67,6 +67,23 @@ describe("TurnLedger", () => {
 
     assert.deepEqual(ledger.answer().route, {
       toAgentIds: ["a", "b", "c"],
+      isFinished: false,
+    });
+  });
+
+  it("ends the branch only where nobody was named, and takes the end of the turn from the first command", () => {
+    const ledger = new TurnLedger();
+
+    assert.equal(ledger.isEnded(), false);
+
+    ledger.routed({
+      toAgentIds: [],
+      isFinished: true,
+    });
+
+    assert.equal(ledger.isEnded(), true);
+    assert.deepEqual(ledger.answer().route, {
+      toAgentIds: [],
       isFinished: true,
     });
   });

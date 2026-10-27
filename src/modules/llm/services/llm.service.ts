@@ -10,6 +10,7 @@ import {
   LLM_CEILING_REASON_KEYS,
   SERVER_NAME_SLOT,
   SERVER_NOT_THERE_NOTE,
+  TOOL_SCHEMA_ARRAY,
   TOOL_SCHEMA_OBJECT,
   TOOL_SCHEMA_TYPES,
 } from "../constants";
@@ -31,6 +32,7 @@ import {
   LLM_PROVIDER_NOT_BUILT,
   LLM_PROVIDER_SILENT,
   RECORD_GONE_NOTE,
+  PASS_TO_COMMAND,
   ROUTE_TO_DESCRIPTION,
   ROUTE_TO_NAME,
 } from "../../../contracts";
@@ -39,10 +41,11 @@ import { Refusal } from "../../../utils/refusals";
 import { AgentWay } from "./agent-way.service";
 import { ToolArguments } from "./tool-arguments.service";
 import { CommandWay } from "./command-way.service";
-import { RouteWay } from "./route-way.service";
+import { FinishWay } from "./finish-way.service";
+import { PassWay } from "./pass-way.service";
 import { ServerWay } from "./server-way.service";
 import { TurnLedger } from "./turn-ledger.service";
-import { isAgentTool, isCommandTool, isRouteTool } from "../interfaces";
+import { isAgentTool, isCommandTool, isSystemTool } from "../interfaces";
 import type { ChatCost, ComposedOutcome, TurnMemory } from "../../../contracts";
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import type { AIMessageChunk, BaseMessage } from "@langchain/core/messages";
@@ -263,6 +266,12 @@ export class LlmService {
 
         await this.ranCalls(turn, asked, ledger);
 
+        // A system command that went through was the agent's last word: the turn ends after its round, with no further
+        // round to ask the model for words it was told it need not write.
+        if (ledger.isEnded()) {
+          return ledger.answer();
+        }
+
         // A stop during a tool ends the turn before another round.
         if (turn.signal.aborted) {
           return ledger.answer({
@@ -393,21 +402,25 @@ export class LlmService {
       };
     }
 
-    if (isRouteTool(tool)) {
+    if (isSystemTool(tool)) {
       return {
         type: "function",
         function: {
           name: tool.name,
           description: tool.description,
           parameters:
-            tool.action === "passTo"
+            tool.command === PASS_TO_COMMAND
               ? {
                   type: TOOL_SCHEMA_OBJECT,
                   properties: {
                     [ROUTE_TO_NAME]: {
-                      type: TOOL_SCHEMA_TYPES.text,
+                      type: TOOL_SCHEMA_ARRAY,
                       description: ROUTE_TO_DESCRIPTION,
-                      enum: tool.options.map((option) => option.label),
+                      items: {
+                        type: TOOL_SCHEMA_TYPES.text,
+                        enum: tool.options.map((option) => option.label),
+                      },
+                      minItems: 1,
                     },
                   },
                   required: [ROUTE_TO_NAME],
@@ -544,8 +557,8 @@ export class LlmService {
       return this.agentWay(turn, tool, said);
     }
 
-    if (isRouteTool(tool)) {
-      return new RouteWay(tool, said, this.arguments_);
+    if (isSystemTool(tool)) {
+      return tool.command === PASS_TO_COMMAND ? new PassWay(tool, said, this.arguments_) : new FinishWay(tool);
     }
 
     const server = turn.servers.find((held) => held.id === tool.serverId) ?? null;

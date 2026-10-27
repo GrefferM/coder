@@ -292,3 +292,25 @@ describe("agentTools", () => {
     assert.deepEqual(tools, []);
   });
 });
+
+describe("agentTools with a system command granted", () => {
+  it("leaves a system grant out, since it is built with the lines going out of the agent", () => {
+    const grants: ToolGrant[] = [
+      {
+        id: "grant-7",
+        source: "system",
+        command: "pass_to",
+      },
+    ];
+
+    assert.deepEqual(
+      agentTools(grants, {
+        commands: [],
+        servers: [],
+        looks: {},
+        agents: [],
+      }),
+      [],
+    );
+  });
+});

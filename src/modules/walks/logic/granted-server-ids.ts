@@ -1,4 +1,4 @@
-import { isAgentGrant, isCommandGrant } from "../../../contracts";
+import { isAgentGrant, isCommandGrant, isSystemGrant } from "../../../contracts";
 import type { Agent, ProjectConfig } from "../../../contracts";
 
 /** The ids of the servers whose functions the agent, or any agent it reaches as a tool, is granted. */
@@ -29,7 +29,7 @@ export function grantedServerIds(root: Agent, config: ProjectConfig): string[] {
         continue;
       }
 
-      if (isCommandGrant(grant)) {
+      if (isCommandGrant(grant) || isSystemGrant(grant)) {
         continue;
       }
 

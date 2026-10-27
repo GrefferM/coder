@@ -6,16 +6,20 @@ export const ORB_HINT_SERVER_KIND = "MCP-СЕРВЕР";
 export const ORB_HINT_COMMAND_KIND = "КОМАНДА ПРОЄКТУ";
 /** One agent granted as a tool is one mark: the singular, then the agent's name. */
 export const ORB_HINT_AGENT_KIND = "АГЕНТ ЯК ІНСТРУМЕНТ";
+/** One system command is one mark: the singular, then the command's name. */
+export const ORB_HINT_SYSTEM_KIND = "СИСТЕМНА КОМАНДА";
 /** «ЩЕ 3 СЕРВЕРИ»: a «+» folds one kind, so it has its own noun and a count. */
 export const ORB_HINT_REST_KIND = "ЩЕ";
 export const ORB_HINT_COMMAND_FORMS: [string, string, string] = ["команда", "команди", "команд"];
 export const ORB_HINT_SERVER_FORMS: [string, string, string] = ["сервер", "сервери", "серверів"];
 export const ORB_HINT_AGENT_FORMS: [string, string, string] = ["агент", "агенти", "агентів"];
+export const ORB_HINT_SYSTEM_FORMS: [string, string, string] = ["системна", "системні", "системних"];
 /** A «+»'s noun, by the kind of source it folds. */
 export const ORB_HINT_SOURCE_FORMS: Record<ToolSource, [string, string, string]> = {
   command: ORB_HINT_COMMAND_FORMS,
   mcp: ORB_HINT_SERVER_FORMS,
   agent: ORB_HINT_AGENT_FORMS,
+  system: ORB_HINT_SYSTEM_FORMS,
 };
 /** «ЩЕ 3 СЕРВЕРИ · 1 ЗЛАМАНИЙ»: the «+» carries a number and a state. */
 export const ORB_HINT_BROKEN_FORMS: [string, string, string] = ["зламаний", "зламані", "зламаних"];

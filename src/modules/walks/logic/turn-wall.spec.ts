@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import { turnWall } from "./turn-wall";
 import { NO_MCP_CALLS, groupedNumber } from "../../../contracts";
 import { aCommand, aModel, aPrompt, anAgent } from "../../../utils/testing";
-import type { Agent, ProjectCommand, ProjectModel, ProjectPrompt, TurnToAsk } from "../../../contracts";
+import type { Agent, ProjectCommand, ProjectModel, ProjectPrompt, ToolGrant, TurnToAsk } from "../../../contracts";
 
 const AGENT: Agent = anAgent({
   name: "ТЕЗАР",
@@ -513,7 +513,7 @@ describe("turnWall", () => {
     assert.notEqual("wouldGo" in stood && stood.wouldGo, null);
   });
 
-  describe("an agent that chooses its route", () => {
+  describe("an agent granted system commands", () => {
     const FOLLOWERS = [
       {
         agentId: "b",
@@ -521,18 +521,27 @@ describe("turnWall", () => {
         purpose: "Пише код",
       },
     ];
+    const PASS: ToolGrant = {
+      id: "grant-s1",
+      source: "system",
+      command: "pass_to",
+    };
+    const FINISH: ToolGrant = {
+      id: "grant-s2",
+      source: "system",
+      command: "finish_here",
+    };
 
     /** The names of the tools the turn goes with. */
     function toolsOf(stood: ReturnType<typeof turnWall>): string[] {
       return "tools" in stood ? stood.tools.map((tool) => tool.name) : [];
     }
 
-    it("goes with pass_to and finish_here after its own tools", () => {
+    it("goes with the commands it was granted after its own tools", () => {
       const stood = turnWall(
         turn({
           agent: {
             ...AGENT,
-            choosesRoute: true,
             tools: [
               {
                 id: "grant-1",
@@ -540,6 +549,8 @@ describe("turnWall", () => {
                 commandId: COMMAND.id,
                 pinned: [],
               },
+              PASS,
+              FINISH,
             ],
           },
           followers: FOLLOWERS,
@@ -549,7 +560,24 @@ describe("turnWall", () => {
       assert.deepEqual(toolsOf(stood), ["find_deep", "pass_to", "finish_here"]);
     });
 
-    it("goes with none of them where it does not choose, though lines lead out of it", () => {
+    it("goes with only the command it was granted", () => {
+      assert.deepEqual(
+        toolsOf(
+          turnWall(
+            turn({
+              agent: {
+                ...AGENT,
+                tools: [FINISH],
+              },
+              followers: FOLLOWERS,
+            }),
+          ),
+        ),
+        ["finish_here"],
+      );
+    });
+
+    it("goes with none of them where it was granted none, though lines lead out of it", () => {
       assert.deepEqual(
         toolsOf(
           turnWall(
@@ -569,7 +597,7 @@ describe("turnWall", () => {
             turn({
               agent: {
                 ...AGENT,
-                choosesRoute: true,
+                tools: [PASS, FINISH],
               },
             }),
           ),
@@ -583,7 +611,6 @@ describe("turnWall", () => {
         turn({
           agent: {
             ...AGENT,
-            choosesRoute: true,
             tools: [
               {
                 id: "grant-1",
@@ -591,6 +618,7 @@ describe("turnWall", () => {
                 commandId: COMMAND.id,
                 pinned: [],
               },
+              PASS,
             ],
           },
           catalogue: {
@@ -606,16 +634,16 @@ describe("turnWall", () => {
         }),
       );
 
-      assert.deepEqual(toolsOf(stood), ["pass_to", "finish_here"]);
-      assert.equal("tools" in stood && stood.tools[0].source, "route");
+      assert.deepEqual(toolsOf(stood), ["pass_to"]);
+      assert.equal("tools" in stood && stood.tools[0].source, "system");
     });
 
-    it("goes without them on a provider that carries no functions, its answer going down every line", () => {
+    it("does not start on a provider that carries no functions, as for any other grant", () => {
       const stood = turnWall(
         turn({
           agent: {
             ...AGENT,
-            choosesRoute: true,
+            tools: [PASS],
           },
           stands: {
             model: MODEL,
@@ -635,7 +663,7 @@ describe("turnWall", () => {
         }),
       );
 
-      assert.deepEqual(toolsOf(stood), []);
+      assert.equal("notStarted" in stood && stood.notStarted, "noTools");
     });
   });
 });

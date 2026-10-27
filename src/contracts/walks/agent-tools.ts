@@ -1,5 +1,6 @@
 import { isAgentGrant } from "../project/agent-grant.guard";
 import { isCommandGrant } from "../project/command-grant.guard";
+import { isSystemGrant } from "../project/system-grant.guard";
 import type { AgentTool } from "../llm/agent-tool.type";
 import type { McpLook } from "../mcp/mcp-look.interface";
 import type {
@@ -40,6 +41,11 @@ function toolOf(grant: ToolGrant, targets: GrantTargets): AgentTool | null {
 
   if (isAgentGrant(grant)) {
     return agentTool(grant, targets.agents);
+  }
+
+  // A system command needs the lines going out of the agent, so it is built apart (see system-tools).
+  if (isSystemGrant(grant)) {
+    return null;
   }
 
   return serverTool(grant, targets.looks);

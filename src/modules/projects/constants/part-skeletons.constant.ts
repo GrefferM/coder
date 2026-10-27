@@ -12,7 +12,6 @@ export const AGENT_SKELETON = {
   isActive: true,
   // Safe default when the lost file says nothing.
   waitsForAll: true,
-  choosesRoute: false,
   memory: "own",
   x: 0,
   y: 0,

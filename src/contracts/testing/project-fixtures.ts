@@ -12,7 +12,6 @@ export function anAgent(patch: Partial<Agent> = {}): Agent {
     color: "#6fd3d8",
     isActive: true,
     waitsForAll: true,
-    choosesRoute: false,
     memory: "own",
     x: 100,
     y: 100,

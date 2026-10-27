@@ -1,12 +1,13 @@
 import { isAgentGrant } from "./agent-grant.guard";
 import { isCommandGrant } from "./command-grant.guard";
+import { isSystemGrant } from "./system-grant.guard";
 import { GRANT_HANDLE_SEPARATOR } from "./grant-handle.constant";
 import type { ToolGrant } from "./tool-grant.type";
 
-/** What a grant points at: the project's own command, another agent, or one function of a server. */
+/** What a grant points at: the project's own command, another agent, one function of a server, or an app command. */
 export interface GrantSource {
   kind: ToolGrant["source"];
-  /** The command's, agent's or server's id; never the function's, which the server names. */
+  /** The command's, agent's or server's id, or the app command's own; never the function's, which the server names. */
   id: string;
   /** The name the server gave the function; null for a command or an agent. */
   functionName: string | null;
@@ -21,6 +22,15 @@ export function sourceOf(grant: ToolGrant): GrantSource {
     return {
       kind: grant.source,
       id: grant.commandId,
+      functionName: null,
+    };
+  }
+
+  // One of the app's own commands is told by its id alone.
+  if (isSystemGrant(grant)) {
+    return {
+      kind: grant.source,
+      id: grant.command,
       functionName: null,
     };
   }

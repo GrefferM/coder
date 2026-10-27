@@ -277,4 +277,52 @@ describe("runUnfinished", () => {
       ],
     );
   });
+
+  it("hands on what a step was given where it passed on without a word of its own", () => {
+    const said = runUnfinished(
+      run([
+        step({
+          said: "",
+          asked: "Розбий текст на тези",
+          handoffs: [
+            {
+              toAgentId: "agent-2",
+              stopReason: null,
+            },
+          ],
+        }),
+      ]),
+      "question-1",
+    );
+
+    assert.equal(said.arrivals[0]?.text, "Розбий текст на тези");
+  });
+
+  it("hands on the words of the steps that fed a step that passed on without words, not its ask with their count", () => {
+    const said = runUnfinished(
+      run([
+        step({
+          id: "step-1",
+          place: 1,
+          said: "- Починай з малого",
+        }),
+        step({
+          id: "step-2",
+          place: 2,
+          said: "",
+          asked: "- Починай з малого\n\nНе передали нічого: 1 з 2 постачальників роботи.",
+          fromStepIds: ["step-1"],
+          handoffs: [
+            {
+              toAgentId: "agent-3",
+              stopReason: null,
+            },
+          ],
+        }),
+      ]),
+      "question-1",
+    );
+
+    assert.equal(said.arrivals.at(-1)?.text, "- Починай з малого");
+  });
 });

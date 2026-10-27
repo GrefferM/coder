@@ -5,9 +5,10 @@ import { CallRow } from "./call-row";
 import { useOpenCalls } from "../../../../hooks";
 import {
   CALL_ROW_ANSWERED_LABEL,
-  CALL_ROW_ROUTE_KIND,
-  CALL_ROW_ROUTE_LABEL,
-  CALL_ROW_ROUTE_REFUSED_LABEL,
+  CALL_ROW_SYSTEM_FINISHED_LABEL,
+  CALL_ROW_SYSTEM_KIND,
+  CALL_ROW_SYSTEM_PASSED_LABEL,
+  CALL_ROW_SYSTEM_REFUSED_LABEL,
   CALL_ROW_BREATH_CLASS,
   CALL_ROW_SAID_NO_COLOR,
   CALL_ROW_SAID_NO_LABEL,
@@ -80,7 +81,7 @@ function onRoute(patch: Partial<LiveCall> = {}): LiveCall {
     line: "",
     output: "Передам: КОДЕР.",
     exitCode: null,
-    source: "route",
+    source: "system",
     startedAt: 1_000,
     endedAt: 1_000,
     ...patch,
@@ -332,11 +333,11 @@ describe("CallRow", () => {
   });
 });
 
-describe("CallRow · a route call", () => {
-  it("says it is a route, with no code and no time of a process that never ran", () => {
+describe("CallRow · a system command", () => {
+  it("says whom it passed to, with no code and no time of a process that never ran", () => {
     render(<Row call={onRoute()} />);
 
-    expect(screen.getByText(CALL_ROW_ROUTE_LABEL)).toBeInTheDocument();
+    expect(screen.getByText(`${CALL_ROW_SYSTEM_PASSED_LABEL} КОДЕР`)).toBeInTheDocument();
     expect(
       screen.queryByText(CALL_ROW_ANSWERED_LABEL, {
         exact: false,
@@ -349,18 +350,18 @@ describe("CallRow · a route call", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("opens on the route as its source, the name it chose and the words given back, with no copy of a server's answer", async () => {
+  it("opens on the system command as its source, the name it chose and the words given back, with no copy of a server's answer", async () => {
     render(<Row call={onRoute()} />);
     await userEvent.click(screen.getByRole("button"));
 
     expect(screen.getByText(CALL_ROW_SOURCE_LABEL)).toBeInTheDocument();
-    expect(screen.getByText(new RegExp(`· ${CALL_ROW_ROUTE_KIND}`))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`· ${CALL_ROW_SYSTEM_KIND}`))).toBeInTheDocument();
     expect(screen.getByText(/· КОДЕР/)).toBeInTheDocument();
     expect(screen.getByText("Передам: КОДЕР.")).toBeInTheDocument();
     expect(screen.queryByText(COPY_ACTION_LABEL)).not.toBeInTheDocument();
   });
 
-  it("says the route was not accepted where the name was none it was given", () => {
+  it("says the command was not accepted where the name was none it was given", () => {
     render(
       <Row
         call={onRoute({
@@ -371,6 +372,20 @@ describe("CallRow · a route call", () => {
       />,
     );
 
-    expect(screen.getByText(CALL_ROW_ROUTE_REFUSED_LABEL)).toBeInTheDocument();
+    expect(screen.getByText(CALL_ROW_SYSTEM_REFUSED_LABEL)).toBeInTheDocument();
+  });
+
+  it("says the branch is closed where the command was finish_here", () => {
+    render(
+      <Row
+        call={onRoute({
+          name: "finish_here",
+          arguments: {},
+          output: "Гілку завершено.",
+        })}
+      />,
+    );
+
+    expect(screen.getByText(CALL_ROW_SYSTEM_FINISHED_LABEL)).toBeInTheDocument();
   });
 });

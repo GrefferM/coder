@@ -15,11 +15,6 @@ export interface Agent extends NamedAgent {
    * input as it arrives.
    */
   waitsForAll: boolean;
-  /**
-   * Where true, the agent chooses where its answer goes: to some of the agents its lines lead to, or nowhere. Where
-   * false, the answer goes down every line.
-   */
-  choosesRoute: boolean;
   memory: AgentMemory;
   x: number;
   y: number;

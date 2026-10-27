@@ -22,6 +22,7 @@ const nothingMoved: WasAgent = {
   commandTools: null,
   serverTools: null,
   agentTools: null,
+  systemTools: null,
   color: null,
   compressAt: null,
   compressTo: null,
@@ -29,7 +30,6 @@ const nothingMoved: WasAgent = {
   temperature: null,
   isActive: null,
   waitsForAll: null,
-  choosesRoute: null,
   memory: null,
 };
 

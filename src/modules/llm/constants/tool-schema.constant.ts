@@ -6,3 +6,4 @@ export const TOOL_SCHEMA_TYPES: Record<string, string> = {
   enum: "string",
 };
 export const TOOL_SCHEMA_OBJECT = "object";
+export const TOOL_SCHEMA_ARRAY = "array";

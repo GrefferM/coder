@@ -13,6 +13,8 @@ export interface AgentsSectionProps {
   providers: ProviderState[];
   /** The agents whose lines come into this one. */
   suppliers: Agent[];
+  /** The agents this one's lines lead to. */
+  followers: Agent[];
   /** When the turn this agent is working began; null while it is not working. */
   startedAt: number | null;
   isNamingCopy: boolean;

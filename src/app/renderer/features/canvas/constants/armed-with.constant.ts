@@ -16,11 +16,14 @@ export const ARMED_COMMANDS_COLOR = ARMED_SOURCE_COLORS[0];
 export const ARMED_SERVERS_COLOR = ARMED_SOURCE_COLORS[1];
 /** An agent granted as a tool wears a warm orange outside the pale family, so it reads as a sphere. */
 export const ARMED_AGENTS_COLOR = "#e8934a";
+/** A system command wears a lavender, outside the pale family and the trouble colours. */
+export const ARMED_SYSTEM_COLOR = "#c9a7e8";
 /** Each kind of source's colour. */
 export const ARMED_SOURCE_COLOR: Record<ToolSource, string> = {
   command: ARMED_COMMANDS_COLOR,
   mcp: ARMED_SERVERS_COLOR,
   agent: ARMED_AGENTS_COLOR,
+  system: ARMED_SYSTEM_COLOR,
 };
 /**
  * What got no place folds under its kind's «+», whose number counts marks: a command or a whole server that did not fit
