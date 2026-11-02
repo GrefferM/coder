@@ -52,4 +52,5 @@ card already carries. `docker-compose.yml` says which model to pull and why that
 ## Licence
 
 Copyright © 2026 [Mykhailo Biloshkurskyi](https://www.linkedin.com/in/mykhailo-biloshkurskyi/).
-All rights reserved — see `LICENSE`.
+Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0) — see `LICENSE`
+and `NOTICE`.

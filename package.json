@@ -4,7 +4,7 @@
   "private": true,
   "description": "A desktop canvas where agents are placed, linked and run as a graph",
   "author": "Mykhailo Biloshkurskyi <zmishabelijj@gmail.com> (https://www.linkedin.com/in/mykhailo-biloshkurskyi/)",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "Apache-2.0",
   "main": "src/app/bootstrap.js",
   "scripts": {
     "dev:app": "node scripts/dev-app.js",
