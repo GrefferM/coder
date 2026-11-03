@@ -1,8 +1,27 @@
 {
   "name": "coder",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "A desktop canvas where agents are placed, linked and run as a graph",
+  "keywords": [
+    "electron",
+    "typescript",
+    "ai-agents",
+    "multi-agent",
+    "mcp",
+    "model-context-protocol",
+    "langchain",
+    "llm",
+    "ollama"
+  ],
+  "homepage": "https://github.com/GrefferM/coder#readme",
+  "bugs": {
+    "url": "https://github.com/GrefferM/coder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GrefferM/coder.git"
+  },
   "author": "Mykhailo Biloshkurskyi <zmishabelijj@gmail.com> (https://www.linkedin.com/in/mykhailo-biloshkurskyi/)",
   "license": "Apache-2.0",
   "engines": {
