@@ -464,7 +464,7 @@ describe("ProjectConfigSerializer", () => {
       ),
     );
 
-    const grant = config.agents[0].tools[0];
+    const [grant] = config.agents[0].tools;
 
     assert.equal(grant.source, "command");
     assert.equal((<CommandToolGrantDto>grant).pinned[0].value, "auth/*.spec.ts");
@@ -577,7 +577,7 @@ describe("ProjectConfigSerializer", () => {
     tools:\n      - id: ${GRANT_ID}\n        source: mcp\n        serverId: ${SERVER_ID}\n        functionName: read_file\n`,
       ) + serversYaml(LOCAL_SERVER_YAML),
     );
-    const grant = config.agents[0].tools[0];
+    const [grant] = config.agents[0].tools;
 
     assert.equal(grant.source, "mcp");
     assert.equal((<McpToolGrantDto>grant).serverId, SERVER_ID);

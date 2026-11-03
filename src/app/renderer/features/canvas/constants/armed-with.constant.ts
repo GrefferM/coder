@@ -4,10 +4,8 @@ import type { ToolSource } from "../../../interfaces";
 export const ARMED_MARKS_EACH = 2;
 /** A mini-sphere wears its source's colour, from a pale family apart from the agent and trouble colours. */
 export const ARMED_SOURCE_COLORS = ["#b7c4e8", "#ddd0a6", "#a8cfd2"];
-/** Declared commands are one source and take the first colour. */
-export const ARMED_COMMANDS_COLOR = ARMED_SOURCE_COLORS[0];
-/** All MCP servers share the second colour. */
-export const ARMED_SERVERS_COLOR = ARMED_SOURCE_COLORS[1];
+/** Declared commands take the first colour; all MCP servers share the second. */
+export const [ARMED_COMMANDS_COLOR, ARMED_SERVERS_COLOR] = ARMED_SOURCE_COLORS;
 /** An agent granted as a tool wears a warm orange outside the pale family, so it reads as a sphere. */
 export const ARMED_AGENTS_COLOR = "#e8934a";
 /** A system command wears a lavender, outside the pale family and the trouble colours. */
