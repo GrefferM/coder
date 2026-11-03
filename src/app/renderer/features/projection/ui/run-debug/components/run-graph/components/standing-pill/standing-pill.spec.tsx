@@ -22,7 +22,6 @@ function standing(patch: Partial<AgentStanding> = {}): AgentStanding {
 
 describe("StandingPill", () => {
   it("says nothing where the record and the project call the agent the same", () => {
-    // Renders nothing when the record and the project agree.
     const { container } = render(<StandingPill standing={standing()} />);
 
     expect(container).toBeEmptyDOMElement();
@@ -87,7 +86,6 @@ describe("StandingPill", () => {
   });
 
   it("writes the recorded name in the capitals every name on a canvas is drawn in", () => {
-    // The name is upper-cased like the sphere's label.
     const { container } = render(
       <StandingPill
         standing={standing({

@@ -14,7 +14,6 @@ describe("ProjectRow", () => {
   });
 
   it("ticks the open project and is no way anywhere, being where the person already is", () => {
-    // The current project is the first row and cannot be walked to.
     render(<ProjectRow name="Coder" directory="/code/coder" agentCount={7} isCurrent />);
 
     const row = screen.getByRole("menuitem");

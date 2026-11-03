@@ -50,7 +50,6 @@ function row(patch: Partial<RunRow> = {}): RunRow {
 
 describe("RunRowLine", () => {
   it("names the money as a word where nothing was spent, «—» reading as a sum nobody counted", () => {
-    // A flow that sent nothing says so in words, not a dash.
     render(
       <RunRowLine
         run={row({
@@ -144,7 +143,6 @@ describe("RunRowLine", () => {
   });
 
   it("offers no deletion while the run is still going, half a record being nobody's", async () => {
-    // The cross stands beside the row, only over a finished record.
     const onForget = vi.fn();
     const { rerender } = render(
       <RunRowLine

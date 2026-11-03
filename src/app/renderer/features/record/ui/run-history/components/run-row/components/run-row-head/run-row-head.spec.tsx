@@ -54,7 +54,6 @@ function row(patch: Partial<RunRow> = {}): RunRow {
 
 describe("RunRowHead", () => {
   it("names whom the flow was asked last, by the name that agent goes by today", () => {
-    // The head shows the agent's current name, not the one the record kept.
     render(<RunRowHead run={row()} agents={AGENTS} isRunning={false} isRaised={false} />);
 
     expect(screen.getByText("ШУКАЧ")).toBeInTheDocument();
@@ -62,7 +61,6 @@ describe("RunRowHead", () => {
   });
 
   it("names the agent the last question went to, not the one the flow started from", () => {
-    // The head names the last addressee, not the first.
     render(
       <RunRowHead
         run={row({
@@ -80,7 +78,6 @@ describe("RunRowHead", () => {
   });
 
   it("names an agent the project no longer holds from the record, and says so by going dimmer", () => {
-    // Current name for an existing agent, the record's for a gone one, drawn quieter.
     render(
       <RunRowHead
         run={row({
@@ -99,7 +96,6 @@ describe("RunRowHead", () => {
   });
 
   it("wears the agent's own colour, so a row is read by whom it belongs to and not by its words", () => {
-    // The name wears the agent's colour.
     render(<RunRowHead run={row()} agents={AGENTS} isRunning={false} isRaised={false} />);
 
     expect(screen.getByText("ШУКАЧ")).toHaveStyle({
@@ -174,7 +170,6 @@ describe("RunRowHead", () => {
   });
 
   it("says the hour the flow last spoke and the work under it, not the waiting", () => {
-    // The hour is the flow's last word; the span sums every written step.
     render(<RunRowHead run={row()} agents={AGENTS} isRunning={false} isRaised={false} />);
 
     expect(screen.getByText(`${timeLabel(ASKED_AT)}${RUN_HISTORY_SEPARATOR}${spanLabel(5_500)}`)).toBeInTheDocument();
@@ -260,7 +255,6 @@ describe("RunRowHead", () => {
   });
 
   it("carries the colour of the state in the dot, the word beside it being quiet in every state", () => {
-    // The dot carries each state's colour.
     const { rerender } = render(<RunRowHead run={row()} agents={AGENTS} isRunning={false} isRaised={false} />);
 
     expect(screen.getByText(RUN_STATE_LABELS[RUN_DONE]).previousElementSibling).toHaveStyle({

@@ -10,8 +10,8 @@ interface QuestionRow {
 }
 
 /**
- * The record of one stream, written by one hand. Each walk has its own chain (question, steps in order, closing) and the
- * stream keeps the tail of all, so a reader can wait for everything written.
+ * The record of one stream, written by one hand. Each walk has its own chain (question, steps in order, closing) and
+ * the stream keeps the tail of all, so a reader can wait for everything written.
  */
 export class RecordWriter {
   private readonly ledgers = new Map<string, RunLedger>();

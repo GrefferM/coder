@@ -16,9 +16,8 @@ export const COMPOSER_MEMORY_PERSON = "ЛЮДИНА:";
 export const COMPOSER_MEMORY_AGENT = "АГЕНТ:";
 
 /**
- * What the composer is told, after the memory in the same message: it writes the main of it in no more than so many
- * words, with no word of its own around it. It is told to put the most important first, which is what a summary does
- * anyway, so that what runs over the budget is cut off the end, where the least important stands.
+ * What the composer is told after the memory, in the same message. Most important first, so what runs over the budget
+ * is cut off the end, where the least important stands.
  */
 export const COMPOSER_INSTRUCTION = [
   `Ти — суворий модуль стиснення тексту (контекстний компресор). Твоє єдине завдання — стиснути пам'ять агента, наведену вище в тегах <пам'ять>, до максимум ${COMPOSER_BUDGET_SLOT} слів.`,

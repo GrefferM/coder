@@ -7,8 +7,8 @@ import type { ToolArguments } from "./tool-arguments.service";
 const NAMES_SEPARATOR = ", ";
 
 /**
- * One call of `pass_to`: the agent names whom it hands a text of its own. Nothing runs; the call is the hand-over, which
- * the turn gathers and gives out once it ends.
+ * One call of `pass_to`: the agent names whom it hands a text of its own. Nothing runs; the call is the hand-over,
+ * which the turn gathers and gives out once it ends.
  */
 export class PassWay implements ToolWay {
   /** The words the model named, in its order. */

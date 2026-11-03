@@ -2,7 +2,7 @@
 // the tests hold is the wire the client speaks, not the library on the other side of it. It takes one argument —
 // a file it appends a line to every time it starts — which is how a test sees whether the process was started
 // twice or held open. A second argument names an environment variable, and then the line carries its value too,
-// which is how a test sees what the process was actually started with (36c).
+// which is how a test sees what the process was actually started with.
 const { appendFileSync } = require("node:fs");
 
 const [, , startsFile, echoName] = process.argv;

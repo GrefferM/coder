@@ -7,7 +7,7 @@ export interface ArmedMarkRow {
   group: string;
   /** A command or an agent names its own grant; a server names none (its id is in `group`). */
   grantId: string | null;
-  /** The command's, server's or agent's own name; no «N з M» count, which lives in the hint and the panel row. */
+  /** The source's own name, without the «N з M» count. */
   name: string;
   color: string;
   /** All of this source's grants point at nothing; the line goes first in the trouble tone. */

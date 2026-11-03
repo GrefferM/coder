@@ -31,8 +31,8 @@ export interface RunningTurn {
    */
   threads: Map<string, ToolThread>;
   /**
-   * What each agent called as a tool in this turn, or under it, has compressed of the question's shared memory, by agent
-   * id, and the record is yet to be told of: the one map of the whole turn, so no call compresses it again.
+   * What each agent called as a tool in this turn, or under it, has compressed of the question's shared memory, by
+   * agent id, and the record is yet to be told of: the one map of the whole turn, so no call compresses it again.
    */
   unwritten: Map<string, UnwrittenMemory>;
 }

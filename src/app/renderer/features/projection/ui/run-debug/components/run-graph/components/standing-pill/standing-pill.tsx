@@ -20,7 +20,7 @@ import type { StandingPillProps } from "./interfaces";
 
 /**
  * Under a run's sphere, the one line where today differs from the record: the agent is named differently now, or the
- * project no longer has it. Empty when they agree. The recorded name is upper-cased like every name on a canvas.
+ * project does not have it. Empty when they agree. The recorded name is upper-cased like every name on a canvas.
  */
 export function StandingPill({ standing }: StandingPillProps) {
   const isGone = standing.isGone;

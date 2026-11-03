@@ -1,8 +1,8 @@
 import type { McpConsentGate, McpConsentStore, ProjectMcpServer } from "../interfaces";
 
 /**
- * Whether this machine agreed to start a server's run line (36k). The line is the key, word for word: a line changed in
- * the file is a line nobody here agreed to. A remote server runs nothing here and needs none.
+ * Whether this machine agreed to start a server's run line. The line is the key, word for word: a line changed in the
+ * file is a line nobody here agreed to. A remote server runs nothing here and needs none.
  */
 export class McpConsents implements McpConsentGate {
   constructor(private readonly store: McpConsentStore) {}
@@ -17,7 +17,7 @@ export class McpConsents implements McpConsentGate {
     return held !== null && held.run === server.run;
   }
 
-  /** Agrees to the line as it stands; an earlier line of the same server is no longer agreed to. */
+  /** Agrees to the line as it stands, in place of any earlier line of the same server. */
   async give(server: ProjectMcpServer): Promise<void> {
     if (!server.isLocal) {
       return;

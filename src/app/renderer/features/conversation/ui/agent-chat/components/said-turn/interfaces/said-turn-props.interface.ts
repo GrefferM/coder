@@ -30,9 +30,6 @@ export interface SaidTurnProps {
   live: WorkingAgent[];
   /** The message the search drove to; its card wears the edge. */
   isFound: boolean;
-  /**
-   * The word the search looks for; lit only in the person's question and an agent's answer, the only places the search
-   * counts.
-   */
+  /** The searched word, lit only in the person's question and an agent's answer: the only places the search counts. */
   looked: string;
 }

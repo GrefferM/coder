@@ -18,6 +18,5 @@ export interface ArmedOrb {
   source: ToolSource;
   /** Everything this mark stands for points at nothing; on a «+», at least one source behind it does. */
   isBroken: boolean;
-  /** What it says under the cursor. */
   hint: OrbHint;
 }

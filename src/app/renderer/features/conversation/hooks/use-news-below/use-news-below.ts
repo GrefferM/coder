@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-/**
- * Turns that arrived while the person was away from the end of the stream: the label on the button down. A run opened
- * from history stays at nought, as nothing arrives in a finished stream.
- */
+/** Turns that arrived while the person was away from the stream's end; a run opened from history stays at nought. */
 export function useNewsBelow(arrived: number, isAtEnd: boolean, stream: string | null): number {
   const [seen, setSeen] = useState(arrived);
   const standing = useRef(stream);

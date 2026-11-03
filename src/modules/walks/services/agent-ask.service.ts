@@ -4,7 +4,7 @@ import { chatStream, chatText, walkBroke } from "../../../contracts";
 import type { AgentAnswered, AgentAsked, ProjectCatalog } from "../interfaces";
 import type { WalkHub } from "./walk-hub.service";
 
-/** One question put from a command line: the project's conversation is opened, the walk goes to its end, and is told. */
+/** One question put from a command line: the project's conversation opens, the walk goes to its end, and is told. */
 export class AgentAsk {
   constructor(
     private readonly hub: WalkHub,

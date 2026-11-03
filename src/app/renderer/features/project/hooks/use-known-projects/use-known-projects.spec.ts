@@ -126,7 +126,6 @@ describe("useKnownProjects · what it does over the list", () => {
   });
 
   it("marks the row of a folder that is gone from the disk, rather than saying nothing", async () => {
-    // A project in the machine's list but gone from disk; its row must say so.
     machine(
       {
         [LIST_RECENT_PROJECTS_CHANNEL]: [entry("/tmp/coder"), entry("/tmp/gone")],

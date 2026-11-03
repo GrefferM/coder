@@ -1,6 +1,6 @@
 /** Handed back when a command succeeded having printed nothing. */
 export const COMMAND_EMPTY_OUTPUT_NOTE = "[команда нічого не вивела]";
-/** What is handed back when the line itself would not run. */
+/** Handed back when the line itself would not run. */
 export const COMMAND_FAILED_PREFIX = "[команда не виконалась]";
 /** Handed back when a command ended on a non-zero code having printed nothing. */
 export const COMMAND_NOTHING_PRINTED_NOTE = "[команда відпрацювала й нічого не вивела · код {code}]";

@@ -5,7 +5,6 @@ import type { Point } from "../../../../../utils/math";
 export interface AgentClipboard {
   /** The copy just pasted; null once its mark is taken off. */
   pasted: PastedAgent | null;
-  /** Whether there is a copy to paste. */
   isPasteOffered: boolean;
   copy: (agentId: string) => void;
   /** Id of the pasted copy; null when nothing was pasted. */

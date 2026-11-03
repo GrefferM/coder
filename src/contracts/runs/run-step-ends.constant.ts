@@ -10,7 +10,7 @@ export const RUN_STEP_NOT_SENT_ENDS: string[] = [
   "notFilled",
   "notFilledAgent",
   "lostFunction",
-  // A granted local server whose run line this machine has not agreed to; nothing was started (36k).
+  // A granted local server whose run line this machine has not agreed to; nothing was started.
   "noConsent",
   // The model's provider is turned off on this machine; nothing left it.
   "providerOff",

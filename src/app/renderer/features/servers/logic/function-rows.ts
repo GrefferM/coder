@@ -3,9 +3,8 @@ import type { Agent, McpLook } from "../../../interfaces";
 import type { FunctionRow } from "../interfaces";
 
 /**
- * The lines of a server's page: what it hands over now, by name.
- *
- * A granted function the server no longer names is left out; that trouble shows among the agent's broken grants.
+ * The lines of a server's page: what it hands over now, by name. A granted function the server does not name is left
+ * out; that trouble shows among the agent's broken grants.
  */
 export function functionRows(serverId: string, look: McpLook | null, agents: Agent[]): FunctionRow[] {
   // A server that has not answered hands nothing over, and its page shows no list.

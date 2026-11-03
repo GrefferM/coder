@@ -50,10 +50,7 @@ function Page({
   );
 }
 
-/**
- * Sends only the key event; `userEvent.tab()` moves focus itself and would pass regardless. Where focus lands is the
- * hook's doing.
- */
+/** Sends only the key event; `userEvent.tab()` moves focus itself and would pass regardless. */
 function press(init: KeyboardEventInit = {}): KeyboardEvent {
   const event = new KeyboardEvent("keydown", {
     key: "Tab",

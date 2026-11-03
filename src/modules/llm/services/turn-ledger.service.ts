@@ -48,7 +48,7 @@ export class TurnLedger {
     this.billed = addedCost(this.billed, cost);
   }
 
-  /** The compressions the agents called made of their memories on the way, spent whether the call came to an answer or not. */
+  /** The compressions the agents called made on the way, spent whether the call came to an answer or not. */
   composed(memories: ToolMemory[]): void {
     this.compressed.push(...memories);
   }

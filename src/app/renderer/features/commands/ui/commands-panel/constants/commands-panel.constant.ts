@@ -23,14 +23,11 @@ export const COMMANDS_PANEL_NAME_FIELD_LABEL = "ІМ'Я ФУНКЦІЇ";
 export const COMMANDS_PANEL_DESCRIPTION_FIELD_LABEL = "ОПИС ДЛЯ МОДЕЛІ";
 export const COMMANDS_PANEL_RUN_FIELD_LABEL = "КОМАНДА";
 export const COMMANDS_PANEL_NAME_PLACEHOLDER = "run_tests";
-/** Note under the name; other characters typed there do not appear. */
+/** The rule under the name field. */
 export const COMMANDS_PANEL_NAME_FIELD_NOTE = "Тільки латинські літери, цифри й підкреслення";
 export const COMMANDS_PANEL_DESCRIPTION_PLACEHOLDER = "Прогнати тести проєкту й повернути звіт";
 export const COMMANDS_PANEL_RUN_PLACEHOLDER = "npm test -- {pattern}";
-/**
- * The line under the run field, the only place the app states where responsibility ends: the line is joined, nothing
- * quoted or escaped, so quoting is the person's.
- */
+/** The run line is joined with nothing quoted or escaped, so quoting is the person's. */
 export const COMMANDS_PANEL_RUN_FIELD_NOTE =
   "Лапки ставите ви: застосунок нічого не екранує — беріть слот у лапки: '{mask}'";
 export const COMMANDS_PANEL_CANCEL_LABEL = "Скасувати";

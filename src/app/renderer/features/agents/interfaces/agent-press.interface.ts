@@ -1,8 +1,4 @@
-/**
- * A press on the agent's own sphere, which returns the tab to the agent's settings root.
- *
- * An object, not a name, so pressing twice is two events.
- */
+/** A press on the agent's own sphere, returning the tab to its settings; an object, so two presses are two events. */
 export interface AgentPress {
   agentId: string;
 }

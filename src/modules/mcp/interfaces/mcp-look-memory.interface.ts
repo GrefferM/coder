@@ -1,6 +1,5 @@
 /** What this machine remembers of the last look at one server; machine-local, not in the project file. */
 export interface McpLookMemory {
-  /** The server's own id, never its name. */
   serverId: string;
   /** The names it handed over when written, so the next look can tell a changed list from the same one. */
   names: string[];

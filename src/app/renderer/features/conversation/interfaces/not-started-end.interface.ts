@@ -1,11 +1,8 @@
 import type { NotStartedAct } from "./not-started-act.type";
 
-/**
- * What one reason of the family comes to: the sphere's word, the one act it offers, and the word the record keeps for a
- * step that ended there. Every reason offers an act.
- */
+/** Per reason: the sphere's word, the one act offered, and the record's word for a step that ended there. */
 export interface NotStartedEnd {
-  /** Null where the frame draws the card without a word of its own (36k). */
+  /** Null where the card carries no word of its own. */
   label: string | null;
   actLabel: string;
   act: NotStartedAct;

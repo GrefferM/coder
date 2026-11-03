@@ -1,14 +1,8 @@
 import { BROKEN_COLOR } from "../../../constants";
 import type { ToolSource } from "../../../interfaces";
-/**
- * How many marks of one kind stand before the rest fold under its «+»: two commands and their «+», two servers and
- * theirs, two agents and theirs.
- */
+/** How many marks of one kind stand before the rest fold under its «+». */
 export const ARMED_MARKS_EACH = 2;
-/**
- * A mini-sphere takes its source's colour, not the agent's. Sources have a pale family that crosses neither the agent
- * colours (`AGENT_COLORS`) nor the trouble colours (`FALLEN_COLOR`, `BROKEN_COLOR`).
- */
+/** A mini-sphere wears its source's colour, from a pale family apart from the agent and trouble colours. */
 export const ARMED_SOURCE_COLORS = ["#b7c4e8", "#ddd0a6", "#a8cfd2"];
 /** Declared commands are one source and take the first colour. */
 export const ARMED_COMMANDS_COLOR = ARMED_SOURCE_COLORS[0];
@@ -18,7 +12,6 @@ export const ARMED_SERVERS_COLOR = ARMED_SOURCE_COLORS[1];
 export const ARMED_AGENTS_COLOR = "#e8934a";
 /** A system command wears a lavender, outside the pale family and the trouble colours. */
 export const ARMED_SYSTEM_COLOR = "#c9a7e8";
-/** Each kind of source's colour. */
 export const ARMED_SOURCE_COLOR: Record<ToolSource, string> = {
   command: ARMED_COMMANDS_COLOR,
   mcp: ARMED_SERVERS_COLOR,
@@ -32,6 +25,6 @@ export const ARMED_SOURCE_COLOR: Record<ToolSource, string> = {
 export const ARMED_REST_PREFIX = "+";
 /**
  * A source whose grants all point at nothing keeps its mark in the trouble tone; if it did not fit its kind's two
- * places, the tone goes to that kind's «+». The colour is the trouble family's, never a source's.
+ * places, the tone goes to that kind's «+».
  */
 export const ARMED_BROKEN_COLOR = BROKEN_COLOR;

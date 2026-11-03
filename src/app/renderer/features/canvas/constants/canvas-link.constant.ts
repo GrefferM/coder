@@ -46,5 +46,4 @@ export const CANVAS_LINK_LIVE_DRIFT_OPACITY = 0.8;
 export const CANVAS_LINK_AWAITED_DASH = "5 6";
 export const CANVAS_LINK_SILENT_COLOR = "#3a4154";
 
-/** The doomed tone. */
 export const CANVAS_LINK_DOOMED_OPACITY = 0.55;

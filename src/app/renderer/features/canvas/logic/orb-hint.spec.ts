@@ -84,7 +84,6 @@ describe("orbHint", () => {
     expect(hint.kind).toBe("MCP-СЕРВЕР");
     expect(hint.name).toBe("playwright-mcp");
     expect(hint.count).toBe("2 з 24 функцій");
-    // «24 імені в підказку не влазять і не для того вона».
     expect(hint.lines).toEqual([]);
   });
 
@@ -114,7 +113,6 @@ describe("orbHint", () => {
 
 describe("foldHint", () => {
   it("counts the commands behind a command's «+» and names each of them", () => {
-    // A «+» has a noun for its kind, and its lines name the marks behind it.
     const hint = foldHint(
       [
         {

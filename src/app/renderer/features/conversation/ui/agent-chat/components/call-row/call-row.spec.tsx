@@ -89,10 +89,7 @@ function onRoute(patch: Partial<LiveCall> = {}): LiveCall {
   });
 }
 
-/**
- * The open-calls memory belongs to the chat, so the row is driven through it here too; the same call keeps its place
- * when the working card gives way to the finished turn.
- */
+/** The row driven through an open-calls memory, as the chat holds it. */
 function Row({ call: one }: { call: LiveCall }) {
   const openCalls = useOpenCalls();
 

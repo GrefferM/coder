@@ -39,7 +39,7 @@ const run: RunRow = {
 };
 
 /** Only the fields a standing question depends on. */
-/** No window of 36k stands. */
+/** No consent window stands. */
 const NO_CONSENT_ASKED = {
   asked: null,
   raise: vi.fn(),

@@ -39,7 +39,6 @@ function ofServer(functionName: string): ToolGrant {
 
 describe("armedTally", () => {
   it("counts every source together, and a declared command as one function", () => {
-    // Counts every source together; a command is one function.
     const tally = armedTally(
       [ofCommand("command-1"), ofCommand("command-2"), ofServer("search"), ofServer("read")],
       said(["command-1", "command-2"], [SERVER_ID]),

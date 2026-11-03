@@ -28,10 +28,7 @@ import {
 } from "../../constants";
 import type { FoundRowProps } from "./interfaces";
 
-/**
- * One place the word was found: whose words, and the words themselves. It carries no flow facts and no forget cross,
- * since one flow can have many places.
- */
+/** One place the word was found; no flow facts or forget cross, as one flow can have many places. */
 export function FoundRow({ agents, found, looked, onOpen }: FoundRowProps) {
   const { isLit, isFocused, handlers } = useInteraction();
   // The hint shows in the app's own window, not the browser `title`.

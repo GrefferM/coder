@@ -23,10 +23,7 @@ export const SERVER_RUN_CHANGE_LABEL = "Рядок запуску";
 export const SERVER_ADDRESS_CHANGE_LABEL = "Адреса";
 export const SERVER_SIGN_IN_CHANGE_LABEL = "Вхід";
 
-/**
- * The switch's two words and the sign-in's; kept here because the leave question is written by logic, which may not
- * read the screen's constants.
- */
+/** The switch's two words and the sign-in's, shared with the leave question. */
 export const SERVER_FORM_LOCAL_LABEL = "ЛОКАЛЬНИЙ";
 export const SERVER_FORM_REMOTE_LABEL = "ВІДДАЛЕНИЙ";
 export const SERVER_FORM_TOKEN_LABEL = "ТОКЕН";

@@ -1,10 +1,7 @@
 import type { McpLook, ProjectMcpServer, ToolGrant } from "../../../interfaces";
 
 import { namesFunction, pointsAt } from "../../../interfaces";
-/**
- * A server is connected to an agent as a whole; the file keeps one grant per function (serverId, functionName).
- * Connecting grants the functions the server offers right now.
- */
+/** A server is connected to an agent as a whole; the file keeps one grant per function (serverId, functionName). */
 export function connectedTo(serverId: string, grants: ToolGrant[]): boolean {
   return grants.some((grant) => pointsAt(grant, serverId));
 }

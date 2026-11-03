@@ -19,7 +19,7 @@ export class WalkHub implements EarsOwner {
     return this.ears === ears;
   }
 
-  /** The conversation of this project; one already going on in it is kept, with the config it is handed now. */
+  /** The conversation of this project; one already going on in it is kept, with the config it is handed. */
   open(directory: string, config: ProjectConfig): WalkSnapshot {
     if (this.runner !== null && this.project?.directory === directory) {
       this.project.replace(config);
@@ -51,7 +51,7 @@ export class WalkHub implements EarsOwner {
     return this.runner === null ? null : walkSnapshot(this.runner.snapshot());
   }
 
-  /** Puts the person's question to an agent; null where it did not go: no such agent, nothing asked, or a walk is out. */
+  /** Puts the person's question to an agent; null where it did not go: no such agent, nothing asked, or a walk out. */
   put(agentId: string, text: string, attached: PackedAttachment[]): string | null {
     const runner = this.opened();
     const agent = this.project?.configNow().agents.find((held) => held.id === agentId) ?? null;

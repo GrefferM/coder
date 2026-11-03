@@ -107,7 +107,6 @@ describe("AgentPanel", () => {
   });
 
   it("is the create form where there is no agent to show, whatever else was asked for", () => {
-    // With nothing selected the panel shows the create form.
     render(
       <AgentPanel
         {...props({
@@ -193,7 +192,6 @@ describe("AgentPanel", () => {
   });
 
   it("stands back at the settings when the agent's own sphere is pressed, from whatever step", () => {
-    // The sphere returns from an open step to the agent's settings.
     const opened = props({
       presses: {
         tools: {

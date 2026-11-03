@@ -47,9 +47,7 @@ export function useCanvasWindows(
     },
     close,
     pressOrb: (agent, orb, at) => {
-      /**
-       * A single mark goes straight to its page; a «+» raises the window of what it folds, leaving the agent's tab untouched.
-       */
+      /** A single mark goes straight to its page; a «+» raises its window and leaves the agent's tab alone. */
       if (orb.folded === null) {
         onOpenAgentTools(agent.id, orb.group, orb.grantId);
 
@@ -100,7 +98,7 @@ export function useCanvasWindows(
 
 /**
  * What a mark says under the pointer: a «+» gives a line per folded mark; a mark of its own gives its kind and name on
- * one line, e.g. «MCP-СЕРВЕР · playwright-mcp», «КОМАНДА ПРОЄКТУ · run_lint».
+ * one line, e.g. «MCP-СЕРВЕР · playwright-mcp».
  */
 function standingOf(agentId: string, orb: ArmedOrb, at: HTMLElement): CanvasMarkStanding | null {
   const rows =

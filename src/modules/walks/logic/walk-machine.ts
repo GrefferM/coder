@@ -133,7 +133,7 @@ function everyWalk(state: WalkState): string[] {
   return Object.keys(state.walks).filter((runKey) => isOnScreen(state, runKey));
 }
 
-/** The walk's question opened a row and the walk writes into it from now on; a walk that knows its row keeps it. */
+/** The walk's question opened a row, which the walk writes into; a walk that knows its row keeps it. */
 function rowOpened(state: WalkState, event: WalkFact<"rowOpened">): WalkNext {
   const walk = state.walks[event.runKey];
 
@@ -524,8 +524,8 @@ function handedOn(state: WalkState, event: WalkFact<"handedOn">, config: Project
  * of walks that are over are let down.
  */
 function put(state: WalkState, event: WalkFact<"put">): WalkNext {
-  // One walk at a time per conversation: while a turn of this stream is out, the button is «ЗУПИНИТИ» and nothing is
-  // sent; another conversation is «+ НОВИЙ ЧАТ».
+  // One walk at a time per conversation: while a turn of this stream is out, the button is «ЗУПИНИТИ» and nothing
+  // is sent.
   if (isWalking(state)) {
     return {
       state,
@@ -741,7 +741,7 @@ function answered(state: WalkState, event: WalkFact<"answered">, config: Project
 
   const card = answerCard(event, walk, ledger, said);
 
-  // A walk the writer no longer holds writes nothing, so its lines go out at once.
+  // A walk the writer does not hold writes nothing, so its lines go out at once.
   if (ledger === null) {
     const next = proceeded(standing, event, config);
 
@@ -777,7 +777,7 @@ function outOf(event: WalkFact<"answered">, config: ProjectConfig): HandedLine[]
     : [];
 }
 
-/** Whether the walk goes on through this turn: through the agent's own words, or through a route it decided by a command. */
+/** Whether the walk goes on through this turn: by the agent's own words, or by a route it decided by a command. */
 function goesOn(event: WalkFact<"answered">): boolean {
   const said = tidyAnswer(event.answer.text);
 
@@ -815,7 +815,7 @@ function proceeded(state: WalkState, event: WalkFact<"answered">, config: Projec
   };
 }
 
-/** The turn's step is in the record: its lines go out now. */
+/** The turn's step is in the record: its lines go out. */
 function stepWritten(state: WalkState, event: WalkFact<"stepWritten">, config: ProjectConfig): WalkNext {
   const walk = state.walks[event.runKey];
   const back = walk?.heldTurns[event.saidId];
@@ -1446,7 +1446,7 @@ function turnsToRunAgain(state: WalkState, event: WalkFact<"repeated">, config: 
         });
       }
 
-      // Whoever waited on this agent waits no longer.
+      // Whoever waited on this agent is let down.
       const next = released(
         standing,
         {

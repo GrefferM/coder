@@ -1,9 +1,8 @@
 import type { PackedAttachment } from "./packed-attachment.interface";
 
 /**
- * The turn's words when files are attached: the person's text, then each attachment's packed block. Content goes into
- * the turn's input only; the stream shows the typed question and the «ПРИКРІПЛЕНО:» row. One hand for both: the walk
- * glues a question with it, and the record glues it again for the shared memory.
+ * The turn's input when files are attached: the person's text, then each attachment's packed block. The walk and the
+ * shared memory both glue a question with it.
  */
 export function askedWithAttached(text: string, attached: PackedAttachment[]): string {
   if (attached.length === 0) {

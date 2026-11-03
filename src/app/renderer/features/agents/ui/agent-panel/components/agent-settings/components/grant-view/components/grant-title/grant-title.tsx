@@ -8,7 +8,6 @@ import {
 } from "../../constants";
 import type { GrantTitleProps } from "./interfaces";
 
-/** The function's name and its description. */
 export function GrantTitle({ name, description }: GrantTitleProps) {
   return (
     <div

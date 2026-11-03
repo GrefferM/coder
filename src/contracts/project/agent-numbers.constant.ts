@@ -1,7 +1,4 @@
-/**
- * Bounds of an agent's numbers, shared so the stepper offers nothing the file refuses. Stepper movement and decimal
- * places belong to the screen.
- */
+/** Bounds of an agent's numbers, shared so the stepper offers nothing the file refuses. */
 export const AGENT_TEMPERATURE_LEAST = 0;
 export const AGENT_TEMPERATURE_MOST = 1;
 

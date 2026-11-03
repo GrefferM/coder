@@ -81,7 +81,6 @@ describe("LinkLayer", () => {
   });
 
   it("dims a line whose end is being asked about, since it goes with the agent", () => {
-    // The question is about the agent, and its lines go with it.
     const { container } = render(
       <LinkLayer
         {...props({

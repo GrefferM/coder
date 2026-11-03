@@ -5,7 +5,6 @@ import { SwitcherButton } from "./switcher-button";
 
 describe("SwitcherButton", () => {
   it("says which project the app stands on and where it lies", () => {
-    // The corner badge names the project and its folder.
     render(<SwitcherButton name="Coder" directory="/Users/olena/code/coder" isOpen={false} onPress={() => {}} />);
 
     expect(screen.getByText("Coder")).toBeInTheDocument();

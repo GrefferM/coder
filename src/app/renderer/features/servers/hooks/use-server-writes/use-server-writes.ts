@@ -36,14 +36,14 @@ export function useServerWrites(project: OpenProject, write: ProjectWrite): Serv
         ...written,
       };
 
-      // A variable removed from the list is no longer named by the file, so its value goes off this machine.
+      // A variable removed from the list is not named by the file, so its value goes off this machine.
       await Promise.all(
         (existing?.env ?? [])
           .filter((name) => !written.env.includes(name))
           .map((name) => saveServerEnvValue(id, name, "")),
       );
 
-      // A line written by hand in the form is agreed to: the person wrote it (36k).
+      // A line written by hand in the form is agreed to: the person wrote it.
       await consentServer(server);
       await save(
         {
@@ -72,8 +72,8 @@ export function useServerWrites(project: OpenProject, write: ProjectWrite): Serv
       // Stops the process at the press, so a server gone from the catalogue stops running.
       await closeServer(serverId);
       /**
-       * The sweep debt is recorded before the file is touched, so an app closed within the thirty seconds still knows it. The
-       * keys do not move yet.
+       * The sweep debt is recorded before the file is touched, so an app closed within the thirty seconds still knows
+       * it. The keys do not move yet.
        */
       await dropServer(serverId);
       await defer(

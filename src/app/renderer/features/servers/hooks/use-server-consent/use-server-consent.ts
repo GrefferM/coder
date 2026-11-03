@@ -4,8 +4,8 @@ import type { ProjectMcpServer } from "../../../../interfaces";
 import type { ServerConsentState } from "./interfaces";
 
 /**
- * The consent before a local server's run line first runs on this machine (36k). Which server the window stands over is
- * held by id, so a server the project stops naming takes its window with it.
+ * The consent before a local server's run line first runs on this machine. Which server the window stands over is held
+ * by id, so a server the project stops naming takes its window with it.
  */
 export function useServerConsent(servers: ProjectMcpServer[], restart: (serverId: string) => void): ServerConsentState {
   const [askedId, setAskedId] = useState<string | null>(null);

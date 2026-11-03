@@ -11,10 +11,7 @@ const NOTHING: LiveAnswer = {
   calls: [],
 };
 
-/**
- * Words arriving now, by turn. Kept apart from the walk state: tens of updates a second, read only by that turn's card,
- * never redrawing the project.
- */
+/** Arriving words by turn, outside the walk state: tens of updates a second, read only by that turn's card. */
 let arriving: Record<string, LiveAnswer> = {};
 let listening: Record<string, Set<() => void>> = {};
 
@@ -57,7 +54,7 @@ export function forgetLive(turnId: string): void {
 }
 
 /**
- * The function each turn has out now. Apart from the words because the canvas draws off it: a call is an event a few
+ * The function each turn has out. Apart from the words because the canvas draws off it: a call is an event a few
  * times a turn, a token sixty times a second.
  */
 let callsOut: Record<string, CallOut> = {};
@@ -66,8 +63,8 @@ let watching = new Set<() => void>();
 function markCallOut(turnId: string, call: LiveCall | null): void {
   const was = callsOut[turnId] ?? null;
   /**
-   * A call to a server is named by the server; a command or an agent has no server and is named by its own name. The call
-   * carries both. A choice of route runs nothing and takes no time, so it is no call out.
+   * A call to a server is named by the server, a command or an agent by its own name. A choice of route runs nothing
+   * and takes no time, so it is no call out.
    */
   const now =
     call === null || call.source === "system"
@@ -95,7 +92,7 @@ function markCallOut(turnId: string, call: LiveCall | null): void {
   }
 }
 
-/** What is out now, by turn: a command by its name, a server by the server's. */
+/** What is out, by turn: a command by its name, a server by the server's. */
 export function useCallsOut(): Record<string, CallOut> {
   const listen = useCallback((listener: () => void) => {
     watching = new Set(watching).add(listener);

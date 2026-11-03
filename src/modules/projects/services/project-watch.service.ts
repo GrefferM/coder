@@ -144,9 +144,8 @@ export class ProjectWatchService implements ProjectWatch {
   }
 
   /**
-   * Takes the watch up on the folder again, since a rename leaves an inotify watch on a dead inode.
-   *
-   * The new watch opens before the old one closes, so the folder is never unwatched.
+   * Takes the watch up on the folder again, since a rename leaves an inotify watch on a dead inode. The new watch opens
+   * before the old one closes, so the folder is never unwatched.
    */
   private arm(directory: string): void {
     const standing = this.watcher;

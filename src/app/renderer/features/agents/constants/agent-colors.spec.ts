@@ -7,12 +7,10 @@ import { LOST_PROVIDER_COLOR } from "../../../constants";
 /** Three colour families that do not cross: agent colours, pale tool-source colours, and the red of states. */
 describe("the three families of colour", () => {
   it("keeps a source's colour out of the palette an agent takes", () => {
-    // A source colour must differ from every agent colour.
     expect(ARMED_SOURCE_COLORS.filter((color) => AGENT_COLORS.includes(color))).toEqual([]);
   });
 
   it("keeps the red of a state out of both of them", () => {
-    // A resting mini-sphere colour must not equal a trouble colour.
     const trouble = [STATE_STOP_COLOR, LOST_PROVIDER_COLOR];
 
     expect(ARMED_SOURCE_COLORS.filter((color) => trouble.includes(color))).toEqual([]);

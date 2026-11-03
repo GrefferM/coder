@@ -111,8 +111,8 @@ export function AnswerCard({
           </span>
         )}
         {/*
-         * A plain gap holds the step at the far end; a panel too narrow for the whole line drops the step to its own line at
-         * that end rather than splitting a count or price.
+         * A plain gap holds the step at the far end; a panel too narrow for the line drops the step to its own line
+         * rather than splitting a count or price.
          */}
         {step !== null && (
           <span

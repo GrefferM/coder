@@ -131,7 +131,6 @@ describe("ProvidersPanel", () => {
     renderPanel([ANTHROPIC, OLLAMA]);
 
     expect(screen.getByText("ВІДДАЛЕНИЙ · КЛЮЧА НЕМАЄ · 2 МОДЕЛІ · 1 АГЕНТ")).toBeInTheDocument();
-    // A local provider's row shows whether anything answers at its address.
     expect(screen.getByText("ВІДПОВІДАЄ")).toBeInTheDocument();
   });
 

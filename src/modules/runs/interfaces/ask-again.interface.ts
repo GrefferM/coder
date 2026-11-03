@@ -9,7 +9,7 @@ export interface AskAgain {
   asked: string;
   /** The files and folders sent with the question, in the order they were glued in. */
   attached: PackedAttachment[];
-  /** Whom this question is put to; it names the row's head from now on. */
+  /** Whom this question is put to; it names the row's head. */
   askedAgentId: string;
   /** That agent's current name, kept after the agent is gone. */
   askedAgentName: string;

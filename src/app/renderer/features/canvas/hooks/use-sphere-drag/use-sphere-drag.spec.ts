@@ -76,7 +76,6 @@ describe("useSphereDrag", () => {
   });
 
   it("stays a click while the hand has not really left the sphere", () => {
-    // A trembling press selects the sphere without moving it.
     const { result, onDragStart, onMoveAgent } = drag();
 
     act(() => result.current.grabSphere(press(310, 210).event, AGENT));
@@ -89,7 +88,6 @@ describe("useSphereDrag", () => {
   });
 
   it("keeps the grip it was taken by, so the sphere does not jump under the pointer", () => {
-    // Grabbed by its edge, it stays grabbed by that edge.
     const { result } = drag();
 
     // Sphere at 300,200, grabbed 10 right and 10 below its centre.
@@ -151,7 +149,6 @@ describe("useSphereDrag", () => {
   });
 
   it("lets the sphere go back to the project's own word when the write fails", async () => {
-    // A failed write leaves the file's position in force.
     const { result } = drag(vi.fn(async () => Promise.reject(new Error("no file"))));
 
     act(() => result.current.grabSphere(press(310, 210).event, AGENT));
@@ -162,7 +159,7 @@ describe("useSphereDrag", () => {
   });
 
   it("does not take a sphere by any button but the left one", () => {
-    // The right button opens the menu and does not start a drag.
+    // The right button opens the menu.
     const { result, onDragStart } = drag();
     const pressed = press(310, 210, 2);
 

@@ -1,10 +1,7 @@
 import { useEffect } from "react";
 import type { StayAtBottom } from "../../../../hooks";
 
-/**
- * Scrolls the stream to the message the search found, centred in the box, after the stream has drawn itself; the stream
- * releases its end-following first.
- */
+/** Scrolls the stream to the found message, centred, once drawn; the stream first stops following its end. */
 export function useDriveTo(stream: StayAtBottom<HTMLElement>, foundId: string | null): void {
   const { box, stopFollowing } = stream;
 

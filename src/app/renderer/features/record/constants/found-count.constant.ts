@@ -7,10 +7,7 @@ export const FOUND_RUN_FORMS: [string, string, string] = ["ЗАПУСК", "ЗА�
 export const FOUND_COUNT_SEPARATOR = " · ";
 /** At the ceiling the second number is the word for why counting stopped. */
 export const FOUND_CEILING_WORD = "СТЕЛЯ";
-/**
- * The ceiling note: counting stopped at the ceiling of places; add a letter. Its number is in words, with its value in
- * `FOUND_CEILING_SPOKEN`.
- */
+/** Its number is in words, with its value in `FOUND_CEILING_SPOKEN`. */
 export const FOUND_CEILING_NOTE = "Далі не лічилось: місць більше за триста. Додайте літеру — і список стане коротшим.";
 
 /** The number the note spells out in words; read only by the spec. */

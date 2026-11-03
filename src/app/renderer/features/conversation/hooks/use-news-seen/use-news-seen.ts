@@ -1,12 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NewsSeen } from "./interfaces";
 
-/**
- * News of this session alone: which words waiting for the hand the person has been shown. Told every render what waits
- * elsewhere and on screen; what is on screen is read in place.
- */
+/** Which words waiting for the hand this session has shown; what stands in the on-screen stream counts as read. */
 export function useNewsSeen(elsewhere: string[], onScreen: string[]): NewsSeen {
-  /** Words the person has been shown; what is read is no longer news. */
+  /** Words the person has been shown. */
   const [readIds, setReadIds] = useState<string[]>([]);
   // Mirrors the argument: the held hand must read the current words across renders.
   const waiting = useRef(elsewhere);

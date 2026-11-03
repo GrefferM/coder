@@ -7,8 +7,8 @@ import type { ServersState } from "./interfaces";
 
 /**
  * Every declared server, asked what it hands over. The answer is held only while the project is open, never written
- * down. A remote server is asked once when the project names it; a local one is started by nobody but a person (36k),
- * so it stands unknown until «ЗАПУСТИТИ». Either is asked again on request, and when redeclared once it has been asked.
+ * down. A remote server is asked once when the project names it; a local one is started by nobody but a person, so it
+ * stands unknown until «ЗАПУСТИТИ». Either is asked again on request, and when redeclared once it has been asked.
  */
 export function useServers(directory: string, servers: ProjectMcpServer[]): ServersState {
   const [looks, setLooks] = useState<Record<string, McpLook>>({});
@@ -19,8 +19,8 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
 
   declared.current = servers;
   /**
-   * Which servers have been asked and how each was reached then; a server whose address or sign-in changed is a different
-   * server behind the same id, so its old answer is dropped.
+   * Which servers have been asked and how each was reached then; a server whose address or sign-in changed is a
+   * different server behind the same id, so its old answer is dropped.
    */
   const asked = useRef(new Map<string, string>());
   /**
@@ -88,8 +88,8 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
   }, []);
 
   /**
-   * «ЗУПИНИТИ»: lets the process go and drops what the server said, as «СКАСУВАТИ» does, and forgets that it was raised,
-   * so a change of its line in the file starts nothing. The consent to its line stays on this machine.
+   * «ЗУПИНИТИ»: lets the process go and drops what the server said, as «СКАСУВАТИ» does, and forgets that it was
+   * raised, so a change of its line in the file starts nothing. The consent to its line stays on this machine.
    */
   const stop = useCallback(
     (serverId: string) => {
@@ -131,7 +131,7 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
     void sweepServerKeys(servers.map((server) => server.id));
   }, [servers]);
 
-  // A server the project no longer names is forgotten with its answer.
+  // A server the project does not name is forgotten with its answer.
   useEffect(() => {
     const ids = new Set(servers.map((server) => server.id));
     // Declared anew since it last answered, so its answer is the old server's and is dropped.

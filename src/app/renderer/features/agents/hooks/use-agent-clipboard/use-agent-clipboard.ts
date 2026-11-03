@@ -8,7 +8,6 @@ import type { Point } from "../../../../utils/math";
 
 /** The copied agent, held by id; the pasted copy carries its mark until taken off, and the original stays held. */
 export function useAgentClipboard(project: OpenProject, writes: AgentWrites): AgentClipboard {
-  // The agent held for copying, by its own id.
   const [copiedAgentId, setCopiedAgentId] = useState<string | null>(null);
   const [pasted, setPasted] = useState<PastedAgent | null>(null);
 

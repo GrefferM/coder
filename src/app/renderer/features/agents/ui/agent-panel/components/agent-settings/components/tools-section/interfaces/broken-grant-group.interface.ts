@@ -7,10 +7,7 @@ export interface BrokenGrantRow {
   pinnedCount: number;
 }
 
-/**
- * One reason, its rows, and their source; grouped by reason as the sentence under the rows differs («функції» vs
- * «сервера»).
- */
+/** One reason, its rows and their source; grouped by reason, as each has its own sentence («функції», «сервера»). */
 export interface BrokenGrantGroup {
   key: string;
   cause: BrokenGrantCause;

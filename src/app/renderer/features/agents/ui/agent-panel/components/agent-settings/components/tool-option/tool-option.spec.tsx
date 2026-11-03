@@ -20,7 +20,6 @@ describe("ToolOption", () => {
   });
 
   it("both grants and revokes with the one press", async () => {
-    // The tick is the only way in and the only way out.
     const onToggle = vi.fn();
     const { rerender } = render(<ToolOption name="open_pr" isGranted={false} onToggle={onToggle} />);
 

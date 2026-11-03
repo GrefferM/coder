@@ -270,7 +270,7 @@ describe("ProjectFileService", () => {
     const config = await projectFileService.read(projectDirectory);
 
     assert.equal(config.agents[0].name, "unknown");
-    // The tie stood in the project file.
+    // The tie stands in the project file.
     assert.equal(config.agents[0].modelId, MODEL_ID);
     // A read writes nothing: a removed file does not come back.
     await assert.rejects(readFile(path.join(projectDirectory, "agents", `${AGENT_ID}.yaml`), "utf8"));
@@ -384,7 +384,6 @@ describe("ProjectFileService", () => {
 
     assert.equal(config.agents[0].name, "EDITOR");
 
-    // The next write splits every part into its own file.
     await projectFileService.write(projectDirectory, config);
 
     assert.match(await readFile(path.join(projectDirectory, "agents", `${AGENT_ID}.yaml`), "utf8"), /name: EDITOR/);

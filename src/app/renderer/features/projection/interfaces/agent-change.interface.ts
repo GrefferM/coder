@@ -1,6 +1,6 @@
 /**
  * One agent of a run, as it walked («тоді», from the record) against as it stands now («зараз», from the project;
- * absent when the project no longer has the agent).
+ * absent when the project does not have the agent).
  */
 export interface AgentChange {
   id: string;

@@ -54,8 +54,8 @@ export function AgentSphere({ agent, place, wearing, doing, acts }: AgentSphereP
         onSelect={acts.onSelect}
       />
       {/*
-       * What the agent is armed with. The arc stands beside the sphere's button, not inside it (its targets are buttons), and
-       * counts places from the same box.
+       * The arc stands beside the sphere's button, not inside it (its targets are buttons), and counts places from the
+       * same box.
        */}
       <SphereOrbs
         orbs={armedWith(agent.tools, wearing.sources)}

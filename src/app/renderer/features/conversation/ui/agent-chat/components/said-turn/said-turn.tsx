@@ -81,7 +81,7 @@ export function SaidTurn({
       {isNewDay && <RuleWithWord>{dayLabel(said, new Date())}</RuleWithWord>}
       {/* A rule marks where the person asked again. */}
       {isAskedAgain && <RuleWithWord>{AGENT_CHAT_ASKED_AGAIN_LABEL}</RuleWithWord>}
-      {/* The memory was compressed before this turn went; the rule says so ahead of the card, and none of what was written. */}
+      {/* The memory was compressed before this turn went; the rule says so ahead of the card. */}
       {message.compressed !== null && <SaidRow words={compressedMemoryWords(message.compressed)} />}
       {isRow ? (
         <>

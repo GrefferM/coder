@@ -55,10 +55,7 @@ export function ProvidersPanel({
   const [drafts, setDrafts] = useState<Record<string, ProviderDraft>>({});
   const draftOf = (provider: ProviderState) => drafts[provider.id] ?? NOTHING_TYPED;
 
-  /**
-   * Set up when everything it asks for is present and it is not off; a local provider always has its customary
-   * address.
-   */
+  /** Nothing missing and not off; a local provider always has its customary address. */
   const isFilled = (provider: ProviderState) => !provider.isOff && providerMissing(provider).length === 0;
   // An off provider is not asked, so it is never «not answering».
   const isSilent = (provider: ProviderState) =>

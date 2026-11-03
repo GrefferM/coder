@@ -31,10 +31,7 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
           level: levels[message.id],
           at: message.began,
         };
-  /**
-   * The turns of one question, the only place they stand; a turn whose question is not in this stream belongs to another
-   * run.
-   */
+  /** A question's turns still out; a turn whose question is not in this stream belongs to another run. */
   const liveIn = (questionId: string) => working.filter((one) => one.questionId === questionId);
   /** Whether a turn of this question stands in the stream, so the pass has something to show. */
   const isWalked = (asked: ChatMessage) =>
@@ -100,10 +97,7 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
       }}
     >
       {band.head !== null && <OpenedBand head={band.head} onExport={band.onExport} />}
-      {/*
-       * The stream's search stands over the stream and under the band, spaced on every side, so it reads as over the
-       * conversation, not another band.
-       */}
+      {/* Spaced on every side, so it reads as over the conversation, not another band. */}
       <StreamSearch {...band.search} />
       {/* The down button sits inside the stream, so its positioning box is the stream's. */}
       <div

@@ -5,7 +5,7 @@ import {
   SECOND_LEVEL_TEXT_COLOR,
 } from "../../../../../constants";
 
-/** The window, centred over the working area (36k). */
+/** The window, centred over the working area. */
 export const SERVER_CONSENT_WIDTH_PX = 460;
 export const SERVER_CONSENT_BACKGROUND_COLOR = PANEL_GROUND_COLOR;
 export const SERVER_CONSENT_BORDER_COLOR = "#2c3550";

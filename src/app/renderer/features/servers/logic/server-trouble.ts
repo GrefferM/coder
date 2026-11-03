@@ -3,9 +3,8 @@ import type { McpLook } from "../../../interfaces";
 import type { ServerTrouble } from "../interfaces";
 
 /**
- * Why a server is not up. «Fell» is one answer among several: a missing token or a variable without a value on this
- * machine also stops it, each with its own sentence and action. Matched on the refusals' own names in the string the
- * main process refused with.
+ * Why a server is not up: fell, a missing token, or a variable without a value on this machine, each with its own
+ * sentence and action. Matched on the refusals' own names in the string the main process refused with.
  */
 export function serverTrouble(look: McpLook | null): ServerTrouble {
   if (look === null || look.isUp) {

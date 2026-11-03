@@ -64,7 +64,7 @@ describe("McpMemory", () => {
   });
 
   it("keeps the first count through a second change nobody has looked at yet", async () => {
-    // The arrow shows what it used to be: 34 → 33 → 32 is still 34 → 32.
+    // The arrow starts from the count before the first unread change: 34 → 33 → 32 is still 34 → 32.
     const memory = new McpMemory(store());
 
     await memory.after(SERVER_ID, given("a", "b", "c"));

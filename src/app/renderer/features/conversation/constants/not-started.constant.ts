@@ -95,8 +95,8 @@ export const NOT_STARTED_ENDS: Record<NotStartedReason, NotStartedEnd> = {
     act: "prompt",
     state: NOT_STARTED_STATES.lostPrompt,
   },
-  // A granted local server whose run line waits for this machine's consent; the act opens the window of 36k over it, and
-  // the card carries no word of its own, as the frame draws it.
+  // A granted local server whose run line waits for this machine's consent; the act opens the consent window over it,
+  // and the card carries no word of its own.
   noConsent: {
     label: null,
     actLabel: "ПОКАЗАТИ, ЩО ЗАПУСТИТЬСЯ",

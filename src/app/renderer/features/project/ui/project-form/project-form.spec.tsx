@@ -27,7 +27,6 @@ describe("ProjectForm", () => {
   });
 
   it("names everything a project is on the disk, not two of them", () => {
-    // The form lists everything the project keeps.
     renderForm();
 
     for (const { name } of PROJECT_FORM_APPEARING) {

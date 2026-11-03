@@ -2,7 +2,7 @@ import type { ChatMessage } from "../interfaces";
 
 /**
  * Messages of this stream containing the word, freshest first; one hit per message, substring and case-insensitive.
- * What the app itself says (a turn that never began, a rule's word, handoff lines) is not searched.
+ * The app's own words are not searched.
  */
 export function foundInStream(messages: ChatMessage[], query: string): string[] {
   const looked = query.trim().toLocaleLowerCase();

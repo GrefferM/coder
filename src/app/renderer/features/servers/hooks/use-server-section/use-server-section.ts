@@ -21,9 +21,7 @@ export function useServerSection(project: OpenProject, writes: ServerWrites): Se
   const [armedServerId, setArmedServerId] = useState<string | null>(null);
   const [armedHeld, setArmedHeld] = useState<McpSecretsHeld>(NOTHING_HELD);
 
-  /**
-   * What this machine holds for the open server; asked once when the form opens, as it answers whether and not what.
-   */
+  /** What this machine holds for the open server; asked once when the form opens, as it answers whether, not what. */
   useEffect(() => {
     if (openServerId === null || openServerId === "new") {
       setHeld(NOTHING_HELD);

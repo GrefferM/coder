@@ -5,10 +5,9 @@ import { agentTools, memoryLength, memoryPlan, systemTools, turnLength } from ".
 import type { TurnAnswer, TurnAsked, TurnToAsk } from "../../../contracts";
 
 /**
- * Every wall a turn can meet before it is asked: the agent's own (`agentReadiness`), then words that leave the memory
- * less than the ceiling holds back for it (or, where the agent keeps none, more than the ceiling). The first wall met is
- * the answer; with none, what the turn carries to the model, and the budget its memory is first compressed into where it
- * has to be.
+ * Every wall a turn can meet before it is asked: the agent's own, then words that leave the memory less than the
+ * ceiling holds back for it (or, where the agent keeps none, more than the ceiling). The first wall met is the answer;
+ * with none, what the turn carries to the model, and the budget its memory is first compressed into where it has to be.
  */
 export function turnWall(turn: TurnToAsk): TurnAnswer | TurnAsked {
   const { catalogue, asked, stands } = turn;
@@ -43,9 +42,8 @@ export function turnWall(turn: TurnToAsk): TurnAnswer | TurnAsked {
         });
   }
 
-  // The system commands the agent was granted become functions, with the agents its lines lead to as the options. A provider
-  // without function calls never gets here with a grant (the readiness wall stops it). A tool of its own by the same name
-  // gives way.
+  // The system commands the agent was granted become functions, with the agents its lines lead to as the options; a
+  // tool of its own by the same name gives way.
   const system = systemTools(agent.tools, turn.followers);
 
   return {

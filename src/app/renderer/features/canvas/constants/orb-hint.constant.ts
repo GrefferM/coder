@@ -1,6 +1,6 @@
 import type { ToolSource } from "../../../interfaces";
 
-/** Words of the hint over a mini-sphere: three cases, one shape. */
+/** Words of the hint over a mini-sphere. */
 export const ORB_HINT_SERVER_KIND = "MCP-СЕРВЕР";
 /** One command is one mark: the singular, then the command's name. */
 export const ORB_HINT_COMMAND_KIND = "КОМАНДА ПРОЄКТУ";
@@ -26,7 +26,7 @@ export const ORB_HINT_BROKEN_FORMS: [string, string, string] = ["зламани�
 export const ORB_HINT_FUNCTION_FORMS: [string, string, string] = ["функції", "функцій", "функцій"];
 export const ORB_HINT_OF = " з ";
 export const ORB_HINT_SEPARATOR = " · ";
-/** A server the project no longer names stays on the arc until the grant is taken back. */
+/** A server the project does not name stays on the arc until the grant is taken back. */
 export const ORB_HINT_GONE_NAME = "СЕРВЕРА НЕМАЄ";
 /** Likewise a command the project has dropped. */
 export const ORB_HINT_GONE_COMMAND = "КОМАНДИ НЕМАЄ";

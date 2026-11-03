@@ -54,9 +54,7 @@ interface ChatOverrides {
   acts?: Partial<ChatActs>;
 }
 
-/**
- * The chat's own state holds the open-calls memory and the catalogue reaches the same one, so presses on a row work.
- */
+/** The chat's own state holds the open-calls memory and the catalogue reaches the same one, so row presses work. */
 function Chat(props: AgentChatProps) {
   const openCalls = useOpenCalls();
 
@@ -795,7 +793,7 @@ describe("AgentChat", () => {
       },
     });
 
-    // No exception remains: the card's own act raises the ceiling and the same words go through.
+    // The card's own act raises the ceiling, so the same words can go through.
     screen.getByText(SAID_ROW_AGAIN_LABEL).click();
     expect(onAskAgain).toHaveBeenCalledWith(
       expect.objectContaining({

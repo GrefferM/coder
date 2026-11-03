@@ -35,9 +35,9 @@ interface Composed {
 }
 
 /**
- * One turn asked of the model layer. Walls are checked first, so the model is never asked past one; where the memory has
- * to be compressed first, the composer is asked once and the turn goes with its message. An answer, a refusal or a fall
- * all return as words with their cost, the composer's included.
+ * One turn asked of the model layer. Walls are checked first, so the model is never asked past one; where the memory
+ * has to be compressed first, the composer is asked once and the turn goes with its message. An answer, a refusal or a
+ * fall all return as words with their cost, the composer's included.
  */
 export class TurnAsker {
   constructor(private readonly llm: TurnLlm) {}
@@ -62,7 +62,8 @@ export class TurnAsker {
         const budget = composerBudget(wall.agent.memory, wall.compression.budget);
         const said = await this.compose(turn, wall, budget);
 
-        // A stop is the person's act, not the composer's fall; what it had written is not a memory, but what it used is spent.
+        // A stop is the person's act, not the composer's fall; what it had written is not a memory, but what it used
+        // is spent.
         if (said.isStopped) {
           return this.answered(
             {

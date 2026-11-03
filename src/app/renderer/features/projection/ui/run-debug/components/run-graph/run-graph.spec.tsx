@@ -233,9 +233,7 @@ describe("RunGraph", () => {
     });
     fireEvent.mouseUp(window);
 
-    // The field pans both ways and the graph moves with it.
     expect(container.querySelector('[style*="translate(60px, 40px)"]')).toBeInTheDocument();
-    // The ruler follows horizontally but stays at the top.
     expect(ruler.style.left).toBe(`${60 + 150 * 1.2 - 60}px`);
     expect(ruler.style.top).toBe(stood);
   });

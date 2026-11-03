@@ -16,10 +16,7 @@ import {
 } from "../../../../constants";
 import type { RunRowHeadProps } from "./interfaces";
 
-/**
- * A row's head: a dot, the state word, the quiet name of the last addressee in that agent's colour (colourless if the
- * agent is gone), and the hour with the work beside it.
- */
+/** A row's head: the state, the last addressee, and the hour with the work beside it. */
 export function RunRowHead({ run, agents, isRunning, isRaised }: RunRowHeadProps) {
   const dot = RUN_HISTORY_STATE_DOTS[run.state];
   const asked = askedStanding(run, agents);

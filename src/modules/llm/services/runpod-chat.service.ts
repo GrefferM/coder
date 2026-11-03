@@ -107,7 +107,7 @@ export class RunPodChat extends BaseChatModel {
     }
   }
 
-  /** Takes the job off the queue; a queue that no longer has it is ignored. */
+  /** Takes the job off the queue; a job the queue does not hold is ignored. */
   private async dropped(jobId: string): Promise<void> {
     await this.asked(`${RUNPOD_CANCEL_PATH}${jobId}`, {
       method: "POST",

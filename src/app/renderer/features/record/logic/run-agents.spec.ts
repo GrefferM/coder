@@ -42,7 +42,6 @@ describe("runAgents", () => {
   });
 
   it("keeps today's name and colour over the ones the record wrote down", () => {
-    // An agent renamed and recoloured after the run reads as it is now.
     const walked = aStep({
       agentName: "Розвідник",
       agentColor: "#b18aff",

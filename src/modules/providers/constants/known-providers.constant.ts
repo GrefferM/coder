@@ -35,7 +35,7 @@ export const KNOWN_PROVIDERS: KnownProvider[] = [
     customaryAddress: null,
   },
   {
-    /** The OpenCode Go subscription: Claude, GPT, Grok, MiniMax, Qwen, DeepSeek and others behind one key. */
+    /** The OpenCode Go subscription: many vendors' models behind one key. */
     id: "opencode",
     name: "OpenCode Go",
     kind: "remote",

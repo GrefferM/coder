@@ -33,7 +33,6 @@ function row(patch: Partial<RunRow> = {}): RunRow {
 
 describe("askedStanding", () => {
   it("names the agent as they stand today, whatever the record called them then", () => {
-    // A rename is the project's word; the list does not keep the old name.
     expect(askedStanding(row(), AGENTS)).toEqual({
       name: "ШУКАЧ",
       color: "#6fd3d8",

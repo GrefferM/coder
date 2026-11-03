@@ -1,8 +1,5 @@
 import { BROKEN_COLOR, FALLEN_COLOR } from "../../../constants";
-/**
- * A server's state is a live process and connection, so its row has a dot and words. Green is «answering»; the troubled
- * ones are `FALLEN_COLOR` and, for broken but standing, `BROKEN_COLOR`.
- */
+/** «Answering»; troubled servers take `FALLEN_COLOR`, or `BROKEN_COLOR` when broken but standing. */
 export const SERVER_UP_COLOR = "#4ade80";
 export const SERVER_UP_GLOW = "0 0 7px #4ade80";
 export const SERVER_FELL_COLOR = FALLEN_COLOR;

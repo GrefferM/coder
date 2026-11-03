@@ -23,7 +23,6 @@ export class RunMemoryEntity implements RunMemoryRecord {
   @PrimaryGeneratedColumn("uuid")
   declare id: string;
 
-  /** Whose memory it is. */
   @Column({
     type: "varchar",
   })

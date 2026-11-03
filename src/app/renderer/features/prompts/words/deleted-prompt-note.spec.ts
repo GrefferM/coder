@@ -21,7 +21,6 @@ describe("deletedPromptNote", () => {
   });
 
   it("says outright when a prompt is on nobody", () => {
-    // With no agents, the second half says nothing goes with it.
     expect(deletedPromptNote("Правки коду", 0)).toBe(
       "Заберемо промпт «Правки коду». Його нікому не призначено — з ним не піде нічого.",
     );

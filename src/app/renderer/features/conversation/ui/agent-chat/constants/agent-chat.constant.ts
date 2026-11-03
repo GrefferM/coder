@@ -92,10 +92,7 @@ export const AGENT_CHAT_STOP_ICON_SIZE_PX = 11;
 export const AGENT_CHAT_STOP_BLINK_CLASS = "stop-blink";
 export const AGENT_CHAT_STOP_GAP_PX = 7;
 
-/**
- * During a walk the field shows a dimmer edge and darker ground with a word instead of the name; writing is allowed and
- * waits.
- */
+/** During a walk the field has a dimmer edge, darker ground and this word; writing is allowed and waits. */
 export const AGENT_CHAT_WALKING_PLACEHOLDER = "Ходьба йде — зачекайте або зупиніть";
 
 /**
@@ -140,10 +137,7 @@ export const AGENT_CHAT_OPENED_DOT_GLOW_PX = 6;
 export const AGENT_CHAT_OPENED_WHEN_COLOR = "#5c6478";
 export const AGENT_CHAT_OPENED_LABEL_COLOR = "#dde1ee";
 
-/**
- * The card the search drove to, lit for a moment then released. An inset shadow, not a border, so no card shifts;
- * transparent at rest so it fades.
- */
+/** Lights the card the search drove to: an inset shadow, so no card shifts; transparent at rest so it fades. */
 export const AGENT_CHAT_FOUND_EDGE = "inset 2px 0 0 #38a3ff";
 export const AGENT_CHAT_FOUND_EDGE_GONE = "inset 2px 0 0 transparent";
 export const AGENT_CHAT_FOUND_FADE = "box-shadow 600ms ease";
@@ -170,10 +164,7 @@ export const AGENT_CHAT_OPENED_EXPORT_TONE: IconTone = {
   lit: AGENT_CHAT_OPENED_LABEL_COLOR,
 };
 
-/**
- * The button down: there only while the end of the stream is out of view; news labels it rather than adding a second.
- * At the right edge above the field so it never covers the last reply.
- */
+/** The button down, shown only while the stream's end is out of view; news labels it instead of a second button. */
 export const AGENT_CHAT_TO_BOTTOM_LABEL = "Вниз потоку";
 export const AGENT_CHAT_TO_BOTTOM_SIZE_PX = 32;
 export const AGENT_CHAT_TO_BOTTOM_RIGHT_PX = 14;

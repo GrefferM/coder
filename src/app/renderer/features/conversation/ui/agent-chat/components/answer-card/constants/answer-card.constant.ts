@@ -12,7 +12,7 @@ export const ANSWER_CARD_CEILING_LABEL = "СТЕЛЯ ВІДПОВІДІ ";
 /** Dots shown in the cost slot while the answer is streaming. */
 export const ANSWER_CARD_DOT_SIZE_PX = 3;
 
-/** Eight rather than six, to let the step dot breathe. */
+/** A step head takes the wider gap, so the step dot breathes. */
 export const ANSWER_CARD_HEAD_GAP_PX = 6;
 export const ANSWER_CARD_STEP_HEAD_GAP_PX = 8;
 

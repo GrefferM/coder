@@ -4,7 +4,7 @@ import type { Agent, ProjectModel } from "../../../interfaces";
 
 /**
  * What changed about a run's agents since it walked: an agent is listed when its name, model or temperature differs, or
- * the project no longer has it. An agent that walked more than once is read off its first turn.
+ * the project does not have it. An agent that walked more than once is read off its first turn.
  */
 export function runChanges(
   run: WholeRun | null,

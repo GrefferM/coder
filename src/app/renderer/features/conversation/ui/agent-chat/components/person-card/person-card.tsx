@@ -35,10 +35,7 @@ import { AttachGlyph } from "../attach-glyph";
 import { attachedName } from "../../../../words";
 import type { PersonCardProps } from "./interfaces";
 
-/**
- * The person's own reply, signed like an agent's (sign above the card, no step number); the way into the projection
- * sits under the text.
- */
+/** The person's reply, signed like an agent's but with no step; the way into the projection sits under the text. */
 export function PersonCard({ text, at, attached, onDebug, isFound, looked = "" }: PersonCardProps) {
   return (
     <div

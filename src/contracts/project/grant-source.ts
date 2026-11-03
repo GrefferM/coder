@@ -13,10 +13,7 @@ export interface GrantSource {
   functionName: string | null;
 }
 
-/**
- * The source a grant points at, in one shape for either kind. Callers use this rather than reading `commandId`,
- * `serverId` and `functionName` themselves.
- */
+/** The source a grant points at, in one shape for every kind. */
 export function sourceOf(grant: ToolGrant): GrantSource {
   if (isCommandGrant(grant)) {
     return {

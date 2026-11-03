@@ -9,7 +9,7 @@ export function useModelSection(project: OpenProject, writes: ModelWrites): Mode
   // The opened model; `new` before it exists.
   const [openModelId, setOpenModelId] = useState<string | "new" | null>(null);
   const [armedModelId, setArmedModelId] = useState<string | null>(null);
-  // The form was opened by a card's act, so it opens on the field that card named.
+  // Opened by a card's act, the form opens on the field that card named.
   const [isMending, setIsMending] = useState(false);
   const [edits, setEdits] = useState<Partial<ModelFormValues> | null>(null);
 

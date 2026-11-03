@@ -106,8 +106,7 @@ describe("ProjectWatchService", () => {
   });
 
   it("notices a change that landed before the watch was listening", async () => {
-    // A change between opening a watch and its first delivery is never queued; the watch's own sweep read finds it (see
-    // `sweep`).
+    // A change between opening a watch and its first delivery is never queued; the watch's own sweep read finds it.
     const watch = watching();
 
     await watch.follow(directory);

@@ -33,7 +33,6 @@ export function useShownStream(
   const [doomedRun, setDoomedRun] = useState<RunRow | null>(null);
   // Whether the whole visible list is armed for deletion.
   const [isForgettingAll, setIsForgettingAll] = useState(false);
-  /** The search word, shared by the history list and the stream. */
   const [query, setQuery] = useState("");
   /** The hit a pressed row pointed at; the stream scrolls to and marks that message. */
   const [drivenTo, setDrivenTo] = useState<RunHit | null>(null);
@@ -198,7 +197,6 @@ export function useShownStream(
       setAt(null);
       setDrivenTo(null);
     },
-    /** This stream's own matches; «3 З 8» counts these. */
     inStream,
     standingAt,
     /** The card the stream stands on, which wears the stripe. */
@@ -207,7 +205,6 @@ export function useShownStream(
     toPreviousFound: () => step(-1),
     /** One hit per run containing the word; empty while the field is. */
     hits: search.hits,
-    /** The message the search drove to, or null. */
     drivenTo,
     /** A fresh stream; releases the opened run, which took the stream's place. */
     fresh: () => {

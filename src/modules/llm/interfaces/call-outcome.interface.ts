@@ -1,7 +1,7 @@
 import type { ToolMessage } from "@langchain/core/messages";
 import type { ChatCost, RouteChoice, ToolMemory, TurnCall } from "../../../contracts";
 
-/** What one call hands back to its turn: the message for the model, the row to record, and what the call spent or decided. */
+/** What one call hands back to its turn. */
 export interface CallOutcome {
   message: ToolMessage;
   /** The row of the call; none for a call that never happened. */

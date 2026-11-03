@@ -116,7 +116,6 @@ describe("SettingsNumbers", () => {
   });
 
   it("says under a row what it was, where the draft has moved it", () => {
-    // Each changed row shows its own «було»; an unchanged row shows none.
     render(
       <SettingsNumbers
         draft={draft}

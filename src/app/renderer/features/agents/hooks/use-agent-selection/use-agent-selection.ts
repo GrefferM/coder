@@ -6,7 +6,7 @@ import type { AgentWrites } from "../use-agent-writes";
 import type { AgentSelection } from "./interfaces";
 import type { Point } from "../../../../utils/math";
 
-/** The selected agent; writes go through `AgentWrites`. */
+/** The selected agent, the place claimed for a new one, and the deletion being asked about. */
 export function useAgentSelection(
   project: OpenProject,
   writes: AgentWrites,
@@ -27,11 +27,9 @@ export function useAgentSelection(
   /** Canvas click: a sphere selects, empty space deselects. */
   function select(agentId: string | null) {
     setSelectedAgentId(agentId);
-    // Selecting anything else withdraws the deletion question.
     setArmedAgentId(null);
     // A sphere click does not reach the window, so the copy's mark is dropped here.
     onLetGoOfCopy();
-    // Any selection change abandons the creation claim.
     setPending(null);
   }
 
@@ -95,7 +93,6 @@ export function useAgentSelection(
   }
 
   return {
-    /** A pasted copy becomes selected and no claim stands. */
     takePut: (agentId: string) => {
       setPending(null);
       setSelectedAgentId(agentId);

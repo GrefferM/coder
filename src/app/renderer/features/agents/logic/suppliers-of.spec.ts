@@ -38,7 +38,6 @@ const CONFIG = aConfig({
 
 describe("suppliersOf", () => {
   it("gives the agents whose lines come into this one, in the order the file holds them", () => {
-    // Order follows the project file.
     expect(suppliersOf(CONFIG, "agent-1").map((agent) => agent.id)).toEqual(["agent-2", "agent-3"]);
   });
 

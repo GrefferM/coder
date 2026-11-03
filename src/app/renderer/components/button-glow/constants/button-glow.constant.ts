@@ -3,10 +3,9 @@ export const GLOW_PARTICLE_RADIUS_PX = 3;
 /** Overlay margin past the button edge, px; keeps border particles from being clipped. */
 export const GLOW_OVERLAY_MARGIN_PX = GLOW_PARTICLE_RADIUS_PX + 2;
 
-/** Particle count, evenly spaced along the border. */
+/** Evenly spaced along the border. */
 export const GLOW_PARTICLE_COUNT = 2;
 
-/** Particle speed along the perimeter, px/s. */
 export const GLOW_PERIMETER_PX_PER_SECOND = 50;
 
 /** Outline and particle color. */

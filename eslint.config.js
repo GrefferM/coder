@@ -58,16 +58,13 @@ const apiImport = {
   message: "A drawing reaches the machine through a hook, never itself.",
 };
 
-// One rule set two blocks deep does not add up — the narrower block replaces the wider one whole,
-// and every ban the wider one carried is gone for those files. So the house's own bans stand here as
-// one list, and a block that has something of its own to say spreads this list and adds to it.
+// A narrower block replaces the wider one's rule whole, so the house bans are one list a block spreads and adds to.
 const rendererLayers = [rendererModulesImport, pagesImport, ipcImport, neighbourInnards];
 
 export default tseslint.config(
   {
-    // `design/` is the designer's own artifact — a page and its vendored React, neither ours to
-    // lint; `_to_delete/` waits to be deleted by hand; `.tools/`
-    // holds whatever the person keeps on this machine alone, and travels with no clone of this.
+    // `design/` is the design reference and its vendored React; `_to_delete/` waits to be deleted by hand;
+    // `.tools/` is this machine's alone.
     ignores: ["dist/**", "node_modules/**", "design/**", "_to_delete/**", ".tools/**"],
   },
   {
@@ -79,7 +76,7 @@ export default tseslint.config(
   tseslint.configs.recommended,
   eslintConfigPrettier,
   {
-    // The renderer runs in a browser context, not Node, so it gets the browser globals instead.
+    // The renderer runs in a browser, not Node.
     files: ["src/app/renderer/**/*.{ts,tsx,mts,cts}"],
     languageOptions: {
       globals: globals.browser,
@@ -162,10 +159,8 @@ export default tseslint.config(
     },
   },
   {
-    // Inside `features/`, the road out of a subject's own door and back in is the same door. A path that
-    // names `features/` from in here has climbed to the renderer's root to come back down — to the subject it
-    // started in, or to a neighbour one `..` away. This stands on the base rule and not the typed one so that it
-    // adds to the bans above instead of replacing them: two blocks setting one rule name do not add up.
+    // A path naming `features/` from inside it has climbed to the renderer's root to come back down. The base rule, not
+    // the typed one, so it adds to the bans above instead of replacing them.
     files: ["src/app/renderer/features/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": [
@@ -183,8 +178,7 @@ export default tseslint.config(
     },
   },
   {
-    // `src/contracts` is what both processes agree on and nothing that runs, so it imports nothing
-    // but itself — the moment it takes something, one process's code is in the other's bundle.
+    // `src/contracts` imports nothing but itself: anything it took would put one process's code in the other's bundle.
     files: ["src/contracts/**/*.ts"],
     rules: {
       "@typescript-eslint/no-restricted-imports": [
@@ -201,9 +195,8 @@ export default tseslint.config(
     },
   },
   {
-    // Nothing shared may know a subject: the moment it does, it is not shared. Every shared folder says it,
-    // `logic/` among them — what one subject alone asks belongs inside that subject. Three blocks and not one,
-    // because a shared drawing, a shared hook and a shared rule are barred from different things.
+    // Nothing shared may know a subject. Three blocks, as a shared drawing, a shared hook and a shared rule are barred
+    // from different things.
     files: ["src/app/renderer/components/**/*.{ts,tsx}"],
     ignores: ["**/*.spec.{ts,tsx}"],
     rules: {
@@ -245,8 +238,7 @@ export default tseslint.config(
     },
   },
   {
-    // Type is the atoms' to say: `Mark`, `Words`, `Chip` and the rest carry their own, and a place
-    // that needs its own writes a constant beside itself. A bare number here is type laid by hand.
+    // The atoms (`Mark`, `Words`, `Chip`) carry their own type.
     files: ["src/app/renderer/**/*.{ts,tsx}"],
     ignores: ["**/*.spec.{ts,tsx}", "**/*.constant.ts"],
     rules: {

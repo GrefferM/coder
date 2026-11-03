@@ -398,7 +398,7 @@ describe("turnWall", () => {
   });
 
   it("stops a turn granted a server whose run line this machine has not agreed to, naming that server by id", () => {
-    // Nothing was started for it, and nothing is sent for the turn either (36k).
+    // Nothing was started for it, and nothing is sent for the turn either.
     const stood = turnWall(
       turn({
         agent: {

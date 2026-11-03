@@ -45,7 +45,6 @@ describe("StandingBand", () => {
   });
 
   it("says nothing over a run where the record and the project agree", () => {
-    // Renders nothing when nothing differs.
     const { container } = render(<StandingBand standings={[standing(), standing()]} />);
 
     expect(container).toBeEmptyDOMElement();

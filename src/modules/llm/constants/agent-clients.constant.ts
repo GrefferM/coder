@@ -144,8 +144,8 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
   [RUNPOD_QUEUE_PROVIDER_ID]: {
     failureHint: null,
     /**
-     * A serverless endpoint of the person's own, reached through its queue: the key is theirs and the address carries the
-     * endpoint's id. The address is taken as it stands, with no `/v1`.
+     * A serverless endpoint of the person's own, reached through its queue: the key is theirs and the address carries
+     * the endpoint's id. The address is taken as it stands, with no `/v1`.
      */
     needs: ["key", "address"],
     open: (opening) =>
@@ -159,8 +159,8 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
   [RUNPOD_OPENAI_PROVIDER_ID]: {
     failureHint: RUNPOD_OPENAI_FAILURE_HINT,
     /**
-     * The same endpoint over the OpenAI protocol it serves: the key is the person's, the address the endpoint's root, and
-     * the model's name is sent and must be the one the endpoint lists.
+     * The same endpoint over the OpenAI protocol it serves: the key is the person's, the address the endpoint's root,
+     * and the model's name is sent and must be the one the endpoint lists.
      */
     needs: ["key", "address"],
     open: (opening) =>

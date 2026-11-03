@@ -16,15 +16,10 @@ export function memoryThreshold(compressAt: number, ceiling: number): number {
 }
 
 /**
- * What to do about the memory before this turn, in percent of the model's ceiling the agent has written.
- *
- * The system prompt and the question are never compressed, and a kept memory, once compressed, is the target's share of
- * the ceiling, full or not. So the turn's own words must leave room for it below the threshold: words and target
- * together reach it, and the memory just compressed would be compressed again by the very next turn. That is the one
- * wall, and the person can mend it by shortening the words. Short of it the memory can always be made to fit. An agent
- * whose memory is off has nothing held back and goes while the turn fits the ceiling.
- *
- * Otherwise the turn goes as it stands below the threshold, and at it the memory is compressed to the target.
+ * What to do about the memory before this turn: below the threshold it goes as it stands, at it the memory is
+ * compressed to the target. The system prompt and the question are never compressed, so with the target's share they
+ * must stay under the threshold, or the memory just compressed would be compressed again by the next turn: that is the
+ * one wall. An agent whose memory is off goes while the turn fits the ceiling.
  */
 export function memoryPlan(agent: MemorySettings, length: TurnLength): MemoryPlan {
   const { prompt, asked, total, ceiling } = length;

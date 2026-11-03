@@ -53,7 +53,6 @@ describe("useLinkDraft", () => {
     act(() => result.current.drawFrom("agent-1", AT));
     act(() => result.current.cancel());
 
-    // A cancelled line leaves the drawing but stays, crossed out, while it fades.
     expect(result.current.drawn).toBeNull();
     expect(result.current.cancelled?.agentId).toBe("agent-1");
 

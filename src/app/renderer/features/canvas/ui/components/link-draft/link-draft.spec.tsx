@@ -31,7 +31,6 @@ describe("LinkDraft", () => {
   });
 
   it("over a sphere names both ends in order and puts an arrow on the line", () => {
-    // The line now says exactly what letting go would make.
     const { container } = render(<LinkDraft from={from} at={at} target={target} />);
 
     expect(screen.getByText(`Шукач${LINK_DIRECTION_ARROW}Перелікар`)).toBeInTheDocument();

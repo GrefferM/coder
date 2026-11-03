@@ -34,9 +34,7 @@ function said(patch: Partial<ChatMessage>): ChatMessage {
   };
 }
 
-/**
- * One stream's walks with their words; each word is stamped with its walk's question so stream order is question order.
- */
+/** One stream's walks with their words, each stamped with its walk's question so stream order is question order. */
 function walk(said: Record<string, { askedAt: number; words: ChatMessage[] }>): WalkSnapshot {
   return {
     ...emptyWalk(),

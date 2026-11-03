@@ -20,9 +20,8 @@ import {
 import type { StartingLinesProps } from "./interfaces";
 
 /**
- * What a row says while being raised, under the name and the clock; no bar.
- *
- * The second line comes on the twentieth second; the ceiling stands for the whole wait, with «СКАСУВАТИ» beside it.
+ * What a row says while being raised, under the name and the clock; no bar. The second line comes on the twentieth
+ * second; the ceiling stands for the whole wait, with «СКАСУВАТИ» beside it.
  */
 export function StartingLines({ waited, onCancel }: StartingLinesProps) {
   return (

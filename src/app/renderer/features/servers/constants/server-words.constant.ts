@@ -54,10 +54,7 @@ export const SERVER_ANSWERED_PREFIX = "Відповів ";
 export const SERVER_UPDATED_PREFIX = "оновлено ";
 /** «34 → 33»: news, not a state; it goes out when the page is opened. */
 export const SERVER_COUNT_ARROW = " → ";
-/**
- * Offered for a remote server that is answering: its list is asked for again and nothing is killed. «СКАСУВАТИ» is not
- * its pair, since it ends the waiting.
- */
+/** Offered for a remote server that is answering: its list is asked for again and nothing is killed. */
 export const SERVER_ASK_AGAIN_LABEL = "ПЕРЕПИТАТИ";
 /** A server that answers and works for nobody is restarted, not started. */
 export const SERVER_RESTART_ALIVE_LABEL = "ПЕРЕЗАПУСТИТИ";
@@ -69,8 +66,5 @@ export const SERVER_CALL_FELL_FORMS: [string, string, string] = [
 ];
 export const SERVER_NONE_ANSWERED_NOTE_TAIL =
   ", вдалого не було жодного з підключення. Каталог сервер віддав, роботу — ні.";
-/**
- * A line of a server's answer that is markdown structure, not speech (heading, fence, rule); it is skipped so the
- * sentence under it shows.
- */
+/** A markdown-structure line of a server's answer (heading, fence, rule), skipped so the sentence under it shows. */
 export const SERVER_SAID_MARK = /^(#{1,6}\s|`{3}|-{3,}|\*{3,}|={3,})/;

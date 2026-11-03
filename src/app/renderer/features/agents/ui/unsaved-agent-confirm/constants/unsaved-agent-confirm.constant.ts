@@ -19,9 +19,7 @@ export const UNSAVED_AGENT_DIFF_NEW_COLOR = FIRST_LEVEL_TEXT_COLOR;
 export const UNSAVED_AGENT_DIFF_SEPARATOR = " ·";
 export const UNSAVED_AGENT_DIFF_ARROW = "→";
 
-/**
- * Letters per box line: 400px less the dialog's 16 and the block's 11 on both sides, at 10.5px mono and three 5px gaps.
- */
+/** Letters per box line: 400px less the dialog's 16 and the block's 11 a side, at 10.5px mono and three 5px gaps. */
 export const UNSAVED_AGENT_DIFF_LETTERS_MOST = 51;
 
 /** The same box raised by «Скасувати» under the fields. */

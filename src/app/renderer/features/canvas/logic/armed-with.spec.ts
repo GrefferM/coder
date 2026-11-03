@@ -97,7 +97,6 @@ const SAID = saidOf(
 
 describe("armedWith", () => {
   it("says which mini-sphere is a command and which a server, since the shape is drawn off that", () => {
-    // Shape tells the kind: a rounded square for a command, a globe for a server.
     const orbs = armedWith([...granted(1), ...fromServers(1)], SAID);
 
     expect(orbs.find((orb) => orb.group === "commands")?.source).toBe("command");
@@ -105,7 +104,6 @@ describe("armedWith", () => {
   });
 
   it("names the grant behind a command's mark, and none behind a server's", () => {
-    // A mark for one grant carries that grant's id; a server's mark names none.
     const orbs = armedWith([...granted(1), ...fromServers(1)], SAID);
 
     expect(orbs.find((orb) => orb.group === "commands")?.grantId).toBe("grant-0");
@@ -145,7 +143,6 @@ describe("armedWith", () => {
   });
 
   it("wears the colour of the source and never the agent's own", () => {
-    // Colour tells the source.
     expect(armedWith(granted(1), SAID)[0].color).toBe(ARMED_COMMANDS_COLOR);
   });
 
@@ -164,7 +161,6 @@ describe("armedWith", () => {
   });
 
   it("stands the commands on the left and the servers on the right, whichever there are more of", () => {
-    // Commands stand left and servers right, whichever are more numerous.
     const arc = armedWith([...fromServers(3), ...granted(1)], SAID);
 
     expect(arc.map((orb) => orb.source)).toEqual(["command", "mcp", "mcp", "mcp"]);
@@ -222,7 +218,7 @@ describe("armedWith", () => {
   });
 
   it("takes the trouble tone where every grant of a source points at nothing", () => {
-    // No grants: no mark; all grants broken: a mark. The trouble tone overrides the source colour.
+    // No grants: no mark; all grants broken: a mark.
     const arc = armedWith(granted(2), saidOf(["command-1"], []));
 
     expect(arc.map((orb) => orb.isBroken)).toEqual([false, true]);
@@ -276,7 +272,6 @@ describe("armedWith", () => {
   });
 
   it("stands what is broken first in the list a «+» raises, though the arc itself does not move", () => {
-    // Broken rows come first in a «+» list.
     const arc = armedWith(granted(4), saidOf(["command-0", "command-1", "command-3"], []));
 
     expect(arc.map((orb) => orb.grantId)).toEqual(["grant-0", "grant-1", null]);
@@ -287,7 +282,6 @@ describe("armedWith", () => {
   });
 
   it("says nothing at all about a call: the arc knows of none", () => {
-    // The arc knows nothing of calls.
     expect(Object.keys(armedWith(granted(1), SAID)[0]).includes("isCalling")).toBe(false);
   });
 

@@ -1,4 +1,4 @@
-// The walk's shapes and what the machine says back are the boundary's: written once in `src/contracts`.
+// Walk shapes and what the backend says back, shared with it.
 export * from "../../../../../contracts/walks";
 export * from "../../../../../contracts/llm";
 export * from "./chat-step.interface";

@@ -54,8 +54,8 @@ const EMPTY_SCREEN: Screen = {
 };
 
 /**
- * Each agent's chat as the screen shows it: the walks are run by the backend and told back as a snapshot; what is typed,
- * attached or aimed at, and the repeats, stay here.
+ * Each agent's chat as the screen shows it: the walks are run by the backend and told back as a snapshot; what is
+ * typed, attached or aimed at, and the repeats, stay here.
  */
 export function useAgentChat(
   project: OpenProject,
@@ -89,7 +89,7 @@ export function useAgentChat(
   /** The repeats under way; the field stays shut from the first send to the last walk's end. */
   const [cycle, setCycle] = useState<RepeatCycle | null>(null);
   const cycling = useRef(cycle);
-  /** The walk of the repeats the snapshot has shown at least once; a walk not shown yet is awaited, one gone is over. */
+  /** The repeats' walk the snapshot has shown at least once; a walk not shown yet is awaited, one gone is over. */
   const seen = useRef<string | null>(null);
   /** A question sent that the backend has not answered yet; a second one waits. */
   const putting = useRef(false);
@@ -156,7 +156,7 @@ export function useAgentChat(
     };
   }, [project.directory, show]);
 
-  // The walks that go on read the config as the screen holds it now.
+  // Walks under way read the config as the screen holds it.
   useEffect(() => {
     if (told.current === null || told.current === project.config) {
       return;
@@ -470,10 +470,7 @@ export function useAgentChat(
     void goOnInWalks(runId).catch(() => undefined);
   }, []);
 
-  /**
-   * A record deleted by hand takes its conversation with it: the stream is emptied if it wrote into that record, else
-   * left alone.
-   */
+  /** A record deleted by hand takes its conversation: the stream is emptied if it wrote into that record. */
   const letGo = useCallback(
     (runId: string) => {
       if (shown.current.flowRunId === runId) {
@@ -523,7 +520,7 @@ export function useAgentChat(
     // Every turn out on screen, not just the aimed agent's; the canvas draws them all, the chat each in its own block.
     working: workingTurns(walked),
     waiting: waitingAgents(walked),
-    /** How each canvas line stands now: flowing, awaited, answered or silent. */
+    /** How each canvas line stands: flowing, awaited, answered or silent. */
     linkLives: linkLives(project.config.links, walked),
     changeDraft,
     attach,

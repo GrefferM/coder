@@ -53,7 +53,6 @@ describe("sphereStanding", () => {
   });
 
   it("stands the rest back while the panel is about a selected agent", () => {
-    // The panel is about one agent; the others stand back.
     const standing = sphereStanding(agent("linter"), {
       picked: picked({
         selectedAgentId: "editor",

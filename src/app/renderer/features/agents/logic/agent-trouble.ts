@@ -47,8 +47,7 @@ export function agentTrouble(
     return broken(TROUBLE_NO_ADDRESS_LABEL);
   }
 
-  // One word for a grant pointing at nothing: undeclared command, removed server function, gone server, or agent no
-  // longer in the project.
+  // One word for every grant pointing at nothing.
   if (
     hasBrokenGrant(agent.tools, {
       commands: config.commands,
@@ -60,7 +59,7 @@ export function agentTrouble(
     return broken(TROUBLE_LOST_FUNCTION_LABEL);
   }
 
-  // A named prompt the project no longer holds is a break, not «no prompt».
+  // A named prompt the project lacks is a break, not «no prompt».
   if (agent.promptId !== null && !config.prompts.some((standing) => standing.id === agent.promptId)) {
     return broken(TROUBLE_LOST_PROMPT_LABEL);
   }

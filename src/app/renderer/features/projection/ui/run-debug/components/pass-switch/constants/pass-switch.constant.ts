@@ -1,10 +1,7 @@
 import { RUN_DEBUG_HEAD_TONE } from "../../../constants";
 import type { IconTone } from "../../../../../../../components";
 
-/**
- * A quiet switch in the projection's head — «‹ ПИТАННЯ 2 З 2 ›», in the head's tone; at the list's end the arrow goes
- * out rather than wrapping.
- */
+/** «‹ ПИТАННЯ 2 З 2 ›» in the projection's head; it does not wrap at the list's ends. */
 export const PASS_SWITCH_WORD = "Питання";
 export const PASS_SWITCH_OF = " з ";
 export const PASS_SWITCH_GAP_PX = 8;

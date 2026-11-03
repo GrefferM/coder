@@ -111,8 +111,7 @@ describe("repeatOf", () => {
   });
 
   it("goes back to the agent that very question stood before, and not to the one the flow began with", () => {
-    // Guards a repeat starting from the flow's first agent, which re-asked a question handed on to another agent of
-    // someone it was never put to.
+    // Starting from the flow's first agent would put the question to someone it was never put to.
     const repeat = repeatOf(
       run([
         step({

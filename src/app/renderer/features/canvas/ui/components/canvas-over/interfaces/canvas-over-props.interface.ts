@@ -1,7 +1,7 @@
 import type { LinkTally } from "../../../../interfaces";
 import type { UndoOffer, WriteNote } from "../../../../../project";
 
-/** What floats over the field: the counts, the scale, the write note along the top and the undo offers along the bottom. */
+/** What floats over the field: counts, scale, the write note on top and the undo offers at the bottom. */
 export interface CanvasOverProps {
   /** The selected sphere's lines both ways; null when nothing is selected. */
   tally: LinkTally | null;

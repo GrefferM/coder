@@ -57,12 +57,12 @@ export function lostFunctionNote(agentName: string): string {
   return `${LOST_FUNCTION_NOTE_PREFIX}${agentName}${LOST_FUNCTION_NOTE_SUFFIX}`;
 }
 
-/** Which server's run line waits for this machine's consent (36k). */
+/** Which server's run line waits for this machine's consent. */
 export function noConsentNote(serverName: string): string {
   return `${serverName}${NO_CONSENT_NOTE_SUFFIX}`;
 }
 
-/** Which agent points at a prompt the project no longer holds. */
+/** Which agent points at a prompt the project does not hold. */
 export function lostPromptNote(agentName: string): string {
   return `${LOST_PROMPT_NOTE_PREFIX}${agentName}${LOST_PROMPT_NOTE_SUFFIX}`;
 }

@@ -3,7 +3,7 @@ import type { McpFunction, ProjectMcpServer, ToolGrant } from "../../../../../..
 export interface ServerViewProps {
   agentName: string;
   server: ProjectMcpServer;
-  /** What the server offers now; a function it no longer names is not offered. */
+  /** What the server offers; a granted function missing from it is not offered. */
   functions: McpFunction[];
   grants: ToolGrant[];
   /** Toggles one function; connecting the whole server is the section's act. */

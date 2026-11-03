@@ -48,7 +48,7 @@ describe("chatStanding", () => {
   });
 
   it("says nothing was sent where the last turn never began, since nothing fell either", () => {
-    // Guards the live-stream band reading only `isFailure`, which left a green dot for a provider that never answered.
+    // `isFailure` alone would leave a green dot for a provider that never answered.
     expect(
       chatStanding([
         said({
@@ -107,7 +107,7 @@ describe("chatStanding", () => {
   });
 
   it("reads the whole walk, so a turn that fell does not hide behind one that answered after it", () => {
-    // Guards one agent handing to two, where the later-answering branch stood for the whole walk.
+    // One agent handing to two: the later-answering branch must not stand for the whole walk.
     expect(
       chatStanding([
         said({

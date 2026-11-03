@@ -225,8 +225,7 @@ describe("McpClient", () => {
   });
 
   it("goes to the address with the token this machine holds, and no longer refuses on its own account", async () => {
-    // What the address answers is not tested; the token was found and the client went. It is held by server id, so a
-    // rename or move keeps it.
+    // Only that the token, held by server id, was found is tested; not what the address answers.
     held.set(`${MCP_TOKEN_PREFIX}${SERVER_ID}`, "sk-the-token");
 
     const look = await client.look(

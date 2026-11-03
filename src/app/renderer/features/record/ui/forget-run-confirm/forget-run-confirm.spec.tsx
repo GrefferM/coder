@@ -29,7 +29,6 @@ const run: RunRow = {
 
 describe("ForgetRunConfirm", () => {
   it("asks before the one deletion that has no way back, and says which run it is", () => {
-    // Forgetting a run asks first.
     render(<ForgetRunConfirm run={run} onConfirm={() => {}} onDismiss={() => {}} />);
 
     expect(screen.getByText(FORGET_RUN_QUESTION)).toBeInTheDocument();

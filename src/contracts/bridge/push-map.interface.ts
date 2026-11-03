@@ -5,10 +5,7 @@ import type { AgentChunk } from "../llm";
 import type { ProviderHeard, WalkSnapshot } from "../walks";
 import type { ProjectChanged } from "./payloads.interface";
 
-/**
- * What the main process sends unprompted and what each channel carries; a push is not a call and has no answer, so it
- * has its own map.
- */
+/** What the main process sends unprompted on each channel; a push has no answer, so it has its own map. */
 export interface PushMap {
   [AGENT_CHUNK_CHANNEL]: AgentChunk;
   [PROJECT_CHANGED_CHANNEL]: ProjectChanged;

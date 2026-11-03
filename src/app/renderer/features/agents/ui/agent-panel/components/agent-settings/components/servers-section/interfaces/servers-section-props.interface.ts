@@ -2,7 +2,7 @@ import type { McpLook, ProjectMcpServer, ToolGrant } from "../../../../../../../
 
 export interface ServersSectionProps {
   servers: ProjectMcpServer[];
-  /** What each server offers now; one that did not answer offers nothing to connect. */
+  /** What each server offers; one that did not answer offers nothing to connect. */
   looks: Record<string, McpLook>;
   /** The whole draft's grants; this section changes only the servers'. */
   grants: ToolGrant[];

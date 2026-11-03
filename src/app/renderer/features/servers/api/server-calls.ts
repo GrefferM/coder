@@ -39,7 +39,7 @@ export async function lookServer(directory: string, server: ProjectMcpServer): P
   }
 }
 
-/** Whether this machine agreed to start the server's run line as it stands (36k); an unreachable machine has not. */
+/** Whether this machine agreed to start the server's run line as it stands; an unreachable machine has not. */
 export async function isServerConsented(server: ProjectMcpServer): Promise<boolean> {
   try {
     return await window.electronApi.invoke(MCP_CONSENTED_CHANNEL, {
@@ -50,7 +50,7 @@ export async function isServerConsented(server: ProjectMcpServer): Promise<boole
   }
 }
 
-/** «Запустити» in the window of 36k, or a line written by hand in the form: this machine agrees to it. */
+/** «Запустити» in the consent window, or a line written by hand in the form: this machine agrees to it. */
 export async function consentServer(server: ProjectMcpServer): Promise<void> {
   await window.electronApi.invoke(MCP_CONSENT_CHANNEL, {
     server,
@@ -93,7 +93,7 @@ export async function dropServer(serverId: string): Promise<void> {
   }
 }
 
-/** Removes from this machine the keys of dropped servers the project no longer names. */
+/** Removes from this machine the keys of dropped servers the project does not name. */
 export async function sweepServerKeys(serverIds: string[]): Promise<void> {
   try {
     await window.electronApi.invoke(SWEEP_MCP_KEYS_CHANNEL, {

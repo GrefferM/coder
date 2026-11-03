@@ -62,7 +62,6 @@ describe("AttachmentPacker", () => {
     // Nothing excluded: `node_modules` is walked like any folder.
     assert.match(packed.text, /node_modules\/dep\.js/);
     assert.match(packed.text, /module\.exports/);
-    // The binary is in, as base64.
     assert.ok(packed.binaries.includes("logo.png"));
     assert.match(packed.text, new RegExp(PNG.toString("base64")));
   });
@@ -101,8 +100,7 @@ describe("AttachmentPacker", () => {
 
       assert.equal(picked.kind, "folder");
       assert.match(packed.text, /видно/);
-      // Whether the system honours the shut folder varies: a refused one is marked in the tree, an open one is listed
-      // normally; the pick succeeds either way.
+      // Whether the system honours the shut folder varies; the pick succeeds either way.
       if (packed.text.includes(`wizards/${ATTACHMENT_DENIED_TAG}`)) {
         assert.doesNotMatch(packed.text, /усередині/);
       } else {
@@ -133,8 +131,6 @@ describe("AttachmentPacker", () => {
   });
 
   it("reads no further than it takes to cross the ceiling, and crosses it", async () => {
-    // A megabyte under a ceiling of a hundred characters: the pack reaches over the ceiling without reading the whole
-    // file.
     const [packed] = await packer.packAll([path.join(big, "huge.txt")], 100);
 
     assert.ok([...packed.text].length > 100);

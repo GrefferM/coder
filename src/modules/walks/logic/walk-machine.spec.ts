@@ -731,8 +731,7 @@ describe("walkMachine · a point that will not answer", () => {
   });
 
   it("settles a converging point with nothing, and the point lets down whoever stands behind it", () => {
-    // The point waits for both only where the run reaches both: the walk out of the thesaurus goes to the shortener
-    // too.
+    // The point waits for both only where the run reaches both: the walk out of the thesaurus reaches the shortener.
     const lines = config(
       [thesaurus, shortener, titler],
       [
@@ -1524,7 +1523,7 @@ describe("walkMachine · a walk picked up where it broke", () => {
       ],
     });
 
-    // Shortener is the only one who would have fed titler; with it cut nothing goes anywhere, and the row stands already.
+    // Shortener is the only one who would have fed titler; with it cut nothing goes anywhere, and the row stands.
     assert.deepEqual(
       effects.filter((effect) => effect.kind === "askAgent" || effect.kind === "sayHandoff"),
       [],
@@ -1825,8 +1824,7 @@ describe("walkMachine · the turn that came back", () => {
   });
 
   it("writes the provider's sentence down for a turn that fell, and makes no card of it", () => {
-    // The record keeps what came back so a later-opened run says why it fell; the card holds only the model's own
-    // words.
+    // The record keeps what came back so a later-opened run says why it fell; the card holds only the model's words.
     const { effects } = walkMachine(
       walk({
         out: working(turn("turn-1", "editor", "walk-1")),
@@ -2093,7 +2091,7 @@ describe("walkMachine · the agent handed its work on by command", () => {
       JOIN,
     );
 
-    // The translator will never answer: the editor's wait counts it settled with nothing, and still waits for the teller.
+    // The translator never answers: the editor's wait counts it settled with nothing, and still waits for the teller.
     const wait = state.walks["walk-1"].waiting[editor];
 
     assert.deepEqual(wait?.settledIds, [translator]);
@@ -2209,7 +2207,8 @@ describe("walkMachine · the agent handed its work on by command", () => {
   });
 
   it("carries the cut down a line with one supplier until it meets a point, and settles that point with nothing", () => {
-    // dispatcher → teller → editor, dispatcher → middle → translator → editor: not naming the middle cuts the translator too.
+    // dispatcher → teller → editor, dispatcher → middle → translator → editor: not naming the middle cuts the
+    // translator too.
     const lines = config(
       [agent(dispatcher), agent(teller), agent("middle"), agent(translator), agent(editor)],
       [

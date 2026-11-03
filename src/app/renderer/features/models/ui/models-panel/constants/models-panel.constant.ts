@@ -67,7 +67,7 @@ export const MODELS_PANEL_CREATE_LABEL = "Створити";
 export const MODELS_PANEL_SAVE_LABEL = "Зберегти";
 export const MODELS_PANEL_CANCEL_LABEL = "Скасувати";
 
-/** The provider is known but no longer holds the model. */
+/** The provider is known but does not hold the model. */
 export const NOT_INSTALLED_SUFFIX = " · немає на машині";
 
 /** The name is sent verbatim; each provider spells it differently. */

@@ -1,4 +1,4 @@
-// Refusal and denied codes are written once in `src/contracts` and matched here.
+// Refusal and denied codes, shared with the backend.
 export * from "../../../../../contracts/attachments";
 export * from "../../../../../contracts/llm";
 export * from "./stream-search.constant";

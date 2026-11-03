@@ -45,7 +45,7 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
 
   const waiting = waitingConsent(agent.tools, targets);
 
-  // A granted local server whose run line this machine has not agreed to is not started, so neither is the turn (36k).
+  // A granted local server whose run line this machine has not agreed to is not started, so neither is the turn.
   if (waiting !== null) {
     return {
       note: noConsentNote(waiting.name),
@@ -63,7 +63,7 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
     };
   }
 
-  // The agent names a prompt the project no longer has.
+  // The agent names a prompt the project does not have.
   if (agent.promptId !== null && prompt === null) {
     return {
       note: lostPromptNote(agent.name),

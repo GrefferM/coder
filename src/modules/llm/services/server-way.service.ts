@@ -26,8 +26,7 @@ export class ServerWay implements ToolWay {
       name: this.tool.name,
       arguments: given,
       pinned: [],
-      // The name the server wore at the call, kept in the record so a later rename or removal cannot lose where it
-      // went.
+      // The server's name at the call, kept in the record so a later rename or removal cannot lose where it went.
       serverId: this.server.id,
       serverName: this.server.name,
     };

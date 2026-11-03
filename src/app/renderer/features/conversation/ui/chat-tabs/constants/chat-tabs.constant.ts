@@ -32,10 +32,7 @@ export const CHAT_TABS_FORGET_LIT_COLOR = FALLEN_COLOR;
 /** Nothing left to delete: the act dims, unpressable, and keeps its place. */
 export const CHAT_TABS_FORGET_SPENT_COLOR = "#333a4d";
 
-/**
- * Sign that a conversation off screen holds a turn waiting for the hand: break colour, state-dot size, no number or
- * word.
- */
+/** A conversation off screen holds a turn waiting for the hand: break colour, state-dot size, no number or word. */
 export const CHAT_TABS_NEWS_COLOR = FALLEN_COLOR;
 export const CHAT_TABS_NEWS_SIZE_PX = 5;
 export const CHAT_TABS_NEWS_GAP_PX = 6;

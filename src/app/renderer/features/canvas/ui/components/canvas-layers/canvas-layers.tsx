@@ -129,9 +129,7 @@ export function CanvasLayers({
             stateColor: states[agent.id],
             modelTitle: models.find((model) => model.id === agent.modelId)?.title,
             trouble: troubles[agent.id] ?? null,
-            /**
-             * The trail's third line; a prompt the project dropped is not shown, and the key counts only what can be called.
-             */
+            /** A prompt the project dropped is not shown; the key counts only what can be called. */
             trail: {
               hasPrompt: prompts.some((prompt) => prompt.id === agent.promptId),
               tools: armedTally(agent.tools, sources),
@@ -143,7 +141,6 @@ export function CanvasLayers({
             // Rows come oldest first, so the first one is the turn the pill shows.
             working: workingAgents.find((held) => held.agentId === agent.id) ?? null,
             waiting: waitingAgents.find((held) => held.agentId === agent.id) ?? null,
-            // What this agent has out, shown by a pill beside the sphere.
             calling: callOut(workingAgents, callsOut, agent.id),
             agents,
           }}

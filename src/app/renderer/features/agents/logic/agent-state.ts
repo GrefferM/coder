@@ -21,7 +21,6 @@ import type { AgentState, StateFacts } from "../interfaces";
 /** State by priority: working, waiting, off, break, provider, lost model, fall, «готовий». */
 export function agentState(agent: Agent, facts: StateFacts): AgentState {
   const { config, providers, answers, looks } = facts;
-  // Working and waiting are matched by agent id.
   const fellAt = facts.fellAt[agent.id] ?? null;
 
   if (facts.working.some((one) => one.agentId === agent.id)) {

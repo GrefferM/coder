@@ -48,7 +48,7 @@ describe("standsWithRepeat", () => {
   });
 
   it("stands under a turn that never began, the ceiling's own among them", () => {
-    // No exception remains: the card's own act raises the ceiling and the same words go through.
+    // The card's own act raises the ceiling, so the same words can go through.
     expect(
       standsWithRepeat(
         said({

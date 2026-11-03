@@ -146,7 +146,6 @@ describe("CommandForm", () => {
 
     await user.type(within(card).getByLabelText(PARAMETER_FORM_NAME_LABEL), "print $5");
 
-    // The field says what is wrong; the name is not altered.
     expect(within(card).getByLabelText(PARAMETER_FORM_NAME_LABEL)).toHaveValue("print $5");
     // The refusal replaces the rule line, which is already on screen.
     expect(screen.getByText(PARAMETER_FORM_NAME_REFUSAL)).toBeInTheDocument();
@@ -271,7 +270,6 @@ describe("CommandForm", () => {
       />,
     );
 
-    // The facts block stands right after the run line it is about.
     const facts = screen.getByText(COMMAND_RUN_FACTS_LABEL);
     const parameters = screen.getByText(COMMAND_FORM_PARAMETERS_LABEL);
 

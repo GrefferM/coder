@@ -76,7 +76,7 @@ export class SecretService {
     return `${head}${SECRET_HINT_BULLETS}${tail}`;
   }
 
-  /** A value that no longer decrypts reads as "". */
+  /** A value that does not decrypt reads as "". */
   private decrypt(encrypted: string): string {
     try {
       return this.cipher.decrypt(Buffer.from(encrypted, "base64"));

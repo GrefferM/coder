@@ -7,7 +7,6 @@ export interface DrawnLine {
 }
 
 export interface LinkDraftState {
-  /** The line being drawn, or `null` when none is. */
   drawn: DrawnLine | null;
   /** The line let go over nothing, drawn crossed out while it fades. */
   cancelled: DrawnLine | null;

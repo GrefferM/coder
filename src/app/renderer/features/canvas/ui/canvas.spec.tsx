@@ -225,7 +225,6 @@ function renderCanvas(overrides: Partial<CanvasSays> = {}) {
   return render(canvasWith(overrides));
 }
 
-/** One offer to put a deletion back. */
 function undoOffer(overrides: Partial<UndoOffer> = {}): UndoOffer {
   return {
     id: "offer-1",
@@ -284,7 +283,6 @@ describe("Canvas", () => {
       ],
     });
 
-    // The hole stays where the agent was.
     expect(container.querySelector(`[style*="${DELETED_PLACE_SIZE_PX}px"]`)).not.toBeNull();
   });
 
@@ -1366,7 +1364,7 @@ describe("Canvas", () => {
     const onAddLink = vi.fn();
     const onSelectedAgentIdChange = vi.fn();
 
-    // No line drawn between them yet.
+    // No line between them.
     const { container } = renderCanvas({
       links: [],
       onAddLink,
@@ -1504,7 +1502,6 @@ describe("Canvas", () => {
 
     expect(drawnFrom).toHaveAttribute("aria-pressed", "true");
     expect(selected).toHaveAttribute("aria-pressed", "false");
-    // Nothing is left selected behind the line.
     expect(onSelectedAgentIdChange).toHaveBeenCalledWith(null);
     // Nothing stands back while the line is being drawn.
     expect(selected).not.toHaveStyle({
@@ -1596,7 +1593,6 @@ describe("Canvas", () => {
     );
     await userEvent.click(container.querySelector("[role='presentation']") as HTMLElement);
 
-    // The neutral tone, the cross on the loose end, and the cancel label.
     expect(screen.getByText(LINK_DRAFT_CANCELLED_LABEL)).toBeInTheDocument();
     expect(container.querySelector("svg path")).toHaveAttribute("stroke", LINK_DRAFT_CANCELLED_CROSS_COLOR);
     expect(screen.queryByText(LINK_DRAFT_HINT)).not.toBeInTheDocument();
@@ -1658,7 +1654,6 @@ describe("Canvas", () => {
       ),
     });
 
-    // Three rows stand; the two oldest collapse into one line with a count.
     expect(screen.queryByText("ВИДАЛЕНО 1")).not.toBeInTheDocument();
     expect(screen.queryByText("ВИДАЛЕНО 2")).not.toBeInTheDocument();
     expect(screen.getByText("ВИДАЛЕНО 3")).toBeInTheDocument();

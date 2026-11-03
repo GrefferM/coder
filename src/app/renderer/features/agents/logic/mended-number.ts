@@ -4,7 +4,6 @@ import type { AgentDraft } from "../interfaces";
 /** The two numbers of a kept memory: where it is compressed and what it is written down to. */
 const MEMORY_NUMBERS = ["compressAt", "compressTo"] as const;
 
-/** The two numbers of the agent's run. */
 const RUN_NUMBERS = ["maxCalls", "temperature"] as const;
 
 /** The agent's own numbers, in the order its tab shows them: the memory's two come first, then the run's. */

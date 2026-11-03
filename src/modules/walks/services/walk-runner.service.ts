@@ -145,7 +145,7 @@ export class WalkRunner implements RecordWatcher {
     this.freshStream = randomUUID();
   }
 
-  /** Questions asked from now on continue this run, or start a new one where there is none. */
+  /** Questions after this call continue this run, or start a new one where there is none. */
   goOnIn(runId: string | null): void {
     this.flowRunId = runId;
     this.writer.forgetOpening();
@@ -594,7 +594,7 @@ export class WalkRunner implements RecordWatcher {
   private arrived(put: PutTurn, arrived: ArrivedTurn): void {
     const { answered, carried, isAsked, model } = arrived;
 
-    // A turn that reached the address, or was refused by silence there, updates the dot; other refusals never got that far.
+    // A turn that reached the address, or met silence there, updates the dot; other refusals never got that far.
     if (isAsked && model !== null && (answered.notStarted === null || answered.notStarted === "silent")) {
       this.listener.heard({
         providerId: model.provider,

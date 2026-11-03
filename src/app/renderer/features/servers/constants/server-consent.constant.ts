@@ -1,4 +1,4 @@
-/** The window before a local server's run line is started on this machine for the first time (36k). */
+/** The window before a local server's run line is started on this machine for the first time. */
 export const SERVER_CONSENT_QUESTION_PREFIX = "Запустити ";
 export const SERVER_CONSENT_QUESTION_SUFFIX = " на цій машині?";
 export const SERVER_CONSENT_NOTE =

@@ -19,16 +19,13 @@ import { RUN_HITS_LIMIT } from "../../../../../../contracts";
 import type { RunHistoryProps } from "./interfaces";
 
 /**
- * One row per run, newest first, grouped by the day it last spoke, with one search over all. With a word typed the
- * list is flat: places ordered by message hour, with a rule naming the run wherever the record changes runs.
+ * One row per run, newest first, grouped by the day it last spoke. With a word typed the list is flat: places ordered
+ * by message hour, with a rule naming the run wherever the record changes runs.
  */
 export function RunHistory({ runs, agents, refusal, onOpen, onForget, query, hits, onQuery }: RunHistoryProps) {
   const now = new Date();
   const looked = query.trim();
-  /**
-   * One card per place the word stands in, in the given order (message hour, newest first); a hit whose flow the list no
-   * longer holds is dropped.
-   */
+  /** One card per place, in the given order; a hit whose flow the list does not hold is dropped. */
   const found =
     looked === ""
       ? []

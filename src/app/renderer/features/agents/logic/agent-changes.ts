@@ -46,7 +46,7 @@ import {
 import type { FieldChange, ProjectModel, ProjectPrompt, ToolGrant } from "../../../interfaces";
 import type { AgentDraft, AgentNaming } from "../interfaces";
 
-/** A model's name in a diff line; its id when no longer in the project. */
+/** A model's name in a diff line; its id when the project lacks it. */
 function modelTitle(models: ProjectModel[], modelId: string): string {
   return models.find((model) => model.id === modelId)?.title ?? modelId;
 }

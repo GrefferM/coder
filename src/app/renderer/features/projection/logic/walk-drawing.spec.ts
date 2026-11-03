@@ -36,7 +36,6 @@ describe("walkDrawing", () => {
       walkSpot(drawing.turns[0].place),
       walkSpot(drawing.turns[1].place),
     ]);
-    // The second turn is a column right of the first, in the same top row.
     expect(drawing.turns[1].at.x).toBeGreaterThan(drawing.turns[0].at.x);
     expect(drawing.turns[1].at.y).toBe(drawing.turns[0].at.y);
   });

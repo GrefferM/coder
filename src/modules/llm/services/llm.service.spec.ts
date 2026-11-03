@@ -1080,8 +1080,8 @@ describe("LlmService when the check refuses a call", () => {
     );
 
     /**
-     * A refusal crosses as an answer; the library's error object carries headers and cookies, so only the provider's own
-     * sentence rides after the code.
+     * A refusal crosses as an answer; the library's error object carries headers and cookies, so only the provider's
+     * own sentence rides after the code.
      */
     await assert.rejects(
       llmService.ask({
@@ -2461,7 +2461,7 @@ describe("LlmService and the memory of an agent called as a tool", () => {
     assert.equal(answer.memories[0].cost?.inputTokens, 100);
   });
 
-  /** A record whose shared memory of the question is this long, up to the fifth step, and which keeps what it was asked. */
+  /** A record whose shared memory of the question is this long, up to the fifth step; it keeps what it was asked. */
   const recordOf = (memory: string, unwritten: unknown[] = []): RunMemory => ({
     sharedMemory: async (_runId, _questionId, _agentId, standing) => {
       unwritten.push(standing);

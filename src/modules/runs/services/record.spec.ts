@@ -117,7 +117,6 @@ describe("the record", () => {
     // A fresh real database per test; the app's own is untouched.
     record = await openTestDatabase();
 
-    // All three share one store.
     const store = new TypeormRunStore(runTablesOf(record.dataSource));
 
     writer = new RunWriter(store);
@@ -615,7 +614,6 @@ describe("the record", () => {
         state: "failed",
       }),
     );
-    // The other branch answers later.
     await writer.step(step(id));
     await writer.close({
       runId: id,

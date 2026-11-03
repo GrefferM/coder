@@ -22,7 +22,7 @@ export class McpSecrets {
   }
 
   /**
-   * Removes the keys of every server this machine dropped whose undo has run out and which the project no longer names;
+   * Removes the keys of every server this machine dropped whose undo has run out and which the project does not name;
    * called when a project opens and when a deletion's timer runs out. Nothing is swept for being unknown.
    */
   async sweep(serverIds: string[]): Promise<void> {

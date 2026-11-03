@@ -4,7 +4,6 @@ import type { PromptFormValues } from "../../../interfaces";
 export interface PromptEditorProps {
   values: PromptFormValues;
   wasName: string | null;
-  /** Another prompt is already called this. */
   isNameTaken: boolean;
   isNew: boolean;
   hasUnsaved: boolean;

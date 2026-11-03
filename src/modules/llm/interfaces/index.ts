@@ -1,4 +1,4 @@
-// The turn's ask, answer and pieces belong to the boundary: defined in `src/contracts`, re-exported here.
+// The turn's ask, answer and pieces belong to the boundary.
 export * from "../../../contracts/llm";
 export * from "../../../contracts/project/mcp-server.interface";
 export * from "../../../contracts/runs/turn-call.interface";

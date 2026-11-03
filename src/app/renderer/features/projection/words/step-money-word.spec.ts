@@ -53,7 +53,6 @@ describe("stepMoneyWord", () => {
   });
 
   it("writes a true nought for a turn that never went out, whatever its prices were", () => {
-    // A turn that never went out spent a known nothing, not an unknown.
     expect(
       stepMoneyWord(
         aStep({

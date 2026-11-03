@@ -20,7 +20,6 @@ const AGENTS = [agent("editor", 0, 0), agent("linter", 400, 400)];
 
 describe("draftTarget", () => {
   it("takes the sphere the line is over", () => {
-    // The end the line would take if it were let go now.
     expect(
       draftTarget(AGENTS, "editor", {
         x: 400,

@@ -2,10 +2,7 @@ import { useRef, useState } from "react";
 import { withinField } from "../../../../../../logic";
 import type { FieldHeight } from "./interfaces";
 
-/**
- * The field is resized by the strip over it and grows upwards; the height is reported at the end of the pull, not on
- * every move.
- */
+/** The strip over the field resizes it upwards; the height is reported at the end of the pull, not on every move. */
 export function useFieldHeight(height: number, onHeight: (height: number) => void): FieldHeight {
   const [pulled, setPulled] = useState<number | null>(null);
   const from = useRef({

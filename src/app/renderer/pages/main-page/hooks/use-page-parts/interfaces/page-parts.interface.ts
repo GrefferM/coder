@@ -26,6 +26,6 @@ export interface PageParts {
   agentStates: Record<string, AgentState>;
   /** What each declared server currently returns; not stored in the project file. */
   looks: Record<string, McpLook>;
-  /** The window of 36k over a server whose run line waits for this machine's consent. */
+  /** The window asking this machine's consent to a server's run line. */
   consent: ServerConsentState;
 }

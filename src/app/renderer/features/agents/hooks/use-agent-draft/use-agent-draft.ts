@@ -20,7 +20,6 @@ export function useAgentDraft(
   const saved = selectedAgent === null ? null : agentDraft(selectedAgent, null);
   const changes = saved === null || draft === null ? [] : agentChanges(saved, draft, project.config);
   const isDirty = changes.length > 0;
-  // A name already used by another agent is refused.
   const isNameTaken =
     draft !== null &&
     nameTaken(
@@ -28,12 +27,10 @@ export function useAgentDraft(
       project.config.agents.filter((agent) => agent.id !== selectedAgentId).map((agent) => agent.name),
     );
 
-  // Discards the edits on leaving an agent.
   useEffect(() => setEdits(null), [selectedAgentId]);
 
   /** Writes the whole draft; nothing unsaved remains. */
   async function save() {
-    // Nothing is written while a blocker stands or the name is taken.
     if (selectedAgentId === null || draft === null || agentBlocked(draft).length > 0 || isNameTaken) {
       return;
     }

@@ -20,12 +20,10 @@ describe("foundCount", () => {
   });
 
   it("says the record rather than a nought where the word is in nothing", () => {
-    // Nothing found: the second number is the record, not a nought.
     expect(foundCount("ялина", 0, 0, 142)).toBe("0 МІСЦЬ · 142 ЗАПУСКИ");
   });
 
   it("says the ceiling with a word, counting having stopped", () => {
-    // At the limit there is no second number, since counting stopped.
     expect(foundCount("а", RUN_HITS_LIMIT, 3, 142)).toBe(`${RUN_HITS_LIMIT} МІСЦЬ · СТЕЛЯ`);
   });
 

@@ -20,7 +20,6 @@ describe("CallPill", () => {
   });
 
   it("says a server by the server's name, in the servers' own colour", () => {
-    // Only the server name, no function; the colour is the source's, matching its mark on the arc.
     const { container } = render(<CallPill name="notion-mcp" source="mcp" />);
     const pill = container.firstElementChild as HTMLElement;
 
@@ -36,7 +35,6 @@ describe("CallPill", () => {
   });
 
   it("stands beside the sphere and level with the top of the arc, catching no pointer", () => {
-    // The pill stands beside the sphere at the arc's highest point, covering no mini-sphere.
     const { container } = render(<CallPill name="run_test" source="command" />);
     const pill = container.firstElementChild as HTMLElement;
 

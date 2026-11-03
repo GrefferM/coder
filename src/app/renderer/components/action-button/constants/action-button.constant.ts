@@ -7,7 +7,7 @@ export const ACTION_BUTTON_FONT_SIZE_PX = 13;
 export const ACTION_BUTTON_FONT_WEIGHT = 600;
 
 export const ACTION_BUTTON_PADDING = "10px 0";
-/** The smaller pair a window drawn by its own frame asks for (36k). */
+/** The smaller pair a window drawn by its own frame asks for. */
 export const ACTION_BUTTON_DIALOG_PADDING = "9px 0";
 export const ACTION_BUTTON_DIALOG_FONT_SIZE_PX = 12.5;
 

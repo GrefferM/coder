@@ -43,7 +43,7 @@ export function usePageParts(
   const machine = useProviders();
   /** Every declared server, looked up live; nothing is persisted. */
   const servers = useServers(project.directory, project.config.servers);
-  /** The window of 36k, opened by «ЗАПУСТИТИ» over a line this machine has not agreed to. */
+  /** The consent window, opened by «ЗАПУСТИТИ» over a line this machine has not agreed to. */
   const consent = useServerConsent(project.config.servers, servers.restart);
 
   // A finished call refreshes the catalogue's look.

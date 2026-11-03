@@ -43,8 +43,8 @@ import {
 import type { ServerConsentProps } from "./interfaces";
 
 /**
- * The window before a local server's run line first runs on this machine (36k): the line word for word, the folder,
- * the names of its variables and never their values. A click outside pulses the box; Escape is «Не запускати».
+ * The window before a local server's run line first runs on this machine: the line word for word, the folder, the
+ * names of its variables and never their values. A click outside pulses the box; Escape is «Не запускати».
  */
 export function ServerConsent({ server, directory, onRun, onDecline }: ServerConsentProps) {
   const declineRef = useRef<HTMLButtonElement>(null);

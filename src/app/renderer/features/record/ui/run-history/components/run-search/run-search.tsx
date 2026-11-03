@@ -23,10 +23,7 @@ import { foundCount } from "../../../../words";
 import { Clear } from "./components";
 import type { RunSearchProps } from "./interfaces";
 
-/**
- * The one search over the record, above the list. The count stands inside the field: «142» at rest, «40 МІСЦЬ · 3
- * ЗАПУСКИ» with a word.
- */
+/** The one search over the record, with the count inside the field. */
 export function RunSearch({ query, record, places, runs, onQuery }: RunSearchProps) {
   const { isLit, isFocused, handlers } = useInteraction();
 

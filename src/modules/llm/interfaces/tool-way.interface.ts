@@ -2,9 +2,7 @@ import type { RouteChoice, ToolMemory } from "../../../contracts/llm";
 import type { ChatCost } from "../../../contracts/walks/chat-cost.interface";
 import type { CallSource } from "../../../contracts/runs";
 
-/**
- * What one call says of itself when minted: where it went, what it was given, and which arguments the person pinned.
- */
+/** What one call says of itself when minted. */
 export interface CallStanding {
   source: CallSource;
   name: string;

@@ -106,8 +106,7 @@ describe("GrantView", () => {
     expect(screen.getByText("ЗАКРІПЛЕНО ЗА EDITOR")).toBeInTheDocument();
     expect(screen.getByDisplayValue("auth/*.spec.ts")).toBeInTheDocument();
     expect(screen.getAllByText("ЗАКРІПИТИ")).toHaveLength(1);
-    // A fixed argument shows once, on its own row, and leaves the model's schema; an open one shows in the list and the
-    // schema.
+    // A fixed argument shows once and leaves the model's schema; an open one shows in the list and the schema.
     expect(screen.getAllByText("pattern")).toHaveLength(1);
     expect(screen.getAllByText("timeout")).toHaveLength(2);
   });

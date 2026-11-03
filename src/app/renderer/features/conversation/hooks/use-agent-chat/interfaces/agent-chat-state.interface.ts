@@ -36,7 +36,7 @@ export interface AgentChatState {
   working: WorkingAgent[];
   /** The agents holding work while lines converge. */
   waiting: WaitingAgent[];
-  /** How each canvas line stands now; a line with no life is absent. */
+  /** How each canvas line stands; a line with no life is absent. */
   linkLives: Record<string, LinkLife>;
   /** Which call rows stand open; shared with the catalogue, which opens rows too. */
   openCalls: OpenCalls;

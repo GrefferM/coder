@@ -97,7 +97,6 @@ describe("SettingsTies", () => {
   });
 
   it("says under each field what it was, where the draft has moved it", () => {
-    // Each of the three shows its own «було»; an untouched one shows none.
     render(
       <SettingsTies
         {...props({

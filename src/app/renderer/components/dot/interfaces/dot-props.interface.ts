@@ -6,7 +6,7 @@ export interface DotProps {
   glow?: number;
   /** The edge of a dot that is not filled in. */
   border?: string;
-  /** Placement in the caller's row; the layout is the caller's. */
+  /** Placement in the caller's row. */
   className?: string;
   /** Accessible name; only a dot standing alone needs one. */
   label?: string;

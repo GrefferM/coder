@@ -155,7 +155,6 @@ describe("the search over the history", () => {
     );
 
     expect(screen.getByText(/Поклав/)).toBeInTheDocument();
-    // A run without the word is absent, as a place and as a rule.
     expect(screen.queryByText("Зовсім інше питання")).not.toBeInTheDocument();
     // The run holding the place is named once, on the rule.
     expect(screen.getAllByText("Розбий текст на тези")).toHaveLength(1);
@@ -214,7 +213,6 @@ describe("the search over the history", () => {
   });
 
   it("carries neither the cross nor the flow's numbers on a found place", () => {
-    // A place card has no forget cross and no flow facts (hour, steps, money).
     render(
       <RunHistory
         runs={[run()]}
@@ -234,7 +232,6 @@ describe("the search over the history", () => {
   });
 
   it("signs a found place with the agent whose message it is, and not with whom the flow was asked last", () => {
-    // The row is signed by its own message's agent, not the flow's last addressee.
     render(
       <RunHistory
         runs={[run()]}
@@ -292,7 +289,6 @@ describe("the search over the history", () => {
       />,
     );
 
-    // The question is signed as the person, like in the stream.
     expect(screen.getByText(PERSON_NAME)).toBeInTheDocument();
     // The person's words have no step but still carry an hour.
     expect(screen.getByText(timeLabel(new Date("2026-08-22T15:10:00")))).toBeInTheDocument();
@@ -426,7 +422,6 @@ describe("the search over the history", () => {
       />,
     );
 
-    // The address is said once per run, not once per place.
     expect(screen.getAllByText(run().asked)).toHaveLength(1);
   });
 
@@ -500,13 +495,11 @@ describe("the search over the history", () => {
       />,
     );
 
-    // One place is one pressable; the rule over it is text only.
     expect(screen.getAllByLabelText(RUN_HISTORY_OPEN_HINT)).toHaveLength(1);
     expect(screen.getByText(run().asked).closest("button")).toBeNull();
   });
 
   it("says in one sentence, with the word in it, that this word is in nothing — and not that the record is empty", () => {
-    // A word found nowhere shows no «Історія порожня».
     render(
       <RunHistory
         runs={[run()]}
@@ -918,7 +911,6 @@ describe("RunHistory", () => {
       />,
     );
 
-    // Inside its own day group the started-on line is omitted.
     expect(screen.queryByText(new RegExp(RUN_HISTORY_STARTED_PREFIX))).not.toBeInTheDocument();
   });
 

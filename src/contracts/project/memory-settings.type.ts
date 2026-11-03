@@ -4,9 +4,8 @@ import type { AgentMemory } from "./agent-memory.type";
 type KeptMemory = Exclude<AgentMemory, "none">;
 
 /**
- * What an agent says about its memory once it is written: with none there is nothing to compress, and with one kept the
- * share of the ceiling it is compressed at and the share it is written down to. Whatever runs an agent, a walk's turn
- * or a call as a tool, is told this and nothing else about it by the rule that decides what its memory needs.
+ * An agent's memory as whatever runs it is told: with none there is nothing to compress; with one kept, the share of
+ * the ceiling it is compressed at and the share it is written down to.
  */
 export type MemorySettings =
   | {

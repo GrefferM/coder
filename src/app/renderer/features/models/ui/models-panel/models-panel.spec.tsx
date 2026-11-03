@@ -254,7 +254,7 @@ describe("ModelsPanel", () => {
       openModelId: "model-1",
     });
 
-    // Nothing has moved yet, so the form wears none of The marks.
+    // Nothing has moved yet, so the form wears none of the marks.
     expect(screen.queryByText(new RegExp(FIELD_SLOT_WAS_PREFIX, "i"))).not.toBeInTheDocument();
 
     await userEvent.clear(screen.getByLabelText(MODELS_PANEL_TITLE_FIELD_LABEL));

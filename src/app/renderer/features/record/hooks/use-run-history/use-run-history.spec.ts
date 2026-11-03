@@ -70,7 +70,6 @@ describe("useRunHistory", () => {
   });
 
   it("reads it again on every write, since a walk going writes into it", async () => {
-    // A row of a run under way is alive, so the list is re-read.
     const { listCalls } = machine({
       [LIST_RUNS_CHANNEL]: [row("run-1")],
     });

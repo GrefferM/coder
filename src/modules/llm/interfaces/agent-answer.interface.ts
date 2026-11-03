@@ -12,7 +12,7 @@ export interface AgentAnswer {
   inputTokens: number;
   outputTokens: number;
   calls: TurnCall[];
-  /** What the agents it called cost, their own turns and the agents they called in turn; their compressions are in `memories`. */
+  /** What the agents it called cost, with the agents they called in turn; their compressions are in `memories`. */
   called: ChatCost | null;
   /** Every compression the agents it called made of their memories, and what each cost. */
   memories: ToolMemory[];

@@ -20,10 +20,7 @@ import {
 } from "../../constants";
 import type { OpenedBandProps } from "./interfaces";
 
-/**
- * The band over the stream: how the flow stands and when it last spoke, in the history row's words
- * (`RUN_STATE_LABELS`).
- */
+/** The band over the stream: how the flow stands and when it last spoke, in the history row's words. */
 export function OpenedBand({ head, onExport }: OpenedBandProps) {
   const dotColor = AGENT_CHAT_OPENED_DOT_COLORS[head.state] ?? AGENT_CHAT_OPENED_RUNNING_DOT_COLOR;
 

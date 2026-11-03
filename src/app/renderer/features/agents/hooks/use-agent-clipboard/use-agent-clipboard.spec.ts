@@ -54,7 +54,6 @@ describe("useAgentClipboard", () => {
   });
 
   it("offers no copy of an agent the project has let go since", () => {
-    // A copy of an agent deleted since is not offered.
     const { result } = clipboard();
 
     act(() => result.current.copy("agent-gone"));

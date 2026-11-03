@@ -21,8 +21,8 @@ import {
 import type { LostGrantsProps } from "./interfaces";
 
 /**
- * Grants the project can no longer honour: one struck-through group after the working ones, counted nowhere. Each
- * reason has its own sentence under its rows; one act removes the whole group.
+ * Grants the project cannot honour: one struck-through group after the working ones, counted nowhere. Each reason has
+ * its own sentence under its rows; one act removes the whole group.
  */
 export function LostGrants({ groups, onRemove }: LostGrantsProps) {
   const count = groups.reduce((all, group) => all + group.rows.length, 0);

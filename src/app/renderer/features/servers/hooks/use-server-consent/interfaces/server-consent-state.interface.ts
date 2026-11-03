@@ -1,6 +1,6 @@
 import type { ProjectMcpServer } from "../../../../../interfaces";
 
-/** The window of 36k: whose run line it asks about, and the ways to open and answer it. */
+/** The consent window: whose run line it asks about, and the ways to open and answer it. */
 export interface ServerConsentState {
   /** The server whose line waits for an answer; null while no window stands. */
   asked: ProjectMcpServer | null;

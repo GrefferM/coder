@@ -63,7 +63,7 @@ describe("AimPicker", () => {
     // The name appears on the button and in the list; this targets the list's.
     const row = within(screen.getByRole("listbox")).getByText("Тезар");
 
-    // Eight coloured names in a row made a list nobody could read.
+    // Coloured names in a row make a list nobody can read.
     expect(row).not.toHaveStyle({
       color: "#b18aff",
     });

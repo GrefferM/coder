@@ -74,17 +74,14 @@ function commandSaid(grant: CommandToolGrant, commands: ProjectCommand[]): strin
   return `${name}${GRANTED_TOOLS_PINNED_OPEN}${pinned}${GRANTED_TOOLS_PINNED_CLOSE}`;
 }
 
-/** An agent given as a tool, by name; its id when no longer in the project. */
+/** An agent given as a tool, by name; its id when the project lacks it. */
 function agentSaid(grant: AgentToolGrant, agents: Agent[]): string {
   const agent = agents.find((item) => item.id === grant.agentId) ?? null;
 
   return `${GRANTED_TOOLS_AGENT_SIGN}${agent?.name ?? grant.agentId}`;
 }
 
-/**
- * A server's function, named with its server, since two servers may both have `search`; a server no longer declared
- * shows as its id.
- */
+/** A server's function with its server's name, as two servers may share one; an undeclared server shows as its id. */
 function serverSaid(grant: McpToolGrant, servers: ProjectMcpServer[]): string {
   const server = servers.find((item) => item.id === grant.serverId) ?? null;
 

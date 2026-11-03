@@ -22,7 +22,7 @@ function aServer(patch: Partial<ProjectMcpServer> = {}): ProjectMcpServer {
   };
 }
 
-/** A local server, which nothing but a person starts (36k). */
+/** A local server, which nothing but a person starts. */
 function aLocalServer(patch: Partial<ProjectMcpServer> = {}): ProjectMcpServer {
   return aServer({
     id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",

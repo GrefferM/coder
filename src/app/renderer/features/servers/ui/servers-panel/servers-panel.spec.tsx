@@ -256,7 +256,7 @@ describe("ServersPanel", () => {
   });
 
   it("a call that failed stands under the name, while the dot stays as it was", () => {
-    // «червоніє смуга, а не стан сервера»: the connection is whole.
+    // Only the stripe reddens: the connection is whole.
     panel({
       looks: {
         [SERVER_ID]: aLook({
@@ -417,7 +417,7 @@ describe("ServersPanel", () => {
 
     expect(screen.getByText("ОСТАННІЙ ВИКЛИК · 14:12")).toBeInTheDocument();
     expect(screen.queryByText(/ОСТАННІЙ ВИКЛИК УПАВ/)).not.toBeInTheDocument();
-    // «Тіло стану — той самий рядок сервера, що в смузі»: one text in both places.
+    // The block's body is the stripe's server line: one text in both places.
     expect(screen.getByText("browser_navigate · Chromium distribution 'chrome' is not found")).toBeInTheDocument();
   });
 
@@ -613,7 +613,6 @@ describe("ServersPanel", () => {
     });
 
     expect(screen.getByText("ПРОЦЕС УПАВ · 1 АГЕНТ")).toBeInTheDocument();
-    // The failure words stand under a fallen row.
     expect(screen.getByText("spawn ENOENT · npx: command not found")).toBeInTheDocument();
 
     await userEvent.click(screen.getByText(SERVER_RESTART_LABEL));
@@ -644,7 +643,7 @@ describe("ServersPanel", () => {
   });
 
   it("holds the second line back until the twentieth second, and says it after", () => {
-    // «доти чекання звичайне»: no long-start line on a wait of three seconds.
+    // No long-start line on a wait of three seconds.
     const { rerender } = panel({
       looks: {},
       askingSince: {

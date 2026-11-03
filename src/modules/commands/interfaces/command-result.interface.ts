@@ -4,6 +4,6 @@ export interface CommandResult {
   line: string;
   output: string;
   isFailed: boolean;
-  /** The exit code; `null` when there was no process to give one. */
+  /** `null` when there was no process to give one. */
   exitCode: number | null;
 }

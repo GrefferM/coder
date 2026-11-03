@@ -160,7 +160,7 @@ export interface RunStore {
   /** Every run of one project, unordered. */
   runsIn(directory: string): Promise<RunEntity[]>;
   allRuns(): Promise<RunEntity[]>;
-  /** Runs left open: the app closed on them, or they are walking now. */
+  /** Runs left open: the app closed on them, or they are still walking. */
   runsStillOpen(): Promise<RunEntity[]>;
   /** Ends a run, or reopens it with `null` when its flow is asked another question. */
   endRun(id: string, endedAt: Date | null): Promise<void>;

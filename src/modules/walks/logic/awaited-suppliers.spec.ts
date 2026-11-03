@@ -44,8 +44,8 @@ describe("awaitedSuppliers", () => {
   });
 
   it("counts the suppliers from where the walk actually began, and not from some other agent", () => {
-    // Guards a repeat beginning the walk at the flow's first agent instead of the asked one, which dropped the
-    // converging point's suppliers and its wait.
+    // Counting from the flow's first agent instead of the asked one drops the converging point's suppliers and its
+    // wait.
     const drawn = config(
       [agent("alone"), agent("thesaurus"), agent("shortener"), agent("headline")],
       [

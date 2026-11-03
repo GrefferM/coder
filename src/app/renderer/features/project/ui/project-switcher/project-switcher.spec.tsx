@@ -158,7 +158,6 @@ describe("ProjectSwitcher", () => {
   });
 
   it("opens a folder that already holds a project instead of asking to name one", async () => {
-    // «Новий проєкт» on a folder that already holds a project asks nothing.
     const user = userEvent.setup();
     const onProjectChange = vi.fn();
     const invoke = stubApi({
@@ -469,7 +468,6 @@ describe("ProjectSwitcher", () => {
 
     const rows = screen.getByText("project-10").closest("[style*='overflow']");
 
-    // Four rows show; the rest sit in a scrolling box.
     expect(rows).toHaveStyle({
       maxHeight: `${SWITCHER_LIST_MAX_HEIGHT_PX}px`,
       overflowY: "auto",

@@ -40,7 +40,6 @@ function run(walk: WholeStep[]): WholeRun {
     startedAt: new Date("2026-08-22T19:26:56"),
     askedAt: new Date("2026-08-22T19:26:56"),
     endedAt: new Date("2026-08-22T19:27:12"),
-    // One question, the one the walk grew from; every step names this row.
     questions: [
       {
         id: "question-1",
@@ -113,7 +112,6 @@ describe("runUnfinished", () => {
       "question-1",
     );
 
-    // The turn is run again as it stood: same agent, words and feeders.
     assert.deepEqual(said.again, [
       {
         agentId: "agent-2",
@@ -154,8 +152,7 @@ describe("runUnfinished", () => {
       "question-1",
     );
 
-    // A row from when «зайнятий» was a word: the work never reached agent-3, and ТЕЗАР's words are all that remains of
-    // the link.
+    // A `busy` link: the work never reached agent-3, and ТЕЗАР's words are all that remains of it.
     assert.deepEqual(said.arrivals, [
       {
         toAgentId: "agent-3",

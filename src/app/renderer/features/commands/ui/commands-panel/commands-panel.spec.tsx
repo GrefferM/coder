@@ -55,7 +55,6 @@ describe("CommandsPanel", () => {
   });
 
   it("lifts the one act into the middle where there is nothing to list", () => {
-    // An empty section is one action, not a list with a footer.
     render(
       <CommandsPanel
         {...props({
@@ -70,7 +69,6 @@ describe("CommandsPanel", () => {
   });
 
   it("keeps every character a provider would refuse, rather than eating it behind the person", async () => {
-    // A typed character is kept, and the field says what is wrong.
     const onFormChange = vi.fn();
 
     render(

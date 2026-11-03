@@ -141,7 +141,6 @@ describe("useUndoOffers", () => {
   });
 
   it("drops the offer whose deletion the history has already put back", () => {
-    // The thing came back another way, so the offer for that deletion is dropped.
     vi.useFakeTimers();
 
     const { result } = renderHook(() => useUndoOffers());

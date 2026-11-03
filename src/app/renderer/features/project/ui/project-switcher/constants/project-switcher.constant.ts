@@ -106,7 +106,6 @@ export const SWITCHER_SCRIM_COLOR = "rgba(8, 10, 16, 0.72)";
 /** Shown when a project's folder no longer holds one. */
 export const SWITCHER_MISSING_LABEL = "НЕ ЗНАЙДЕНО";
 
-/** Row colour of a missing project. */
 export const SWITCHER_MISSING_COLOR = QUIET_MARK_COLOR;
 
 export const SWITCHER_FORGET_LABEL = "Прибрати зі списку";

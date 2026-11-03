@@ -53,7 +53,6 @@ describe("ParameterForm", () => {
   });
 
   it("answers a name the braces would not take with the refusal, and not with the rule said again", async () => {
-    // The refusal names what failed, not the rule, which is already on screen.
     render(<ParameterForm parameter={null} run="" {...acts()} />);
     await userEvent.type(screen.getByLabelText(PARAMETER_FORM_NAME_LABEL), "2fast");
 

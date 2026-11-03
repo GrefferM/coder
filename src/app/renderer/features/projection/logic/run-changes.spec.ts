@@ -72,7 +72,6 @@ describe("runChanges", () => {
   });
 
   it("says nothing about an agent nothing has moved about", () => {
-    // An unchanged agent yields no change.
     const same = aStep({
       agentId: "agent-1",
       model: "claude-opus-4.1",

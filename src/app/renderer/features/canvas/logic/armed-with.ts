@@ -15,12 +15,11 @@ import {
 import type { ToolGrant } from "../../../interfaces";
 
 /**
- * The arc of mini-spheres over an agent: what it is armed with, not which functions. Each mark wears its source's
- * colour.
+ * The arc of mini-spheres over an agent: what it is armed with, not which functions.
  *
- * Twelve places by kind, not by number: two commands, two servers, two agents, two system commands, and a third place
- * under each kind's «+». A kind never takes another's places, so the arc may be shorter. A source whose every grant points at nothing takes the
- * trouble tone; if folded, its kind's «+» takes it.
+ * Twelve places by kind, not by number: two of each of the four kinds and a third under its «+». A kind never takes
+ * another's places, so the arc may be shorter. A source whose every grant points at nothing takes the trouble tone; if
+ * folded, its kind's «+» takes it.
  */
 export function armedWith(tools: ToolGrant[], said: GrantTargets): ArmedOrb[] {
   return [
@@ -121,12 +120,10 @@ function serverMarks(tools: ToolGrant[], said: GrantTargets): ArmedMark[] {
   }));
 }
 
-/** One mini-sphere: a server, a declared command, or an agent granted as a tool. */
 function orbOf(mark: ArmedMark, said: GrantTargets): ArmedOrb {
   return {
     group: mark.group,
     grantId: mark.grantId,
-    // The trouble tone overrides the source colour.
     color: mark.isBroken ? ARMED_BROKEN_COLOR : ARMED_SOURCE_COLOR[sourceOfGroup(mark.group)],
     more: null,
     folded: null,

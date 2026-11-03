@@ -11,7 +11,7 @@ export const STEP_SHEET_BORDER_RADIUS_PX = 12;
 export const STEP_SHEET_BACKGROUND_COLOR = PANEL_GROUND_COLOR;
 export const STEP_SHEET_BORDER_PERCENT = 34;
 export const STEP_SHEET_BORDER_MIX_COLOR = "#262b3a";
-/** Below this graph width the sheet no longer sits beside the graph. */
+/** Below this graph width the sheet lies along the bottom instead of beside the graph. */
 export const STEP_SHEET_GRAPH_LEAST_PX = 560;
 /** The lower sheet spans the field's width and a little over half its height. */
 export const STEP_SHEET_BOTTOM_HEIGHT = "58%";

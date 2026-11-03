@@ -704,7 +704,6 @@ describe("AgentSettings", () => {
       },
     });
 
-    // A changed field shows its previous value.
     expect(screen.getByText(`${FIELD_SLOT_WAS_PREFIX}0.3`)).toBeInTheDocument();
   });
 });

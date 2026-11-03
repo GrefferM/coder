@@ -76,10 +76,7 @@ import type {
   ToolRunner,
 } from "../interfaces";
 
-/**
- * One turn of the model as it is asked: the agent's run and what it is given. What an agent needs to call its tools —
- * its id, the directory, the tools, the servers and the agents reachable — a call that asks for words alone leaves out.
- */
+/** One turn of the model as it is asked; a call that asks for words alone leaves out what calling tools needs. */
 interface AskedPayload {
   turnId: string;
   agentId?: string;
@@ -137,8 +134,8 @@ export class LlmService {
   }
 
   /**
-   * The composer's call: one round of the same model with no tools and no system prompt, under the turn's own id so a stop reaches it, and
-   * with nothing said onward, since its words are a memory and not an answer. The model's own ceiling cuts it short.
+   * The composer's call, under the turn's own id so a stop reaches it; nothing is said onward, since its words are a
+   * memory and not an answer. The model's own ceiling cuts it short.
    */
   async compose(payload: {
     turnId: string;
@@ -226,9 +223,9 @@ export class LlmService {
   }
 
   /**
-   * One turn's loop: a round of the model, then every call it asked for, until it asks for none or a ceiling cuts it. A
-   * stop and a ceiling end the turn, keeping what was said and done. A provider fault is thrown as the app's one refusal
-   * for it.
+   * One turn's loop: a round of the model, then every call it asked for, until it asks for none or a ceiling cuts it.
+   * A stop and a ceiling end the turn, keeping what was said and done. A provider fault is thrown as the app's one
+   * refusal for it.
    */
   private async turn(turn: RunningTurn): Promise<AgentAnswer> {
     const ledger = new TurnLedger();
@@ -269,8 +266,8 @@ export class LlmService {
 
         await this.ranCalls(turn, asked, ledger);
 
-        // `finish_here` was the agent's last word: the turn ends after its round, with no further round to ask the model
-        // for words it was told it need not write.
+        // `finish_here` was the agent's last word: the turn ends after its round, with no further round to ask the
+        // model for words it was told it need not write.
         if (ledger.isEnded()) {
           return ledger.answer();
         }
@@ -297,8 +294,8 @@ export class LlmService {
         });
       }
 
-      // A provider fault is thrown as a refusal the app knows, not reported; the provider's own sentence rides after the
-      // code, and nothing else of the library's error object (its headers and cookies) leaves.
+      // A provider fault is thrown as a refusal the app knows, not reported; the provider's own sentence rides after
+      // the code, and nothing else of the library's error object (its headers and cookies) leaves.
       throw new Refusal(LLM_ASK_FAILED, this.withHint(messageOf(failure), turn.failureHint));
     }
   }
@@ -486,8 +483,8 @@ export class LlmService {
   }
 
   /**
-   * One call of any kind. The envelope is shared: the row is minted, said on going out and again when over, and handed to
-   * the model as a message; the middle belongs to the way (command line, server function or another agent's turn).
+   * One call of any kind. The envelope is shared: the row is minted, said on going out and again when over, and handed
+   * to the model as a message; the middle belongs to the way.
    */
   private async called(
     turn: RunningTurn,
@@ -538,7 +535,6 @@ export class LlmService {
       };
     }
 
-    // Said when it goes out and again when it is over.
     this.sayCall(turn, standing, RUN_CALL_RUNNING);
 
     const { memories, cost, route, ...result } = await way.make(standing.id, turn.directory, turn.signal);
@@ -621,11 +617,10 @@ export class LlmService {
   }
 
   /**
-   * A sub-agent's whole turn for the one request: silent, under the caller's stop, added to the watched ring. It keeps
-   * what its memory says, as an agent that walks does: its own calls within this turn of the caller, or the question's
-   * shared memory, or nothing. The memory is weighed first, and compressed by its composer where it has to be, before the
-   * agent is asked; what that cost goes up with the outcome, whatever came of the call. Whatever stops it — the record,
-   * the ceiling, the provider — is the call's outcome in its own words, not the caller's fall.
+   * A sub-agent's whole turn for the one request: silent, under the caller's stop, added to the watched ring. Its
+   * memory is compressed first where it has to be, and that cost goes up with the outcome whatever came of the call.
+   * Whatever stops it (the record, the ceiling, the provider) is the call's outcome in its own words, not the caller's
+   * fall.
    */
   private async subTurn(asked: SubTurn): Promise<AgentTurnOutcome> {
     const { turn, agent, request, signal } = asked;
@@ -895,8 +890,8 @@ export class LlmService {
   }
 
   /**
-   * Whether the provider's token count for this round stopped exactly at the ceiling. A count over the ceiling means the
-   * provider ignored it, so nothing was cut.
+   * Whether the provider's token count for this round stopped exactly at the ceiling. A count over the ceiling means
+   * the provider ignored it, so nothing was cut.
    */
   private reachedCeiling(roundTokens: number, answerCeiling: number): boolean {
     return roundTokens > 0 && answerCeiling > 0 && roundTokens === answerCeiling;

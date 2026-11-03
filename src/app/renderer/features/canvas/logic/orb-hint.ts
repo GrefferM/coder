@@ -39,7 +39,6 @@ export function orbHint(group: string, granted: ToolGrant[], said: GrantTargets)
   if (group === SYSTEM_GROUP_KEY) {
     return {
       kind: ORB_HINT_SYSTEM_KIND,
-      // A system command is one mark, named by the command.
       name: nameOfSystem(granted[0] ?? null),
       count: "",
       lines: [],
@@ -49,7 +48,6 @@ export function orbHint(group: string, granted: ToolGrant[], said: GrantTargets)
   if (group === AGENTS_GROUP_KEY) {
     return {
       kind: ORB_HINT_AGENT_KIND,
-      // An agent is one mark, named by its own name.
       name: nameOfAgent(granted[0] ?? null, said) ?? ORB_HINT_GONE_AGENT,
       count: "",
       lines: [],
@@ -96,7 +94,6 @@ export function foldHint(folded: ArmedFold[], broken: number, said: GrantTargets
   };
 }
 
-/** A granted command is named by the name the project gave it. */
 function nameOfCommand(grant: ToolGrant | null, said: GrantTargets): string | null {
   if (grant === null) {
     return null;
@@ -105,7 +102,6 @@ function nameOfCommand(grant: ToolGrant | null, said: GrantTargets): string | nu
   return said.commands.find((one) => pointsAt(grant, one.id))?.name ?? null;
 }
 
-/** An agent granted as a tool is named by its own name. */
 function nameOfAgent(grant: ToolGrant | null, said: GrantTargets): string | null {
   if (grant === null || !isAgentGrant(grant)) {
     return null;
@@ -114,7 +110,7 @@ function nameOfAgent(grant: ToolGrant | null, said: GrantTargets): string | null
   return said.agents.find((one) => one.id === grant.agentId)?.name ?? null;
 }
 
-/** A system command by its name: `pass_to`, `finish_here`. */
+/** A system command by its name, e.g. `pass_to`. */
 function nameOfSystem(grant: ToolGrant | null): string {
   return grant !== null && isSystemGrant(grant) ? grant.command : "";
 }

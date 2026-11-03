@@ -59,7 +59,6 @@ function list(rows: ArmedMarkRow[] = ROWS, head = "ЩЕ 3 СЕРВЕРИ") {
 
 describe("MarkWindow", () => {
   it("says what the «+» hides, and every line by its own name alone", () => {
-    // Lists only the folded marks, and only by name, without a count.
     list();
 
     expect(screen.getByText("ЩЕ 3 СЕРВЕРИ")).toBeInTheDocument();

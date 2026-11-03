@@ -35,7 +35,6 @@ describe("UndoStack", () => {
   });
 
   it("shows three at most and counts the rest above them", () => {
-    // What does not fit is said as a number.
     render(<UndoStack offers={[1, 2, 3, 4, 5].map(offer)} onUndo={() => {}} />);
 
     expect(screen.getAllByText(UNDO_ACTION_LABEL)).toHaveLength(UNDO_STACK_SHOWN_MAX);

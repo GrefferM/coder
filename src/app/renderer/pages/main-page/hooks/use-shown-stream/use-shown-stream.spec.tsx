@@ -126,7 +126,6 @@ describe("useShownStream", () => {
   });
 
   it("aims at whom the flow was asked last, and not at whom it was asked first", async () => {
-    // Regression: a flow handed from one agent to another opened aimed at the first.
     machine([]);
     select.mockClear();
 

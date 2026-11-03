@@ -3,7 +3,6 @@
  * memory had up to a place in the run. No step is deleted; the message is read in place of those steps.
  */
 export interface MemoryFacts {
-  /** Whose memory it is. */
   agentId: string;
   /** The question a shared memory belongs to; null for the agent's own thread in the conversation. */
   questionId: string | null;

@@ -9,7 +9,7 @@ export interface ServerPageProps {
   rows: FunctionRow[];
   /** «N АГ.» — how many agents hold any function of this server. */
   agentCount: number;
-  /** It is being raised right now; no process action is offered. */
+  /** It is being raised; no process action is offered. */
   isAsking: boolean;
   /** «ЗАПУСТИТИ» and «ПЕРЕЗАПУСТИТИ»: let the process go and raise it afresh. */
   onRestart: () => void;

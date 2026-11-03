@@ -61,10 +61,7 @@ export const RUN_HISTORY_QUIET_LETTER_SPACING_PX = 1;
 export const RUN_HISTORY_RUNNING_COLOR = "#4ade80";
 export const RUN_HISTORY_FAILED_COLOR = FALLEN_COLOR;
 
-/**
- * The state is a dot in its own colour plus a word. The word is quiet in all five states with no pill, so the state's
- * colour lives in the dot alone.
- */
+/** The state is a dot in its own colour plus a quiet word, with no pill. */
 export const RUN_HISTORY_STATE_DOT_SIZE_PX = 6;
 /** Nothing was sent: an empty outline, not a colour. */
 export const RUN_HISTORY_EMPTY_DOT_BORDER = `1px solid ${RUN_HISTORY_QUIET_COLOR}`;
@@ -73,7 +70,7 @@ export const RUN_HISTORY_EMPTY_DOT_COLOR = "transparent";
 export const RUN_HISTORY_RUNNING_DOT_GLOW_PX = 8;
 export const RUN_HISTORY_RUNNING_BORDER_COLOR = "#2c4a3a";
 
-/** The one search over the whole record; the placeholder says where it looks. */
+/** The one search over the whole record. */
 export const RUN_SEARCH_PLACEHOLDER = "Пошук по запиту, текстах і викликах";
 export const RUN_SEARCH_LABEL = "Пошук по запису";
 export const RUN_SEARCH_BACKGROUND_COLOR = "#171b26";
@@ -118,10 +115,7 @@ export const RUN_HISTORY_FOOT_PADDING = "12px 2px 2px";
 export const RUN_HISTORY_FOOT_TOP_PX = 4;
 export const RUN_HISTORY_FOOT_LINE_HEIGHT = 1.7;
 
-/**
- * The rule naming a run, shown only where the flat list changes runs: its day, hour and the start of its question. It
- * is not a group, and an interleaved run is named again each time.
- */
+/** The rule naming a run where the flat list changes runs: its day, hour and the start of its question. */
 export const FOUND_RULE_PADDING = "7px 2px 0";
 export const FOUND_RULE_GAP_PX = 7;
 /** Day and hour are dimmer than the question. */

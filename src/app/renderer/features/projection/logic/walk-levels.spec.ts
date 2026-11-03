@@ -68,7 +68,6 @@ describe("walkLevels", () => {
   });
 
   it("leaves a turn whose feeder is not in the walk standing on the first step", () => {
-    // A step naming a missing step does not fail.
     expect(walkLevels([step("orphan", 1, ["gone"])])).toEqual({
       orphan: 1,
     });

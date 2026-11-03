@@ -99,11 +99,13 @@ describe("TurnAsker", () => {
       const [asking] = llm.asked;
 
       assert.equal(llm.composed.length, 1);
-      // Ten thousand characters, ten percent of a hundred thousand, less what the memory is told in around the message; told in words.
+      // Ten thousand characters, ten percent of a hundred thousand, less what the memory is told in around the
+      // message; told in words.
       const words = composerWords(10_000 - [...composedMemory("")].length);
 
       assert.equal(composing.answerCeiling, 4_096);
-      // One message with no system prompt: the memory told by who said it, fenced in, then the instruction with the words.
+      // One message with no system prompt: the memory told by who said it, fenced in, then the instruction with the
+      // words.
       assert.deepEqual(composing.messages, [
         {
           from: "person",

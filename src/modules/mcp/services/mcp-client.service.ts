@@ -65,7 +65,7 @@ export class McpClient {
       return {
         serverId: server.id,
         isUp: false,
-        // Nothing is reported from the last look; this is what it says now.
+        // A fallen server hands over nothing; an earlier look's list is not repeated.
         functions: [],
         answeredAt: null,
         failure: String(failure),
@@ -97,7 +97,7 @@ export class McpClient {
   async call(payload: McpCall): Promise<McpResult> {
     const result = await this.asked(payload);
 
-    // The one place a call ends.
+    // The one place a call is counted.
     this.calls.noted(payload.server.id, payload, result);
 
     return result;
@@ -170,8 +170,7 @@ export class McpClient {
     // A new connection is a new chance.
     this.calls.forget(server.id);
 
-    // A fallen server is noticed where it falls, so a dead connection is not held; only this connection releases its
-    // own place.
+    // A dead connection is let go where it falls; a newer one under the same id is left alone.
     client.onclose = () => {
       if (this.live.get(server.id) === client) {
         this.live.delete(server.id);
@@ -200,8 +199,7 @@ export class McpClient {
       throw new Refusal(MCP_SERVER_UNREACHABLE);
     }
 
-    // The environment is settled before anything runs; a missing key is «не запуститься» and no process exists to say
-    // so.
+    // Settled before anything runs: a missing key is «не запуститься», with no process to say so.
     const environment = await this.environment(server);
     const client = new Client({
       name: MCP_CLIENT_NAME,

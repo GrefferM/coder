@@ -7,16 +7,13 @@ import type {
   WorkingAgent,
 } from "../../../interfaces";
 
-/**
- * What an agent's state is read against: the project, the machine, and what every agent is doing in the conversation on
- * screen.
- */
+/** What an agent's state is read against: the project, the machine, and the conversation on screen. */
 export interface StateFacts {
   config: ProjectConfig;
   providers: ProviderState[];
   /** Each provider's last answer, by provider id. */
   answers: Record<string, ProviderAnswer>;
-  /** What each declared server offers now, by server id. */
+  /** What each declared server offers, by server id. */
   looks: Record<string, McpLook>;
   /** The agents with a turn out in this conversation. */
   working: WorkingAgent[];

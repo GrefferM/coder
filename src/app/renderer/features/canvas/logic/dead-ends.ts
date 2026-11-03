@@ -4,8 +4,8 @@ import type { Agent, Link } from "../../../interfaces";
 import type { Point } from "../../../utils/math";
 
 /**
- * Where each end of a line that names nobody stands. A hand-edited file, a merge or a `git pull` can make one; such a
- * line is drawn rather than hidden.
+ * Where each end of a line that names nobody stands. A hand-edited or merged file can make one; such a line is drawn
+ * rather than hidden.
  *
  * The dead end is put in free space down and to the right of the live end, by the rule that places a new agent. A line
  * with both ends dead is not drawn.

@@ -1,6 +1,6 @@
 import { AGENT_COLORS } from "./agent-colors.constant";
 
-/** Starting colour of a canvas-menu agent — the picker's first. */
+/** Starting colour of a canvas-menu agent. */
 export const [NEW_AGENT_COLOR] = AGENT_COLORS;
 
 /** Call limit of a canvas-menu agent. */

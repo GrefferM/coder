@@ -92,11 +92,9 @@ export class RunReader {
   }
 
   /**
-   * What has happened to one question so far, as an agent with the shared memory reads it: the question with its files,
-   * then every answered turn in the order it landed and whom its work came from; fallen, cut or stopped turns and calls
-   * are left out. Where the agent's memory of this question was compressed, the composer's message stands for the
-   * question and every answer up to the place it covers, and the answers after it follow as they were; so does one
-   * the caller's turn has made and the record is yet to be told of (`unwritten`). Empty while
+   * One question as an agent with the shared memory reads it: the question with its files, then every answered turn
+   * in landing order with whom its work came from; calls are left out. Where that memory was compressed, the composer's
+   * message (held, or `unwritten` from the caller's turn) stands for everything up to the place it covers. Empty while
    * nothing has answered; null for a run or a question the record does not hold.
    */
   async sharedMemory(

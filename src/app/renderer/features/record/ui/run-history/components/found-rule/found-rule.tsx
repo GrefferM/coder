@@ -11,10 +11,7 @@ import {
 } from "../../constants";
 import type { FoundRuleProps } from "./interfaces";
 
-/**
- * A quiet rule naming the run, shown where the row above came from another run; not a group or heading, cannot be
- * pressed. A run that interleaves with another is named again each time.
- */
+/** A quiet, unpressable rule naming the run where the row above came from another run; not a group. */
 export function FoundRule({ run, now }: FoundRuleProps) {
   return (
     <div

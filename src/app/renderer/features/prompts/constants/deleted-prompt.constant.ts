@@ -1,10 +1,7 @@
 /** Prompt-deletion question wording; its agents stay, left on the bare model. */
 export const DELETED_PROMPT_QUESTION_PREFIX = "Видалити промпт «";
 export const DELETED_PROMPT_QUESTION_SUFFIX = "»?";
-/**
- * «Заберемо ‹річ›. ‹Що піде або лишиться разом›.»: the prompt named, then what its agents are left on; they stay, on
- * the bare model.
- */
+/** «Заберемо ‹річ›. ‹Що піде або лишиться разом›.»: the prompt named, then its agents left on the bare model. */
 export const DELETED_PROMPT_NOTE_PREFIX = "Заберемо промпт «";
 export const DELETED_PROMPT_NOTE_NAMED = "». ";
 export const DELETED_PROMPT_AGENT_FORMS = ["агент", "агенти", "агентів"];

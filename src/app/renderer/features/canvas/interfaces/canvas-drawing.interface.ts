@@ -4,7 +4,6 @@ import type { Agent } from "../../../interfaces";
 
 /** What is being drawn on the canvas now, and the drawing's size at this scale. */
 export interface CanvasDrawing {
-  /** The one sphere being dragged, or `null` when none is. */
   drag: SphereDragState | null;
   /** The line in hand, the cancelled line fading, and the sphere the line is over. */
   draft: DrawnLine | null;

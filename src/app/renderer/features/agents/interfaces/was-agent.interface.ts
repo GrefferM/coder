@@ -1,7 +1,4 @@
-/**
- * What each field was before this draft changed it, worded as the field shows it; null where unchanged or nothing is
- * saved yet.
- */
+/** Each field's saved value, worded as the field shows it; null where unchanged or never saved. */
 export interface WasAgent {
   name: string | null;
   purpose: string | null;
@@ -10,9 +7,7 @@ export interface WasAgent {
   /** Commands and server functions are separate tab fields, each worded on its own. */
   commandTools: string | null;
   serverTools: string | null;
-  /** Agents granted as tools, a field of their own. */
   agentTools: string | null;
-  /** System commands granted, a field of their own. */
   systemTools: string | null;
   color: string | null;
   compressAt: string | null;

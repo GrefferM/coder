@@ -7,7 +7,7 @@ export interface RepeatCycle {
   text: string;
   /** The files packed for the first question; every repeat carries the same. */
   attached: PackedAttachment[];
-  /** The walk now out; `null` while the first question is still packing. */
+  /** The walk out; `null` while the first question is still packing. */
   runKey: string | null;
   /** How many have gone, the one out included. */
   sent: number;

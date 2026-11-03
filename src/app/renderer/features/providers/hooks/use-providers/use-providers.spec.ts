@@ -101,7 +101,6 @@ describe("useProviders", () => {
     const invoke = held();
     const { result } = renderHook(() => useProviders());
 
-    // The list arrives over the bridge, and its ask goes first.
     await act(async () => {
       await vi.advanceTimersByTimeAsync(0);
     });
