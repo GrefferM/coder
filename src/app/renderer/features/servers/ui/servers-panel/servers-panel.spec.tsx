@@ -15,6 +15,7 @@ import {
   SERVER_STARTING_SLOW_AFTER_SECONDS,
   SERVER_STARTING_SLOW_LABEL,
   SERVER_STOP_ASKING_LABEL,
+  SERVER_STOP_LABEL,
   SERVER_UNKNOWN_LABEL,
 } from "../../constants";
 import { MS_IN_SECOND } from "../../../../utils/dates/constants";
@@ -87,6 +88,7 @@ function panelProps(says: Partial<PanelSays> = {}): ServersPanelProps {
     askingSince: {},
     agents: holding(),
     onRestart: () => {},
+    onStop: () => {},
     onCancel: () => {},
     onAskAgain: () => {},
     onSeen: () => {},
@@ -119,6 +121,7 @@ function panelProps(says: Partial<PanelSays> = {}): ServersPanelProps {
     },
     serverActs: {
       onRestart: said.onRestart,
+      onStop: said.onStop,
       onCancel: said.onCancel,
       onAskAgain: said.onAskAgain,
       onSeen: said.onSeen,
@@ -755,16 +758,61 @@ describe("ServersPanel", () => {
     expect(onRestart).toHaveBeenCalledWith(SERVER_ID);
   });
 
-  it("never offers to stop a server anywhere, in the catalogue or on its page", async () => {
-    // No stop action: a server is stopped by closing the project and removed by deleting; «СКАСУВАТИ» lets go of the
-    // waiting, not the server.
-    panel();
+  it("offers to stop a standing local server in its row, where «ЗАПУСТИТИ» would stand, and stops it by its id", async () => {
+    const onStop = vi.fn();
+    const onRestart = vi.fn();
 
-    expect(screen.queryByText("ЗУПИНИТИ")).not.toBeInTheDocument();
+    panel({
+      onStop,
+      onRestart,
+    });
+
+    expect(screen.queryByText(SERVER_RESTART_LABEL)).not.toBeInTheDocument();
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: SERVER_STOP_LABEL,
+      }),
+    );
+
+    expect(onStop).toHaveBeenCalledWith(SERVER_ID);
+    expect(onRestart).not.toHaveBeenCalled();
+  });
+
+  it("offers «ЗАПУСТИТИ» and no stop to a local server nobody raised", () => {
+    panel({
+      looks: {},
+    });
+
+    expect(screen.getByText(SERVER_RESTART_LABEL)).toBeInTheDocument();
+    expect(screen.queryByText(SERVER_STOP_LABEL)).not.toBeInTheDocument();
+  });
+
+  it("never offers to stop a remote server: nothing of it runs on this machine", () => {
+    panel({
+      servers: [
+        aServer({
+          isLocal: false,
+          run: "",
+          address: "https://mcp.linear.app/mcp",
+        }),
+      ],
+    });
+
+    expect(screen.queryByText(SERVER_STOP_LABEL)).not.toBeInTheDocument();
+  });
+
+  it("keeps the server's page as it was: a standing local server is raised afresh there, never stopped", async () => {
+    panel();
 
     await userEvent.click(screen.getByText("filesystem-mcp"));
 
-    expect(screen.queryByText("ЗУПИНИТИ")).not.toBeInTheDocument();
+    expect(screen.queryByText(SERVER_STOP_LABEL)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: SERVER_RESTART_ALIVE_LABEL,
+      }),
+    ).toBeInTheDocument();
   });
 
   it("says where servers come from while there are none, rather than offering what is not built", () => {

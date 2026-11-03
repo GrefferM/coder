@@ -12,6 +12,8 @@ export interface ServerRowProps {
   onOpen: () => void;
   /** «ЗАПУСТИТИ»: let it go and start it afresh. */
   onRestart: () => void;
+  /** «ЗУПИНИТИ»: let a standing local server's process go; its consent stays. */
+  onStop: () => void;
   /** «СКАСУВАТИ»: let the process go and ask nothing. */
   onCancel: () => void;
   /** «УВІЙТИ» and «ВПИСАТИ»: open the form for a token or value. */

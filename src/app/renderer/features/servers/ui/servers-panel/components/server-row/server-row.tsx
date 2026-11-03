@@ -8,6 +8,7 @@ import {
   SERVER_LOST_COLOR,
   SERVER_RESTART_ALIVE_LABEL,
   SERVER_RESTART_LABEL,
+  SERVER_STOP_LABEL,
   SERVER_STARTING_COLOR,
   SERVER_TOKEN_MISSING_ACTION,
   SERVER_VALUE_MISSING_ACTION,
@@ -53,6 +54,7 @@ export function ServerRow({
   agentCount,
   onOpen,
   onRestart,
+  onStop,
   onCancel,
   onFill,
   onShowCall,
@@ -76,7 +78,7 @@ export function ServerRow({
   const isUnasked = trouble?.kind === "tokenMissing";
   /** A server nobody has raised: never asked, or let go by hand. Empty dot, no number, and a way back up. */
   const isUnknown = !isAsking && look === null;
-  const deed = isAsking ? null : serverDeed(look);
+  const deed = isAsking ? null : serverDeed(look, server.isLocal);
   const action =
     deed === null
       ? null
@@ -92,6 +94,10 @@ export function ServerRow({
           raiseAgain: {
             label: SERVER_RESTART_ALIVE_LABEL,
             onPress: onRestart,
+          },
+          stop: {
+            label: SERVER_STOP_LABEL,
+            onPress: onStop,
           },
         }[deed];
 

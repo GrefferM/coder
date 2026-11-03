@@ -87,6 +87,18 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
     void closeServer(serverId);
   }, []);
 
+  /**
+   * «ЗУПИНИТИ»: lets the process go and drops what the server said, as «СКАСУВАТИ» does, and forgets that it was raised,
+   * so a change of its line in the file starts nothing. The consent to its line stays on this machine.
+   */
+  const stop = useCallback(
+    (serverId: string) => {
+      raised.current.delete(serverId);
+      cancel(serverId);
+    },
+    [cancel],
+  );
+
   /** The page was opened, so the «34 → 33» arrow goes out here as well as on this machine. */
   const seen = useCallback((serverId: string) => {
     void seenServer(serverId);
@@ -176,6 +188,7 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
     askingSince,
     look: ask,
     restart,
+    stop,
     cancel,
     seen,
   };

@@ -18,19 +18,24 @@ function aLook(patch: Partial<McpLook> = {}): McpLook {
 }
 
 describe("serverDeed", () => {
-  it("offers nothing in the head of a row whose server simply stands answering", () => {
-    // An answering server offers nothing in the head; its process actions are on its page.
-    expect(serverDeed(aLook())).toBeNull();
+  it("offers nothing in the head of a row whose remote server simply stands answering", () => {
+    // A remote server is a connection, not a process here; its actions are on its page.
+    expect(serverDeed(aLook(), false)).toBeNull();
+  });
+
+  it("offers to stop a local server that stands answering, since that one is our own process", () => {
+    expect(serverDeed(aLook(), true)).toBe("stop");
   });
 
   it("offers to raise one that never rose and one that fell, since both ask the same of a hand", () => {
-    expect(serverDeed(null)).toBe("raise");
+    expect(serverDeed(null, true)).toBe("raise");
     expect(
       serverDeed(
         aLook({
           isUp: false,
           failure: "Error: spawn npx ENOENT",
         }),
+        true,
       ),
     ).toBe("raise");
   });
@@ -43,6 +48,7 @@ describe("serverDeed", () => {
           isUp: false,
           failure: "Error: MCP_TOKEN_MISSING",
         }),
+        true,
       ),
     ).toBe("fill");
     expect(
@@ -51,6 +57,7 @@ describe("serverDeed", () => {
           isUp: false,
           failure: "Error: MCP_ENV_VALUE_MISSING: BRAVE_API_KEY",
         }),
+        true,
       ),
     ).toBe("fill");
   });
@@ -66,6 +73,7 @@ describe("serverDeed", () => {
             hasWorked: false,
           },
         }),
+        true,
       ),
     ).toBe("raiseAgain");
   });

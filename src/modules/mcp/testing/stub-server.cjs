@@ -147,6 +147,11 @@ process.stdin.on("data", (chunk) => {
       continue;
     }
 
+    // A call left without an answer, which is how a test stops a server while a call is out.
+    if (request.method === "tools/call" && request.params.name === "never_answers") {
+      continue;
+    }
+
     const result = answer(request);
 
     say(

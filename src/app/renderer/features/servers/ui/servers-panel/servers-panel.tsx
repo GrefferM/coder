@@ -26,7 +26,7 @@ import { pointsAt } from "../../../../interfaces";
 export function ServersPanel({ catalogue, declaring, serverActs, declaringActs }: ServersPanelProps) {
   const { servers, looks, askingSince, agents } = catalogue;
   const { openServerId, form, held, secrets } = declaring;
-  const { onRestart, onCancel, onAskAgain, onSeen, onShowCall, onArm } = serverActs;
+  const { onRestart, onStop, onCancel, onAskAgain, onSeen, onShowCall, onArm } = serverActs;
   const { onSecretChange, onOpenForm, onFormChange, onSaveForm, onCancelForm } = declaringActs;
   /** Which server's own page stands over the list. */
   const [shownServerId, setShownServerId] = useState<string | null>(null);
@@ -132,6 +132,7 @@ export function ServersPanel({ catalogue, declaring, serverActs, declaringActs }
             agentCount={agentsOn(server.id)}
             onOpen={() => setShownServerId(server.id)}
             onRestart={() => onRestart(server.id)}
+            onStop={() => onStop(server.id)}
             onCancel={() => onCancel(server.id)}
             onFill={() => onOpenForm(server.id)}
             onShowCall={onShowCall}

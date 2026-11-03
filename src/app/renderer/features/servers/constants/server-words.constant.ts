@@ -8,6 +8,8 @@ export const SERVER_FUNCTION_FORMS: [string, string, string] = ["ФУНКЦІЯ"
 export const SERVER_AGENT_FORMS: [string, string, string] = ["АГЕНТ", "АГЕНТИ", "АГЕНТІВ"];
 export const SERVER_FACTS_SEPARATOR = " · ";
 export const SERVER_RESTART_LABEL = "ЗАПУСТИТИ";
+/** A local server standing up lets its process go; the consent to its line stays. */
+export const SERVER_STOP_LABEL = "ЗУПИНИТИ";
 /** One sentence per fix: type a token, or check the address. */
 export const SERVER_TOKEN_MISSING_LABEL = "ПОТРІБЕН ТОКЕН";
 export const SERVER_TOKEN_MISSING_ACTION = "УВІЙТИ";
@@ -53,8 +55,8 @@ export const SERVER_UPDATED_PREFIX = "оновлено ";
 /** «34 → 33»: news, not a state; it goes out when the page is opened. */
 export const SERVER_COUNT_ARROW = " → ";
 /**
- * Offered for a remote server that is answering: its list is asked for again and nothing is killed. «ЗУПИНИТИ» does not
- * exist, and «СКАСУВАТИ» is not its pair since it ends the waiting.
+ * Offered for a remote server that is answering: its list is asked for again and nothing is killed. «СКАСУВАТИ» is not
+ * its pair, since it ends the waiting.
  */
 export const SERVER_ASK_AGAIN_LABEL = "ПЕРЕПИТАТИ";
 /** A server that answers and works for nobody is restarted, not started. */

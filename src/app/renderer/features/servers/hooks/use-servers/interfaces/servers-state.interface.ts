@@ -10,6 +10,8 @@ export interface ServersState {
   look: (serverId: string) => void;
   /** «ЗАПУСТИТИ»: lets the server go and asks it afresh. */
   restart: (serverId: string) => void;
+  /** «ЗУПИНИТИ»: releases a standing server's process; it stands unknown, and is not raised again by a change of its line. */
+  stop: (serverId: string) => void;
   /** «СКАСУВАТИ»: releases the process and asks nothing. */
   cancel: (serverId: string) => void;
   /** The server's page was opened, so the «34 → 33» news has been read. */

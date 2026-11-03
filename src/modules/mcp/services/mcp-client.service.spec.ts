@@ -90,6 +90,13 @@ async function startsIn(file: string): Promise<number> {
   return text === "" ? 0 : text.split("\n").length;
 }
 
+/** Waits until the client holds the server, so a call sent to it is out. */
+async function waitUntilUp(client: McpClient): Promise<void> {
+  while (!client.isUp(SERVER_ID)) {
+    await new Promise((settle) => setTimeout(settle, 10));
+  }
+}
+
 describe("McpClient", () => {
   let client: McpClient;
   let directory: string;
@@ -528,5 +535,53 @@ describe("McpClient before consent", () => {
 
     assert.doesNotMatch(look.failure ?? "", new RegExp(MCP_CONSENT_MISSING));
     assert.match(look.failure ?? "", new RegExp(MCP_SERVER_UNREACHABLE));
+  });
+
+  it("starts a server let go by hand again on the next look, its line still agreed to, and asks nothing", async () => {
+    // «ЗУПИНИТИ» is a let-go, not a ban: the next turn or «ЗАПУСТИТИ» raises it under the same consent.
+    await consents.give(server);
+    await client.look(server, directory);
+    await client.close(SERVER_ID);
+
+    assert.equal(client.isUp(SERVER_ID), false);
+
+    const look = await client.look(server, directory);
+
+    assert.equal(look.isUp, true);
+    assert.equal(await startsIn(starts), 2);
+  });
+
+  it("ends a call that was out when the server was let go as a call that went wrong, and the client stays usable", async () => {
+    await consents.give(server);
+
+    const out = client.call({
+      server,
+      directory,
+      callId: "call-cut",
+      functionName: "never_answers",
+      arguments: {},
+    });
+
+    // The call is in flight once the server is held.
+    await waitUntilUp(client);
+    await client.close(SERVER_ID);
+
+    const result = await out;
+
+    assert.equal(result.isFailed, true);
+    assert.match(result.output, new RegExp(MCP_FAILED_PREFIX.replace("[", "\\[")));
+
+    // The turn goes on: the next call raises the server afresh and answers.
+    const next = await client.call({
+      server,
+      directory,
+      callId: "call-next",
+      functionName: "read_file",
+      arguments: {
+        path: "a.md",
+      },
+    });
+
+    assert.equal(next.isFailed, false);
   });
 });

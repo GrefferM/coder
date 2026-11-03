@@ -5,9 +5,9 @@ import type { ServerDeed } from "../interfaces";
 
 /**
  * The at most one action a catalogue row's head offers, chosen by state («УВІЙТИ» and «ВПИСАТИ» are one deed). A
- * working server offers none.
+ * working local server is our own process, so it can be stopped; a working remote one is a connection and offers none.
  */
-export function serverDeed(look: McpLook | null): ServerDeed {
+export function serverDeed(look: McpLook | null, isLocal: boolean): ServerDeed {
   const trouble = serverTrouble(look);
 
   if (trouble?.kind === "tokenMissing" || trouble?.kind === "valueMissing") {
@@ -20,5 +20,9 @@ export function serverDeed(look: McpLook | null): ServerDeed {
   }
 
   // A server that answers and works for nobody is restarted, not started.
-  return noneAnswered(look) ? "raiseAgain" : null;
+  if (noneAnswered(look)) {
+    return "raiseAgain";
+  }
+
+  return isLocal ? "stop" : null;
 }

@@ -19,6 +19,7 @@ export function ServersSection({ project, state, consent, section, wayOut, onSho
       }}
       serverActs={{
         onRestart: consent.raise,
+        onStop: state.stop,
         onCancel: state.cancel,
         onAskAgain: state.look,
         onSeen: state.seen,

@@ -339,4 +339,41 @@ describe("useServers", () => {
       LOOK_MCP_SERVER_CHANNEL,
     ]);
   });
+
+  it("«ЗУПИНИТИ» lets a standing server go and leaves its row unknown", async () => {
+    const asked = machine();
+    const { result } = renderHook(() => useServers(DIRECTORY, [aLocalServer()]));
+
+    act(() => result.current.restart(aLocalServer().id));
+
+    await waitFor(() => expect(result.current.looks[aLocalServer().id]?.isUp).toBe(true));
+
+    act(() => result.current.stop(aLocalServer().id));
+
+    expect(result.current.looks).toEqual({});
+    expect(result.current.askingSince).toEqual({});
+    expect(walk(asked).at(-1)).toBe(CLOSE_MCP_SERVER_CHANNEL);
+  });
+
+  it("starts nothing for a stopped server when its line then changes in the file", async () => {
+    const asked = machine();
+    let servers = [aLocalServer()];
+    const { result, rerender } = renderHook(() => useServers(DIRECTORY, servers));
+
+    act(() => result.current.restart(aLocalServer().id));
+
+    await waitFor(() => expect(looks(asked)).toHaveLength(1));
+
+    act(() => result.current.stop(aLocalServer().id));
+
+    servers = [
+      aLocalServer({
+        run: "npx server-filesystem ~",
+      }),
+    ];
+    rerender();
+
+    expect(looks(asked)).toHaveLength(1);
+    expect(result.current.looks).toEqual({});
+  });
 });
