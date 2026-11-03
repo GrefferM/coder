@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile } from "node:fs/promises";
+import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { beforeEach, describe, it } from "node:test";
-import { KNOWN_PROVIDERS, PROVIDERS_FILE_NAME, UNKNOWN_PROVIDER } from "../constants";
+import { KNOWN_PROVIDERS, PROVIDERS_FILE_NAME, PROVIDERS_OFF_FILE_NAME, UNKNOWN_PROVIDER } from "../constants";
 import { ProviderService } from "./provider.service";
 import type { ProviderKeyStore } from "../interfaces";
 
@@ -328,6 +328,54 @@ describe("ProviderService", () => {
         (await providerService.list()).some((provider) => provider.isOff),
         false,
       );
+    });
+  });
+
+  describe("a file of this machine's spoiled by hand", () => {
+    it("stands every provider on where the off file holds no list of ids", async () => {
+      await writeFile(path.join(directory, PROVIDERS_OFF_FILE_NAME), "{}", "utf8");
+
+      const providers = await providerService.list();
+
+      assert.equal(providers.length, KNOWN_PROVIDERS.length);
+      assert.equal(
+        providers.some((provider) => provider.isOff),
+        false,
+      );
+    });
+
+    it("stands every provider on where the off file is not JSON at all", async () => {
+      await writeFile(path.join(directory, PROVIDERS_OFF_FILE_NAME), "runpod", "utf8");
+
+      assert.equal(
+        (await providerService.list()).some((provider) => provider.isOff),
+        false,
+      );
+    });
+
+    it("holds no address where the addresses file is not a map of words", async () => {
+      await writeFile(path.join(directory, PROVIDERS_FILE_NAME), '["http://10.0.0.4:11434"]', "utf8");
+
+      const providers = await providerService.list();
+
+      assert.equal(providers.length, KNOWN_PROVIDERS.length);
+      assert.equal(
+        providers.every((provider) => provider.address === null),
+        true,
+      );
+      assert.equal(await providerService.addressOf("ollama"), "http://localhost:11434");
+    });
+
+    it("holds no address where one of them is not a word", async () => {
+      await writeFile(
+        path.join(directory, PROVIDERS_FILE_NAME),
+        JSON.stringify({
+          ollama: 11434,
+        }),
+        "utf8",
+      );
+
+      assert.equal(await providerService.addressOf("ollama"), "http://localhost:11434");
     });
   });
 });

@@ -181,25 +181,44 @@ export class ProviderService {
     return `${PROVIDER_SECRET_PREFIX}${providerId}`;
   }
 
+  /** The saved addresses by provider id; none where the file is missing, unreadable or not of that shape. */
   private async readAddresses(): Promise<Record<string, string>> {
-    try {
-      return <Record<string, string>>JSON.parse(await readFile(this.filePath(PROVIDERS_FILE_NAME), "utf8"));
-    } catch {
-      return {};
-    }
+    const held = await this.readHeld(PROVIDERS_FILE_NAME);
+
+    return this.isAddresses(held) ? held : {};
   }
 
   private async writeAddresses(held: Record<string, string>): Promise<void> {
     await this.writeHeld(PROVIDERS_FILE_NAME, held);
   }
 
-  /** The ids of the providers standing off; none where the file was never written. */
+  /** The ids of the providers standing off; none where the file is missing, unreadable or not a list of ids. */
   private async readOff(): Promise<string[]> {
+    const held = await this.readHeld(PROVIDERS_OFF_FILE_NAME);
+
+    return this.isIds(held) ? held : [];
+  }
+
+  /** One of this machine's files as parsed, or `null` where it is missing or not JSON. */
+  private async readHeld(fileName: string): Promise<unknown> {
     try {
-      return <string[]>JSON.parse(await readFile(this.filePath(PROVIDERS_OFF_FILE_NAME), "utf8"));
+      return JSON.parse(await readFile(this.filePath(fileName), "utf8"));
     } catch {
-      return [];
+      return null;
     }
+  }
+
+  private isAddresses(held: unknown): held is Record<string, string> {
+    return (
+      typeof held === "object" &&
+      held !== null &&
+      !Array.isArray(held) &&
+      Object.values(held).every((value) => typeof value === "string")
+    );
+  }
+
+  private isIds(held: unknown): held is string[] {
+    return Array.isArray(held) && held.every((value) => typeof value === "string");
   }
 
   /** Writes one of this machine's files whole, through a temporary one beside it. */
