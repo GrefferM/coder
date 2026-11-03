@@ -113,6 +113,7 @@ function answer(patch: Partial<TurnAnswer> = {}): TurnAnswer {
     isCut: false,
     notStarted: null,
     wouldGo: null,
+    waitsFor: null,
     state: RUN_STEP_DONE,
     calls: [],
     compressed: null,
@@ -157,6 +158,7 @@ function broken(id: string, walkId: string): ChatMessage {
     isFailure: true,
     notStarted: null,
     wouldGo: null,
+    waitsFor: null,
     began: null,
     stepId: null,
     walkId,
@@ -1788,6 +1790,37 @@ describe("walkMachine · the turn that came back", () => {
     assert.deepEqual(
       effects.map((effect) => effect.kind),
       ["sayAnswer", "writeTurn"],
+    );
+  });
+
+  it("writes a turn without consent down by its own end, with the server it waited on, and lets nothing go down a line", () => {
+    const serverId = "99999999-9999-4999-8999-999999999999";
+    const { effects } = walkMachine(
+      walk({
+        out: working(turn("turn-1", "editor", "walk-1")),
+        ledgers: {
+          "walk-1": ledger(),
+        },
+      }),
+      back("editor", {
+        text: "exa-mcp ще не запускали на цій машині — його рядок запуску чекає вашої згоди.",
+        notStarted: "noConsent",
+        state: "noConsent",
+        waitsFor: serverId,
+        cost: null,
+      }),
+      config([agent("editor"), agent("shortener")], [["editor", "shortener"]]),
+    );
+    const written = effects.find((effect) => effect.kind === "writeTurn");
+    const card = effects.find((effect) => effect.kind === "sayAnswer");
+
+    assert.equal(written?.kind === "writeTurn" && written.turn.state, "noConsent");
+    assert.equal(written?.kind === "writeTurn" && written.turn.waitsFor, serverId);
+    assert.equal(card?.kind === "sayAnswer" && card.turn.answer.waitsFor, serverId);
+    // Nothing was done, so the shortener is not asked.
+    assert.equal(
+      effects.some((effect) => effect.kind === "askMachine"),
+      false,
     );
   });
 

@@ -46,6 +46,7 @@ export * from "./filled-model.interface";
 export * from "./grant-targets.interface";
 export * from "./field-names.constant";
 export * from "./broken-cause";
+export * from "./waiting-consent";
 export * from "./agent-numbers";
 export * from "./model-numbers";
 export * from "./unfilled-field";

@@ -5,7 +5,9 @@ canvas, connects them with directed links, and runs work through the graph — a
 different cost and capability to each one, and granting each the tools it may call.
 
 A project is a folder on disk: it travels with the repository, so an automation can be committed and
-shared like any other code.
+shared like any other code. Opening one starts none of its local MCP servers: a server's run line is
+started only once this machine has agreed to it, word for word, so opening somebody else's project
+runs nothing it wrote.
 
 ## How it is laid out
 

@@ -32,6 +32,8 @@ export interface ChatMessage {
   notStarted: NotStartedReason | null;
   /** What would have gone, in characters, on the one turn the ceiling refused. */
   wouldGo: TurnLength | null;
+  /** The server whose run line the turn waited on; «ПОКАЗАТИ, ЩО ЗАПУСТИТЬСЯ» opens the window over it by this id. */
+  waitsFor: string | null;
   /** How the agent was set to compress when it did before this turn; the stream says it on a rule. */
   compressed: CompressionSettings | null;
   /** Calls this turn made; they stay in the stream after the working card is gone. */

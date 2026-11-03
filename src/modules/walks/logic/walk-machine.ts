@@ -1082,6 +1082,7 @@ function writtenStep(event: WalkFact<"answered">, config: ProjectConfig, said: s
       memoryLength: event.memoryLength,
       said,
       state: event.answer.state,
+      waitsFor: event.answer.waitsFor,
       cost: event.answer.cost,
       incoming: event.incoming,
       handoffs: out.map(({ to, stopReason, text }) => ({

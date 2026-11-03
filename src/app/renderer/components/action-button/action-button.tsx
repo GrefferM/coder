@@ -2,6 +2,8 @@ import { useInteraction } from "../../hooks";
 import { INTERACTION_FOCUS_RING_PX, INTERACTION_PRESSED_SHIFT_PX, INTERACTION_TRANSITION } from "../../constants";
 import {
   ACTION_BUTTON_BORDER_RADIUS_PX,
+  ACTION_BUTTON_DIALOG_FONT_SIZE_PX,
+  ACTION_BUTTON_DIALOG_PADDING,
   ACTION_BUTTON_DISABLED_OPACITY,
   ACTION_BUTTON_FONT_SIZE_PX,
   ACTION_BUTTON_FONT_WEIGHT,
@@ -11,11 +13,20 @@ import {
 import type { ActionButtonProps } from "./interfaces";
 
 /** A dimmed button keeps focus and ignores presses (`aria-disabled`, not `disabled`). */
-export function ActionButton({ variant, label, type = "button", ref, onClick, isDisabled = false }: ActionButtonProps) {
+export function ActionButton({
+  variant,
+  label,
+  type = "button",
+  ref,
+  onClick,
+  isDisabled = false,
+  size = "form",
+}: ActionButtonProps) {
   const { isPressed, isFocused, isLit, handlers } = useInteraction();
   const palette = ACTION_BUTTON_PALETTES[variant];
   const isHeld = isPressed && !isDisabled;
   const isBright = isLit && !isHeld && !isDisabled;
+  const isDialog = size === "dialog";
 
   return (
     <button
@@ -37,12 +48,12 @@ export function ActionButton({ variant, label, type = "button", ref, onClick, is
       {...handlers}
       className="flex-fill text-center"
       style={{
-        padding: ACTION_BUTTON_PADDING,
+        padding: isDialog ? ACTION_BUTTON_DIALOG_PADDING : ACTION_BUTTON_PADDING,
         borderRadius: ACTION_BUTTON_BORDER_RADIUS_PX,
         border: `1px solid ${isHeld ? palette.pressedBorderColor : isBright ? palette.litBorderColor : palette.borderColor}`,
         background: isHeld ? palette.pressedBackground : isBright ? palette.litBackground : palette.background,
         color: isHeld ? palette.pressedColor : isBright ? palette.litColor : palette.color,
-        fontSize: ACTION_BUTTON_FONT_SIZE_PX,
+        fontSize: isDialog ? ACTION_BUTTON_DIALOG_FONT_SIZE_PX : ACTION_BUTTON_FONT_SIZE_PX,
         fontWeight: ACTION_BUTTON_FONT_WEIGHT,
         opacity: isDisabled ? ACTION_BUTTON_DISABLED_OPACITY : 1,
         cursor: isDisabled ? "default" : "pointer",

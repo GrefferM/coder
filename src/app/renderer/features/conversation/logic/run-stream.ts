@@ -46,6 +46,7 @@ function message(
     isFailure: false,
     notStarted: null,
     wouldGo: null,
+    waitsFor: null,
     calls: [],
     began: null,
     stepId: null,
@@ -176,6 +177,8 @@ export function runStream(run: WholeRun): ChatMessage[] {
                   ceiling: step.contextCeiling,
                 })
               : null,
+          // The server a turn without consent waited on, so the card's act opens the window over it again.
+          waitsFor: step.waitsFor,
           answerCeiling: step.answerCeiling,
           cost:
             notStarted !== null

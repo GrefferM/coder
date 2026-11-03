@@ -17,6 +17,8 @@ import type {
   SEEN_MCP_SERVER_CHANNEL,
   SWEEP_MCP_KEYS_CHANNEL,
   MCP_SECRETS_HELD_CHANNEL,
+  MCP_CONSENTED_CHANNEL,
+  MCP_CONSENT_CHANNEL,
   LOOK_PROJECT_CHANNEL,
   OPEN_OR_CREATE_PROJECT_CHANNEL,
   OPEN_PROJECT_CHANNEL,
@@ -57,6 +59,7 @@ import type {
   SearchRuns,
   CreateProject,
   LookMcpServer,
+  OfMcpServer,
   OfServer,
   SaveMcpEnvValue,
   SaveMcpToken,
@@ -101,6 +104,8 @@ export interface ChannelMap {
 
   [LOOK_MCP_SERVER_CHANNEL]: { payload: LookMcpServer; answer: McpLook };
   [SEEN_MCP_SERVER_CHANNEL]: { payload: { id: string }; answer: void };
+  [MCP_CONSENTED_CHANNEL]: { payload: OfMcpServer; answer: boolean };
+  [MCP_CONSENT_CHANNEL]: { payload: OfMcpServer; answer: void };
   [DROP_MCP_SERVER_CHANNEL]: { payload: { id: string }; answer: void };
   [SWEEP_MCP_KEYS_CHANNEL]: { payload: { serverIds: string[] }; answer: void };
   /** Releases a server; it restarts on the next look. */

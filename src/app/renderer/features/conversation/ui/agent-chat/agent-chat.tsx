@@ -75,8 +75,22 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
   useDriveTo(stream, said.foundId);
 
   const lit = useFoundFlash(said.foundId);
-  /** Where the card's own act leads: the place its cause is mended. */
-  const actOf = (reason: NotStartedReason) => acts[CHAT_WAYS_OUT[NOT_STARTED_ENDS[reason].act]];
+  /** Where the card's own act leads: the place its cause is mended, or the window over the server it waited on. */
+  function actOf(message: ChatMessage, reason: NotStartedReason): (() => void) | null {
+    const way = NOT_STARTED_ENDS[reason].act;
+    const serverId = message.waitsFor;
+
+    if (way !== "consent") {
+      return acts[CHAT_WAYS_OUT[way]];
+    }
+
+    // A card that names no server has nowhere to open the window.
+    if (serverId === null) {
+      return null;
+    }
+
+    return () => acts.onShowConsent(serverId);
+  }
 
   return (
     <div
@@ -148,7 +162,11 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
                     step={stepOf(message)}
                     onAskAgain={askAgainOf(message, index)}
                     words={isBreak ? breakWords(messages, index) : null}
-                    act={isActedOn(message, index) && message.notStarted !== null ? actOf(message.notStarted) : null}
+                    act={
+                      isActedOn(message, index) && message.notStarted !== null
+                        ? actOf(message, message.notStarted)
+                        : null
+                    }
                     isAsked={isActedOn(message, index) && message.asked !== null && field.draft === message.asked}
                     // A question with no turn under it has no pass to show.
                     onDebug={debugOf(message)}

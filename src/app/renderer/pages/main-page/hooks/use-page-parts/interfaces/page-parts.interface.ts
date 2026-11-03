@@ -4,6 +4,7 @@ import type { AgentState } from "../../../../../features/agents/interfaces";
 import type { AgentChatState } from "../../../../../features/conversation";
 import type { OpenedPassState } from "../../../../../features/projection";
 import type { ProvidersState } from "../../../../../features/providers";
+import type { ServerConsentState } from "../../../../../features/servers";
 import type { ShownStream } from "../../use-shown-stream/interfaces";
 import type { RailStanding } from "../../use-rail-standing/interfaces";
 
@@ -25,4 +26,6 @@ export interface PageParts {
   agentStates: Record<string, AgentState>;
   /** What each declared server currently returns; not stored in the project file. */
   looks: Record<string, McpLook>;
+  /** The window of 36k over a server whose run line waits for this machine's consent. */
+  consent: ServerConsentState;
 }

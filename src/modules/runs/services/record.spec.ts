@@ -82,6 +82,7 @@ function step(runId: string, patch: Partial<AddStep> = {}): AddStep {
     asked: "Знайди md-файли",
     said: "ЗНАЙДЕНО\n- report.md",
     state: "done",
+    waitsFor: null,
     inputTokens: 2_263,
     outputTokens: 1_068,
     money: 0.0031,
@@ -505,6 +506,43 @@ describe("the record", () => {
 
     const [row] = await reader.list(DIRECTORY);
 
+    assert.equal(row.state, "notSent");
+  });
+
+  it("keeps a turn without consent by its own end and the server it waited on, and reads both back", async () => {
+    const serverId = "99999999-9999-4999-8999-999999999999";
+    const { runId: id } = await openRun({
+      directory: DIRECTORY,
+      questionId: "aaaaaaaa-0000-4000-8000-000000000061",
+      startedByAgentId: SEEKER,
+      startedByAgentName: "Шукач",
+      startedByAgentColor: "#6fd3d8",
+      attached: [],
+      startedAt: ASKED_AT,
+      asked: "Знайди md-файли",
+    });
+
+    await writer.step(
+      step(id, {
+        said: "exa-mcp ще не запускали на цій машині — його рядок запуску чекає вашої згоди.",
+        state: "noConsent",
+        waitsFor: serverId,
+        inputTokens: 0,
+        outputTokens: 0,
+        money: 0,
+      }),
+    );
+    await writer.close({
+      runId: id,
+      endedAt: ASKED_AT + 4_000,
+    });
+
+    const whole = await reader.one(id);
+    const [row] = await reader.list(DIRECTORY);
+
+    assert.equal(whole?.walk[0].state, "noConsent");
+    assert.equal(whole?.walk[0].waitsFor, serverId);
+    // Nothing was started and nothing sent: the row says so, not that it fell.
     assert.equal(row.state, "notSent");
   });
 

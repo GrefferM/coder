@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   CloseMcpServerDto,
   LookMcpServerDto,
+  McpConsentDto,
   McpController,
   McpSecretsHeldDto,
   SaveMcpEnvValueDto,
@@ -11,6 +12,8 @@ import {
 import {
   CLOSE_MCP_SERVER_CHANNEL,
   LOOK_MCP_SERVER_CHANNEL,
+  MCP_CONSENTED_CHANNEL,
+  MCP_CONSENT_CHANNEL,
   MCP_SECRETS_HELD_CHANNEL,
   SAVE_MCP_ENV_VALUE_CHANNEL,
   SAVE_MCP_TOKEN_CHANNEL,
@@ -33,6 +36,12 @@ function controllerRecording(received: unknown[]): McpController {
       received.push(payload);
     },
     heldSecrets: async (payload: unknown) => {
+      received.push(payload);
+    },
+    isConsented: async (payload: unknown) => {
+      received.push(payload);
+    },
+    consent: async (payload: unknown) => {
       received.push(payload);
     },
   });
@@ -96,5 +105,22 @@ describe("MCP_IPC_CHANNELS", () => {
     assert.ok(received[1] instanceof SaveMcpEnvValueDto);
     assert.ok(received[2] instanceof McpSecretsHeldDto);
     assert.equal((<SaveMcpEnvValueDto>received[1]).name, "BRAVE_API_KEY");
+  });
+
+  it("rebuilds both doors of consent with the server inside, so its run line is checked as a server's", async () => {
+    const received: unknown[] = [];
+    const controller = controllerRecording(received);
+
+    await MCP_IPC_CHANNELS[MCP_CONSENTED_CHANNEL](controller, {
+      server: SERVER,
+    });
+    await MCP_IPC_CHANNELS[MCP_CONSENT_CHANNEL](controller, {
+      server: SERVER,
+    });
+
+    assert.ok(received[0] instanceof McpConsentDto);
+    assert.ok(received[1] instanceof McpConsentDto);
+    assert.ok((<McpConsentDto>received[1]).server instanceof ProjectMcpServerDto);
+    assert.equal((<McpConsentDto>received[1]).server.run, "npx server-filesystem .");
   });
 });

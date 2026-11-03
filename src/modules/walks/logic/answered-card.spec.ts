@@ -15,6 +15,7 @@ function answer(patch: Partial<TurnAnswer> = {}): TurnAnswer {
     isCut: false,
     notStarted: null,
     wouldGo: null,
+    waitsFor: null,
     state: RUN_STEP_DONE,
     calls: [],
     compressed: null,

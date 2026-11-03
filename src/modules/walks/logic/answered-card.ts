@@ -25,6 +25,7 @@ export function answeredCard(turn: AnsweredTurn): ChatMessage {
     isFailure: turn.answer.isFailure,
     notStarted: turn.answer.notStarted,
     wouldGo: turn.answer.wouldGo,
+    waitsFor: turn.answer.waitsFor,
     // A live turn names its step of the walk exactly as a read one does.
     began: new Date(turn.startedAt).toISOString(),
     stepId: null,

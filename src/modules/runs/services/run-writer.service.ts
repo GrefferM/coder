@@ -77,6 +77,7 @@ export class RunWriter {
         asked: payload.asked,
         said: payload.said,
         state: payload.state,
+        waitsFor: payload.waitsFor,
         inputTokens: payload.inputTokens,
         outputTokens: payload.outputTokens,
         money: payload.money,

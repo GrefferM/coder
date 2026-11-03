@@ -10,7 +10,7 @@ import { ModelsIcon, ModelsPanel } from "../../../../features/models";
 import { CommandsIcon, CommandsPanel } from "../../../../features/commands";
 import { PromptsIcon, PromptsPanel } from "../../../../features/prompts";
 import { ProvidersIcon, ProvidersPanel, useProviders } from "../../../../features/providers";
-import { ServersIcon, useServers } from "../../../../features/servers";
+import { ServersIcon, useServerConsent, useServers } from "../../../../features/servers";
 import {
   AGENTS_PANEL_LABEL,
   AGENTS_SECTION_ID,
@@ -43,6 +43,8 @@ export function usePageParts(
   const machine = useProviders();
   /** Every declared server, looked up live; nothing is persisted. */
   const servers = useServers(project.directory, project.config.servers);
+  /** The window of 36k, opened by «ЗАПУСТИТИ» over a line this machine has not agreed to. */
+  const consent = useServerConsent(project.config.servers, servers.restart);
 
   // A finished call refreshes the catalogue's look.
   useLookAfterCall(servers.look);
@@ -149,7 +151,14 @@ export function usePageParts(
       count: project.config.servers.length,
       hasUnsaved: section.unsaved !== null,
       content: (
-        <ServersSection project={project} state={servers} section={section} wayOut={wayOut} onShowCall={showCall} />
+        <ServersSection
+          project={project}
+          state={servers}
+          consent={consent}
+          section={section}
+          wayOut={wayOut}
+          onShowCall={showCall}
+        />
       ),
     },
     {
@@ -219,6 +228,7 @@ export function usePageParts(
           onOpenDebug={openDebug(stream.shownRunId)}
           onOpenProviders={() => rail.handleActiveIdChange(PROVIDERS_SECTION_ID)}
           onOpenModel={() => rail.openAgentModel(chat.aimedAgentId)}
+          onShowConsent={consent.ask}
           onOpenAgentAt={rail.openAgentAt}
         />
       ),
@@ -252,5 +262,6 @@ export function usePageParts(
     rail,
     agentStates: states,
     looks: servers.looks,
+    consent,
   };
 }

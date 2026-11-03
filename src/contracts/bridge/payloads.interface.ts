@@ -46,6 +46,11 @@ export interface LookMcpServer extends OfProject {
   server: ProjectMcpServer;
 }
 
+/** One server whose run line is asked about or agreed to; the line is read off the server, not the folder. */
+export interface OfMcpServer {
+  server: ProjectMcpServer;
+}
+
 /** Shared by writing a key and writing an address; only the channel differs. */
 export interface SaveProviderValue {
   providerId: string;

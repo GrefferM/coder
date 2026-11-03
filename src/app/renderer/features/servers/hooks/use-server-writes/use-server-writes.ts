@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef } from "react";
 import { declaredServer } from "../../logic";
 import { deletedServerLabel } from "../../words";
-import { closeServer, dropServer, saveServerEnvValue, sweepServerKeys } from "../../api";
+import { closeServer, consentServer, dropServer, saveServerEnvValue, sweepServerKeys } from "../../api";
 import { UNDO_STANDS_MS, WRITE_SERVER_LABEL } from "../../../project";
-import type { OpenProject } from "../../../../interfaces";
+import type { OpenProject, ProjectMcpServer } from "../../../../interfaces";
 import type { ProjectWrite } from "../../../project";
 import type { ServerFormValues } from "../../interfaces";
 import type { ServerWrites } from "./interfaces";
@@ -31,6 +31,10 @@ export function useServerWrites(project: OpenProject, write: ProjectWrite): Serv
       const existing = project.config.servers.find((server) => server.id === serverId);
       const written = declaredServer(values);
       const id = existing?.id ?? crypto.randomUUID();
+      const server: ProjectMcpServer = {
+        id,
+        ...written,
+      };
 
       // A variable removed from the list is no longer named by the file, so its value goes off this machine.
       await Promise.all(
@@ -39,25 +43,14 @@ export function useServerWrites(project: OpenProject, write: ProjectWrite): Serv
           .map((name) => saveServerEnvValue(id, name, "")),
       );
 
+      // A line written by hand in the form is agreed to: the person wrote it (36k).
+      await consentServer(server);
       await save(
         {
           ...project.config,
           servers: existing
-            ? project.config.servers.map((server) =>
-                server.id === existing.id
-                  ? {
-                      ...server,
-                      ...written,
-                    }
-                  : server,
-              )
-            : [
-                ...project.config.servers,
-                {
-                  id,
-                  ...written,
-                },
-              ],
+            ? project.config.servers.map((standing) => (standing.id === id ? server : standing))
+            : [...project.config.servers, server],
         },
         WRITE_SERVER_LABEL,
       );

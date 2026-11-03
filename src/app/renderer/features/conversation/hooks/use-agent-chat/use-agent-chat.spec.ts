@@ -81,6 +81,7 @@ function said(patch: Partial<ChatMessage> = {}): ChatMessage {
     isFailure: false,
     notStarted: null,
     wouldGo: null,
+    waitsFor: null,
     calls: [],
     began: null,
     stepId: null,

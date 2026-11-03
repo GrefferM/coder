@@ -7,6 +7,9 @@ export const LOST_FUNCTION_NOTE_PREFIX = "В агента ";
 export const LOST_FUNCTION_NOTE_SUFFIX =
   " лишилась видача на функцію, якої в проєкті немає. Приберіть видачу або оголосіть команду наново, і агент піде.";
 
+/** For a granted local server whose run line this machine has not agreed to (36k). */
+export const NO_CONSENT_NOTE_SUFFIX = " ще не запускали на цій машині — його рядок запуску чекає вашої згоди.";
+
 /** For a prompt the agent names and the project has lost. */
 export const LOST_PROMPT_NOTE_PREFIX = "В агента ";
 

@@ -2,6 +2,7 @@ import {
   CloseMcpServerDto,
   DropMcpServerDto,
   LookMcpServerDto,
+  McpConsentDto,
   McpController,
   McpSecretsHeldDto,
   SaveMcpEnvValueDto,
@@ -14,6 +15,8 @@ import {
   CLOSE_MCP_SERVER_CHANNEL,
   DROP_MCP_SERVER_CHANNEL,
   LOOK_MCP_SERVER_CHANNEL,
+  MCP_CONSENTED_CHANNEL,
+  MCP_CONSENT_CHANNEL,
   MCP_SECRETS_HELD_CHANNEL,
   SAVE_MCP_ENV_VALUE_CHANNEL,
   SAVE_MCP_TOKEN_CHANNEL,
@@ -35,6 +38,8 @@ export const MCP_IPC_CHANNELS: IpcChannelMap<McpController> = {
 
     return controller.look(look);
   },
+  [MCP_CONSENTED_CHANNEL]: (controller, payload) => controller.isConsented(consentOf(payload)),
+  [MCP_CONSENT_CHANNEL]: (controller, payload) => controller.consent(consentOf(payload)),
   [CLOSE_MCP_SERVER_CHANNEL]: (controller, payload) =>
     controller.close(Object.assign(new CloseMcpServerDto(), payload)),
   [SEEN_MCP_SERVER_CHANNEL]: (controller, payload) => controller.seen(Object.assign(new SeenMcpServerDto(), payload)),
@@ -49,3 +54,12 @@ export const MCP_IPC_CHANNELS: IpcChannelMap<McpController> = {
   [MCP_SECRETS_HELD_CHANNEL]: (controller, payload) =>
     controller.heldSecrets(Object.assign(new McpSecretsHeldDto(), payload)),
 };
+
+/** The payload rebuilt as a DTO, the nested server with it, so both sets of decorators are read. */
+function consentOf(payload: unknown): McpConsentDto {
+  const consent = Object.assign(new McpConsentDto(), payload);
+
+  consent.server = Object.assign(new ProjectMcpServerDto(), consent.server);
+
+  return consent;
+}

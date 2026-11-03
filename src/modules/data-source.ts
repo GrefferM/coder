@@ -2,7 +2,7 @@ import "reflect-metadata";
 import path from "node:path";
 import { DataSource } from "typeorm";
 import { DeletionEntity, ProjectEntryEntity } from "./projects";
-import { McpDroppedServerEntity, McpServerLookEntity } from "./mcp";
+import { McpDroppedServerEntity, McpServerConsentEntity, McpServerLookEntity } from "./mcp";
 import {
   RunCallEntity,
   RunEntity,
@@ -23,6 +23,7 @@ export const MODULES_ENTITIES = [
   DeletionEntity,
   McpServerLookEntity,
   McpDroppedServerEntity,
+  McpServerConsentEntity,
   RunEntity,
   RunStepEntity,
   RunCallEntity,

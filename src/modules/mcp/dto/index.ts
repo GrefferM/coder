@@ -1,6 +1,7 @@
 export * from "./close-mcp-server.dto";
 export * from "./drop-mcp-server.dto";
 export * from "./look-mcp-server.dto";
+export * from "./mcp-consent.dto";
 export * from "./mcp-secrets-held.dto";
 export * from "./save-mcp-env-value.dto";
 export * from "./save-mcp-token.dto";

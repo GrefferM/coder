@@ -110,7 +110,7 @@ export function NotStartedCard({ reason, note, wouldGo, isAsked, onAct, isFound 
         >
           {NOT_STARTED_TITLE}
         </span>
-        <Mark color={NOT_STARTED_CARD_ACCENT_COLOR}>{card.label}</Mark>
+        {card.label !== null && <Mark color={NOT_STARTED_CARD_ACCENT_COLOR}>{card.label}</Mark>}
       </div>
       <Words>{note}</Words>
       {wouldGo !== null && (

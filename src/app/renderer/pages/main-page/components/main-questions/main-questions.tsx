@@ -2,7 +2,7 @@ import { DeleteAgentConfirm, UnsavedAgentConfirm, doomedNeighbourNames } from ".
 import { ForgetRunConfirm, ForgetRunsConfirm } from "../../../../features/record";
 import { DeleteModelConfirm } from "../../../../features/models";
 import { DeleteCommandConfirm } from "../../../../features/commands";
-import { DeleteServerConfirm } from "../../../../features/servers";
+import { DeleteServerConfirm, ServerConsent } from "../../../../features/servers";
 import { DeletePromptConfirm, PromptEditor } from "../../../../features/prompts";
 import { FileConflictConfirm, configDifference, DIFFERENCE_MOVED_SIGN } from "../../../../features/project";
 import { quietly } from "../../../../utils/writes";
@@ -77,6 +77,14 @@ export function MainQuestions({
           burden={servers.armedBurden}
           onConfirm={servers.confirmDelete}
           onDismiss={servers.dismissDelete}
+        />
+      )}
+      {parts.consent.asked !== null && (
+        <ServerConsent
+          server={parts.consent.asked}
+          directory={project.directory}
+          onRun={() => void parts.consent.agree()}
+          onDecline={parts.consent.decline}
         />
       )}
       {models.armedModelId !== null && (

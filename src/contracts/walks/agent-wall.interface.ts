@@ -4,4 +4,6 @@ import type { NotStartedReason } from "../llm";
 export interface AgentWall {
   note: string;
   reason: NotStartedReason;
+  /** The server whose run line waits for this machine's consent; null for every other wall. */
+  waitsFor: string | null;
 }

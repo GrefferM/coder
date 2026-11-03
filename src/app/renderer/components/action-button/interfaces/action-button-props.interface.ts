@@ -8,4 +8,6 @@ export interface ActionButtonProps {
   ref?: Ref<HTMLButtonElement>;
   onClick?: () => void;
   isDisabled?: boolean;
+  /** `dialog` is the smaller pair of a window drawn by its own frame; `form` otherwise. */
+  size?: "form" | "dialog";
 }

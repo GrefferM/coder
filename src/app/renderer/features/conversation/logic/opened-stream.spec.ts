@@ -79,6 +79,7 @@ function live(patch: Partial<ChatMessage> & Pick<ChatMessage, "id" | "from" | "q
     isFailure: false,
     notStarted: null,
     wouldGo: null,
+    waitsFor: null,
     began: null,
     stepId: null,
     note: null,

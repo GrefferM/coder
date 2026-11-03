@@ -264,6 +264,7 @@ export class TypeormRunStore implements RunStore {
       asked: step.asked,
       said: step.said,
       state: step.state,
+      waitsFor: step.waitsFor,
       inputTokens: step.inputTokens,
       outputTokens: step.outputTokens,
       money: step.money,

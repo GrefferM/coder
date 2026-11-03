@@ -491,6 +491,26 @@ describe("runStream", () => {
     expect(turn.asked).toBe("Розбий текст на тези");
   });
 
+  it("gives back a turn without consent with the server it waited on, so its act opens the window again", () => {
+    const said = runStream(
+      run([
+        step({
+          state: NOT_STARTED_ENDS.noConsent.state,
+          said: "exa-mcp ще не запускали на цій машині — його рядок запуску чекає вашої згоди.",
+          waitsFor: "99999999-9999-4999-8999-999999999999",
+          inputTokens: 0,
+          outputTokens: 0,
+          money: 0,
+        }),
+      ]),
+    );
+    const turn = said.find((message) => message.from === "agent")!;
+
+    expect(turn.notStarted).toBe("noConsent");
+    expect(turn.waitsFor).toBe("99999999-9999-4999-8999-999999999999");
+    expect(turn.cost).toBeNull();
+  });
+
   it("counts the ceiling breakdown again from the words and the ceiling the model had then", () => {
     const said = runStream(
       run([

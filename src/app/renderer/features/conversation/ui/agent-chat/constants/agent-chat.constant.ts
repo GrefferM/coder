@@ -11,11 +11,11 @@ import {
   SECOND_LEVEL_TEXT_COLOR,
   WORDS_COLOR,
 } from "../../../../../constants";
-import type { FieldStanding, NotStartedAct } from "../../../interfaces";
+import type { FieldStanding, NotStartedPlace } from "../../../interfaces";
 import type { ChatWayOut, FieldGround } from "../interfaces";
 
 /** Where a card's act leads: the place it names and the stream's hand that opens it; one row per place in the union. */
-export const CHAT_WAYS_OUT: Record<NotStartedAct, ChatWayOut> = {
+export const CHAT_WAYS_OUT: Record<NotStartedPlace, ChatWayOut> = {
   providers: "onOpenProviders",
   settings: "onOpenSettings",
   prompt: "onOpenPrompt",

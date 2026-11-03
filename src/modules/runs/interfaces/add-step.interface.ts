@@ -28,6 +28,8 @@ export interface AddStep {
   said: string;
   /** How the turn ended, in the screen's word. */
   state: string;
+  /** The server a `noConsent` turn waited on, by id; null for every other end. */
+  waitsFor: string | null;
   inputTokens: number;
   outputTokens: number;
   money: number | null;

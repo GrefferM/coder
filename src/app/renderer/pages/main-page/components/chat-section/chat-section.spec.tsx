@@ -103,6 +103,7 @@ function props(patch: Partial<ChatSectionProps> = {}): ChatSectionProps {
     aimed,
     onOpenDebug: null,
     onOpenProviders: vi.fn(),
+    onShowConsent: vi.fn(),
     onOpenModel: vi.fn(),
     onOpenAgentAt: vi.fn(),
     ...patch,

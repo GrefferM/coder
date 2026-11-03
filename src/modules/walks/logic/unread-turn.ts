@@ -13,6 +13,7 @@ export function unreadTurn(failure: string): TurnAnswer {
     isCut: false,
     notStarted: null,
     wouldGo: null,
+    waitsFor: null,
     state: RUN_STEP_FAILED,
     calls: [],
     compressed: null,

@@ -22,6 +22,8 @@ export interface TurnAnswer {
   notStarted: NotStartedReason | null;
   /** What would have gone, in characters, on the one turn the ceiling refused. */
   wouldGo: TurnLength | null;
+  /** The server whose run line waited for this machine's consent, by id; null on every other turn. */
+  waitsFor: string | null;
   /** How the step ended, for the record; a turn that never began has an end of its own. */
   state: string;
   calls: TurnCall[];

@@ -28,6 +28,7 @@ export function aStep(patch: Partial<WholeStep> = {}): WholeStep {
     asked: "Розбий текст на тези",
     said: "- Починай з малого",
     state: RUN_STEP_DONE,
+    waitsFor: null,
     inputTokens: 400,
     outputTokens: 200,
     money: 0.01,

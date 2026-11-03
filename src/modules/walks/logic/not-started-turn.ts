@@ -21,6 +21,8 @@ export function notStartedTurn(
     isCut: false,
     notStarted,
     wouldGo,
+    // Only the consent wall names a server, and it says which over this.
+    waitsFor: null,
     state: NOT_STARTED_STATES[notStarted],
     calls: [],
     compressed: null,

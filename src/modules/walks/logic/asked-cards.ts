@@ -20,6 +20,7 @@ export function askedCards(said: AskedSaid): ChatMessage[] {
     isFailure: false,
     notStarted: null,
     wouldGo: null,
+    waitsFor: null,
     calls: [],
     began: null,
     stepId: null,

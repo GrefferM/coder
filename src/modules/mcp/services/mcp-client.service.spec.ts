@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import {
+  MCP_CONSENT_MISSING,
   MCP_EMPTY_OUTPUT_NOTE,
   MCP_FAILED_PREFIX,
   MCP_KIND_SLOT,
@@ -15,8 +16,9 @@ import {
   MCP_TOKEN_PREFIX,
 } from "../constants";
 import { McpClient } from "./mcp-client.service";
+import { McpConsents } from "./mcp-consents.service";
 import type { ProjectMcpServerDto } from "../../projects";
-import type { McpSecretStore } from "../interfaces";
+import type { McpConsent, McpConsentGate, McpConsentStore, McpSecretStore } from "../interfaces";
 
 const SERVER_ID = "99999999-9999-4999-8999-999999999999";
 const STUB = path.join(__dirname, "..", "testing", "stub-server.cjs");
@@ -61,13 +63,40 @@ const keychain: McpSecretStore = {
     ),
 };
 
+/** Every line agreed to, so the cases below are about the server and not the gate. */
+const AGREED: McpConsentGate = {
+  isGiven: () => Promise.resolve(true),
+};
+
+/** Consent kept in memory, under the real rule of `McpConsents`. */
+function consentsInMemory(): McpConsents {
+  const rows = new Map<string, McpConsent>();
+  const store: McpConsentStore = {
+    of: (serverId) => Promise.resolve(rows.get(serverId) ?? null),
+    put: (consent) => {
+      rows.set(consent.serverId, consent);
+
+      return Promise.resolve();
+    },
+  };
+
+  return new McpConsents(store);
+}
+
+/** How many times the stub server was started, read off the file it writes a line to on every start. */
+async function startsIn(file: string): Promise<number> {
+  const text = (await readFile(file, "utf8")).trim();
+
+  return text === "" ? 0 : text.split("\n").length;
+}
+
 describe("McpClient", () => {
   let client: McpClient;
   let directory: string;
 
   beforeEach(async () => {
     held.clear();
-    client = new McpClient(keychain);
+    client = new McpClient(keychain, AGREED);
     directory = await mkdtemp(path.join(os.tmpdir(), "coder-mcp-"));
   });
 
@@ -412,5 +441,92 @@ describe("McpClient", () => {
 
     assert.equal(result.isFailed, true);
     assert.equal(client.isUp(SERVER_ID), false);
+  });
+});
+
+describe("McpClient before consent", () => {
+  let consents: McpConsents;
+  let client: McpClient;
+  let directory: string;
+  let starts: string;
+  let server: ProjectMcpServerDto;
+
+  beforeEach(async () => {
+    held.clear();
+    consents = consentsInMemory();
+    client = new McpClient(keychain, consents);
+    directory = await mkdtemp(path.join(os.tmpdir(), "coder-mcp-"));
+    starts = path.join(directory, "starts.txt");
+    await writeFile(starts, "", "utf8");
+    server = aServer({
+      run: `node "${STUB}" "${starts}"`,
+    });
+  });
+
+  afterEach(async () => {
+    await client.closeAll();
+  });
+
+  it("starts no process for a line this machine has not agreed to, and says so by its own code", async () => {
+    const look = await client.look(server, directory);
+
+    assert.equal(look.isUp, false);
+    assert.match(look.failure ?? "", new RegExp(MCP_CONSENT_MISSING));
+    assert.equal(await startsIn(starts), 0);
+    assert.equal(client.isUp(SERVER_ID), false);
+  });
+
+  it("starts no process for a call either, and answers the call as one that did not happen", async () => {
+    const result = await client.call({
+      server,
+      directory,
+      callId: "call-gate",
+      functionName: "read_file",
+      arguments: {},
+    });
+
+    assert.equal(result.isFailed, true);
+    assert.match(result.output, new RegExp(MCP_CONSENT_MISSING));
+    assert.equal(await startsIn(starts), 0);
+  });
+
+  it("starts the server as before once its line is agreed to", async () => {
+    await consents.give(server);
+
+    const look = await client.look(server, directory);
+
+    assert.equal(look.isUp, true);
+    assert.deepEqual(
+      look.functions.map((offered) => offered.name),
+      ["read_file", "list_roots"],
+    );
+    assert.equal(await startsIn(starts), 1);
+  });
+
+  it("refuses again once the line in the file has changed, and starts nothing for the new line", async () => {
+    await consents.give(server);
+
+    const changed = aServer({
+      run: `node "${STUB}" "${starts}" --changed`,
+    });
+    const look = await client.look(changed, directory);
+
+    assert.match(look.failure ?? "", new RegExp(MCP_CONSENT_MISSING));
+    assert.equal(await startsIn(starts), 0);
+  });
+
+  it("asks a remote server no consent: it is reached, not started", async () => {
+    // An empty address is the remote path's own refusal, met only past the gate.
+    const look = await client.look(
+      aServer({
+        isLocal: false,
+        run: "",
+        address: "",
+      }),
+      directory,
+    );
+
+    assert.doesNotMatch(look.failure ?? "", new RegExp(MCP_CONSENT_MISSING));
+    assert.match(look.failure ?? "", new RegExp(MCP_SERVER_UNREACHABLE));
   });
 });

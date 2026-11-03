@@ -17,6 +17,7 @@ function said(patch: Partial<ChatMessage> & Pick<ChatMessage, "id">): ChatMessag
     isFailure: false,
     notStarted: null,
     wouldGo: null,
+    waitsFor: null,
     calls: [],
     began: "2026-08-22T19:27:00.000Z",
     stepId: patch.id,

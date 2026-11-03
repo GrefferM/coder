@@ -14,6 +14,8 @@ export interface WrittenTurn {
   memoryLength: number;
   said: string;
   state: string;
+  /** The server a `noConsent` turn waited on, by id; null for every other end. */
+  waitsFor: string | null;
   cost: ChatCost | null;
   incoming: IncomingWork[];
   handoffs: TurnHandoff[];

@@ -14,6 +14,8 @@ export interface ChatSectionProps {
   onOpenDebug: ((questionId: string) => void) | null;
   onOpenProviders: () => void;
   onOpenModel: () => void;
+  /** The window of 36k over a server a turn waited on. */
+  onShowConsent: (serverId: string) => void;
   /** A card's act opens the agent's tab on the place the card named. */
   onOpenAgentAt: (place: AgentMend) => void;
 }

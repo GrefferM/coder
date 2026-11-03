@@ -22,6 +22,7 @@ export function handoffCard(said: HandoffSaid): ChatMessage {
     isFailure: false,
     notStarted: null,
     wouldGo: null,
+    waitsFor: null,
     began: null,
     stepId: null,
     // The walk this row belongs to, so a repeat finds its question by walk rather than by time.

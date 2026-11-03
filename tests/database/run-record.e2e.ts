@@ -86,6 +86,7 @@ function step(runId: string, patch: Partial<AddStep> = {}): AddStep {
     asked: "Знайди md-файли",
     said: "ЗНАЙДЕНО\n- report.md",
     state: "done",
+    waitsFor: null,
     inputTokens: 2_263,
     outputTokens: 1_068,
     money: 0.0031,

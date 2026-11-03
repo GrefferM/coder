@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { closeServer, lookServer, seenServer, sweepServerKeys } from "../../api";
 import { serverReach } from "../../logic";
+import { isConsentMissing } from "../../../../interfaces";
 import type { McpLook, ProjectMcpServer } from "../../../../interfaces";
 import type { ServersState } from "./interfaces";
 
 /**
  * Every declared server, asked what it hands over. The answer is held only while the project is open, never written
- * down; a server is asked once when the project names it, and again on request or when redeclared.
+ * down. A remote server is asked once when the project names it; a local one is started by nobody but a person (36k),
+ * so it stands unknown until «ЗАПУСТИТИ». Either is asked again on request, and when redeclared once it has been asked.
  */
 export function useServers(directory: string, servers: ProjectMcpServer[]): ServersState {
   const [looks, setLooks] = useState<Record<string, McpLook>>({});
@@ -26,6 +28,8 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
    * earlier turn's answer is dropped on arrival.
    */
   const turns = useRef(new Map<string, number>());
+  /** The servers asked in this session; only those are asked afresh when redeclared. */
+  const raised = useRef(new Set<string>());
 
   const ask = useCallback(
     (serverId: string) => {
@@ -37,6 +41,7 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
 
       const turn = (turns.current.get(serverId) ?? 0) + 1;
 
+      raised.current.add(serverId);
       turns.current.set(serverId, turn);
       setAskingSince((asking) => (asking[serverId] === undefined ? started(asking, serverId) : asking));
       void lookServer(directory, server)
@@ -45,10 +50,15 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
             return;
           }
 
-          setLooks((held) => ({
-            ...held,
-            [serverId]: look,
-          }));
+          // A line not agreed to started nothing and says nothing of the server: the row stays unknown.
+          setLooks((held) =>
+            isConsentMissing(look)
+              ? withoutLook(held, serverId)
+              : {
+                  ...held,
+                  [serverId]: look,
+                },
+          );
         })
         .finally(() => {
           if (turns.current.get(serverId) !== turn) {
@@ -73,7 +83,7 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
   const cancel = useCallback((serverId: string) => {
     turns.current.set(serverId, (turns.current.get(serverId) ?? 0) + 1);
     setAskingSince((asking) => without(asking, serverId));
-    setLooks((held) => Object.fromEntries(Object.entries(held).filter(([id]) => id !== serverId)));
+    setLooks((held) => withoutLook(held, serverId));
     void closeServer(serverId);
   }, []);
 
@@ -132,11 +142,12 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
     for (const id of asked.current.keys()) {
       if (!ids.has(id)) {
         asked.current.delete(id);
+        raised.current.delete(id);
       }
     }
 
-    // A server is asked when first named and again only on request, except when redeclared, which leaves the process
-    // stale.
+    // A remote server is asked when first named; any server already asked is asked afresh when redeclared, since its
+    // process is stale. A local one named for the first time is left alone: opening a project runs nothing.
     for (const server of servers) {
       const reach = serverReach(server);
 
@@ -148,10 +159,14 @@ export function useServers(directory: string, servers: ProjectMcpServer[]): Serv
 
       asked.current.set(server.id, reach);
 
-      if (isNew) {
-        ask(server.id);
-      } else {
+      if (raised.current.has(server.id)) {
         restart(server.id);
+
+        continue;
+      }
+
+      if (isNew && !server.isLocal) {
+        ask(server.id);
       }
     }
   }, [servers, ask, restart]);
@@ -176,4 +191,8 @@ function started(asking: Record<string, number>, serverId: string): Record<strin
 
 function without(asking: Record<string, number>, serverId: string): Record<string, number> {
   return Object.fromEntries(Object.entries(asking).filter(([id]) => id !== serverId));
+}
+
+function withoutLook(looks: Record<string, McpLook>, serverId: string): Record<string, McpLook> {
+  return Object.fromEntries(Object.entries(looks).filter(([id]) => id !== serverId));
 }

@@ -15,7 +15,10 @@ export function turnWall(turn: TurnToAsk): TurnAnswer | TurnAsked {
   const readiness = agentReadiness(turn.agent, stands, catalogue);
 
   if ("reason" in readiness) {
-    return notStartedTurn(readiness.note, readiness.reason);
+    return {
+      ...notStartedTurn(readiness.note, readiness.reason),
+      waitsFor: readiness.waitsFor,
+    };
   }
 
   const { agent, model } = readiness;

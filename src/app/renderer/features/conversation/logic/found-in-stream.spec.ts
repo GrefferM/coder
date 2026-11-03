@@ -39,6 +39,7 @@ function said(id: string, text: string, calls: TurnCall[] = [], patch: Partial<C
     isFailure: false,
     notStarted: null,
     wouldGo: null,
+    waitsFor: null,
     calls,
     began: null,
     stepId: null,

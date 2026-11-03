@@ -2,7 +2,7 @@ import { ServersPanel } from "../../../../features/servers";
 import type { ServersSectionProps } from "./interfaces";
 
 /** The catalogue of servers, and the form over it while one is declared. */
-export function ServersSection({ project, state, section, wayOut, onShowCall }: ServersSectionProps) {
+export function ServersSection({ project, state, consent, section, wayOut, onShowCall }: ServersSectionProps) {
   return (
     <ServersPanel
       catalogue={{
@@ -18,7 +18,7 @@ export function ServersSection({ project, state, section, wayOut, onShowCall }: 
         secrets: section.secrets,
       }}
       serverActs={{
-        onRestart: state.restart,
+        onRestart: consent.raise,
         onCancel: state.cancel,
         onAskAgain: state.look,
         onSeen: state.seen,

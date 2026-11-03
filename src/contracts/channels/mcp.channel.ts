@@ -27,3 +27,9 @@ export const SAVE_MCP_ENV_VALUE_CHANNEL = "mcp:save-env-value";
 
 /** What this machine holds for one server: whether a token is set and which names have values. */
 export const MCP_SECRETS_HELD_CHANNEL = "mcp:secrets-held";
+
+/** Whether this machine agreed to start a local server's run line as it stands now (36k). */
+export const MCP_CONSENTED_CHANNEL = "mcp:consented";
+
+/** «Запустити» in the window of 36k: this machine agrees to start the server's run line as it stands now. */
+export const MCP_CONSENT_CHANNEL = "mcp:consent";

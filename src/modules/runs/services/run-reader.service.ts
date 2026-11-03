@@ -275,6 +275,7 @@ export class RunReader {
       asked: row.asked,
       said: row.said,
       state: row.state,
+      waitsFor: row.waitsFor,
       inputTokens: row.inputTokens,
       outputTokens: row.outputTokens,
       money: row.money,

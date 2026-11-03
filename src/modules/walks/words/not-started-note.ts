@@ -10,6 +10,7 @@ import {
   NOT_FILLED_NOTE_PREFIX,
   NOT_FILLED_NOTE_SUFFIX,
   NO_ADDRESS_NOTE_PREFIX,
+  NO_CONSENT_NOTE_SUFFIX,
   NO_ADDRESS_NOTE_SUFFIX,
   NO_KEY_NOTE_MIDDLE,
   NO_KEY_NOTE_PREFIX,
@@ -47,6 +48,11 @@ export function noToolsNote(providerName: string, agentName: string): string {
 /** Which agent holds a grant on a function missing from the project. */
 export function lostFunctionNote(agentName: string): string {
   return `${LOST_FUNCTION_NOTE_PREFIX}${agentName}${LOST_FUNCTION_NOTE_SUFFIX}`;
+}
+
+/** Which server's run line waits for this machine's consent (36k). */
+export function noConsentNote(serverName: string): string {
+  return `${serverName}${NO_CONSENT_NOTE_SUFFIX}`;
 }
 
 /** Which agent points at a prompt the project no longer holds. */

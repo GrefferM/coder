@@ -39,6 +39,15 @@ const run: RunRow = {
 };
 
 /** Only the fields a standing question depends on. */
+/** No window of 36k stands. */
+const NO_CONSENT_ASKED = {
+  asked: null,
+  raise: vi.fn(),
+  ask: vi.fn(),
+  agree: vi.fn(async () => {}),
+  decline: vi.fn(),
+};
+
 function props(patch: Record<string, unknown> = {}): MainQuestionsProps {
   return {
     project,
@@ -98,6 +107,7 @@ function props(patch: Record<string, unknown> = {}): MainQuestionsProps {
         forgetAllRuns: vi.fn(async () => {}),
         dismissForgetAll: vi.fn(),
       },
+      consent: NO_CONSENT_ASKED,
     },
     ...patch,
   } as unknown as MainQuestionsProps;
@@ -159,11 +169,41 @@ describe("MainQuestions", () => {
               forgetAllRuns: vi.fn(async () => {}),
               dismissForgetAll: vi.fn(),
             },
+            consent: NO_CONSENT_ASKED,
           },
         })}
       />,
     );
 
     expect(screen.getByText(FORGET_RUN_QUESTION)).toBeInTheDocument();
+  });
+
+  it("stands the window of 36k over the server whose line waits, starting in the project's folder", () => {
+    const base = props();
+
+    render(
+      <MainQuestions
+        {...props({
+          parts: {
+            ...base.parts,
+            consent: {
+              ...NO_CONSENT_ASKED,
+              asked: {
+                id: "99999999-9999-4999-8999-999999999999",
+                name: "exa-mcp",
+                isLocal: true,
+                run: "npx -y exa-mcp-server",
+                address: "",
+                signIn: "none",
+                env: [],
+              },
+            },
+          },
+        })}
+      />,
+    );
+
+    expect(screen.getByText("Запустити exa-mcp на цій машині?")).toBeInTheDocument();
+    expect(screen.getByText(base.project.directory)).toBeInTheDocument();
   });
 });

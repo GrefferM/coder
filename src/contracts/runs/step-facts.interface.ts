@@ -29,6 +29,8 @@ export interface StepFacts {
   asked: string;
   said: string;
   state: string;
+  /** The server whose run line the turn waited on (`noConsent`), by id; null for every other end. */
+  waitsFor: string | null;
   inputTokens: number;
   outputTokens: number;
   /** What the turn cost at those prices; `null` where they are unknown. */

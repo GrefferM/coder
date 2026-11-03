@@ -11,6 +11,7 @@ export function ChatSection({
   onOpenDebug,
   onOpenProviders,
   onOpenModel,
+  onShowConsent,
   onOpenAgentAt,
 }: ChatSectionProps) {
   return (
@@ -85,6 +86,7 @@ export function ChatSection({
           acts={{
             onOpenProviders,
             onOpenModel,
+            onShowConsent,
             onOpenSettings: () => onOpenAgentAt("number"),
             onOpenPrompt: () => onOpenAgentAt("prompt"),
             onOpenGrants: () => onOpenAgentAt("grants"),

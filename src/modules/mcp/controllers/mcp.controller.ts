@@ -1,9 +1,10 @@
 import { Validate } from "../../../utils/dto-validation";
-import { McpClient, McpMemory, McpSecrets } from "../services";
+import { McpClient, McpConsents, McpMemory, McpSecrets } from "../services";
 import {
   CloseMcpServerDto,
   DropMcpServerDto,
   LookMcpServerDto,
+  McpConsentDto,
   McpSecretsHeldDto,
   SaveMcpEnvValueDto,
   SaveMcpTokenDto,
@@ -17,6 +18,7 @@ export class McpController {
     private readonly client: McpClient,
     private readonly secrets: McpSecrets,
     private readonly memory: McpMemory,
+    private readonly consents: McpConsents,
   ) {}
 
   @Validate()
@@ -38,6 +40,16 @@ export class McpController {
   @Validate()
   async seen(payload: SeenMcpServerDto): Promise<void> {
     return this.memory.seen(payload.id);
+  }
+
+  @Validate()
+  async isConsented(payload: McpConsentDto): Promise<boolean> {
+    return this.consents.isGiven(payload.server);
+  }
+
+  @Validate()
+  async consent(payload: McpConsentDto): Promise<void> {
+    return this.consents.give(payload.server);
   }
 
   @Validate()

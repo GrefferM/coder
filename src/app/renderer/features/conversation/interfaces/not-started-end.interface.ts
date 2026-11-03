@@ -5,7 +5,8 @@ import type { NotStartedAct } from "./not-started-act.type";
  * step that ended there. Every reason offers an act.
  */
 export interface NotStartedEnd {
-  label: string;
+  /** Null where the frame draws the card without a word of its own (36k). */
+  label: string | null;
   actLabel: string;
   act: NotStartedAct;
   state: string;

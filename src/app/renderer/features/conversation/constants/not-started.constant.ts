@@ -94,6 +94,14 @@ export const NOT_STARTED_ENDS: Record<NotStartedReason, NotStartedEnd> = {
     act: "prompt",
     state: NOT_STARTED_STATES.lostPrompt,
   },
+  // A granted local server whose run line waits for this machine's consent; the act opens the window of 36k over it, and
+  // the card carries no word of its own, as the frame draws it.
+  noConsent: {
+    label: null,
+    actLabel: "ПОКАЗАТИ, ЩО ЗАПУСТИТЬСЯ",
+    act: "consent",
+    state: NOT_STARTED_STATES.noConsent,
+  },
   // The one reason with something to say to, and too much of it said.
   tooLong: {
     label: OVER_CEILING_LABEL,

@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Initial1793112189384 implements MigrationInterface {
-  name = "Initial1793112189384";
+export class Initial1793697764855 implements MigrationInterface {
+  name = "Initial1793697764855";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -12,6 +12,9 @@ export class Initial1793112189384 implements MigrationInterface {
     );
     await queryRunner.query(
       'CREATE TABLE "mcp_dropped_servers" ("serverId" varchar PRIMARY KEY NOT NULL, "droppedAt" integer NOT NULL)',
+    );
+    await queryRunner.query(
+      'CREATE TABLE "mcp_server_consents" ("serverId" varchar PRIMARY KEY NOT NULL, "run" text NOT NULL, "givenAt" integer NOT NULL)',
     );
     await queryRunner.query(
       'CREATE TABLE "mcp_server_looks" ("serverId" varchar PRIMARY KEY NOT NULL, "names" text NOT NULL, "changedAt" integer, "wasCount" integer, "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')))',
@@ -58,7 +61,7 @@ export class Initial1793112189384 implements MigrationInterface {
     await queryRunner.query('CREATE INDEX "IDX_6be615901fab9c96fdf02a30d1" ON "run_step_feeds" ("stepId") ');
     await queryRunner.query('CREATE INDEX "IDX_76df172e90320c34210fc2cb2d" ON "run_step_feeds" ("fromId") ');
     await queryRunner.query(
-      'CREATE TABLE "run_steps" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "walkId" varchar NOT NULL, "asked" text NOT NULL, "said" text NOT NULL, "state" varchar NOT NULL, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "money" float, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, "questionId" varchar)',
+      'CREATE TABLE "run_steps" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "walkId" varchar NOT NULL, "asked" text NOT NULL, "said" text NOT NULL, "state" varchar NOT NULL, "waitsFor" varchar, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "money" float, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, "questionId" varchar)',
     );
     await queryRunner.query('CREATE INDEX "IDX_a7151a8ecac7a6aab97019ce51" ON "run_steps" ("runId") ');
     await queryRunner.query('CREATE INDEX "IDX_0d0c3758c0c7b7c5000c25e5d7" ON "run_steps" ("questionId") ');
@@ -157,10 +160,10 @@ export class Initial1793112189384 implements MigrationInterface {
     await queryRunner.query('DROP INDEX "IDX_a7151a8ecac7a6aab97019ce51"');
     await queryRunner.query('DROP INDEX "IDX_0d0c3758c0c7b7c5000c25e5d7"');
     await queryRunner.query(
-      'CREATE TABLE "temporary_run_steps" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "walkId" varchar NOT NULL, "asked" text NOT NULL, "said" text NOT NULL, "state" varchar NOT NULL, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "money" float, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, "questionId" varchar, CONSTRAINT "FK_a7151a8ecac7a6aab97019ce518" FOREIGN KEY ("runId") REFERENCES "runs" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_0d0c3758c0c7b7c5000c25e5d77" FOREIGN KEY ("questionId") REFERENCES "run_questions" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
+      'CREATE TABLE "temporary_run_steps" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "walkId" varchar NOT NULL, "asked" text NOT NULL, "said" text NOT NULL, "state" varchar NOT NULL, "waitsFor" varchar, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "money" float, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, "questionId" varchar, CONSTRAINT "FK_a7151a8ecac7a6aab97019ce518" FOREIGN KEY ("runId") REFERENCES "runs" ("id") ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT "FK_0d0c3758c0c7b7c5000c25e5d77" FOREIGN KEY ("questionId") REFERENCES "run_questions" ("id") ON DELETE CASCADE ON UPDATE NO ACTION)',
     );
     await queryRunner.query(
-      'INSERT INTO "temporary_run_steps"("id", "place", "walkId", "asked", "said", "state", "inputTokens", "outputTokens", "money", "startedAt", "endedAt", "createdAt", "updatedAt", "runId", "questionId") SELECT "id", "place", "walkId", "asked", "said", "state", "inputTokens", "outputTokens", "money", "startedAt", "endedAt", "createdAt", "updatedAt", "runId", "questionId" FROM "run_steps"',
+      'INSERT INTO "temporary_run_steps"("id", "place", "walkId", "asked", "said", "state", "waitsFor", "inputTokens", "outputTokens", "money", "startedAt", "endedAt", "createdAt", "updatedAt", "runId", "questionId") SELECT "id", "place", "walkId", "asked", "said", "state", "waitsFor", "inputTokens", "outputTokens", "money", "startedAt", "endedAt", "createdAt", "updatedAt", "runId", "questionId" FROM "run_steps"',
     );
     await queryRunner.query('DROP TABLE "run_steps"');
     await queryRunner.query('ALTER TABLE "temporary_run_steps" RENAME TO "run_steps"');
@@ -193,10 +196,10 @@ export class Initial1793112189384 implements MigrationInterface {
     await queryRunner.query('DROP INDEX "IDX_a7151a8ecac7a6aab97019ce51"');
     await queryRunner.query('ALTER TABLE "run_steps" RENAME TO "temporary_run_steps"');
     await queryRunner.query(
-      'CREATE TABLE "run_steps" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "walkId" varchar NOT NULL, "asked" text NOT NULL, "said" text NOT NULL, "state" varchar NOT NULL, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "money" float, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, "questionId" varchar)',
+      'CREATE TABLE "run_steps" ("id" varchar PRIMARY KEY NOT NULL, "place" integer NOT NULL, "walkId" varchar NOT NULL, "asked" text NOT NULL, "said" text NOT NULL, "state" varchar NOT NULL, "waitsFor" varchar, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "money" float, "startedAt" datetime NOT NULL, "endedAt" datetime NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "updatedAt" datetime NOT NULL DEFAULT (datetime(\'now\')), "runId" varchar, "questionId" varchar)',
     );
     await queryRunner.query(
-      'INSERT INTO "run_steps"("id", "place", "walkId", "asked", "said", "state", "inputTokens", "outputTokens", "money", "startedAt", "endedAt", "createdAt", "updatedAt", "runId", "questionId") SELECT "id", "place", "walkId", "asked", "said", "state", "inputTokens", "outputTokens", "money", "startedAt", "endedAt", "createdAt", "updatedAt", "runId", "questionId" FROM "temporary_run_steps"',
+      'INSERT INTO "run_steps"("id", "place", "walkId", "asked", "said", "state", "waitsFor", "inputTokens", "outputTokens", "money", "startedAt", "endedAt", "createdAt", "updatedAt", "runId", "questionId") SELECT "id", "place", "walkId", "asked", "said", "state", "waitsFor", "inputTokens", "outputTokens", "money", "startedAt", "endedAt", "createdAt", "updatedAt", "runId", "questionId" FROM "temporary_run_steps"',
     );
     await queryRunner.query('DROP TABLE "temporary_run_steps"');
     await queryRunner.query('CREATE INDEX "IDX_0d0c3758c0c7b7c5000c25e5d7" ON "run_steps" ("questionId") ');
@@ -316,6 +319,7 @@ export class Initial1793112189384 implements MigrationInterface {
     await queryRunner.query('DROP INDEX "IDX_503cb5169ad98f938167fbffb1"');
     await queryRunner.query('DROP TABLE "run_handoffs"');
     await queryRunner.query('DROP TABLE "mcp_server_looks"');
+    await queryRunner.query('DROP TABLE "mcp_server_consents"');
     await queryRunner.query('DROP TABLE "mcp_dropped_servers"');
     await queryRunner.query('DROP TABLE "deletions"');
     await queryRunner.query('DROP TABLE "project_entries"');

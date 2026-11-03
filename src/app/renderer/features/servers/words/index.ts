@@ -7,3 +7,4 @@ export * from "./freshness-line";
 export * from "./starting-ceiling";
 export * from "./deleted-server-label";
 export * from "./delete-server-note";
+export * from "./consent-env-label";

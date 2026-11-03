@@ -1,4 +1,11 @@
-import { lostFunctionNote, lostPromptNote, noToolsNote, notFilledAgentNote, notStartedNote } from "../words";
+import {
+  lostFunctionNote,
+  lostPromptNote,
+  noConsentNote,
+  noToolsNote,
+  notFilledAgentNote,
+  notStartedNote,
+} from "../words";
 import {
   NO_MODEL_NOTE,
   agentNumbers,
@@ -6,6 +13,7 @@ import {
   isAgentFilled,
   isModelFilled,
   unfilledField,
+  waitingConsent,
 } from "../../../contracts";
 import type { Agent, AgentReady, AgentStands, AgentWall, GrantTargets } from "../../../contracts";
 
@@ -21,6 +29,18 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
     return {
       note: lostFunctionNote(agent.name),
       reason: "lostFunction",
+      waitsFor: null,
+    };
+  }
+
+  const waiting = waitingConsent(agent.tools, targets);
+
+  // A granted local server whose run line this machine has not agreed to is not started, so neither is the turn (36k).
+  if (waiting !== null) {
+    return {
+      note: noConsentNote(waiting.name),
+      reason: "noConsent",
+      waitsFor: waiting.id,
     };
   }
 
@@ -29,6 +49,7 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
     return {
       note: noToolsNote(provider.name, agent.name),
       reason: "noTools",
+      waitsFor: null,
     };
   }
 
@@ -37,6 +58,7 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
     return {
       note: lostPromptNote(agent.name),
       reason: "lostPrompt",
+      waitsFor: null,
     };
   }
 
@@ -44,6 +66,7 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
     return {
       note: notFilledAgentNote(agent.name, unfilledField(agentNumbers(agent)) ?? ""),
       reason: "notFilledAgent",
+      waitsFor: null,
     };
   }
 
@@ -51,6 +74,7 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
     return {
       note: NO_MODEL_NOTE,
       reason: "noModel",
+      waitsFor: null,
     };
   }
 
@@ -59,6 +83,7 @@ export function agentReadiness(agent: Agent, stands: AgentStands, targets: Grant
     return {
       note: notStartedNote("notFilled", model, provider),
       reason: "notFilled",
+      waitsFor: null,
     };
   }
 

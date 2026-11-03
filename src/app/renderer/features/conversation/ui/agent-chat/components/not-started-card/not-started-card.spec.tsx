@@ -35,7 +35,7 @@ describe("NotStartedCard", () => {
 
     // One shared heading, plus the reason's word from the sphere's pill.
     expect(screen.getByText(NOT_STARTED_TITLE)).toBeInTheDocument();
-    expect(screen.getByText(NOT_STARTED_ENDS.noKey.label)).toBeInTheDocument();
+    expect(screen.getByText(NOT_STARTED_ENDS.noKey.label ?? "")).toBeInTheDocument();
     expect(screen.getByText("Провайдер цієї моделі не має ключа.")).toBeInTheDocument();
     expect(screen.getByText(NOT_STARTED_FREE_LABEL)).toBeInTheDocument();
   });
@@ -116,5 +116,21 @@ describe("NotStartedCard", () => {
 
     expect(screen.queryByText(OVER_CEILING_TOTAL_LABEL)).not.toBeInTheDocument();
     expect(screen.queryByText(OVER_CEILING_NO_RETRY_NOTE)).not.toBeInTheDocument();
+  });
+
+  it("draws a turn without consent as the frame does, with no word of its own beside the heading", () => {
+    render(
+      <NotStartedCard
+        reason="noConsent"
+        note="exa-mcp ще не запускали на цій машині — його рядок запуску чекає вашої згоди."
+        wouldGo={null}
+        isAsked={false}
+        onAct={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(NOT_STARTED_TITLE)).toBeInTheDocument();
+    expect(screen.getByText("ПОКАЗАТИ, ЩО ЗАПУСТИТЬСЯ")).toBeInTheDocument();
+    expect(screen.getByText(NOT_STARTED_FREE_LABEL)).toBeInTheDocument();
   });
 });

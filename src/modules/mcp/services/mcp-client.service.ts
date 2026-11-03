@@ -5,6 +5,7 @@ import {
   MCP_CLIENT_NAME,
   MCP_CLIENT_VERSION,
   MCP_CONNECT_TIMEOUT_MS,
+  MCP_CONSENT_MISSING,
   MCP_ENV_PREFIX,
   MCP_ENV_VALUE_MISSING,
   MCP_FAILED_PREFIX,
@@ -18,7 +19,7 @@ import {
 } from "../constants";
 import { runParts, saidWhole } from "../logic";
 import { McpCalls } from "./mcp-calls.service";
-import type { McpCall, McpFunction, McpLook, McpResult, McpSecretStore } from "../interfaces";
+import type { McpCall, McpConsentGate, McpFunction, McpLook, McpResult, McpSecretStore } from "../interfaces";
 import type { ProjectMcpServer } from "../interfaces";
 import type { ProjectMcpServerDto } from "../../projects";
 import { Refusal } from "../../../utils/refusals";
@@ -28,8 +29,12 @@ import { Refusal } from "../../../utils/refusals";
  * server is the same server, two running the same line are two. Nothing is written to a file.
  */
 export class McpClient {
-  /** This machine's secrets, where a token and every environment value live, never the project file. */
-  constructor(private readonly secrets: McpSecretStore) {}
+  constructor(
+    /** This machine's secrets, where a token and every environment value live, never the project file. */
+    private readonly secrets: McpSecretStore,
+    /** Whether this machine agreed to a local server's run line; nothing is started without it. */
+    private readonly consents: McpConsentGate,
+  ) {}
 
   private readonly live = new Map<string, Client>();
   /** What a server printed beside the protocol while starting, by server id. */
@@ -182,6 +187,11 @@ export class McpClient {
   private async started(server: ProjectMcpServerDto, directory: string): Promise<Client> {
     if (!server.isLocal) {
       return await this.reached(server);
+    }
+
+    // The one gate every way of starting passes: a look, a call, a turn, a restart.
+    if (!(await this.consents.isGiven(server))) {
+      throw new Refusal(MCP_CONSENT_MISSING);
     }
 
     const [command, ...args] = runParts(server.run);

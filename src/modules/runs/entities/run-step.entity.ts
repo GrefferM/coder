@@ -57,6 +57,13 @@ export class RunStepEntity implements RunStepRecord {
   })
   declare state: string;
 
+  /** The server a `noConsent` step waited on, by id; not a key, since servers live in the project file. */
+  @Column({
+    type: "varchar",
+    nullable: true,
+  })
+  declare waitsFor: string | null;
+
   @Column({
     type: "integer",
   })

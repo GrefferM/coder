@@ -139,4 +139,30 @@ describe("ActionButton", () => {
 
     expect(screen.getByText("Зберегти")).toHaveAttribute("type", "submit");
   });
+
+  it("takes the smaller pair of a window drawn by its own frame when asked, and the form's otherwise", () => {
+    render(
+      <>
+        <ActionButton variant="save" label="Запустити" size="dialog" />
+        <ActionButton variant="save" label="Зберегти" />
+      </>,
+    );
+
+    expect(
+      screen.getByRole("button", {
+        name: "Запустити",
+      }),
+    ).toHaveStyle({
+      padding: "9px 0px",
+      fontSize: "12.5px",
+    });
+    expect(
+      screen.getByRole("button", {
+        name: "Зберегти",
+      }),
+    ).toHaveStyle({
+      padding: "10px 0px",
+      fontSize: "13px",
+    });
+  });
 });

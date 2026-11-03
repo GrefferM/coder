@@ -208,6 +208,7 @@ export class RecordWriter {
       asked: turn.asked,
       said: turn.said,
       state: turn.state,
+      waitsFor: turn.waitsFor,
       inputTokens: turn.cost?.inputTokens ?? 0,
       outputTokens: turn.cost?.outputTokens ?? 0,
       // A turn that never began cost zero, not an unknown.

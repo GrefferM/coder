@@ -8,17 +8,30 @@ import { NO_MCP_CALLS } from "../../../../interfaces";
 
 const DIRECTORY = "/tmp/coder";
 
+/** A remote server, the kind asked as the project opens. */
 function aServer(patch: Partial<ProjectMcpServer> = {}): ProjectMcpServer {
   return {
     id: "99999999-9999-4999-8999-999999999999",
-    name: "filesystem",
-    isLocal: true,
-    run: "npx server-filesystem .",
-    address: "",
+    name: "linear",
+    isLocal: false,
+    run: "",
+    address: "https://mcp.linear.app/mcp",
     signIn: "none",
     env: [],
     ...patch,
   };
+}
+
+/** A local server, which nothing but a person starts (36k). */
+function aLocalServer(patch: Partial<ProjectMcpServer> = {}): ProjectMcpServer {
+  return aServer({
+    id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+    name: "filesystem",
+    isLocal: true,
+    run: "npx server-filesystem .",
+    address: "",
+    ...patch,
+  });
 }
 
 /** A machine that answers every look with a server that is up, and records what it was asked. */
@@ -59,7 +72,8 @@ function machine() {
   return asked;
 }
 
-const looks = (asked: { channel: string }[]) => asked.filter((one) => one.channel === LOOK_MCP_SERVER_CHANNEL);
+const looks = <TOne extends { channel: string }>(asked: TOne[]) =>
+  asked.filter((one) => one.channel === LOOK_MCP_SERVER_CHANNEL);
 /** The walk to and from one server, without other traffic on the wire such as the key sweep. */
 const walk = (asked: { channel: string }[]) =>
   asked
@@ -148,8 +162,6 @@ describe("useServers", () => {
 
     servers = [
       aServer({
-        isLocal: false,
-        run: "",
         address: "https://mcp.linear.app/sse",
       }),
     ];
@@ -243,5 +255,88 @@ describe("useServers", () => {
 
     await waitFor(() => expect(result.current.askingSince).toEqual({}));
     expect(looks(asked)).toHaveLength(0);
+  });
+
+  it("holds no look for a server whose run line is not agreed to, so its row stays unknown", async () => {
+    const invoke = vi.fn(async (channel: string, payload: unknown) => {
+      if (channel !== LOOK_MCP_SERVER_CHANNEL) {
+        return undefined;
+      }
+
+      return {
+        serverId: (<{ server: ProjectMcpServer }>payload).server.id,
+        isUp: false,
+        functions: [],
+        answeredAt: null,
+        failure: "Error: MCP_CONSENT_MISSING",
+        changedAt: null,
+        wasCount: null,
+        calls: NO_MCP_CALLS,
+      };
+    });
+
+    standInBridge({
+      invoke,
+    });
+
+    const { result } = renderHook(() => useServers(DIRECTORY, [aLocalServer()]));
+
+    act(() => result.current.look(aLocalServer().id));
+
+    await waitFor(() => expect(result.current.askingSince).toEqual({}));
+
+    expect(invoke).toHaveBeenCalledWith(LOOK_MCP_SERVER_CHANNEL, expect.anything());
+    expect(result.current.looks).toEqual({});
+  });
+
+  it("starts no local server as the project opens, and asks the remote one beside it", async () => {
+    const asked = machine();
+    const { result } = renderHook(() => useServers(DIRECTORY, [aLocalServer(), aServer()]));
+
+    await waitFor(() => expect(Object.keys(result.current.looks)).toEqual([aServer().id]));
+
+    expect(looks(asked).map((one) => (<{ server: ProjectMcpServer }>one.payload).server.id)).toEqual([aServer().id]);
+    expect(result.current.looks[aLocalServer().id]).toBeUndefined();
+  });
+
+  it("leaves a local server nobody raised alone when its line changes in the file", async () => {
+    const asked = machine();
+    let servers = [aLocalServer()];
+    const { rerender } = renderHook(() => useServers(DIRECTORY, servers));
+
+    servers = [
+      aLocalServer({
+        run: "npx server-filesystem ~",
+      }),
+    ];
+    rerender();
+
+    await waitFor(() => expect(asked.length).toBeGreaterThan(0));
+    expect(walk(asked)).toEqual([]);
+  });
+
+  it("asks a local server once a person raised it, and afresh when its line changes after that", async () => {
+    const asked = machine();
+    let servers = [aLocalServer()];
+    const { result, rerender } = renderHook(() => useServers(DIRECTORY, servers));
+
+    act(() => result.current.restart(aLocalServer().id));
+
+    await waitFor(() => expect(looks(asked)).toHaveLength(1));
+
+    servers = [
+      aLocalServer({
+        run: "npx server-filesystem ~",
+      }),
+    ];
+    rerender();
+
+    await waitFor(() => expect(looks(asked)).toHaveLength(2));
+    expect(walk(asked)).toEqual([
+      CLOSE_MCP_SERVER_CHANNEL,
+      LOOK_MCP_SERVER_CHANNEL,
+      CLOSE_MCP_SERVER_CHANNEL,
+      LOOK_MCP_SERVER_CHANNEL,
+    ]);
   });
 });

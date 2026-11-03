@@ -396,6 +396,72 @@ describe("turnWall", () => {
     assert.equal("notStarted" in way, false);
   });
 
+  it("stops a turn granted a server whose run line this machine has not agreed to, naming that server by id", () => {
+    // Nothing was started for it, and nothing is sent for the turn either (36k).
+    const stood = turnWall(
+      turn({
+        agent: {
+          ...AGENT,
+          tools: [
+            {
+              id: "grant-1",
+              source: "mcp",
+              serverId: SERVER_ID,
+              functionName: "browser_click",
+            },
+          ],
+        },
+        catalogue: {
+          ...WITH_SERVER,
+          looks: {
+            [SERVER_ID]: {
+              ...WITH_SERVER.looks[SERVER_ID],
+              isUp: false,
+              functions: [],
+              answeredAt: null,
+              failure: "Error: MCP_CONSENT_MISSING",
+            },
+          },
+        },
+      }),
+    );
+
+    assert.ok("notStarted" in stood);
+    assert.equal(stood.notStarted, "noConsent");
+    assert.equal(stood.state, "noConsent");
+    assert.equal(stood.waitsFor, SERVER_ID);
+    assert.equal(stood.cost, null);
+    assert.equal(stood.text, "playwright-mcp ще не запускали на цій машині — його рядок запуску чекає вашої згоди.");
+  });
+
+  it("lets a turn through where the server waiting for consent is not granted to the agent", () => {
+    const way = turnWall(
+      turn({
+        catalogue: {
+          ...WITH_SERVER,
+          looks: {
+            [SERVER_ID]: {
+              ...WITH_SERVER.looks[SERVER_ID],
+              isUp: false,
+              functions: [],
+              answeredAt: null,
+              failure: "Error: MCP_CONSENT_MISSING",
+            },
+          },
+        },
+      }),
+    );
+
+    assert.equal("notStarted" in way, false);
+  });
+
+  it("names no server on a turn stopped by any other wall", () => {
+    const stood = wall({}, null);
+
+    assert.ok("notStarted" in stood);
+    assert.equal(stood.waitsFor, null);
+  });
+
   it("stops a turn whose provider carries no functions while the agent holds grants", () => {
     // Dropping them silently would pass off an answer as made with the granted tools.
     const stood = turnWall(

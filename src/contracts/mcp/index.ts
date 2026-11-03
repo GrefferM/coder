@@ -1,3 +1,4 @@
+export * from "./is-consent-missing";
 export * from "./mcp-refusals.constant";
 export * from "./mcp-timeout.constant";
 export * from "./mcp-calls-state.interface";

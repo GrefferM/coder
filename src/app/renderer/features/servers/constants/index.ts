@@ -6,3 +6,4 @@ export * from "./deleted-server.constant";
 export * from "./server-form.constant";
 export * from "./delete-server.constant";
 export * from "./servers-section.constant";
+export * from "./server-consent.constant";
