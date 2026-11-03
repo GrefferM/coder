@@ -111,6 +111,7 @@ function renderCard(
     onAsk?: () => void;
     onChange?: (need: ProviderNeed, value: string) => void;
     onSwitch?: () => void;
+    onFold?: () => void;
   } = {},
 ) {
   return render(
@@ -124,6 +125,7 @@ function renderCard(
       onAsk={acts.onAsk ?? (() => {})}
       onChange={acts.onChange ?? (() => {})}
       onCancel={() => {}}
+      onFold={acts.onFold ?? (() => {})}
       onSave={() => {}}
       onSwitch={acts.onSwitch ?? (() => {})}
       onTakeUpModel={acts.onTakeUpModel ?? (() => {})}
@@ -324,6 +326,18 @@ describe("ProviderCard's key", () => {
     renderCard(RUNPOD);
 
     expect(screen.queryByText(/ENABLE_AUTO_TOOL_CHOICE/)).not.toBeInTheDocument();
+  });
+
+  it("folds from the chevron in its head", async () => {
+    const onFold = vi.fn();
+
+    renderCard(ANTHROPIC, null, [], {
+      onFold,
+    });
+
+    await userEvent.click(screen.getByLabelText("Згорнути"));
+
+    expect(onFold).toHaveBeenCalledTimes(1);
   });
 
   it("asks a key-only provider for no address at all", () => {

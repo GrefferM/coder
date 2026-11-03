@@ -48,8 +48,12 @@ export function ProvidersPanel({
   onTakeUpModel,
 }: ProvidersPanelProps) {
   const [openProviderId, setOpenProviderId] = useState<string | null>(null);
-  // Empty until a field is typed into or cleared; an untouched key is kept.
-  const [draft, setDraft] = useState<ProviderDraft>(NOTHING_TYPED);
+  /**
+   * What was typed, per provider: empty until a field is typed into or cleared, so an untouched key is kept. Folding a
+   * card keeps its draft for the next opening; «СКАСУВАТИ» and «ЗБЕРЕГТИ» drop it.
+   */
+  const [drafts, setDrafts] = useState<Record<string, ProviderDraft>>({});
+  const draftOf = (provider: ProviderState) => drafts[provider.id] ?? NOTHING_TYPED;
 
   /**
    * Set up when everything it asks for is present and it is not off; a local provider always has its customary
@@ -99,12 +103,25 @@ export function ProvidersPanel({
 
   function open(provider: ProviderState) {
     setOpenProviderId(provider.id);
-    setDraft(NOTHING_TYPED);
   }
 
-  function close() {
+  /** Back into its row, with what was typed kept. */
+  function fold() {
     setOpenProviderId(null);
-    setDraft(NOTHING_TYPED);
+  }
+
+  /** Back into its row, with what was typed dropped. */
+  function close(provider: ProviderState) {
+    setDrafts((standing) =>
+      Object.fromEntries(Object.entries(standing).filter(([providerId]) => providerId !== provider.id)),
+    );
+    fold();
+  }
+
+  /** On or off at once; the provider changes its group, so the card folds rather than travel open. */
+  async function switchOver(provider: ProviderState) {
+    await onSwitch(provider, !provider.isOff);
+    fold();
   }
 
   /**
@@ -112,11 +129,13 @@ export function ProvidersPanel({
    * «unchanged»; taking a key off is the cross, then save writes the empty value.
    */
   async function save(provider: ProviderState) {
+    const draft = draftOf(provider);
+
     if (draft.key !== null || draft.address !== null) {
       await onSave(provider, draft);
     }
 
-    close();
+    close(provider);
   }
 
   function rowFor(provider: ProviderState) {
@@ -125,20 +144,24 @@ export function ProvidersPanel({
         <ProviderCard
           key={provider.id}
           provider={provider}
-          value={draft}
+          value={draftOf(provider)}
           models={models.filter((model) => model.provider === provider.id)}
           answer={answers[provider.id] ?? null}
           isAsking={askingIds.includes(provider.id)}
           onAsk={() => onAsk(provider.id)}
           onChange={(need, typed) =>
-            setDraft((standing) => ({
+            setDrafts((standing) => ({
               ...standing,
-              [need]: typed,
+              [provider.id]: {
+                ...(standing[provider.id] ?? NOTHING_TYPED),
+                [need]: typed,
+              },
             }))
           }
-          onCancel={close}
+          onCancel={() => close(provider)}
+          onFold={fold}
           onSave={() => void save(provider)}
-          onSwitch={() => void onSwitch(provider, !provider.isOff)}
+          onSwitch={() => void switchOver(provider)}
           onTakeUpModel={(title) => onTakeUpModel(provider.id, title)}
         />
       );

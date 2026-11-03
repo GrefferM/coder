@@ -339,7 +339,7 @@ describe("ProvidersPanel", () => {
       expect(screen.queryByText("НЕ ВІДПОВІДАЄ")).not.toBeInTheDocument();
     });
 
-    it("turns a provider off from its card at once, with nothing saved, and keeps the card open", async () => {
+    it("turns a provider off from its card at once, with nothing saved, and folds the card as it moves down", async () => {
       const user = userEvent.setup();
       const onSave = vi.fn().mockResolvedValue(undefined);
       const onSwitch = vi.fn().mockResolvedValue(undefined);
@@ -363,7 +363,70 @@ describe("ProvidersPanel", () => {
 
       expect(onSwitch).toHaveBeenCalledWith(ANTHROPIC, true);
       expect(onSave).not.toHaveBeenCalled();
-      expect(screen.getByLabelText("КЛЮЧ")).toBeInTheDocument();
+      // It changes its group, so it arrives there folded rather than open.
+      expect(screen.queryByLabelText("КЛЮЧ")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("folding an open card", () => {
+    it("folds it back into its row and keeps what was typed for the next opening, unsaved", async () => {
+      const user = userEvent.setup();
+      const onSave = renderPanel([ANTHROPIC]);
+
+      await user.click(screen.getByLabelText(/Відкрити провайдера Anthropic/));
+      await user.type(screen.getByLabelText("КЛЮЧ"), "sk-ant-half");
+      await user.click(screen.getByLabelText("Згорнути"));
+
+      expect(screen.queryByLabelText("КЛЮЧ")).not.toBeInTheDocument();
+      expect(onSave).not.toHaveBeenCalled();
+
+      await user.click(screen.getByLabelText(/Відкрити провайдера Anthropic/));
+
+      expect(screen.getByLabelText("КЛЮЧ")).toHaveValue("sk-ant-half");
+    });
+
+    it("keeps each card's typing apart while another is opened", async () => {
+      const user = userEvent.setup();
+
+      renderPanel([ANTHROPIC, OPENAI]);
+
+      await user.click(screen.getByLabelText(/Відкрити провайдера Anthropic/));
+      await user.type(screen.getByLabelText("КЛЮЧ"), "sk-ant-half");
+      await user.click(screen.getByLabelText(/Відкрити провайдера OpenAI/));
+
+      expect(screen.getByLabelText("КЛЮЧ")).toHaveValue("");
+
+      await user.click(screen.getByLabelText(/Відкрити провайдера Anthropic/));
+
+      expect(screen.getByLabelText("КЛЮЧ")).toHaveValue("sk-ant-half");
+    });
+
+    it("drops what was typed on «СКАСУВАТИ», so the next opening starts clean", async () => {
+      const user = userEvent.setup();
+
+      renderPanel([ANTHROPIC]);
+
+      await user.click(screen.getByLabelText(/Відкрити провайдера Anthropic/));
+      await user.type(screen.getByLabelText("КЛЮЧ"), "sk-ant-half");
+      await user.click(screen.getByText("Скасувати"));
+      await user.click(screen.getByLabelText(/Відкрити провайдера Anthropic/));
+
+      expect(screen.getByLabelText("КЛЮЧ")).toHaveValue("");
+    });
+
+    it("drops what was typed once it is saved", async () => {
+      const user = userEvent.setup();
+      const onSave = renderPanel([ANTHROPIC]);
+
+      await user.click(screen.getByLabelText(/Відкрити провайдера Anthropic/));
+      await user.type(screen.getByLabelText("КЛЮЧ"), "sk-ant-full");
+      await user.click(screen.getByText("Зберегти"));
+
+      expect(onSave).toHaveBeenCalledTimes(1);
+
+      await user.click(screen.getByLabelText(/Відкрити провайдера Anthropic/));
+
+      expect(screen.getByLabelText("КЛЮЧ")).toHaveValue("");
     });
   });
 });

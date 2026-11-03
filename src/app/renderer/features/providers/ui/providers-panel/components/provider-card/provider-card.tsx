@@ -1,4 +1,4 @@
-import { Dot, Field, Mark, NestedActions, TextAction } from "../../../../../../components";
+import { Dot, Field, IconButton, Mark, NestedActions, TextAction } from "../../../../../../components";
 import { ProviderModels } from "./components";
 import { timeLabel } from "../../../../../../utils/dates";
 import { ukrainianPlural } from "../../../../../../utils/text";
@@ -42,6 +42,8 @@ import {
   PROVIDER_CARD_NAME_COLOR,
   PROVIDER_CARD_NAME_FONT_SIZE_PX,
   PROVIDER_CARD_NAME_FONT_WEIGHT,
+  PROVIDER_CARD_FOLD_LABEL,
+  PROVIDER_CARD_FOLD_SIZE_PX,
   PROVIDER_CARD_OFF_LABEL,
   PROVIDER_CARD_ON_LABEL,
   PROVIDER_CARD_PADDING,
@@ -63,6 +65,7 @@ export function ProviderCard({
   onAsk,
   onChange,
   onCancel,
+  onFold,
   onSave,
   onSwitch,
   onTakeUpModel,
@@ -140,6 +143,20 @@ export function ProviderCard({
         >
           {isLocal ? PROVIDER_LOCAL_LABEL : PROVIDER_REMOTE_LABEL}
         </span>
+        <IconButton label={PROVIDER_CARD_FOLD_LABEL} onPress={onFold}>
+          <svg
+            width={PROVIDER_CARD_FOLD_SIZE_PX}
+            height={PROVIDER_CARD_FOLD_SIZE_PX}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m18 15-6-6-6 6" />
+          </svg>
+        </IconButton>
       </div>
 
       {wantsKey && (

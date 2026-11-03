@@ -49,6 +49,9 @@ export const PROVIDER_CARD_SETUP_NOTES: Record<string, string> = {
 export const PROVIDER_CARD_SETUP_NOTE_COLOR = CONTROL_AT_REST_COLOR;
 export const PROVIDER_CARD_SETUP_NOTE_FONT_SIZE_PX = 11;
 export const PROVIDER_CARD_SETUP_NOTE_LINE_HEIGHT = 1.55;
+/** The head's chevron, pointing up where a row's points down; folding keeps what was typed. */
+export const PROVIDER_CARD_FOLD_LABEL = "Згорнути";
+export const PROVIDER_CARD_FOLD_SIZE_PX = 12;
 export const PROVIDER_CARD_CANCEL_LABEL = "Скасувати";
 export const PROVIDER_CARD_SAVE_LABEL = "Зберегти";
 /** Left of the pair: turns the provider off on this machine, or back on. */

@@ -14,6 +14,8 @@ export interface ProviderCardProps {
   onAsk: () => void;
   onChange: (need: ProviderNeed, value: string) => void;
   onCancel: () => void;
+  /** The chevron in the head: folds the card back into its row, keeping what was typed for the next opening. */
+  onFold: () => void;
   onSave: () => void;
   /** «ВИМКНУТИ», or «УВІМКНУТИ» for one standing off; acts without «ЗБЕРЕГТИ». */
   onSwitch: () => void;
