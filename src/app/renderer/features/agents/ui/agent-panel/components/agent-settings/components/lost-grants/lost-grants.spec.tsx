@@ -96,6 +96,32 @@ describe("LostGrants", () => {
     expect(screen.getByText(LOST_GRANTS_NOTES.goneServer)).toBeInTheDocument();
   });
 
+  it("says a server lacks a function by that name, true whether it dropped it or never had it", () => {
+    render(
+      <LostGrants
+        groups={[
+          {
+            key: "server:server-1",
+            cause: "goneFunction",
+            serverName: "deepwiki",
+            rows: [
+              {
+                id: "grant-1",
+                name: "ask_question",
+                pinnedCount: 0,
+              },
+            ],
+          },
+        ]}
+        onRemove={() => {}}
+      />,
+    );
+
+    expect(
+      screen.getByText("На сервері немає функції з такою назвою. Видача лишилась — агент кличе те, чого немає."),
+    ).toBeInTheDocument();
+  });
+
   it("stands a row for every lost grant", () => {
     render(<LostGrants groups={[commands(2)]} onRemove={() => {}} />);
 

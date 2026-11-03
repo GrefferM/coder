@@ -3,7 +3,7 @@ import type { BrokenGrantCause } from "../../../../../../../../../interfaces";
 /** One sentence per reason; a gone server is not named, only «сервера», as its name went with its file. */
 export const LOST_GRANTS_NOTES: Record<BrokenGrantCause, string> = {
   command: "Команди більше немає у проєкті. Видача лишилась — агент кличе те, чого немає.",
-  goneFunction: "Сервер оновився й забрав цю функцію. Видача лишилась — агент кличе те, чого немає.",
+  goneFunction: "На сервері немає функції з такою назвою. Видача лишилась — агент кличе те, чого немає.",
   goneServer: "Сервера більше немає у проєкті. Видача лишилась — агент кличе те, чого немає.",
   goneAgent: "Агента більше немає у проєкті. Видача лишилась — агент кличе те, чого немає.",
 };
