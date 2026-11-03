@@ -5,6 +5,7 @@ import { ProviderCard } from "./provider-card";
 import {
   PROVIDER_CARD_ADDRESS_PLACEHOLDER,
   PROVIDER_CARD_ANSWERED_LABEL,
+  PROVIDER_CARD_SETUP_NOTES,
   PROVIDER_CARD_SILENT_LABEL,
 } from "./constants";
 import { MODEL_FIELD_ANSWER_CEILING, NOT_FILLED_LABEL } from "../../../../../../constants";
@@ -52,6 +53,14 @@ const RUNPOD: ProviderState = {
   customaryAddress: null,
   keyHint: null,
   address: null,
+};
+
+const RUNPOD_OPENAI: ProviderState = {
+  ...RUNPOD,
+  id: "runpod-openai",
+  name: "RunPod OpenAI",
+  keyHint: "rpa_JX3…rkk",
+  address: "https://api.runpod.ai/v2/k3x9q2m7f1",
 };
 
 const INSTALLED = [
@@ -267,6 +276,47 @@ describe("ProviderCard's key", () => {
     await userEvent.type(address, "h");
 
     expect(onChange).toHaveBeenCalledWith("address", "h");
+  });
+
+  it("takes a saved address off only when its cross is pressed, as it does a key", async () => {
+    // The saved address stands as the placeholder, so an empty field cannot be how it is removed.
+    const onChange = vi.fn();
+
+    renderCard(RUNPOD_OPENAI, null, [], {
+      onChange,
+    });
+
+    const [, addressCross] = screen.getAllByRole("button", {
+      name: "Очистити",
+    });
+
+    expect(screen.getByLabelText("АДРЕСА")).toHaveAttribute("placeholder", RUNPOD_OPENAI.address);
+
+    await userEvent.click(addressCross);
+
+    expect(onChange).toHaveBeenCalledWith("address", "");
+    expect(onChange).not.toHaveBeenCalledWith("key", "");
+  });
+
+  it("offers no cross on an address nobody has saved", () => {
+    renderCard(RUNPOD);
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Очистити",
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("says what the endpoint itself must carry for functions, only on the provider that needs it", () => {
+    const { unmount } = renderCard(RUNPOD_OPENAI);
+
+    expect(screen.getByText(PROVIDER_CARD_SETUP_NOTES["runpod-openai"])).toBeInTheDocument();
+
+    unmount();
+    renderCard(RUNPOD);
+
+    expect(screen.queryByText(/ENABLE_AUTO_TOOL_CHOICE/)).not.toBeInTheDocument();
   });
 
   it("asks a key-only provider for no address at all", () => {

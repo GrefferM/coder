@@ -38,6 +38,17 @@ export const PROVIDER_CARD_ADDRESS_NOTE = "Порожнє поле означа�
 export const PROVIDER_CARD_ADDRESS_PLACEHOLDER = "https://api.runpod.ai/v2/…";
 export const PROVIDER_CARD_OWN_ADDRESS_NOTE =
   "Корінь точки зі сторінки провайдера; решту шляху застосунок дописує сам.";
+/**
+ * What a provider needs set up on its own side before an agent with functions can run on it, said in the card where its
+ * address is written, by provider id. Prose, not a quiet line: the values are copied as written, case and all.
+ */
+export const PROVIDER_CARD_SETUP_NOTES: Record<string, string> = {
+  "runpod-openai":
+    "Щоб агент міг викликати функції, на endpoint потрібні змінні ENABLE_AUTO_TOOL_CHOICE=true і TOOL_CALL_PARSER під модель — для Qwen це hermes. Перша без другої не дає endpoint стартувати.",
+};
+export const PROVIDER_CARD_SETUP_NOTE_COLOR = CONTROL_AT_REST_COLOR;
+export const PROVIDER_CARD_SETUP_NOTE_FONT_SIZE_PX = 11;
+export const PROVIDER_CARD_SETUP_NOTE_LINE_HEIGHT = 1.55;
 export const PROVIDER_CARD_CANCEL_LABEL = "Скасувати";
 export const PROVIDER_CARD_SAVE_LABEL = "Зберегти";
 

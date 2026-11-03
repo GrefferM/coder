@@ -44,6 +44,10 @@ import {
   PROVIDER_CARD_NAME_FONT_WEIGHT,
   PROVIDER_CARD_PADDING,
   PROVIDER_CARD_SAVE_LABEL,
+  PROVIDER_CARD_SETUP_NOTE_COLOR,
+  PROVIDER_CARD_SETUP_NOTE_FONT_SIZE_PX,
+  PROVIDER_CARD_SETUP_NOTE_LINE_HEIGHT,
+  PROVIDER_CARD_SETUP_NOTES,
 } from "./constants";
 import type { ProviderCardProps } from "./interfaces";
 
@@ -75,7 +79,12 @@ export function ProviderCard({
   // The hint shows until something is typed or the cross is pressed.
   const isKeyHeld = value.key === null && provider.keyHint !== null;
   const keyPlaceholder = isKeyHeld ? (provider.keyHint ?? "") : PROVIDER_CARD_KEY_PLACEHOLDER;
-  const addressPlaceholder = provider.address ?? provider.customaryAddress ?? PROVIDER_CARD_ADDRESS_PLACEHOLDER;
+  // A saved address shows as the placeholder too, so it is taken off the same way: only by the cross.
+  const isAddressHeld = value.address === null && provider.address !== null;
+  const addressPlaceholder = isAddressHeld
+    ? (provider.address ?? "")
+    : (provider.customaryAddress ?? PROVIDER_CARD_ADDRESS_PLACEHOLDER);
+  const setupNote = PROVIDER_CARD_SETUP_NOTES[provider.id] ?? null;
 
   return (
     <div
@@ -148,8 +157,22 @@ export function ProviderCard({
           placeholder={addressPlaceholder}
           // An address with no customary one is the person's own, and empty leaves no way to reach it.
           note={provider.customaryAddress === null ? PROVIDER_CARD_OWN_ADDRESS_NOTE : PROVIDER_CARD_ADDRESS_NOTE}
+          onClear={isAddressHeld ? () => onChange("address", "") : undefined}
           onChange={(typed) => onChange("address", typed)}
         />
+      )}
+
+      {setupNote !== null && (
+        <p
+          className="m-0"
+          style={{
+            color: PROVIDER_CARD_SETUP_NOTE_COLOR,
+            fontSize: PROVIDER_CARD_SETUP_NOTE_FONT_SIZE_PX,
+            lineHeight: PROVIDER_CARD_SETUP_NOTE_LINE_HEIGHT,
+          }}
+        >
+          {setupNote}
+        </p>
       )}
 
       {isLocal && (isAsking || isAnswering !== null) && (

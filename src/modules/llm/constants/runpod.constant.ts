@@ -18,7 +18,7 @@ export const RUNPOD_DONE = "COMPLETED";
  * environment variables.
  */
 export const RUNPOD_OPENAI_FAILURE_HINT =
-  "Якщо йдеться про tool choice, на endpoint RunPod потрібні ENABLE_AUTO_TOOL_CHOICE=true і TOOL_CALL_PARSER, що відповідає моделі.";
+  "Якщо йдеться про tool choice, на endpoint RunPod потрібні ENABLE_AUTO_TOOL_CHOICE=true і TOOL_CALL_PARSER, що відповідає моделі (для Qwen — hermes).";
 
 /** Prefix where the job ended in anything but an answer. */
 export const RUNPOD_ENDED_PREFIX = "RunPod: ";
