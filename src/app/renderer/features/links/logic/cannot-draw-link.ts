@@ -1,4 +1,4 @@
-import { wouldMakeCycle } from "./would-make-cycle";
+import { wouldMakeCycle } from "../../../interfaces";
 import type { Link } from "../../../interfaces";
 
 /** Whether a link cannot be drawn: it would close a ring or already exists. */

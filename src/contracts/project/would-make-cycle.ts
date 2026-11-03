@@ -1,4 +1,4 @@
-import type { Link } from "../../../interfaces";
+import type { Link } from "./link.interface";
 
 /** Whether `from → to` would close a ring; a self-link is the shortest ring. */
 export function wouldMakeCycle(links: Link[], fromAgentId: string, toAgentId: string): boolean {

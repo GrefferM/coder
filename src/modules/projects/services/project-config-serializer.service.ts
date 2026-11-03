@@ -30,7 +30,13 @@ import {
   MODEL_CONTEXT_CEILING_LEAST,
   PROJECT_CONFIG_VERSION,
 } from "../constants";
-import { LINKS_MAKE_RING, LINKS_REPEAT, PROJECT_FILE_BROKEN, PROJECT_FROM_NEWER_BUILD } from "../../../contracts";
+import {
+  LINKS_MAKE_RING,
+  LINKS_REPEAT,
+  PROJECT_FILE_BROKEN,
+  PROJECT_FROM_NEWER_BUILD,
+  wouldMakeCycle,
+} from "../../../contracts";
 import type { AgentMemory } from "../../../contracts";
 import { brokenPlace } from "../logic";
 import { Refusal } from "../../../utils/refusals";
@@ -328,32 +334,9 @@ export class ProjectConfigSerializer {
     });
   }
 
-  /** Whether the links close a ring; twin of `wouldMakeCycle` in `src/app/renderer/features/links/logic`. */
+  /** Whether the links close a ring. */
   private makeRing(links: ProjectLinkDto[]): boolean {
-    const walked = new Set<string>();
-    const standing = new Set<string>();
-    const ends = (agentId: string): string[] => links.filter((link) => link.from === agentId).map((link) => link.to);
-
-    const walk = (agentId: string): boolean => {
-      if (standing.has(agentId)) {
-        return true;
-      }
-
-      if (walked.has(agentId)) {
-        return false;
-      }
-
-      walked.add(agentId);
-      standing.add(agentId);
-
-      const found = ends(agentId).some((next) => walk(next));
-
-      standing.delete(agentId);
-
-      return found;
-    };
-
-    return links.some((link) => walk(link.from));
+    return links.some((link) => wouldMakeCycle(links, link.from, link.to));
   }
 
   private toLink(source: Record<string, unknown>): ProjectLinkDto {
