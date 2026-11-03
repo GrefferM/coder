@@ -1,11 +1,16 @@
 import assert from "node:assert/strict";
+import { mkdtemp } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { describe, it } from "node:test";
 import { AgentAsk } from "./agent-ask.service";
 import { WalkHub } from "./walk-hub.service";
 import { aConfig, aModel, anAgent } from "../../../contracts/testing";
 import { MemoryRecord, RecordingVoice, ScriptedLlm } from "../testing";
+import { createProvidersModule } from "../../providers";
 import type { McpLook, ProjectConfig, ProviderState } from "../../../contracts";
 import type { ProjectCatalog, ProviderLister, ServerLooker } from "../interfaces";
+import type { ProviderKeyStore } from "../../providers";
 
 const PROVIDER: ProviderState = {
   id: "openrouter",
@@ -53,11 +58,36 @@ function catalogue(config: ProjectConfig = CONFIG): ProjectCatalog {
   };
 }
 
-function askOn(script: Record<string, string | Error>, projects: ProjectCatalog = catalogue()) {
+/** The key store a command line holds, with one key in it. */
+class OneKey implements ProviderKeyStore {
+  async set(payload: { key: string; value: string }): Promise<{ key: string; hint: string }> {
+    return {
+      key: payload.key,
+      hint: "sk-or-•••",
+    };
+  }
+
+  async value(): Promise<string | null> {
+    return "sk-or-longvalue";
+  }
+
+  async remove(): Promise<void> {}
+
+  async hints(): Promise<{ key: string; hint: string }[]> {
+    return [];
+  }
+}
+
+function askOn(
+  script: Record<string, string | Error>,
+  projects: ProjectCatalog = catalogue(),
+  providers: ProviderLister = new KnownProviders(),
+  llm: ScriptedLlm = new ScriptedLlm(script),
+) {
   const hub = new WalkHub({
     record: new MemoryRecord(),
-    llm: new ScriptedLlm(script),
-    providers: new KnownProviders(),
+    llm,
+    providers,
     servers: new NoServers(),
     voice: new RecordingVoice(),
   });
@@ -119,5 +149,25 @@ describe("AgentAsk", () => {
       }),
       /не прийняла питання/,
     );
+  });
+
+  it("stops the turn on a provider this machine turned off, read from the same folder the window keeps", async () => {
+    // The command line opens its providers over the window's userData, so it reads the same off file.
+    const userData = await mkdtemp(path.join(os.tmpdir(), "coder-agent-off-"));
+    const machine = createProvidersModule(new OneKey(), userData);
+    const llm = new ScriptedLlm({
+      "agent-1": "Нічого, все гаразд.",
+    });
+
+    await machine.service.switchOff({
+      providerId: "openrouter",
+      isOff: true,
+    });
+
+    const answered = await askOn({}, catalogue(), machine.service, llm).run(ASKED);
+
+    assert.deepEqual(llm.asked, []);
+    assert.equal(answered.hasFallen, true);
+    assert.match(answered.text, /Провайдер OpenRouter вимкнено на цій машині/);
   });
 });
