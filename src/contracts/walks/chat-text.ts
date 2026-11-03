@@ -40,9 +40,8 @@ import type { TurnCall } from "../runs";
  * and output, what broke and why; no tokens, price or step.
  */
 export function chatText(messages: ChatMessage[], agents: NamedAgent[]): string {
-  const nameOf = (agentId: string | null): string => agents.find((agent) => agent.id === agentId)?.name ?? "";
   const blocks = messages
-    .map((message, at) => turnBlock(message, wordsOf(messages, at), nameOf))
+    .map((message, at) => turnBlock(message, wordsOf(messages, at), agents))
     .filter((block) => block !== null);
   const head = `${CHAT_EXPORT_HEADING} · ${dateStamp(new Date())}`;
 
@@ -64,19 +63,15 @@ function wordsOf(messages: ChatMessage[], at: number): string | null {
 }
 
 /** One turn as lines, or null when it has nothing worth reading. */
-function turnBlock(
-  message: ChatMessage,
-  words: string | null,
-  nameOf: (agentId: string | null) => string,
-): string | null {
+function turnBlock(message: ChatMessage, words: string | null, agents: NamedAgent[]): string | null {
   const at = timeLabel(new Date(message.at));
 
   if (message.from === "handoff") {
-    return handoffLine(message, at, nameOf);
+    return handoffLine(message, at, agents);
   }
 
   if (message.from === "notSent") {
-    return `[${at}] ${CHAT_EXPORT_NOT_SENT_PREFIX}${nameOf(message.otherAgentId)}`;
+    return `[${at}] ${CHAT_EXPORT_NOT_SENT_PREFIX}${nameOf(agents, message.otherAgentId)}`;
   }
 
   const lines: string[] = [];
@@ -105,13 +100,13 @@ function turnBlock(
     return null;
   }
 
-  return [`[${at}] ${authorOf(message, nameOf)}${markOf(message)}:`, ...lines].join("\n");
+  return [`[${at}] ${authorOf(message, agents)}${markOf(message)}:`, ...lines].join("\n");
 }
 
 /** One line for work handed on, or for a line it did not go down and why. */
-function handoffLine(message: ChatMessage, at: string, nameOf: (agentId: string | null) => string): string {
-  const from = nameOf(message.agentId);
-  const to = nameOf(message.otherAgentId);
+function handoffLine(message: ChatMessage, at: string, agents: NamedAgent[]): string {
+  const from = nameOf(agents, message.agentId);
+  const to = nameOf(agents, message.otherAgentId);
 
   if (message.stopReason === null) {
     return `[${at}] ${CHAT_EXPORT_HANDOFF_PREFIX}${from}${CHAT_EXPORT_HANDOFF_ARROW}${to}`;
@@ -132,16 +127,16 @@ function markOf(message: ChatMessage): string {
 }
 
 /** Who the turn is from: the person, the agent whose turn it is, or the neighbour the work came from. */
-function authorOf(message: ChatMessage, nameOf: (agentId: string | null) => string): string {
+function authorOf(message: ChatMessage, agents: NamedAgent[]): string {
   if (message.from === "person") {
     return CHAT_EXPORT_PERSON;
   }
 
   if (message.from === "supplier") {
-    return `${nameOf(message.otherAgentId)}${CHAT_EXPORT_SUPPLIER_SUFFIX}`;
+    return `${nameOf(agents, message.otherAgentId)}${CHAT_EXPORT_SUPPLIER_SUFFIX}`;
   }
 
-  return nameOf(message.agentId);
+  return nameOf(agents, message.agentId);
 }
 
 /** The «Прикріплено:» line under a question, or null when nothing was attached. */
@@ -206,4 +201,9 @@ function isoDay(at: Date): string {
 
 function two(value: number): string {
   return String(value).padStart(2, "0");
+}
+
+/** An agent's name by its id; empty where the project holds none. */
+function nameOf(agents: NamedAgent[], agentId: string | null): string {
+  return agents.find((agent) => agent.id === agentId)?.name ?? "";
 }
