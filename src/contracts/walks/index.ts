@@ -41,6 +41,8 @@ export * from "./turn-memory.interface";
 export * from "./turn-parts.interface";
 export * from "./turn-to-ask.interface";
 export * from "./agent-stands";
+export * from "./model-stands";
+export * from "./model-stands.interface";
 export * from "./walk-act.interface";
 export * from "./put-turn.interface";
 export * from "./walk-snapshot.interface";

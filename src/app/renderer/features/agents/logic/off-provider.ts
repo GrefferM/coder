@@ -1,9 +1,9 @@
+import { modelStands } from "../../../logic";
 import type { ProjectModel, ProviderState } from "../../../interfaces";
 
 /** The name of the provider a held model stands on, where that provider is turned off; nothing otherwise. */
 export function offProviderName(modelId: string, models: ProjectModel[], providers: ProviderState[]): string | null {
-  const model = models.find((standing) => standing.id === modelId) ?? null;
-  const provider = model === null ? null : (providers.find((standing) => standing.id === model.provider) ?? null);
+  const { provider } = modelStands(modelId, models, providers);
 
   return provider !== null && provider.isOff ? provider.name : null;
 }

@@ -1,5 +1,6 @@
 import { agentTrouble } from "./agent-trouble";
 import { modelInstalled } from "../../models";
+import { modelStands } from "../../../logic";
 import {
   STATE_LIVE_COLOR,
   STATE_MODEL_MISSING_LABEL,
@@ -60,7 +61,7 @@ export function agentState(agent: Agent, facts: StateFacts): AgentState {
     };
   }
 
-  const model = config.models.find((standing) => standing.id === agent.modelId) ?? null;
+  const { model } = modelStands(agent.modelId, config.models, providers);
   const answer = model === null ? undefined : answers[model.provider];
 
   if (answer !== undefined && !answer.isAnswering) {

@@ -10,7 +10,7 @@ import {
   TROUBLE_NO_PROVIDER_LABEL,
   TROUBLE_PROVIDER_OFF_LABEL,
 } from "../constants";
-import { hasBrokenGrant } from "../../../logic";
+import { hasBrokenGrant, modelStands } from "../../../logic";
 import type { Agent, AgentTrouble, McpLook, ProjectConfig, ProviderState } from "../../../interfaces";
 
 /**
@@ -23,13 +23,11 @@ export function agentTrouble(
   providers: ProviderState[],
   looks: Record<string, McpLook> = {},
 ): AgentTrouble | null {
-  const model = config.models.find((standing) => standing.id === agent.modelId) ?? null;
+  const { model, provider } = modelStands(agent.modelId, config.models, providers);
 
   if (model === null) {
     return broken(TROUBLE_NO_MODEL_LABEL);
   }
-
-  const provider = providers.find((standing) => standing.id === model.provider) ?? null;
 
   if (provider === null) {
     return broken(TROUBLE_NO_PROVIDER_LABEL);

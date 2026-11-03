@@ -3,6 +3,7 @@ import { ProviderModels } from "./components";
 import { timeLabel } from "../../../../../../utils/dates";
 import { ukrainianPlural } from "../../../../../../utils/text";
 import { PROVIDER_LOCAL_LABEL, PROVIDER_REMOTE_LABEL } from "../../../../constants";
+import { providerMissing } from "../../../../words";
 import {
   PROVIDER_CARD_ADDRESS_LABEL,
   PROVIDER_CARD_ANSWERED_COLOR,
@@ -78,12 +79,7 @@ export function ProviderCard({
   const wantsKey = provider.needs.includes("key");
   const wantsAddress = provider.needs.includes("address");
   // A local provider is lit by answering; any other by holding everything it asked for; an off one never.
-  const isFilled =
-    !provider.isOff &&
-    (isLocal
-      ? isAnswering === true
-      : (!wantsKey || provider.keyHint !== null) &&
-        (!wantsAddress || provider.address !== null || provider.customaryAddress !== null));
+  const isFilled = !provider.isOff && (isLocal ? isAnswering === true : providerMissing(provider).length === 0);
   const isSilent = isLocal && isAnswering === false;
   // The hint shows until something is typed or the cross is pressed.
   const isKeyHeld = value.key === null && provider.keyHint !== null;

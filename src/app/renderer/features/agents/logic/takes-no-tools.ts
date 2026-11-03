@@ -1,3 +1,4 @@
+import { modelStands } from "../../../logic";
 import type { ProjectModel, ProviderState } from "../../../interfaces";
 
 /**
@@ -5,8 +6,7 @@ import type { ProjectModel, ProviderState } from "../../../interfaces";
  * unknown provider: those are separate troubles.
  */
 export function takesNoTools(modelId: string, models: ProjectModel[], providers: ProviderState[]): boolean {
-  const model = models.find((standing) => standing.id === modelId) ?? null;
-  const provider = model === null ? null : (providers.find((standing) => standing.id === model.provider) ?? null);
+  const { provider } = modelStands(modelId, models, providers);
 
   return provider !== null && !provider.takesTools;
 }
