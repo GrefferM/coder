@@ -1,13 +1,33 @@
 # Coder
 
+[![CI](https://github.com/GrefferM/coder/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GrefferM/coder/actions/workflows/ci.yml) [![License](https://img.shields.io/github/license/GrefferM/coder)](LICENSE) [![Version](https://img.shields.io/github/package-json/v/GrefferM/coder)](package.json)
+
 An AI platform for automated code development, built around agents. The user places agents on a
 canvas, connects them with directed links, and runs work through the graph — assigning models of
 different cost and capability to each one, and granting each the tools it may call.
 
-A project is a folder on disk: it travels with the repository, so an automation can be committed and
-shared like any other code. Opening one starts none of its local MCP servers: a server's run line is
-started only once this machine has agreed to it, word for word, so opening somebody else's project
-runs nothing it wrote.
+## What it does
+
+- Agents stand on a canvas and hand work along directed links; a link that would close a ring is
+  refused.
+- Each agent has its own model, from Anthropic, OpenAI, Google, OpenRouter, OpenCode Go, RunPod
+  (queue or OpenAI-compatible), Ollama or LM Studio.
+- Each agent calls only the tools granted to it: functions of MCP servers, local or remote, the
+  project's declared commands, system commands and other agents. A local server's run line starts
+  only once this machine has agreed to it, word for word, so opening somebody else's project runs
+  nothing it wrote.
+- `npm run agent -- <project> <agent> "question"` runs one agent's walk without the window and exits
+  0 when it stood whole, 1 when something fell, 2 when the question did not go.
+- A project is a folder on disk with its `project.yaml`, so an automation is committed and shared
+  like any other code.
+- Provider keys and server secrets are kept in a file encrypted with a key the OS keychain holds.
+
+## Screenshot
+
+![The canvas: linked agents and a finished run](docs/canvas.png)
+
+**Built with** Electron, TypeScript, React, Vite, TypeORM + SQLite (better-sqlite3), LangChain and the
+MCP TypeScript SDK.
 
 ## How it is laid out
 
