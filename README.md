@@ -29,6 +29,15 @@ runs nothing it wrote.
   about.
 - `scripts` — what `package.json` calls: the dev run, the migration CLI, the feature graph.
 
+## Documents
+
+- `OPERATOR.md` — for whoever composes a pipeline: the project file, every field, the system
+  commands, the providers, the limits and the usual troubles (in Ukrainian).
+- `DESIGN.md` — how the interface looks and behaves, in words over the frames.
+- `BACKEND.md` and `FRONTEND.md` — how the code is built: modules, contracts, the renderer.
+- `CLAUDE.md` — how work is done in this repository: conventions, checks, commits.
+- `TODO.md` — what the built product is still missing.
+
 ## Running it
 
 `npm install`, then `npm run dev:app` — the Electron shell with the renderer served by Vite;

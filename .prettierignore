@@ -3,3 +3,5 @@ dist
 coverage
 .idea
 package-lock.json
+# The frames are drawn and exported, not written: their files are kept as delivered
+design

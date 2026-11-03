@@ -9,7 +9,7 @@ export interface ProvidersPanelProps {
   agents: Agent[];
   onAsk: (providerId: string) => void;
   onSave: (provider: ProviderState, draft: ProviderDraft) => Promise<void>;
-  /** «ВИМКНУТИ» / «УВІМКНУТИ»: acts at once, the card stays open. */
+  /** «ВИМКНУТИ» / «УВІМКНУТИ»: acts at once, and the card folds. */
   onSwitch: (provider: ProviderState, isOff: boolean) => Promise<void>;
   /** Takes an undeclared installed model up to the catalogue. */
   onTakeUpModel: (providerId: string, title: string) => void;
