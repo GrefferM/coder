@@ -538,8 +538,9 @@ Applies to the SQLite-backed modules only.
   gitignored `.data/` directory under the repo root.
 - They run `scripts/run-migration-cli.js` through the local Electron binary in
   `ELECTRON_RUN_AS_NODE=1` mode, not plain `node`, for two reasons. `better-sqlite3`'s native binary
-  is built against whichever runtime last rebuilt it — Electron's, if `dev:app` did — so plain `node`
-  fails with `ERR_DLOPEN_FAILED`. And `yargs`, which the TypeORM CLI is built on, drops the wrong
+  is built for Electron by `npm run rebuild:electron` (`scripts/rebuild-electron.js`), which every
+  install needs, since the install builds it for the Node that ran it — so plain `node` fails with
+  `ERR_DLOPEN_FAILED`. And `yargs`, which the TypeORM CLI is built on, drops the wrong
   number of leading `process.argv` entries whenever `process.versions.electron` is set and
   `process.defaultApp` is falsy, exactly the state `ELECTRON_RUN_AS_NODE` leaves the process in;
   `run-migration-cli.js` sets that flag by hand before requiring the CLI.

@@ -136,8 +136,8 @@ lands far from where it was made.
   `src` but leaves the renderer out; the renderer's own `tsconfig.json` beside its sources; and
   `tests/`'s, whose `rootDir` spans both `tests/` and `src/`.
 - The rest of `package.json` stands outside those three: `dev:app`, `dev:app:watch` and `agent` in
-  `FRONTEND.md`, the three `migration:*` scripts in `BACKEND.md`, and `test:front` and `test:back`
-  above. One is run by hand:
+  `FRONTEND.md`, the three `migration:*` scripts and `rebuild:electron` in `BACKEND.md`, and
+  `test:front` and `test:back` above. One is run by hand:
   `graph:features` draws which subject of the renderer imports which and fails on a ring or on
   `project` importing a subject (`FRONTEND.md`); `npm run lint` runs it after ESLint, so the layers
   and the rings fail one command.

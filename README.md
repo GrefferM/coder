@@ -27,7 +27,9 @@ runs nothing it wrote.
 - `src/utils` — what belongs to neither.
 - `tests` — the end-to-end suite, run by `test:back`; every other test stands beside the file it is
   about.
-- `scripts` — what `package.json` calls: the dev run, the migration CLI, the feature graph.
+- `scripts` — what `package.json` calls: the dev run, the native rebuild, the migration CLI, the
+  feature graph.
+- `.github/workflows/ci.yml` — CI: the three checks and both suites on Node 22 and 24.
 - `design` — the agreed design, frame by frame.
 
 ## Documents and design
@@ -50,16 +52,20 @@ Node.js `^22.22.2`, `^24.15.0` or `^26.0.0`, with the npm it ships — the range
 the tooling: the install, Vite, the checks and `test:front`; the app itself, `test:back` and the
 migrations run on the Node that Electron carries.
 
-`npm install`, then `npm run dev:app` — the Electron shell with the renderer served by Vite;
-`npm run dev:app:watch` restarts it when the main process changes. `npm run typecheck` covers all
-three tsconfigs, and `npm run test:back` and `npm run test:front` are the two suites.
+`npm install`, then `npm run rebuild:electron` once after every install: the install builds
+`better-sqlite3` for the Node that ran it, and Electron loads only one built for itself, so this
+fetches Electron's headers and compiles it again. Then `npm run dev:app` — the Electron shell with
+the renderer served by Vite; `npm run dev:app:watch` restarts it when the main process changes.
+`npm run typecheck` covers all three tsconfigs, and `npm run test:back` and `npm run test:front` are
+the two suites.
 
 `npm run agent -- <project> <agent> "question"` asks one agent of a project without the window: the
 project by its name among the recent ones or by its folder, the agent by name or id. The walk goes
 along the lines to its end and prints the conversation; the exit code is 0 when it stood whole, 1
 when something fell, 2 when the question did not go.
 
-`npm run lint` and `npm run prettier` are what CI would run — `lint` is ESLint followed by
+CI runs, on every push to `main` and every pull request, `typecheck`, `lint`, `prettier`,
+`test:front`, then `rebuild:electron` and `test:back` — `lint` is ESLint followed by
 `graph:features`, which draws which subject of the renderer imports which and fails on a ring;
 `npm run format` writes what `prettier` checks. A schema change goes through
 `npm run migration:generate -- src/modules/migrations/<Name>`, with `migration:run` and
