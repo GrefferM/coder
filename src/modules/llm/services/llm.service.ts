@@ -197,6 +197,7 @@ export class LlmService {
 
     return this.turn({
       voicedAs: isVoiced ? payload.turnId : null,
+      failureHint: client.failureHint,
       answering: this.bound(
         client,
         held,
@@ -298,8 +299,13 @@ export class LlmService {
 
       // A provider fault is thrown as a refusal the app knows, not reported; the provider's own sentence rides after the
       // code, and nothing else of the library's error object (its headers and cookies) leaves.
-      throw new Refusal(LLM_ASK_FAILED, messageOf(failure));
+      throw new Refusal(LLM_ASK_FAILED, this.withHint(messageOf(failure), turn.failureHint));
     }
+  }
+
+  /** The provider's words, and the client's own sentence after them where it has one. */
+  private withHint(said: string, hint: string | null): string {
+    return hint === null ? said : `${said} ${hint}`;
   }
 
   /**
@@ -723,6 +729,7 @@ export class LlmService {
       const held = await this.opened(client, agent.providerId);
       const answer = await this.turn({
         voicedAs: null,
+        failureHint: client.failureHint,
         answering: this.bound(client, held, agent, turn.question.runId ?? turn.question.questionId),
         conversation: this.said(agent.systemPrompt, turnMessages(memory, request)),
         directory: turn.directory,

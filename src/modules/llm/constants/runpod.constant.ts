@@ -13,6 +13,13 @@ export const RUNPOD_ASKED_EVERY_MS = 1_000;
 export const RUNPOD_WAITING = ["IN_QUEUE", "IN_PROGRESS"];
 export const RUNPOD_DONE = "COMPLETED";
 
+/**
+ * Said after an OpenAI-door endpoint's refusal: vLLM names its own flags, while a RunPod worker is configured by
+ * environment variables.
+ */
+export const RUNPOD_OPENAI_FAILURE_HINT =
+  "Якщо йдеться про tool choice, на endpoint RunPod потрібні ENABLE_AUTO_TOOL_CHOICE=true і TOOL_CALL_PARSER, що відповідає моделі.";
+
 /** Prefix where the job ended in anything but an answer. */
 export const RUNPOD_ENDED_PREFIX = "RunPod: ";
 /** Prefix where the queue itself refused the job; its status line follows. */

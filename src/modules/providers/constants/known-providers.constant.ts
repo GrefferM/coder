@@ -46,11 +46,20 @@ export const KNOWN_PROVIDERS: KnownProvider[] = [
   {
     /** Remote, yet asked for both key and address (a serverless endpoint carries its id in the path); never pinged. */
     id: "runpod",
-    name: "RunPod",
+    name: "RunPod Queue",
     kind: "remote",
     needs: ["key", "address"],
     // Its queue carries a conversation only; functions cannot be handed to the model.
     takesTools: false,
+    customaryAddress: null,
+  },
+  {
+    /** The same endpoint over the OpenAI protocol it serves; functions go as far as the endpoint turns them on. */
+    id: "runpod-openai",
+    name: "RunPod OpenAI",
+    kind: "remote",
+    needs: ["key", "address"],
+    takesTools: true,
     customaryAddress: null,
   },
   {

@@ -21,16 +21,20 @@ import {
   OPENAI_PROVIDER_ID,
   OPENCODE_PROVIDER_ID,
   OPENROUTER_PROVIDER_ID,
-  RUNPOD_PROVIDER_ID,
+  RUNPOD_OPENAI_PROTOCOL_PATH,
+  RUNPOD_OPENAI_PROVIDER_ID,
+  RUNPOD_QUEUE_PROVIDER_ID,
 } from "./provider-ids.constant";
 import { opencodeModelName, opencodeProtocolOf } from "../logic";
+import { RUNPOD_OPENAI_FAILURE_HINT } from "./runpod.constant";
 import { RunPodChat } from "../services/runpod-chat.service";
 import type { AgentClient } from "../interfaces";
 
-function atProtocol(address: string | null): string {
+/** The address with the protocol's path on its end, once, whatever trailing slashes it was written with. */
+function atProtocol(address: string | null, protocolPath: string): string {
   const machine = (address ?? "").replace(/\/+$/, "");
 
-  return machine.endsWith(OPENAI_PROTOCOL_PATH) ? machine : `${machine}${OPENAI_PROTOCOL_PATH}`;
+  return machine.endsWith(protocolPath) ? machine : `${machine}${protocolPath}`;
 }
 
 /** A call that says who makes it: the OpenAI client puts its own library's name on the header, whatever it is given. */
@@ -47,6 +51,7 @@ const asCoder: typeof fetch = (input, init) => {
 
 export const AGENT_CLIENTS: Record<string, AgentClient> = {
   [ANTHROPIC_PROVIDER_ID]: {
+    failureHint: null,
     needs: ["key"],
     open: (opening) =>
       new ChatAnthropic({
@@ -57,6 +62,7 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
       }),
   },
   [OPENAI_PROVIDER_ID]: {
+    failureHint: null,
     needs: ["key"],
     open: (opening) =>
       new ChatOpenAI({
@@ -67,6 +73,7 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
       }),
   },
   [OPENROUTER_PROVIDER_ID]: {
+    failureHint: null,
     needs: ["key"],
     open: (opening) =>
       new ChatOpenRouter({
@@ -83,6 +90,7 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
       }),
   },
   [GOOGLE_PROVIDER_ID]: {
+    failureHint: null,
     needs: ["key"],
     open: (opening) =>
       new ChatGoogleGenerativeAI({
@@ -93,6 +101,7 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
       }),
   },
   [OPENCODE_PROVIDER_ID]: {
+    failureHint: null,
     /** The person's OpenCode Go subscription: one key, and the protocol follows from the model's name. */
     needs: ["key"],
     open: (opening) => {
@@ -132,7 +141,8 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
       });
     },
   },
-  [RUNPOD_PROVIDER_ID]: {
+  [RUNPOD_QUEUE_PROVIDER_ID]: {
+    failureHint: null,
     /**
      * A serverless endpoint of the person's own, reached through its queue: the key is theirs and the address carries the
      * endpoint's id. The address is taken as it stands, with no `/v1`.
@@ -146,7 +156,26 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
         answerTokens: opening.answerTokens,
       }),
   },
+  [RUNPOD_OPENAI_PROVIDER_ID]: {
+    failureHint: RUNPOD_OPENAI_FAILURE_HINT,
+    /**
+     * The same endpoint over the OpenAI protocol it serves: the key is the person's, the address the endpoint's root, and
+     * the model's name is sent and must be the one the endpoint lists.
+     */
+    needs: ["key", "address"],
+    open: (opening) =>
+      new ChatOpenAI({
+        apiKey: opening.key ?? undefined,
+        model: opening.model,
+        temperature: opening.temperature,
+        maxTokens: opening.answerTokens,
+        configuration: {
+          baseURL: atProtocol(opening.address, RUNPOD_OPENAI_PROTOCOL_PATH),
+        },
+      }),
+  },
   [OLLAMA_PROVIDER_ID]: {
+    failureHint: null,
     needs: ["address"],
     open: (opening) =>
       new ChatOllama({
@@ -157,6 +186,7 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
       }),
   },
   [LMSTUDIO_PROVIDER_ID]: {
+    failureHint: null,
     needs: ["address"],
     open: (opening) =>
       new ChatOpenAI({
@@ -165,7 +195,7 @@ export const AGENT_CLIENTS: Record<string, AgentClient> = {
         temperature: opening.temperature,
         maxTokens: opening.answerTokens,
         configuration: {
-          baseURL: atProtocol(opening.address),
+          baseURL: atProtocol(opening.address, OPENAI_PROTOCOL_PATH),
         },
       }),
   },

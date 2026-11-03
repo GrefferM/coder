@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { turnWall } from "./turn-wall";
+import { KNOWN_PROVIDERS } from "../../providers";
 import { NO_MCP_CALLS, groupedNumber } from "../../../contracts";
 import { aCommand, aModel, aPrompt, anAgent } from "../../../utils/testing";
 import type { Agent, ProjectCommand, ProjectModel, ProjectPrompt, ToolGrant, TurnToAsk } from "../../../contracts";
@@ -495,6 +496,40 @@ describe("turnWall", () => {
     );
 
     assert.equal("notStarted" in stood && stood.notStarted, "noTools");
+  });
+
+  it("lets an agent with grants go on RunPod OpenAI and keeps it standing on RunPod Queue, as the known list says", () => {
+    // The two doors of one kind of endpoint: only the OpenAI one carries functions.
+    const onProvider = (providerId: string) =>
+      turnWall(
+        turn({
+          agent: {
+            ...AGENT,
+            tools: [
+              {
+                id: "grant-1",
+                source: "command",
+                commandId: COMMAND.id,
+                pinned: [],
+              },
+            ],
+          },
+          stands: {
+            model: MODEL,
+            provider: {
+              ...(KNOWN_PROVIDERS.find((known) => known.id === providerId) ?? KNOWN_PROVIDERS[0]),
+              keyHint: "rpa_lon•••",
+              address: "https://api.runpod.ai/v2/z5x8c1v4b7n2m6",
+            },
+            prompt: null,
+          },
+        }),
+      );
+
+    const onQueue = onProvider("runpod");
+
+    assert.equal("notStarted" in onProvider("runpod-openai"), false);
+    assert.equal("notStarted" in onQueue && onQueue.notStarted, "noTools");
   });
 
   it("lets a turn through on such a provider where the agent holds no grants at all", () => {

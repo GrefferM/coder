@@ -9,6 +9,7 @@ import {
   MODEL_NAME_NOTE_LOCAL,
   MODEL_NAME_NOTE_PREFIX,
   MODEL_NAME_NOTE_UNCHOSEN,
+  MODEL_NAME_NOTES,
 } from "../../constants";
 import { FIELD_SLOT_WAS_PREFIX } from "../../../../../../components/field-slot/constants";
 import type { ModelFormValues } from "../../../../interfaces";
@@ -98,6 +99,36 @@ describe("ModelForm", () => {
         exact: false,
       }),
     ).toBeInTheDocument();
+  });
+
+  it("says RunPod OpenAI's name is the one the endpoint lists, which is not what RunPod Queue says", () => {
+    const runpod = (id: string, name: string): ProviderState => ({
+      id,
+      name,
+      kind: "remote",
+      needs: ["key", "address"],
+      takesTools: id !== "runpod",
+      customaryAddress: null,
+      keyHint: "rpa_…",
+      address: "https://api.runpod.ai/v2/abc",
+    });
+    const providers = [runpod("runpod", "RunPod Queue"), runpod("runpod-openai", "RunPod OpenAI")];
+
+    render(
+      <ModelForm
+        providers={providers}
+        values={values({
+          provider: "runpod-openai",
+        })}
+        saved={null}
+        isNew
+        isMending={false}
+        {...acts()}
+      />,
+    );
+
+    expect(screen.getByText(MODEL_NAME_NOTES["runpod-openai"])).toBeInTheDocument();
+    expect(MODEL_NAME_NOTES["runpod-openai"]).not.toBe(MODEL_NAME_NOTES.runpod);
   });
 
   it("does not save with a field still empty, and marks it instead", async () => {

@@ -14,7 +14,9 @@ import {
   OPENCODE_PROVIDER_ID,
   OPENROUTER_PROVIDER_ID,
   RUNPOD_CLIENT_NAME,
-  RUNPOD_PROVIDER_ID,
+  RUNPOD_OPENAI_FAILURE_HINT,
+  RUNPOD_OPENAI_PROVIDER_ID,
+  RUNPOD_QUEUE_PROVIDER_ID,
 } from "../constants";
 import {
   LLM_NO_ADDRESS,
@@ -343,7 +345,9 @@ describe("AGENT_CLIENTS", () => {
       [GOOGLE_PROVIDER_ID]: ["key"],
       [OPENCODE_PROVIDER_ID]: ["key"],
       // A serverless endpoint carries its id in the address, so the key alone is not enough.
-      [RUNPOD_PROVIDER_ID]: ["key", "address"],
+      [RUNPOD_QUEUE_PROVIDER_ID]: ["key", "address"],
+      // The same endpoint over OpenAI's protocol asks for the same two.
+      [RUNPOD_OPENAI_PROVIDER_ID]: ["key", "address"],
       [OLLAMA_PROVIDER_ID]: ["address"],
       [LMSTUDIO_PROVIDER_ID]: ["address"],
     });
@@ -389,7 +393,7 @@ describe("AGENT_CLIENTS", () => {
   });
 
   it("opens RunPod on the queue's own client, since such an endpoint has no OpenAI door to knock at", () => {
-    const model = AGENT_CLIENTS[RUNPOD_PROVIDER_ID].open({
+    const model = AGENT_CLIENTS[RUNPOD_QUEUE_PROVIDER_ID].open({
       session: "chat-1",
       model: "dphn/dolphin-2.9.3-mistral-nemo-12b",
       key: "rpa_test",
@@ -405,7 +409,7 @@ describe("AGENT_CLIENTS", () => {
   it("keeps the endpoint's address as the person wrote it, adding no path of OpenAI's to the end", async () => {
     // The endpoint id lives in the address; the model name is never sent.
     const asked = runpodQueue();
-    const model = AGENT_CLIENTS[RUNPOD_PROVIDER_ID].open({
+    const model = AGENT_CLIENTS[RUNPOD_QUEUE_PROVIDER_ID].open({
       session: "chat-1",
       model: "dphn/dolphin-2.9.3-mistral-nemo-12b",
       key: "rpa_test",
@@ -418,7 +422,198 @@ describe("AGENT_CLIENTS", () => {
 
     assert.equal(asked[0], "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/run");
   });
+
+  it("opens RunPod OpenAI on OpenAI's client at the endpoint's own OpenAI path, with the key and the model's name", () => {
+    const model = <ChatOpenAI>AGENT_CLIENTS[RUNPOD_OPENAI_PROVIDER_ID].open({
+      session: "chat-1",
+      model: "Qwen/Qwen3-8B",
+      key: "rpa_test",
+      address: "https://api.runpod.ai/v2/abc",
+      temperature: 0.3,
+      answerTokens: ANSWER_TOKENS,
+    });
+
+    assert.ok(model instanceof ChatOpenAI);
+    assert.equal(model.clientConfig.baseURL, "https://api.runpod.ai/v2/abc/openai/v1");
+    assert.equal(model.apiKey, "rpa_test");
+    assert.equal(model.model, "Qwen/Qwen3-8B");
+  });
+
+  it("takes an address already ending in that path as it stands, trailing slashes cut", () => {
+    const model = <ChatOpenAI>AGENT_CLIENTS[RUNPOD_OPENAI_PROVIDER_ID].open({
+      session: "chat-1",
+      model: "Qwen/Qwen3-8B",
+      key: "rpa_test",
+      address: "https://api.runpod.ai/v2/abc/openai/v1/",
+      temperature: 0.3,
+      answerTokens: ANSWER_TOKENS,
+    });
+
+    assert.equal(model.clientConfig.baseURL, "https://api.runpod.ai/v2/abc/openai/v1");
+  });
 });
+
+describe("LlmService on RunPod OpenAI", () => {
+  afterEach(() => {
+    globalThis.fetch = undefined as unknown as typeof fetch;
+  });
+
+  function service(): LlmService {
+    return new LlmService(
+      keyStore("rpa_test", "https://api.runpod.ai/v2/abc"),
+      voice([]),
+      runner(),
+      noServers(),
+      noMemory(),
+      toolArguments,
+      AGENT_CLIENTS,
+    );
+  }
+
+  it("counts the tokens the endpoint reports at the end of its stream, so the turn has a price", async () => {
+    const asked = runpodOpenAi();
+
+    const answer = await service().ask({
+      ...TURN,
+      providerId: RUNPOD_OPENAI_PROVIDER_ID,
+      model: "Qwen/Qwen3-8B",
+    });
+
+    assert.equal(answer.text, "Готово");
+    assert.equal(answer.inputTokens, 120);
+    assert.equal(answer.outputTokens, 7);
+    assert.equal(asked[0].url, "https://api.runpod.ai/v2/abc/openai/v1/chat/completions");
+    assert.equal(asked[0].body.model, "Qwen/Qwen3-8B");
+  });
+
+  it("hands the endpoint the agent's tools, the app's own system commands among them", async () => {
+    const asked = runpodOpenAi();
+
+    await service().ask({
+      ...TURN,
+      providerId: RUNPOD_OPENAI_PROVIDER_ID,
+      model: "Qwen/Qwen3-8B",
+      tools: systemTools(
+        [
+          {
+            id: "grant-s1",
+            source: "system",
+            command: "pass_to",
+          },
+        ],
+        [
+          {
+            agentId: "aaaaaaaa-0000-4000-8000-0000000000a1",
+            name: "КОДЕР",
+            purpose: null,
+          },
+        ],
+      ),
+    });
+
+    const tools = <{ function: { name: string } }[]>asked[0].body.tools;
+
+    assert.deepEqual(
+      tools.map((tool) => tool.function.name),
+      ["pass_to"],
+    );
+  });
+  it("says after the endpoint's own refusal which two variables turn functions on, and finds nothing out by itself", async () => {
+    // vLLM names its own command-line flags; a RunPod worker is set up by environment variables.
+    globalThis.fetch = (async () =>
+      new Response(
+        JSON.stringify({
+          error: {
+            message: '"auto" tool choice requires --enable-auto-tool-choice and --tool-call-parser to be set',
+            type: "BadRequestError",
+            code: 400,
+          },
+        }),
+        {
+          status: 400,
+          headers: {
+            "content-type": "application/json",
+          },
+        },
+      )) as typeof fetch;
+
+    await assert.rejects(
+      service().ask({
+        ...TURN,
+        providerId: RUNPOD_OPENAI_PROVIDER_ID,
+        model: "Qwen/Qwen3-8B",
+      }),
+      (thrown: Error) =>
+        thrown.message.includes(LLM_ASK_FAILED) &&
+        thrown.message.includes("--enable-auto-tool-choice") &&
+        thrown.message.endsWith(RUNPOD_OPENAI_FAILURE_HINT),
+    );
+  });
+});
+
+/** One chunk of an OpenAI stream, as a vLLM endpoint says it. */
+function chunk(fields: Record<string, unknown>): string {
+  return `data: ${JSON.stringify({
+    id: "chatcmpl-1",
+    object: "chat.completion.chunk",
+    created: 1,
+    model: "Qwen/Qwen3-8B",
+    ...fields,
+  })}\n\n`;
+}
+
+/** A RunPod endpoint answering OpenAI's protocol with a streamed answer and its usage last; what went out is kept. */
+function runpodOpenAi(): { url: string; body: Record<string, unknown> }[] {
+  const asked: { url: string; body: Record<string, unknown> }[] = [];
+  const stream = [
+    chunk({
+      choices: [
+        {
+          index: 0,
+          delta: {
+            role: "assistant",
+            content: "Готово",
+          },
+          finish_reason: null,
+        },
+      ],
+    }),
+    chunk({
+      choices: [
+        {
+          index: 0,
+          delta: {},
+          finish_reason: "stop",
+        },
+      ],
+    }),
+    chunk({
+      choices: [],
+      usage: {
+        prompt_tokens: 120,
+        completion_tokens: 7,
+        total_tokens: 127,
+      },
+    }),
+    "data: [DONE]\n\n",
+  ].join("");
+
+  globalThis.fetch = (async (url: string | URL | Request, init?: RequestInit) => {
+    asked.push({
+      url: String(url),
+      body: <Record<string, unknown>>JSON.parse(String(init?.body ?? "{}")),
+    });
+
+    return new Response(stream, {
+      status: 200,
+      headers: {
+        "content-type": "text/event-stream",
+      },
+    });
+  }) as typeof fetch;
+
+  return asked;
+}
 
 /** Provider id the fake client answers to; no real provider is opened. */
 const TEST_PROVIDER_ID = "a provider that exists only here";
@@ -491,6 +686,7 @@ function speaking(rounds: AIMessageChunk[]) {
     clients: <Record<string, AgentClient>>{
       [TEST_PROVIDER_ID]: {
         needs: ["key"],
+        failureHint: null,
         open: (opening) => {
           openings.push(opening);
 
@@ -513,6 +709,7 @@ function faulting(failure: unknown) {
   return <Record<string, AgentClient>>{
     [TEST_PROVIDER_ID]: {
       needs: ["key"],
+      failureHint: null,
       open: () => <BaseChatModel>(<unknown>model),
     },
   };
@@ -2003,6 +2200,7 @@ describe("LlmService and the composer's call", () => {
     service = serviceOf([], {
       [TEST_PROVIDER_ID]: {
         needs: ["key"],
+        failureHint: null,
         open: () => <BaseChatModel>(<unknown>model),
       },
     });

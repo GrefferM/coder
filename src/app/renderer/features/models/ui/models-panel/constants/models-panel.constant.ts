@@ -80,11 +80,12 @@ export const MODEL_NAME_EXAMPLES: Record<string, string> = {
 };
 
 /**
- * Notes for providers where the name is not what the request is keyed by: a RunPod endpoint serves one model and never
- * names it, so the title is for the eye alone.
+ * Notes for providers whose name is read otherwise: RunPod's queue never names the model, so the title is for the eye
+ * alone; its OpenAI door matches the name against the list the endpoint gives.
  */
 export const MODEL_NAME_NOTES: Record<string, string> = {
   runpod: "Ім'я для ока: точка обслуговує одну модель, і запит її не називає",
+  "runpod-openai": "Так, як його віддає endpoint у /openai/v1/models",
 };
 export const MODEL_NAME_NOTE_PREFIX = "Так, як його пише провайдер: ";
 export const MODEL_NAME_NOTE_UNCHOSEN = "Так, як його пише провайдер — оберіть провайдера нижче";

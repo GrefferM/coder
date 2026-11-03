@@ -10,6 +10,8 @@ export interface RunningTurn {
   /** The turn id its pieces are said under; `null` for a sub-agent's turn, which says nothing onward. */
   voicedAs: string | null;
   answering: Runnable<BaseMessage[], AIMessageChunk> | BaseChatModel;
+  /** Said after the provider's own words when it refuses; the client's own, null for most. */
+  failureHint: string | null;
   conversation: BaseMessage[];
   directory: string;
   maxCalls: number;
