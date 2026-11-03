@@ -20,11 +20,13 @@ import {
   PROVIDERS_NOTE_ICON_SIZE_PX,
   PROVIDERS_NOTE_LINE_HEIGHT,
   PROVIDERS_NOTE_PADDING,
+  PROVIDERS_OFF_LABEL,
   PROVIDERS_RULE_MARGIN,
   PROVIDERS_UNSET_LABEL,
   PROVIDER_ANSWERING_LABEL,
   PROVIDER_ASKING_LABEL,
   PROVIDER_FACTS_SEPARATOR,
+  PROVIDER_OFF_LABEL,
   PROVIDER_SILENT_LABEL,
 } from "./constants";
 import { NOTHING_TYPED, PROVIDER_KEY_WRITTEN_LABEL, PROVIDER_REMOTE_LABEL } from "../../constants";
@@ -33,7 +35,7 @@ import type { ProviderState } from "../../../../interfaces";
 import type { ProviderDraft } from "../../interfaces";
 import type { ProvidersPanelProps } from "./interfaces";
 
-/** Fixed provider rows — filled first, untouched below; one open at a time. */
+/** Fixed provider rows — filled first, untouched below, turned off last; one open at a time. */
 export function ProvidersPanel({
   providers,
   answers,
@@ -42,16 +44,21 @@ export function ProvidersPanel({
   agents,
   onAsk,
   onSave,
+  onSwitch,
   onTakeUpModel,
 }: ProvidersPanelProps) {
   const [openProviderId, setOpenProviderId] = useState<string | null>(null);
   // Empty until a field is typed into or cleared; an untouched key is kept.
   const [draft, setDraft] = useState<ProviderDraft>(NOTHING_TYPED);
 
-  /** Set up when everything it asks for is present; a local provider always is, having a customary address. */
-  const isFilled = (provider: ProviderState) => providerMissing(provider).length === 0;
+  /**
+   * Set up when everything it asks for is present and it is not off; a local provider always has its customary
+   * address.
+   */
+  const isFilled = (provider: ProviderState) => !provider.isOff && providerMissing(provider).length === 0;
+  // An off provider is not asked, so it is never «not answering».
   const isSilent = (provider: ProviderState) =>
-    provider.kind === "local" && answers[provider.id]?.isAnswering === false;
+    provider.kind === "local" && !provider.isOff && answers[provider.id]?.isAnswering === false;
 
   /** Project counts on a provider, read off the project itself. */
   function counts(provider: ProviderState): string[] {
@@ -68,10 +75,14 @@ export function ProvidersPanel({
   }
 
   /**
-   * Local: whether it answers. Remote: key written, or its kind and what is missing. Counts follow where models stand
-   * on it.
+   * Off: that word in place of the rest. Local: whether it answers. Remote: key written, or its kind and what is
+   * missing. Counts follow where models stand on it.
    */
   function facts(provider: ProviderState): string {
+    if (provider.isOff) {
+      return [PROVIDER_OFF_LABEL, ...counts(provider)].join(PROVIDER_FACTS_SEPARATOR);
+    }
+
     const answer = answers[provider.id];
     const local =
       answer === undefined
@@ -127,6 +138,7 @@ export function ProvidersPanel({
           }
           onCancel={close}
           onSave={() => void save(provider)}
+          onSwitch={() => void onSwitch(provider, !provider.isOff)}
           onTakeUpModel={(title) => onTakeUpModel(provider.id, title)}
         />
       );
@@ -145,7 +157,8 @@ export function ProvidersPanel({
   }
 
   const filled = providers.filter(isFilled);
-  const unset = providers.filter((provider) => !isFilled(provider));
+  const unset = providers.filter((provider) => !provider.isOff && !isFilled(provider));
+  const off = providers.filter((provider) => provider.isOff);
 
   return (
     <div
@@ -225,6 +238,17 @@ export function ProvidersPanel({
         )}
 
         {unset.map(rowFor)}
+
+        {off.length > 0 && filled.length + unset.length > 0 && (
+          <>
+            <Hairline margin={PROVIDERS_RULE_MARGIN} className="flex-shrink-0" />
+            <Mark color={PROVIDERS_HINT_COLOR} isUpperCase={false} className="flex-shrink-0">
+              {PROVIDERS_OFF_LABEL}
+            </Mark>
+          </>
+        )}
+
+        {off.map(rowFor)}
       </div>
     </div>
   );

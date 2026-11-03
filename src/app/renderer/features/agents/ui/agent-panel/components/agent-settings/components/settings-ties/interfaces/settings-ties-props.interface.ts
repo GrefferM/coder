@@ -14,6 +14,10 @@ export interface SettingsTiesProps {
   isModelGone: boolean;
   isPromptGone: boolean;
   goneProviderId: string | null;
+  /** The chosen model's provider, by name, where it is turned off on this machine. */
+  offProviderName: string | null;
+  /** The models standing on a provider turned off on this machine. */
+  offModelIds: string[];
   /** The field a mended card points at, focused on open. */
   mendedField: RefObject<HTMLButtonElement | null> | undefined;
   onDraftChange: (patch: Partial<AgentDraft>) => void;

@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   KNOWN_PROVIDERS,
   PROVIDERS_FILE_NAME,
+  PROVIDERS_OFF_FILE_NAME,
   PROVIDER_ASK_TIMEOUT_MS,
   PROVIDER_HAS_NO_ADDRESS,
   PROVIDER_MODEL_PATHS,
@@ -16,10 +17,13 @@ import type {
   ProviderReply,
   ProviderState,
 } from "../interfaces";
-import type { AskProviderDto, SaveProviderAddressDto, SaveProviderKeyDto } from "../dto";
+import type { AskProviderDto, SaveProviderAddressDto, SaveProviderKeyDto, SwitchProviderDto } from "../dto";
 import { Refusal } from "../../../utils/refusals";
 
-/** The known providers and what this machine holds for each: keys encrypted, addresses in the clear. */
+/**
+ * The known providers and what this machine holds for each: keys encrypted, addresses in the clear, and which of them
+ * stand off.
+ */
 export class ProviderService {
   constructor(
     private readonly keys: ProviderKeyStore,
@@ -29,12 +33,14 @@ export class ProviderService {
   async list(): Promise<ProviderState[]> {
     const hints = await this.keys.hints();
     const addresses = await this.readAddresses();
+    const off = await this.readOff();
     const hintOf = new Map(hints.map((held) => [held.key, held.hint]));
 
     return KNOWN_PROVIDERS.map((provider) => ({
       ...provider,
       keyHint: hintOf.get(this.secretKey(provider.id)) ?? null,
       address: addresses[provider.id] ?? null,
+      isOff: off.includes(provider.id),
     }));
   }
 
@@ -142,6 +148,14 @@ export class ProviderService {
     await this.writeAddresses(held);
   }
 
+  /** Turns a provider off on this machine, or back on; its key and address are not touched. */
+  async switchOff(payload: SwitchProviderDto): Promise<void> {
+    const provider = this.known(payload.providerId);
+    const others = (await this.readOff()).filter((providerId) => providerId !== provider.id);
+
+    await this.writeHeld(PROVIDERS_OFF_FILE_NAME, payload.isOff ? [...others, provider.id] : others);
+  }
+
   private known(providerId: string): KnownProvider {
     const provider = KNOWN_PROVIDERS.find((known) => known.id === providerId);
 
@@ -169,14 +183,28 @@ export class ProviderService {
 
   private async readAddresses(): Promise<Record<string, string>> {
     try {
-      return <Record<string, string>>JSON.parse(await readFile(this.filePath(), "utf8"));
+      return <Record<string, string>>JSON.parse(await readFile(this.filePath(PROVIDERS_FILE_NAME), "utf8"));
     } catch {
       return {};
     }
   }
 
   private async writeAddresses(held: Record<string, string>): Promise<void> {
-    const filePath = this.filePath();
+    await this.writeHeld(PROVIDERS_FILE_NAME, held);
+  }
+
+  /** The ids of the providers standing off; none where the file was never written. */
+  private async readOff(): Promise<string[]> {
+    try {
+      return <string[]>JSON.parse(await readFile(this.filePath(PROVIDERS_OFF_FILE_NAME), "utf8"));
+    } catch {
+      return [];
+    }
+  }
+
+  /** Writes one of this machine's files whole, through a temporary one beside it. */
+  private async writeHeld(fileName: string, held: unknown): Promise<void> {
+    const filePath = this.filePath(fileName);
     const temporaryPath = `${filePath}.tmp`;
 
     await mkdir(path.dirname(filePath), {
@@ -186,7 +214,7 @@ export class ProviderService {
     await rename(temporaryPath, filePath);
   }
 
-  private filePath(): string {
-    return path.join(this.userDataDirectory, PROVIDERS_FILE_NAME);
+  private filePath(fileName: string): string {
+    return path.join(this.userDataDirectory, fileName);
   }
 }

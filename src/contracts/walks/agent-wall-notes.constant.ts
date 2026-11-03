@@ -13,6 +13,10 @@ export const NO_CONSENT_NOTE_SUFFIX = " ще не запускали на цій
 /** For a prompt the agent names and the project has lost. */
 export const LOST_PROMPT_NOTE_PREFIX = "В агента ";
 
+/** For a provider turned off on this machine. */
+export const PROVIDER_OFF_NOTE_PREFIX = "Провайдер ";
+export const PROVIDER_OFF_NOTE_SUFFIX = " вимкнено на цій машині. Увімкніть його в розділі «Провайдери», і агент піде.";
+
 /** For a provider protocol without functions while the agent holds grants. */
 export const NO_TOOLS_NOTE_PREFIX = "Провайдер ";
 export const NO_TOOLS_NOTE_MIDDLE = " не вміє викликати функції, а в агента ";

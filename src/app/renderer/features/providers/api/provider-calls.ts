@@ -3,6 +3,7 @@ import {
   LIST_PROVIDERS_CHANNEL,
   SAVE_PROVIDER_ADDRESS_CHANNEL,
   SAVE_PROVIDER_KEY_CHANNEL,
+  SWITCH_PROVIDER_CHANNEL,
 } from "../../../../../contracts";
 import type { ProviderReply, ProviderState } from "../../../interfaces";
 import type { ProviderWrite } from "../interfaces";
@@ -37,5 +38,13 @@ export async function saveProviderValue(write: ProviderWrite): Promise<void> {
   await window.electronApi.invoke(channel, {
     providerId: write.provider.id,
     value: write.value,
+  });
+}
+
+/** Turns one provider off on this machine, or back on. */
+export async function switchProvider(providerId: string, isOff: boolean): Promise<void> {
+  await window.electronApi.invoke(SWITCH_PROVIDER_CHANNEL, {
+    providerId,
+    isOff,
   });
 }

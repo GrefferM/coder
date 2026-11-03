@@ -49,6 +49,8 @@ function props(patch: Partial<SettingsTiesProps> = {}): SettingsTiesProps {
     isModelGone: false,
     isPromptGone: false,
     goneProviderId: null,
+    offProviderName: null,
+    offModelIds: [],
     mendedField: undefined,
     onDraftChange: () => {},
     ...patch,

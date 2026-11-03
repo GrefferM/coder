@@ -13,6 +13,7 @@ const OPENROUTER: ProviderState = {
   customaryAddress: null,
   keyHint: "sk-…f31a",
   address: null,
+  isOff: false,
 };
 
 const AGENT = anAgent({

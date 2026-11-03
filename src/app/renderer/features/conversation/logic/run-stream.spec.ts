@@ -511,6 +511,27 @@ describe("runStream", () => {
     expect(turn.cost).toBeNull();
   });
 
+  it("gives back a turn whose provider was off with its own card and no cost", () => {
+    const said = runStream(
+      run([
+        step({
+          state: NOT_STARTED_ENDS.providerOff.state,
+          said: "Провайдер Anthropic вимкнено на цій машині. Увімкніть його в розділі «Провайдери», і агент піде.",
+          inputTokens: 0,
+          outputTokens: 0,
+          money: 0,
+        }),
+      ]),
+    );
+    const turn = said.find((message) => message.from === "agent")!;
+
+    expect(turn.notStarted).toBe("providerOff");
+    expect(turn.text).toBe(
+      "Провайдер Anthropic вимкнено на цій машині. Увімкніть його в розділі «Провайдери», і агент піде.",
+    );
+    expect(turn.cost).toBeNull();
+  });
+
   it("counts the ceiling breakdown again from the words and the ceiling the model had then", () => {
     const said = runStream(
       run([

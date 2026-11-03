@@ -9,6 +9,8 @@ import {
   lostProvider,
   memoryNumberOf,
   mendedNumber,
+  offModelIds,
+  offProviderName,
   runNumberOf,
   takesNoTools,
   withFunction,
@@ -107,6 +109,8 @@ export function AgentSettings({
   const isModelGone = isModelLost(draft.modelId, models);
   // The model is whole but its provider is unknown to the app; the field names it.
   const goneProviderId = lostProvider(draft.modelId, models, providers);
+  // The model's provider is off on this machine: the picker says so, and the agent will not start on it.
+  const offName = offProviderName(draft.modelId, models, providers);
   // The provider has no function calls: fields are shut, earlier grants stay listed.
   const isToolless = takesNoTools(draft.modelId, models, providers);
   const was = wasAgent(draft, writing.saved, catalogue);
@@ -214,6 +218,8 @@ export function AgentSettings({
           isModelGone={isModelGone}
           isPromptGone={isPromptGone}
           goneProviderId={goneProviderId}
+          offProviderName={offName}
+          offModelIds={offModelIds(models, providers)}
           mendedField={presses.mending === "prompt" ? mendedField : undefined}
           onDraftChange={onDraftChange}
         />

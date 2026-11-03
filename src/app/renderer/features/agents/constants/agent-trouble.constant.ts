@@ -3,6 +3,8 @@ export const TROUBLE_NO_PROMPT_LABEL = "БЕЗ ПРОМПТА";
 export const TROUBLE_NO_MODEL_LABEL = "НЕМА МОДЕЛІ";
 export const TROUBLE_NO_PROVIDER_LABEL = "НЕМА ПРОВАЙДЕРА";
 export const TROUBLE_NO_KEY_LABEL = "НЕМА КЛЮЧА";
+/** The model's provider is turned off on this machine. */
+export const TROUBLE_PROVIDER_OFF_LABEL = "ПРОВАЙДЕР ВИМКНЕНО";
 /** A provider that needs the person's own address and has none. */
 export const TROUBLE_NO_ADDRESS_LABEL = "НЕМА АДРЕСИ";
 export const TROUBLE_LOST_FUNCTION_LABEL = "ФУНКЦІЯ ЗНИКЛА";

@@ -17,7 +17,7 @@ import {
   PICKER_VALUE_COLOR,
 } from "../../../../../../components/picker-shell/constants";
 import { MODEL_PICKER_LOST_GAP_PX, MODEL_PICKER_LOST_LETTER_SPACING_PX, MODEL_PICKER_PLACEHOLDER } from "./constants";
-import { LOST_PROVIDER_COLOR, LOST_PROVIDER_SUFFIX } from "../../../../../../constants";
+import { LOST_PROVIDER_COLOR, LOST_PROVIDER_SUFFIX, PROVIDER_OFF_SUFFIX } from "../../../../../../constants";
 import type { ModelPickerProps } from "./interfaces";
 
 /** Model choice: project models with prices and agent counts, in the shared picker shell. */
@@ -28,6 +28,8 @@ export function ModelPicker({
   isInvalid = false,
   isLost = false,
   lostProviderId = null,
+  offProviderName = null,
+  offModelIds = [],
   isChanged = false,
   onModelIdChange,
 }: ModelPickerProps) {
@@ -103,7 +105,7 @@ export function ModelPicker({
                 isUpperCase={false}
                 className="text-truncate"
               >
-                {priceLabel(model)}
+                {`${priceLabel(model)}${offModelIds.includes(model.id) ? PROVIDER_OFF_SUFFIX : ""}`}
               </Mark>
             </span>
             <Mark
@@ -124,6 +126,14 @@ export function ModelPicker({
           spacing={MODEL_PICKER_LOST_LETTER_SPACING_PX}
           isUpperCase={false}
         >{`${lostProviderId}${LOST_PROVIDER_SUFFIX}`}</Mark>
+      )}
+
+      {offProviderName !== null && (
+        <Mark
+          color={LOST_PROVIDER_COLOR}
+          spacing={MODEL_PICKER_LOST_LETTER_SPACING_PX}
+          isUpperCase={false}
+        >{`${offProviderName}${PROVIDER_OFF_SUFFIX}`}</Mark>
       )}
     </div>
   );

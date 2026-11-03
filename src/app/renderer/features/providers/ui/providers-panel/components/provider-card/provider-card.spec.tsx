@@ -5,6 +5,8 @@ import { ProviderCard } from "./provider-card";
 import {
   PROVIDER_CARD_ADDRESS_PLACEHOLDER,
   PROVIDER_CARD_ANSWERED_LABEL,
+  PROVIDER_CARD_OFF_LABEL,
+  PROVIDER_CARD_ON_LABEL,
   PROVIDER_CARD_SETUP_NOTES,
   PROVIDER_CARD_SILENT_LABEL,
 } from "./constants";
@@ -31,6 +33,7 @@ const OLLAMA: ProviderState = {
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 const ANTHROPIC: ProviderState = {
@@ -42,6 +45,7 @@ const ANTHROPIC: ProviderState = {
   customaryAddress: null,
   keyHint: "sk-ant-…4Kd",
   address: null,
+  isOff: false,
 };
 
 const RUNPOD: ProviderState = {
@@ -53,6 +57,7 @@ const RUNPOD: ProviderState = {
   customaryAddress: null,
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 const RUNPOD_OPENAI: ProviderState = {
@@ -105,6 +110,7 @@ function renderCard(
     onTakeUpModel?: () => void;
     onAsk?: () => void;
     onChange?: (need: ProviderNeed, value: string) => void;
+    onSwitch?: () => void;
   } = {},
 ) {
   return render(
@@ -119,6 +125,7 @@ function renderCard(
       onChange={acts.onChange ?? (() => {})}
       onCancel={() => {}}
       onSave={() => {}}
+      onSwitch={acts.onSwitch ?? (() => {})}
       onTakeUpModel={acts.onTakeUpModel ?? (() => {})}
     />,
   );
@@ -324,5 +331,54 @@ describe("ProviderCard's key", () => {
 
     expect(screen.getByLabelText("КЛЮЧ")).toBeInTheDocument();
     expect(screen.queryByLabelText("АДРЕСА")).not.toBeInTheDocument();
+  });
+});
+
+describe("ProviderCard's switch", () => {
+  it("offers to turn a provider off beside the pair, and turns it at once", async () => {
+    const user = userEvent.setup();
+    const onSwitch = vi.fn();
+
+    renderCard(ANTHROPIC, null, [], {
+      onSwitch,
+    });
+    await user.click(screen.getByText(PROVIDER_CARD_OFF_LABEL));
+
+    expect(onSwitch).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText(PROVIDER_CARD_ON_LABEL)).not.toBeInTheDocument();
+  });
+
+  it("offers to turn it back on in the same place, an unfilled one as much as a filled one", async () => {
+    const user = userEvent.setup();
+    const onSwitch = vi.fn();
+
+    renderCard(
+      {
+        ...RUNPOD,
+        isOff: true,
+      },
+      null,
+      [],
+      {
+        onSwitch,
+      },
+    );
+    await user.click(screen.getByText(PROVIDER_CARD_ON_LABEL));
+
+    expect(onSwitch).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText(PROVIDER_CARD_OFF_LABEL)).not.toBeInTheDocument();
+  });
+
+  it("shows nothing an off local provider once answered, since nobody asks it now", () => {
+    renderCard(
+      {
+        ...OLLAMA,
+        isOff: true,
+      },
+      ANSWERED,
+    );
+
+    expect(screen.queryByText(`${PROVIDER_CARD_ANSWERED_LABEL} · 2 моделі встановлено`)).not.toBeInTheDocument();
+    expect(screen.queryByText("qwen2.5-coder")).not.toBeInTheDocument();
   });
 });

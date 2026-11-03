@@ -57,6 +57,12 @@ export interface SaveProviderValue {
   value: string;
 }
 
+/** Whether a provider stands off on this machine. */
+export interface SwitchProvider {
+  providerId: string;
+  isOff: boolean;
+}
+
 /** One word looked for through a project's whole record. */
 export interface SearchRuns extends OfProject {
   query: string;

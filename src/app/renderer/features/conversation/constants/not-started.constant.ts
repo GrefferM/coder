@@ -5,6 +5,7 @@ import {
   TROUBLE_NO_KEY_LABEL,
   TROUBLE_NO_MODEL_LABEL,
   TROUBLE_NO_PROVIDER_LABEL,
+  TROUBLE_PROVIDER_OFF_LABEL,
 } from "../../agents";
 import { STATE_PROVIDER_SILENT_LABEL } from "../../agents";
 import { OVER_CEILING_ACT_LABEL, OVER_CEILING_LABEL } from "./over-ceiling.constant";
@@ -101,6 +102,13 @@ export const NOT_STARTED_ENDS: Record<NotStartedReason, NotStartedEnd> = {
     actLabel: "ПОКАЗАТИ, ЩО ЗАПУСТИТЬСЯ",
     act: "consent",
     state: NOT_STARTED_STATES.noConsent,
+  },
+  // The model's provider is turned off on this machine; it is turned back on in its card.
+  providerOff: {
+    label: TROUBLE_PROVIDER_OFF_LABEL,
+    actLabel: "ВІДКРИТИ ПРОВАЙДЕРА",
+    act: "providers",
+    state: NOT_STARTED_STATES.providerOff,
   },
   // The one reason with something to say to, and too much of it said.
   tooLong: {

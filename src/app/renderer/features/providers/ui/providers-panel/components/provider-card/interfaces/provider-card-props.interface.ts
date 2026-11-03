@@ -15,5 +15,7 @@ export interface ProviderCardProps {
   onChange: (need: ProviderNeed, value: string) => void;
   onCancel: () => void;
   onSave: () => void;
+  /** «ВИМКНУТИ», or «УВІМКНУТИ» for one standing off; acts without «ЗБЕРЕГТИ». */
+  onSwitch: () => void;
   onTakeUpModel: (title: string) => void;
 }

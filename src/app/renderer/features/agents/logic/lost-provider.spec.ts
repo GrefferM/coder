@@ -23,6 +23,7 @@ const PROVIDERS: ProviderState[] = [
     address: "http://localhost:11434",
     keyHint: null,
     customaryAddress: "http://localhost:11434",
+    isOff: false,
   },
 ];
 

@@ -13,6 +13,7 @@ function aProvider(patch: Partial<ProviderState> = {}): ProviderState {
     customaryAddress: null,
     keyHint: null,
     address: null,
+    isOff: false,
     ...patch,
   };
 }
@@ -53,6 +54,7 @@ describe("providerMissing", () => {
           needs: ["address"],
           takesTools: true,
           customaryAddress: "http://localhost:11434",
+          isOff: false,
         }),
       ),
     ).toEqual([]);
@@ -67,6 +69,7 @@ describe("providerMissing", () => {
           needs: ["key"],
           takesTools: true,
           keyHint: "sk-or-v•••",
+          isOff: false,
         }),
       ),
     ).toEqual([]);

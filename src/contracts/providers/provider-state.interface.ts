@@ -13,4 +13,6 @@ export interface ProviderState {
   customaryAddress: string | null;
   keyHint: string | null;
   address: string | null;
+  /** Turned off on this machine: its key and address stay, but nothing goes to it and a local one is not asked. */
+  isOff: boolean;
 }

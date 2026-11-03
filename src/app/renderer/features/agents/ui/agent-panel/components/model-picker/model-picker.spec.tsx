@@ -110,4 +110,31 @@ describe("ModelPicker", () => {
 
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
+
+  it("says which models stand on a provider turned off on this machine, and still lets one be chosen", async () => {
+    const user = userEvent.setup();
+    const onModelIdChange = vi.fn();
+
+    renderPicker({
+      offModelIds: ["haiku"],
+      onModelIdChange,
+    });
+    await user.click(screen.getByText(MODEL_PICKER_PLACEHOLDER));
+
+    expect(screen.getByText("$3.00 · $15.00 / 1M")).toBeInTheDocument();
+    expect(screen.getByText("$1.00 · $5.00 / 1M · провайдер вимкнено")).toBeInTheDocument();
+
+    await user.click(screen.getByText("claude-haiku-4.5"));
+
+    expect(onModelIdChange).toHaveBeenCalledWith("haiku");
+  });
+
+  it("names the chosen model's provider under the field while that provider is off", () => {
+    renderPicker({
+      modelId: "sonnet",
+      offProviderName: "Anthropic",
+    });
+
+    expect(screen.getByText("Anthropic · провайдер вимкнено")).toBeInTheDocument();
+  });
 });

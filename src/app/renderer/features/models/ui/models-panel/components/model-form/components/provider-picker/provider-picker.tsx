@@ -19,6 +19,7 @@ import {
   PROVIDER_REMOTE_LABEL,
 } from "../../../../../../../providers";
 import { MODELS_PANEL_PROVIDER_FIELD_LABEL } from "../../../../constants";
+import { PROVIDER_OFF_SUFFIX } from "../../../../../../../../constants";
 import {
   PROVIDER_PICKER_GAP_PX,
   PROVIDER_PICKER_LOST_NAME,
@@ -50,6 +51,11 @@ export function ProviderPicker({ providers, providerId, wasProviderId, isInvalid
     return `${PROVIDER_REMOTE_LABEL}${PROVIDER_PICKER_NOTE_SEPARATOR}${reach}`;
   }
 
+  /** Said after a provider turned off on this machine, in its row and in the field. */
+  function offSuffix(provider: ProviderState): string {
+    return provider.isOff ? PROVIDER_OFF_SUFFIX : "";
+  }
+
   return (
     <FieldSlot label={MODELS_PANEL_PROVIDER_FIELD_LABEL} wasValue={wasValue}>
       <div
@@ -63,7 +69,7 @@ export function ProviderPicker({ providers, providerId, wasProviderId, isInvalid
           isChanged={wasValue !== null}
           field={
             <span className="flex-fill text-truncate">
-              {isLost ? "" : (chosen?.name ?? PROVIDER_PICKER_PLACEHOLDER)}
+              {isLost ? "" : chosen === null ? PROVIDER_PICKER_PLACEHOLDER : `${chosen.name}${offSuffix(chosen)}`}
             </span>
           }
           fieldColor={chosen === null ? PICKER_PLACEHOLDER_COLOR : PICKER_VALUE_COLOR}
@@ -107,7 +113,7 @@ export function ProviderPicker({ providers, providerId, wasProviderId, isInvalid
                   {provider.name}
                 </span>
                 <Mark color={PICKER_ROW_NOTE_COLOR} spacing={PICKER_ROW_NOTE_LETTER_SPACING_PX} isUpperCase={false}>
-                  {note(provider)}
+                  {`${note(provider)}${offSuffix(provider)}`}
                 </Mark>
               </span>
             </button>

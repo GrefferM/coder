@@ -51,6 +51,9 @@ export const PROVIDER_CARD_SETUP_NOTE_FONT_SIZE_PX = 11;
 export const PROVIDER_CARD_SETUP_NOTE_LINE_HEIGHT = 1.55;
 export const PROVIDER_CARD_CANCEL_LABEL = "Скасувати";
 export const PROVIDER_CARD_SAVE_LABEL = "Зберегти";
+/** Left of the pair: turns the provider off on this machine, or back on. */
+export const PROVIDER_CARD_OFF_LABEL = "Вимкнути";
+export const PROVIDER_CARD_ON_LABEL = "Увімкнути";
 
 /** A local provider's line once asked; «Не відповідає» means not running, not a wrong key. */
 export const PROVIDER_CARD_ASKING_LABEL = "ПИТАЄМО…";

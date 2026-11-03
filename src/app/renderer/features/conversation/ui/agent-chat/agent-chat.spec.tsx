@@ -896,6 +896,52 @@ describe("AgentChat", () => {
     expect(screen.getByText(SAID_ROW_AGAIN_LABEL)).toBeInTheDocument();
   });
 
+  it("stands a turn whose provider is off under its own word, and its act opens the providers", async () => {
+    const onOpenProviders = vi.fn();
+    const off = {
+      id: "provider-off",
+      agentId: "agent-1",
+      from: "agent" as const,
+      text: "Провайдер Anthropic вимкнено на цій машині. Увімкніть його в розділі «Провайдери», і агент піде.",
+      note: null,
+      at: new Date().toISOString(),
+      questionId: "question-0",
+      askedAt: 0,
+      cost: null,
+      answerCeiling: null,
+      otherAgentId: null,
+      stopReason: null,
+      isFailure: false,
+      notStarted: "providerOff" as const,
+      wouldGo: null,
+      waitsFor: null,
+      calls: [],
+      began: null,
+      stepId: null,
+      walkId: null,
+      asked: "Підсумуй, що змінилось",
+      fedBy: [],
+      attached: [],
+      compressed: null,
+    };
+
+    renderChat({
+      said: {
+        messages: [off],
+      },
+      acts: {
+        onOpenProviders,
+      },
+    });
+
+    expect(screen.getByText("ПРОВАЙДЕР ВИМКНЕНО")).toBeInTheDocument();
+    expect(screen.getByText(off.text)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByText(NOT_STARTED_ENDS.providerOff.actLabel));
+
+    expect(onOpenProviders).toHaveBeenCalledTimes(1);
+  });
+
   it("says the words are back in the field only while the field holds them", () => {
     const unbegun = {
       id: "no-key",

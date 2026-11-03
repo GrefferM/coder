@@ -22,6 +22,8 @@ export function SettingsTies({
   isModelGone,
   isPromptGone,
   goneProviderId,
+  offProviderName,
+  offModelIds,
   mendedField,
   onDraftChange,
 }: SettingsTiesProps) {
@@ -41,6 +43,8 @@ export function SettingsTies({
             isChanged={was.model !== null}
             isLost={isModelGone}
             lostProviderId={goneProviderId}
+            offProviderName={offProviderName}
+            offModelIds={offModelIds}
             onModelIdChange={(modelId) =>
               onDraftChange({
                 modelId,

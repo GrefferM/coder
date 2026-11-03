@@ -1,6 +1,6 @@
 import { Validate } from "../../../utils/dto-validation";
 import { ProviderService } from "../services";
-import { AskProviderDto, SaveProviderAddressDto, SaveProviderKeyDto } from "../dto";
+import { AskProviderDto, SaveProviderAddressDto, SaveProviderKeyDto, SwitchProviderDto } from "../dto";
 import type { ProviderReply, ProviderState } from "../interfaces";
 
 export class ProviderController {
@@ -23,5 +23,10 @@ export class ProviderController {
   @Validate()
   async saveAddress(payload: SaveProviderAddressDto): Promise<void> {
     return this.providerService.saveAddress(payload);
+  }
+
+  @Validate()
+  async switchOff(payload: SwitchProviderDto): Promise<void> {
+    return this.providerService.switchOff(payload);
   }
 }

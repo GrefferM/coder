@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { mkdtemp } from "node:fs/promises";
+import { mkdtemp, readFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { beforeEach, describe, it } from "node:test";
-import { KNOWN_PROVIDERS, UNKNOWN_PROVIDER } from "../constants";
+import { KNOWN_PROVIDERS, PROVIDERS_FILE_NAME, UNKNOWN_PROVIDER } from "../constants";
 import { ProviderService } from "./provider.service";
 import type { ProviderKeyStore } from "../interfaces";
 
@@ -33,9 +33,13 @@ function keyStore(): ProviderKeyStore {
 
 describe("ProviderService", () => {
   let providerService: ProviderService;
+  let keys: ProviderKeyStore;
+  let directory: string;
 
   beforeEach(async () => {
-    providerService = new ProviderService(keyStore(), await mkdtemp(path.join(os.tmpdir(), "coder-providers-")));
+    keys = keyStore();
+    directory = await mkdtemp(path.join(os.tmpdir(), "coder-providers-"));
+    providerService = new ProviderService(keys, directory);
   });
 
   it("stands the whole known list, whatever this machine holds", async () => {
@@ -249,5 +253,81 @@ describe("ProviderService", () => {
       }),
       new RegExp(UNKNOWN_PROVIDER),
     );
+  });
+
+  describe("a provider turned off on this machine", () => {
+    it("stands every provider on until one is turned off", async () => {
+      assert.equal(
+        (await providerService.list()).some((provider) => provider.isOff),
+        false,
+      );
+    });
+
+    it("keeps it off past a restart, and leaves its key and the addresses file as they were", async () => {
+      await providerService.saveKey({
+        providerId: "runpod",
+        value: "rpa_longvalue4Kd",
+      });
+      await providerService.saveAddress({
+        providerId: "runpod",
+        value: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3",
+      });
+
+      const addressesBefore = await readFile(path.join(directory, PROVIDERS_FILE_NAME), "utf8");
+
+      await providerService.switchOff({
+        providerId: "runpod",
+        isOff: true,
+      });
+
+      // A fresh service over the same folder is the app opened again.
+      const reopened = new ProviderService(keys, directory);
+      const runpod = (await reopened.list()).find((provider) => provider.id === "runpod");
+
+      assert.equal(runpod?.isOff, true);
+      assert.equal(runpod?.keyHint, "rpa_lon•••");
+      assert.equal(await reopened.keyOf("runpod"), "rpa_longvalue4Kd");
+      assert.equal(runpod?.address, "https://api.runpod.ai/v2/q7w2e9r4t6y1u3");
+      assert.equal(await readFile(path.join(directory, PROVIDERS_FILE_NAME), "utf8"), addressesBefore);
+    });
+
+    it("takes it off the list when it is turned back on, and touches no other", async () => {
+      await providerService.switchOff({
+        providerId: "runpod",
+        isOff: true,
+      });
+      await providerService.switchOff({
+        providerId: "ollama",
+        isOff: true,
+      });
+      await providerService.switchOff({
+        providerId: "runpod",
+        isOff: false,
+      });
+
+      const off = (await providerService.list()).filter((provider) => provider.isOff).map((provider) => provider.id);
+
+      assert.deepEqual(off, ["ollama"]);
+    });
+
+    it("holds one turned off twice once", async () => {
+      await providerService.switchOff({
+        providerId: "anthropic",
+        isOff: true,
+      });
+      await providerService.switchOff({
+        providerId: "anthropic",
+        isOff: true,
+      });
+      await providerService.switchOff({
+        providerId: "anthropic",
+        isOff: false,
+      });
+
+      assert.equal(
+        (await providerService.list()).some((provider) => provider.isOff),
+        false,
+      );
+    });
   });
 });

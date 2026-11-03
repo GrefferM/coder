@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { ProvidersPanel } from "./providers-panel";
-import { PROVIDERS_UNSET_LABEL } from "./constants";
+import { PROVIDERS_OFF_LABEL, PROVIDERS_UNSET_LABEL } from "./constants";
 import type { Agent, ProjectModel, ProviderAnswer, ProviderState } from "../../../../interfaces";
 import { aModel, anAgent } from "../../../../testing";
 
@@ -42,6 +42,7 @@ const ANTHROPIC: ProviderState = {
   customaryAddress: null,
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 const OPENAI: ProviderState = {
@@ -53,6 +54,7 @@ const OPENAI: ProviderState = {
   customaryAddress: null,
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 const RUNPOD: ProviderState = {
@@ -64,6 +66,7 @@ const RUNPOD: ProviderState = {
   customaryAddress: null,
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 const OLLAMA: ProviderState = {
@@ -75,6 +78,7 @@ const OLLAMA: ProviderState = {
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 const ANSWERED: Record<string, ProviderAnswer> = {
@@ -107,6 +111,7 @@ function renderPanel(
       agents={agents}
       onAsk={() => {}}
       onSave={onSave}
+      onSwitch={async () => {}}
       onTakeUpModel={() => {}}
     />,
   );
@@ -264,6 +269,101 @@ describe("ProvidersPanel", () => {
     expect(onSave).toHaveBeenCalledWith(written, {
       key: null,
       address: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1",
+    });
+  });
+
+  describe("providers turned off on this machine", () => {
+    /** The names of the rows and the group words, top to bottom. */
+    function order(): string[] {
+      return screen
+        .getAllByText(/^(Anthropic|OpenAI|Ollama|НЕ НАЛАШТОВАНІ|ВИМКНЕНІ)$/)
+        .map((element) => element.textContent ?? "");
+    }
+
+    it("stands them last, under their own word, after the unset ones", () => {
+      renderPanel([
+        {
+          ...ANTHROPIC,
+          keyHint: "sk-ant-••••••••••••4Kd",
+        },
+        OPENAI,
+        {
+          ...OLLAMA,
+          isOff: true,
+        },
+      ]);
+
+      expect(order()).toEqual(["Anthropic", PROVIDERS_UNSET_LABEL, "OpenAI", PROVIDERS_OFF_LABEL, "Ollama"]);
+    });
+
+    it("stands one off among them even while it lacks its key, and says off before its counts", () => {
+      renderPanel([
+        {
+          ...ANTHROPIC,
+          isOff: true,
+        },
+        OLLAMA,
+      ]);
+
+      expect(order()).toEqual(["Ollama", PROVIDERS_OFF_LABEL, "Anthropic"]);
+      expect(screen.getByText("ВИМКНЕНО · 2 МОДЕЛІ · 1 АГЕНТ")).toBeInTheDocument();
+      expect(screen.queryByText(PROVIDERS_UNSET_LABEL)).not.toBeInTheDocument();
+    });
+
+    it("draws no such group while none is off", () => {
+      renderPanel([ANTHROPIC, OPENAI, OLLAMA]);
+
+      expect(screen.queryByText(PROVIDERS_OFF_LABEL)).not.toBeInTheDocument();
+    });
+
+    it("never says an off local provider is silent, whatever it last answered", () => {
+      renderPanel(
+        [
+          {
+            ...OLLAMA,
+            isOff: true,
+          },
+        ],
+        [],
+        [],
+        {
+          ollama: {
+            isAnswering: false,
+            models: [],
+            askedAt: new Date(2026, 7, 19, 14, 26),
+          },
+        },
+      );
+
+      expect(screen.getByText("ВИМКНЕНО")).toBeInTheDocument();
+      expect(screen.queryByText("НЕ ВІДПОВІДАЄ")).not.toBeInTheDocument();
+    });
+
+    it("turns a provider off from its card at once, with nothing saved, and keeps the card open", async () => {
+      const user = userEvent.setup();
+      const onSave = vi.fn().mockResolvedValue(undefined);
+      const onSwitch = vi.fn().mockResolvedValue(undefined);
+
+      render(
+        <ProvidersPanel
+          providers={[ANTHROPIC]}
+          answers={{}}
+          askingIds={[]}
+          models={MODELS}
+          agents={AGENTS}
+          onAsk={() => {}}
+          onSave={onSave}
+          onSwitch={onSwitch}
+          onTakeUpModel={() => {}}
+        />,
+      );
+
+      await user.click(screen.getByLabelText(/Відкрити провайдера Anthropic/));
+      await user.click(screen.getByText("Вимкнути"));
+
+      expect(onSwitch).toHaveBeenCalledWith(ANTHROPIC, true);
+      expect(onSave).not.toHaveBeenCalled();
+      expect(screen.getByLabelText("КЛЮЧ")).toBeInTheDocument();
     });
   });
 });

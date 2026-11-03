@@ -9,6 +9,10 @@ export interface ModelPickerProps {
   isLost?: boolean;
   /** The model is whole but its provider is unknown to the app; named under the field. */
   lostProviderId?: string | null;
+  /** The chosen model's provider is turned off on this machine; named under the field. */
+  offProviderName?: string | null;
+  /** The models standing on a provider turned off on this machine; their rows say so. */
+  offModelIds?: string[];
   isChanged?: boolean;
   onModelIdChange: (modelId: string) => void;
 }

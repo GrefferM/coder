@@ -8,6 +8,7 @@ import {
   TROUBLE_NO_MODEL_LABEL,
   TROUBLE_NO_PROMPT_LABEL,
   TROUBLE_NO_PROVIDER_LABEL,
+  TROUBLE_PROVIDER_OFF_LABEL,
 } from "../constants";
 import { hasBrokenGrant } from "../../../logic";
 import type { Agent, AgentTrouble, McpLook, ProjectConfig, ProviderState } from "../../../interfaces";
@@ -32,6 +33,11 @@ export function agentTrouble(
 
   if (provider === null) {
     return broken(TROUBLE_NO_PROVIDER_LABEL);
+  }
+
+  // Off on this machine outranks whatever else the provider lacks.
+  if (provider.isOff) {
+    return broken(TROUBLE_PROVIDER_OFF_LABEL);
   }
 
   if (provider.needs.includes("key") && provider.keyHint === null) {

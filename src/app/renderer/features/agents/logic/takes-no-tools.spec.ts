@@ -26,6 +26,7 @@ function aProvider(patch: Partial<ProviderState> = {}): ProviderState {
     customaryAddress: null,
     keyHint: null,
     address: null,
+    isOff: false,
     ...patch,
   };
 }
@@ -37,6 +38,7 @@ const PROVIDERS = [
     name: "Anthropic",
     needs: ["key"],
     takesTools: true,
+    isOff: false,
   }),
 ];
 

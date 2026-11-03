@@ -13,6 +13,7 @@ export const NOT_STARTED_STATES: Record<NotStartedReason, string> = {
   notFilledAgent: "notFilledAgent",
   lostFunction: "lostFunction",
   noConsent: "noConsent",
+  providerOff: "providerOff",
   noTools: "noTools",
   lostPrompt: "lostPrompt",
   tooLong: RUN_STEP_TOO_LONG,

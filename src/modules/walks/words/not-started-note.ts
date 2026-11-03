@@ -20,6 +20,8 @@ import {
   NO_TOOLS_NOTE_MIDDLE,
   NO_TOOLS_NOTE_PREFIX,
   NO_TOOLS_NOTE_SUFFIX,
+  PROVIDER_OFF_NOTE_PREFIX,
+  PROVIDER_OFF_NOTE_SUFFIX,
   modelNumbers,
   unfilledField,
 } from "../../../contracts";
@@ -43,6 +45,11 @@ export function noAddressNote(providerName: string): string {
 /** Which provider carries no functions and which agent holds grants against it. */
 export function noToolsNote(providerName: string, agentName: string): string {
   return `${NO_TOOLS_NOTE_PREFIX}${providerName}${NO_TOOLS_NOTE_MIDDLE}${agentName}${NO_TOOLS_NOTE_SUFFIX}`;
+}
+
+/** Which provider is turned off on this machine. */
+export function providerOffNote(providerName: string): string {
+  return `${PROVIDER_OFF_NOTE_PREFIX}${providerName}${PROVIDER_OFF_NOTE_SUFFIX}`;
 }
 
 /** Which agent holds a grant on a function missing from the project. */

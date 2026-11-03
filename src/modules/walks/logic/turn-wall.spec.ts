@@ -489,6 +489,7 @@ describe("turnWall", () => {
             customaryAddress: null,
             keyHint: "rpa_lon•••",
             address: "https://api.runpod.ai/v2/z5x8c1v4b7n2m6",
+            isOff: false,
           },
           prompt: null,
         },
@@ -520,6 +521,7 @@ describe("turnWall", () => {
               ...(KNOWN_PROVIDERS.find((known) => known.id === providerId) ?? KNOWN_PROVIDERS[0]),
               keyHint: "rpa_lon•••",
               address: "https://api.runpod.ai/v2/z5x8c1v4b7n2m6",
+              isOff: false,
             },
             prompt: null,
           },
@@ -530,6 +532,80 @@ describe("turnWall", () => {
 
     assert.equal("notStarted" in onProvider("runpod-openai"), false);
     assert.equal("notStarted" in onQueue && onQueue.notStarted, "noTools");
+  });
+
+  describe("a provider turned off on this machine", () => {
+    /** The agent's turn on Anthropic, standing off or on. */
+    function onAnthropic(isOff: boolean) {
+      return turnWall(
+        turn({
+          stands: {
+            model: MODEL,
+            provider: {
+              id: "anthropic",
+              name: "Anthropic",
+              kind: "remote",
+              needs: ["key"],
+              takesTools: true,
+              customaryAddress: null,
+              keyHint: "sk-ant-•••",
+              address: null,
+              isOff,
+            },
+            prompt: null,
+          },
+        }),
+      );
+    }
+
+    it("stops the turn and names the provider in its sentence", () => {
+      const stood = onAnthropic(true);
+
+      assert.equal("notStarted" in stood && stood.notStarted, "providerOff");
+      assert.equal("notStarted" in stood && stood.state, "providerOff");
+      assert.equal(
+        "notStarted" in stood && stood.text,
+        "Провайдер Anthropic вимкнено на цій машині. Увімкніть його в розділі «Провайдери», і агент піде.",
+      );
+    });
+
+    it("lets the same turn through once the provider is on again", () => {
+      assert.equal("notStarted" in onAnthropic(false), false);
+    });
+
+    it("outranks a provider that carries no functions, where the agent holds grants", () => {
+      const grant: ToolGrant = {
+        id: "grant-1",
+        source: "command",
+        commandId: COMMAND.id,
+        pinned: [],
+      };
+      const stood = turnWall(
+        turn({
+          agent: {
+            ...AGENT,
+            tools: [grant],
+          },
+          stands: {
+            model: MODEL,
+            provider: {
+              id: "runpod",
+              name: "RunPod Queue",
+              kind: "remote",
+              needs: ["key", "address"],
+              takesTools: false,
+              customaryAddress: null,
+              keyHint: "rpa_lon•••",
+              address: "https://api.runpod.ai/v2/z5x8c1v4b7n2m6",
+              isOff: true,
+            },
+            prompt: null,
+          },
+        }),
+      );
+
+      assert.equal("notStarted" in stood && stood.notStarted, "providerOff");
+    });
   });
 
   it("lets a turn through on such a provider where the agent holds no grants at all", () => {
@@ -546,6 +622,7 @@ describe("turnWall", () => {
             customaryAddress: null,
             keyHint: "rpa_lon•••",
             address: "https://api.runpod.ai/v2/z5x8c1v4b7n2m6",
+            isOff: false,
           },
           prompt: null,
         },
@@ -757,6 +834,7 @@ describe("turnWall", () => {
               customaryAddress: null,
               keyHint: "rpa_lon•••",
               address: "https://api.runpod.ai/v2/z5x8c1v4b7n2m6",
+              isOff: false,
             },
             prompt: null,
           },

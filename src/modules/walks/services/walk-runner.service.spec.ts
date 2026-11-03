@@ -16,12 +16,15 @@ const PROVIDER: ProviderState = {
   customaryAddress: null,
   keyHint: "…abcd",
   address: null,
+  isOff: false,
 };
 
-/** Providers that list the one. */
+/** Providers that list what they were handed, the one by default. */
 class KnownProviders implements ProviderLister {
+  constructor(private readonly held: ProviderState[] = [PROVIDER]) {}
+
   async list(): Promise<ProviderState[]> {
-    return [PROVIDER];
+    return this.held;
   }
 }
 
@@ -49,15 +52,20 @@ function agent(id: string, patch: Partial<Agent> = {}): Agent {
   });
 }
 
-function standing(config: ProjectConfig, script: Record<string, string | Error>): Stood {
+function standing(
+  config: ProjectConfig,
+  script: Record<string, string | Error>,
+  providers: ProviderState[] = [PROVIDER],
+): Stood {
   const record = new MemoryRecord();
   const llm = new ScriptedLlm(script);
   const listener = new QuietListener();
+  const known = new KnownProviders(providers);
   const runner = new WalkRunner({
     project: new StoodProject(config),
     record,
     llm,
-    providers: new KnownProviders(),
+    providers: known,
     servers: new NoServers(),
     listener,
   });
@@ -109,6 +117,48 @@ describe("WalkRunner", () => {
     assert.equal(stood.record.closed.length, 1);
     assert.equal(stood.runner.runId(), "run-1");
     assert.equal(stood.runner.isBusy(), false);
+  });
+
+  it("asks nothing of a local provider turned off on this machine, and writes the step as never begun", async () => {
+    // The turn itself is where a local provider is pinged, so a turn that never goes pings nobody.
+    const asker = agent("agent-1");
+    const config = aConfig({
+      models: [
+        aModel({
+          provider: "ollama",
+        }),
+      ],
+      agents: [asker],
+    });
+    const stood = standing(
+      config,
+      {
+        "agent-1": "відповідь",
+      },
+      [
+        {
+          id: "ollama",
+          name: "Ollama",
+          kind: "local",
+          needs: ["address"],
+          takesTools: true,
+          customaryAddress: "http://localhost:11434",
+          keyHint: null,
+          address: null,
+          isOff: true,
+        },
+      ],
+    );
+
+    stood.runner.put({
+      agent: asker,
+      text: "питання",
+      attached: [],
+    });
+    await stood.runner.whenIdle();
+
+    assert.deepEqual(stood.llm.asked, []);
+    assert.deepEqual(stood.record.states(), ["providerOff"]);
   });
 
   it("gives the second agent what the first said", async () => {

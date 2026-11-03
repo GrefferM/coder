@@ -8,6 +8,7 @@ import {
   TROUBLE_NO_MODEL_LABEL,
   TROUBLE_NO_PROMPT_LABEL,
   TROUBLE_NO_PROVIDER_LABEL,
+  TROUBLE_PROVIDER_OFF_LABEL,
 } from "../constants";
 import { AGENT_FIELD_TEMPERATURE, MODEL_FIELD_ANSWER_CEILING, NOT_FILLED_LABEL } from "../../../constants";
 import type { Agent, ProjectConfig, ProviderState } from "../../../interfaces";
@@ -23,6 +24,7 @@ const ANTHROPIC: ProviderState = {
   customaryAddress: null,
   keyHint: "sk-ant-…4Kd",
   address: null,
+  isOff: false,
 };
 
 const AGENT: Agent = anAgent({
@@ -71,6 +73,22 @@ describe("agentTrouble", () => {
     });
   });
 
+  it("marks an agent whose provider is turned off on this machine, before anything that provider lacks", () => {
+    // Off and keyless at once: the person turned it off, so that is what is said.
+    expect(
+      agentTrouble(AGENT, CONFIG, [
+        {
+          ...ANTHROPIC,
+          keyHint: null,
+          isOff: true,
+        },
+      ]),
+    ).toEqual({
+      label: TROUBLE_PROVIDER_OFF_LABEL,
+      isBreak: true,
+    });
+  });
+
   it("marks an agent whose remote provider has no key on this machine", () => {
     expect(
       agentTrouble(AGENT, CONFIG, [
@@ -94,6 +112,7 @@ describe("agentTrouble", () => {
           needs: ["key", "address"],
           takesTools: true,
           keyHint: "rpa_lon•••",
+          isOff: false,
         },
       ]),
     ).toEqual({
@@ -111,6 +130,7 @@ describe("agentTrouble", () => {
           takesTools: true,
           keyHint: "rpa_lon•••",
           address: "https://api.runpod.ai/v2/q7w2e9r4t6y1u3/openai/v1",
+          isOff: false,
         },
       ]),
     ).toBeNull();

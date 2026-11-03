@@ -247,6 +247,7 @@ export function usePageParts(
           agents={project.config.agents}
           onAsk={machine.ask}
           onSave={machine.save}
+          onSwitch={machine.switchOff}
           onTakeUpModel={rail.takeUpModel}
         />
       ),

@@ -10,5 +10,6 @@ export type NotStartedReason =
   | "lostPrompt"
   | "lostFunction"
   | "noConsent"
+  | "providerOff"
   | "noTools"
   | "tooLong";

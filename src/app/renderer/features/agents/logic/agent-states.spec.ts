@@ -20,6 +20,7 @@ const OLLAMA: ProviderState = {
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 const ASKED_AT = new Date(2026, 7, 19, 14, 26);

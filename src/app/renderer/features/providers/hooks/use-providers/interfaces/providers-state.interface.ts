@@ -10,4 +10,6 @@ export interface ProvidersState {
   /** Reports what a turn heard at a provider's address, so the sphere's dot need not wait for the card's asking. */
   heard: (providerId: string, isAnswering: boolean) => void;
   save: (provider: ProviderState, draft: ProviderDraft) => Promise<void>;
+  /** Turns a provider off on this machine, or back on; nothing waits for «ЗБЕРЕГТИ». */
+  switchOff: (provider: ProviderState, isOff: boolean) => Promise<void>;
 }

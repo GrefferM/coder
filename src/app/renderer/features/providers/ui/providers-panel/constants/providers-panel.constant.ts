@@ -23,6 +23,10 @@ export const PROVIDERS_LIST_GAP_PX = 10;
 
 /** Filled providers first, unfilled below under a rule and this word, shown only when both groups exist. */
 export const PROVIDERS_UNSET_LABEL = "НЕ НАЛАШТОВАНІ";
+/** Turned-off providers last, under a rule and this word, shown only when any stands off. */
+export const PROVIDERS_OFF_LABEL = "ВИМКНЕНІ";
+/** The first fact of a turned-off provider's row, in place of its reach. */
+export const PROVIDER_OFF_LABEL = "ВИМКНЕНО";
 export const PROVIDERS_RULE_MARGIN = "2px 0";
 
 /** A local provider's row says whether anybody answers. */

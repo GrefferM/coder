@@ -76,6 +76,7 @@ const PROVIDERS: ProviderState[] = [
     customaryAddress: null,
     keyHint: null,
     address: null,
+    isOff: false,
   },
   {
     id: "ollama",
@@ -86,6 +87,7 @@ const PROVIDERS: ProviderState[] = [
     customaryAddress: "http://localhost:11434",
     keyHint: null,
     address: null,
+    isOff: false,
   },
 ];
 

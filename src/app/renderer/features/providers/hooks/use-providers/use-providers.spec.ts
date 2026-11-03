@@ -6,6 +6,7 @@ import {
   LIST_PROVIDERS_CHANNEL,
   SAVE_PROVIDER_ADDRESS_CHANNEL,
   SAVE_PROVIDER_KEY_CHANNEL,
+  SWITCH_PROVIDER_CHANNEL,
 } from "../../../../../../contracts";
 import { PROVIDER_ASKED_EVERY_MS } from "../../constants";
 import type { ProviderState } from "../../../../interfaces";
@@ -20,6 +21,7 @@ const OLLAMA: ProviderState = {
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 const OPENROUTER: ProviderState = {
@@ -31,6 +33,7 @@ const OPENROUTER: ProviderState = {
   customaryAddress: null,
   keyHint: "sk-or",
   address: null,
+  isOff: false,
 };
 
 const RUNPOD: ProviderState = {
@@ -42,6 +45,7 @@ const RUNPOD: ProviderState = {
   customaryAddress: null,
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 const INSTALLED = [
@@ -214,5 +218,93 @@ describe("useProviders", () => {
     });
 
     expect(invoke).not.toHaveBeenCalledWith(SAVE_PROVIDER_KEY_CHANNEL, expect.anything());
+  });
+
+  describe("a provider turned off on this machine", () => {
+    /** A bridge whose list holds Ollama off or on, each switch turning it over. */
+    function switching(isOff: boolean) {
+      let ollama: ProviderState = {
+        ...OLLAMA,
+        isOff,
+      };
+      const invoke = vi.fn(async (channel: string) => {
+        if (channel === LIST_PROVIDERS_CHANNEL) {
+          return [ollama, OPENROUTER];
+        }
+
+        if (channel === SWITCH_PROVIDER_CHANNEL) {
+          ollama = {
+            ...ollama,
+            isOff: !ollama.isOff,
+          };
+
+          return undefined;
+        }
+
+        return channel === ASK_PROVIDER_CHANNEL
+          ? {
+              isAnswering: true,
+              models: INSTALLED,
+            }
+          : undefined;
+      });
+
+      standInBridge({
+        invoke: invoke,
+      });
+
+      return invoke;
+    }
+
+    it("asks an off local provider neither when the list arrives nor on the beat", async () => {
+      vi.useFakeTimers();
+
+      const invoke = switching(true);
+
+      renderHook(() => useProviders());
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(PROVIDER_ASKED_EVERY_MS * 2);
+      });
+
+      expect(invoke.mock.calls.filter(([channel]) => channel === ASK_PROVIDER_CHANNEL)).toHaveLength(0);
+    });
+
+    it("turns one off at once, lets its last answer go, and reads the list again", async () => {
+      const invoke = switching(false);
+      const { result } = renderHook(() => useProviders());
+
+      await waitFor(() => expect(result.current.answers[OLLAMA.id]?.isAnswering).toBe(true));
+      await act(async () => {
+        await result.current.switchOff(OLLAMA, true);
+      });
+
+      expect(invoke).toHaveBeenCalledWith(SWITCH_PROVIDER_CHANNEL, {
+        providerId: OLLAMA.id,
+        isOff: true,
+      });
+      expect(result.current.providers.find((provider) => provider.id === OLLAMA.id)?.isOff).toBe(true);
+      expect(result.current.answers[OLLAMA.id]).toBeUndefined();
+    });
+
+    it("asks a local provider again the moment it is turned back on", async () => {
+      const invoke = switching(true);
+      const { result } = renderHook(() => useProviders());
+
+      await waitFor(() => expect(result.current.providers).toHaveLength(2));
+      await act(async () => {
+        await result.current.switchOff(
+          {
+            ...OLLAMA,
+            isOff: true,
+          },
+          false,
+        );
+      });
+
+      await waitFor(() => expect(result.current.answers[OLLAMA.id]?.isAnswering).toBe(true));
+      expect(invoke).toHaveBeenCalledWith(ASK_PROVIDER_CHANNEL, {
+        providerId: OLLAMA.id,
+      });
+    });
   });
 });

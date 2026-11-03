@@ -12,6 +12,7 @@ const OLLAMA: ProviderState = {
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 const ANTHROPIC: ProviderState = {
@@ -23,6 +24,7 @@ const ANTHROPIC: ProviderState = {
   customaryAddress: null,
   keyHint: "sk-ant-…4Kd",
   address: null,
+  isOff: false,
 };
 
 const LOCAL_MODEL: ProjectModel = aModel({

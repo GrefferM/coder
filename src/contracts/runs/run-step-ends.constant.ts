@@ -12,6 +12,8 @@ export const RUN_STEP_NOT_SENT_ENDS: string[] = [
   "lostFunction",
   // A granted local server whose run line this machine has not agreed to; nothing was started (36k).
   "noConsent",
+  // The model's provider is turned off on this machine; nothing left it.
+  "providerOff",
   // The provider's protocol carries no function calls, yet the agent holds grants.
   "noTools",
   "lostPrompt",

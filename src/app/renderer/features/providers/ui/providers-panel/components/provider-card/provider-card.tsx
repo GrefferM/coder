@@ -1,4 +1,4 @@
-import { Dot, Field, Mark, NestedActions } from "../../../../../../components";
+import { Dot, Field, Mark, NestedActions, TextAction } from "../../../../../../components";
 import { ProviderModels } from "./components";
 import { timeLabel } from "../../../../../../utils/dates";
 import { ukrainianPlural } from "../../../../../../utils/text";
@@ -42,6 +42,8 @@ import {
   PROVIDER_CARD_NAME_COLOR,
   PROVIDER_CARD_NAME_FONT_SIZE_PX,
   PROVIDER_CARD_NAME_FONT_WEIGHT,
+  PROVIDER_CARD_OFF_LABEL,
+  PROVIDER_CARD_ON_LABEL,
   PROVIDER_CARD_PADDING,
   PROVIDER_CARD_SAVE_LABEL,
   PROVIDER_CARD_SETUP_NOTE_COLOR,
@@ -62,19 +64,23 @@ export function ProviderCard({
   onChange,
   onCancel,
   onSave,
+  onSwitch,
   onTakeUpModel,
 }: ProviderCardProps) {
   const [one, few, many] = PROVIDER_CARD_MODEL_FORMS;
   const countOfModels = (count: number) => `${count} ${ukrainianPlural(count, one, few, many)}`;
   const isLocal = provider.kind === "local";
-  const isAnswering = answer === null ? null : answer.isAnswering;
+  // An off provider is not asked, so nothing it once answered is shown.
+  const isAnswering = answer === null || provider.isOff ? null : answer.isAnswering;
   const wantsKey = provider.needs.includes("key");
   const wantsAddress = provider.needs.includes("address");
-  // A local provider is lit by answering; any other by holding everything it asked for.
-  const isFilled = isLocal
-    ? isAnswering === true
-    : (!wantsKey || provider.keyHint !== null) &&
-      (!wantsAddress || provider.address !== null || provider.customaryAddress !== null);
+  // A local provider is lit by answering; any other by holding everything it asked for; an off one never.
+  const isFilled =
+    !provider.isOff &&
+    (isLocal
+      ? isAnswering === true
+      : (!wantsKey || provider.keyHint !== null) &&
+        (!wantsAddress || provider.address !== null || provider.customaryAddress !== null));
   const isSilent = isLocal && isAnswering === false;
   // The hint shows until something is typed or the cross is pressed.
   const isKeyHeld = value.key === null && provider.keyHint !== null;
@@ -175,7 +181,7 @@ export function ProviderCard({
         </p>
       )}
 
-      {isLocal && (isAsking || isAnswering !== null) && (
+      {isLocal && !provider.isOff && (isAsking || isAnswering !== null) && (
         <Mark
           color={isAnswering === true ? PROVIDER_CARD_ANSWERED_COLOR : PROVIDER_CARD_SILENT_COLOR}
           size={PROVIDER_CARD_REPLY_FONT_SIZE_PX}
@@ -200,12 +206,19 @@ export function ProviderCard({
         />
       )}
 
-      <NestedActions
-        cancelLabel={PROVIDER_CARD_CANCEL_LABEL}
-        confirmLabel={PROVIDER_CARD_SAVE_LABEL}
-        onCancel={onCancel}
-        onConfirm={onSave}
-      />
+      <div className="d-flex align-items-center justify-content-between">
+        <TextAction
+          label={provider.isOff ? PROVIDER_CARD_ON_LABEL : PROVIDER_CARD_OFF_LABEL}
+          isQuiet
+          onClick={onSwitch}
+        />
+        <NestedActions
+          cancelLabel={PROVIDER_CARD_CANCEL_LABEL}
+          confirmLabel={PROVIDER_CARD_SAVE_LABEL}
+          onCancel={onCancel}
+          onConfirm={onSave}
+        />
+      </div>
     </div>
   );
 }

@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PROVIDER_ASKED_EVERY_MS } from "../../constants";
-import { askProvider, listProviders, saveProviderValue } from "../../api";
+import { askProvider, listProviders, saveProviderValue, switchProvider } from "../../api";
 import type { ProviderAnswer, ProviderState } from "../../../../interfaces";
 import type { ProviderDraft } from "../../interfaces";
 import type { ProvidersState } from "./interfaces";
 
-/** Providers this machine can call, re-read on mount and after every write; each local one asked at its address. */
+/**
+ * Providers this machine can call, re-read on mount and after every write; each local one that is not off asked at its
+ * address.
+ */
 export function useProviders(): ProvidersState {
   const [providers, setProviders] = useState<ProviderState[]>([]);
   const [answers, setAnswers] = useState<Record<string, ProviderAnswer>>({});
@@ -47,7 +50,8 @@ export function useProviders(): ProvidersState {
       .finally(() => setAskingIds((asking) => asking.filter((held) => held !== providerId)));
   }, []);
 
-  const localProviders = providers.filter((provider) => provider.kind === "local");
+  // One turned off is not asked at all, neither on the beat nor on a write.
+  const localProviders = providers.filter((provider) => provider.kind === "local" && !provider.isOff);
 
   useEffect(() => {
     void load();
@@ -122,6 +126,22 @@ export function useProviders(): ProvidersState {
     [load],
   );
 
+  /** Turns a provider off or back on at once; an off one's last answer goes, since nobody asks it any more. */
+  const switchOff = useCallback(
+    async (provider: ProviderState, isOff: boolean) => {
+      await switchProvider(provider.id, isOff);
+
+      if (isOff) {
+        setAnswers((standing) =>
+          Object.fromEntries(Object.entries(standing).filter(([providerId]) => providerId !== provider.id)),
+        );
+      }
+
+      await load();
+    },
+    [load],
+  );
+
   return {
     providers,
     answers,
@@ -129,5 +149,6 @@ export function useProviders(): ProvidersState {
     ask,
     heard,
     save,
+    switchOff,
   };
 }

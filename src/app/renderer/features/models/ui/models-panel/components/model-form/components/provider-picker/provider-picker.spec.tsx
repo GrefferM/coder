@@ -21,6 +21,7 @@ function provider(patch: Partial<ProviderState> = {}): ProviderState {
     customaryAddress: null,
     keyHint: "sk-…4f2",
     address: null,
+    isOff: false,
     ...patch,
   };
 }
@@ -33,6 +34,7 @@ const local = provider({
   takesTools: true,
   keyHint: null,
   customaryAddress: "http://localhost:11434",
+  isOff: false,
 });
 
 describe("ProviderPicker", () => {
@@ -144,5 +146,30 @@ describe("ProviderPicker", () => {
     );
 
     expect(screen.getByText(`${FIELD_SLOT_WAS_PREFIX}OpenRouter`)).toBeInTheDocument();
+  });
+
+  it("says of a provider turned off on this machine that it is off, in its row and in the field", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const off = provider({
+      isOff: true,
+    });
+
+    render(
+      <ProviderPicker
+        providers={[off, local]}
+        providerId="openrouter"
+        wasProviderId={null}
+        isInvalid={false}
+        onChange={onChange}
+      />,
+    );
+
+    expect(screen.getByText("OpenRouter · провайдер вимкнено")).toBeInTheDocument();
+
+    await user.click(screen.getByText("OpenRouter · провайдер вимкнено"));
+
+    expect(screen.getByText(`ВІДДАЛЕНИЙ · ${PROVIDER_KEY_WRITTEN_LABEL} · провайдер вимкнено`)).toBeInTheDocument();
+    expect(screen.getByText(PROVIDER_LOCAL_LABEL)).toBeInTheDocument();
   });
 });

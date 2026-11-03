@@ -5,6 +5,7 @@ import {
   noToolsNote,
   notFilledAgentNote,
   notStartedNote,
+  providerOffNote,
 } from "../words";
 import {
   NO_MODEL_NOTE,
@@ -23,6 +24,15 @@ import type { Agent, AgentReady, AgentStands, AgentWall, GrantTargets } from "..
  */
 export function agentReadiness(agent: Agent, stands: AgentStands, targets: GrantTargets): AgentWall | AgentReady {
   const { model, provider, prompt } = stands;
+
+  // A provider turned off on this machine is reached by nothing, whatever else the agent lacks or holds.
+  if (provider !== null && provider.isOff) {
+    return {
+      note: providerOffNote(provider.name),
+      reason: "providerOff",
+      waitsFor: null,
+    };
+  }
 
   // A grant pointing at nothing would hand the model a missing tool.
   if (hasBrokenGrant(agent.tools, targets)) {

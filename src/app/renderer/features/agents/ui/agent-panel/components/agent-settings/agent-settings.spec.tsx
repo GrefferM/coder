@@ -57,6 +57,7 @@ const PROVIDERS: ProviderState[] = [
     address: "",
     customaryAddress: "",
     keyHint: "sk-…4f2a",
+    isOff: false,
   },
 ];
 

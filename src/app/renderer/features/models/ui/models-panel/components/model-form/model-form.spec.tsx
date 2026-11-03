@@ -24,6 +24,7 @@ const remote: ProviderState = {
   customaryAddress: null,
   keyHint: "sk-…4f2",
   address: null,
+  isOff: false,
 };
 
 const local: ProviderState = {
@@ -35,6 +36,7 @@ const local: ProviderState = {
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 function values(patch: Partial<ModelFormValues> = {}): ModelFormValues {
@@ -111,6 +113,7 @@ describe("ModelForm", () => {
       customaryAddress: null,
       keyHint: "rpa_…",
       address: "https://api.runpod.ai/v2/abc",
+      isOff: false,
     });
     const providers = [runpod("runpod", "RunPod Queue"), runpod("runpod-openai", "RunPod OpenAI")];
 

@@ -37,6 +37,7 @@ import type {
   SAVE_MCP_TOKEN_CHANNEL,
   SAVE_PROVIDER_ADDRESS_CHANNEL,
   SAVE_PROVIDER_KEY_CHANNEL,
+  SWITCH_PROVIDER_CHANNEL,
   CONFIGURE_WALKS_CHANNEL,
   FRESH_WALKS_CHANNEL,
   GO_ON_IN_WALKS_CHANNEL,
@@ -69,6 +70,7 @@ import type {
   RememberProjectView,
   SaveProject,
   SaveProviderValue,
+  SwitchProvider,
   ConfigureWalks,
   GoOnInWalks,
   LetGoWalks,
@@ -101,6 +103,7 @@ export interface ChannelMap {
   [ASK_PROVIDER_CHANNEL]: { payload: AskProvider; answer: ProviderReply };
   [SAVE_PROVIDER_KEY_CHANNEL]: { payload: SaveProviderValue; answer: void };
   [SAVE_PROVIDER_ADDRESS_CHANNEL]: { payload: SaveProviderValue; answer: void };
+  [SWITCH_PROVIDER_CHANNEL]: { payload: SwitchProvider; answer: void };
 
   [LOOK_MCP_SERVER_CHANNEL]: { payload: LookMcpServer; answer: McpLook };
   [SEEN_MCP_SERVER_CHANNEL]: { payload: { id: string }; answer: void };

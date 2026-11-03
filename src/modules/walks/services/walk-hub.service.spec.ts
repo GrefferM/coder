@@ -16,6 +16,7 @@ const PROVIDER: ProviderState = {
   customaryAddress: null,
   keyHint: "…abcd",
   address: null,
+  isOff: false,
 };
 
 /** Providers that list the one. */

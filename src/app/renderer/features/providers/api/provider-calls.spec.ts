@@ -18,6 +18,7 @@ const OLLAMA: ProviderState = {
   customaryAddress: "http://localhost:11434",
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 const OPENROUTER: ProviderState = {
@@ -29,6 +30,7 @@ const OPENROUTER: ProviderState = {
   customaryAddress: null,
   keyHint: null,
   address: null,
+  isOff: false,
 };
 
 function machine(answer: unknown) {
