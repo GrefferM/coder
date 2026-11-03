@@ -45,6 +45,11 @@ runs nothing it wrote.
 
 ## Running it
 
+Node.js `^22.22.2`, `^24.15.0` or `^26.0.0`, with the npm it ships — the range `engines` in
+`package.json` holds, the narrowest the dependencies allow (jsdom, TypeORM, ESLint, Vite). Node runs
+the tooling: the install, Vite, the checks and `test:front`; the app itself, `test:back` and the
+migrations run on the Node that Electron carries.
+
 `npm install`, then `npm run dev:app` — the Electron shell with the renderer served by Vite;
 `npm run dev:app:watch` restarts it when the main process changes. `npm run typecheck` covers all
 three tsconfigs, and `npm run test:back` and `npm run test:front` are the two suites.
