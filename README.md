@@ -24,7 +24,11 @@ different cost and capability to each one, and granting each the tools it may ca
 
 ## Screenshot
 
-![The canvas: linked agents and a finished run](docs/canvas.png)
+![The canvas: four agents branch and join, a run in progress](docs/canvas.png)
+
+![An agent's settings: its model, prompt and the MCP server granted to it](docs/agent-settings.png)
+
+![A finished run laid out as steps, one step opened on what it received and answered](docs/run-steps.png)
 
 **Built with** Electron, TypeScript, React, Vite, TypeORM + SQLite (better-sqlite3), LangChain and the
 MCP TypeScript SDK.
