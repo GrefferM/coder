@@ -9,9 +9,10 @@ export function createRunModule(dataSource: DataSource): RunModule {
   const keeper = new RunKeeper(store);
   const reader = new RunReader(store);
   const writer = new RunWriter(store);
+  const search = new RunSearch(store);
 
   return {
-    controller: new RunController(reader, new RunSearch(store), keeper),
+    controller: new RunController(reader, search, keeper),
     keeper,
     reader,
     writer,

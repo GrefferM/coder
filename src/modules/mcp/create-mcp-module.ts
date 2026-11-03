@@ -11,9 +11,11 @@ export function createMcpModule(secrets: McpSecretStore, dataSource: DataSource)
   const consentStore = new TypeormMcpConsentStore(tables.consents);
   const consents = new McpConsents(consentStore);
   const client = new McpClient(secrets, consents);
+  const mcpSecrets = new McpSecrets(secrets, droppedStore);
+  const memory = new McpMemory(lookStore);
 
   return {
-    controller: new McpController(client, new McpSecrets(secrets, droppedStore), new McpMemory(lookStore), consents),
+    controller: new McpController(client, mcpSecrets, memory, consents),
     client,
   };
 }

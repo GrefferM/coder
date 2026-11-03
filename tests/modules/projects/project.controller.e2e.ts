@@ -95,14 +95,18 @@ describe("ProjectController", () => {
   beforeEach(async () => {
     // A fresh real database per test; the app's own is untouched.
     record = await openTestDatabase();
-    projectController = new ProjectController(
-      new ProjectService(
-        record.dataSource.getRepository(ProjectEntryEntity),
-        new ProjectFileStoreStub(),
-        new ProjectWatchStub(),
-        new ProjectHistoryStub(),
-      ),
+
+    const files = new ProjectFileStoreStub();
+    const watch = new ProjectWatchStub();
+    const history = new ProjectHistoryStub();
+    const projectService = new ProjectService(
+      record.dataSource.getRepository(ProjectEntryEntity),
+      files,
+      watch,
+      history,
     );
+
+    projectController = new ProjectController(projectService);
   });
 
   afterEach(async () => {

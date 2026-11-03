@@ -185,7 +185,8 @@ describe("TurnAsker", () => {
 
   describe("when the composer cannot write the message", () => {
     it("falls the turn with the provider's own sentence, the model never asked", async () => {
-      const llm = new ScriptedLlm({}, new Error("Провайдер не відповів"));
+      const unwritten = new Error("Провайдер не відповів");
+      const llm = new ScriptedLlm({}, unwritten);
       const answer = await new TurnAsker(llm).answer(turn(thread(91_000)));
 
       assert.equal(llm.asked.length, 0);

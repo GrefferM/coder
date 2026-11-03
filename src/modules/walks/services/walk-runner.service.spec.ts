@@ -61,12 +61,14 @@ function standing(
   const llm = new ScriptedLlm(script);
   const listener = new QuietListener();
   const known = new KnownProviders(providers);
+  const project = new StoodProject(config);
+  const servers = new NoServers();
   const runner = new WalkRunner({
-    project: new StoodProject(config),
+    project,
     record,
     llm,
     providers: known,
-    servers: new NoServers(),
+    servers,
     listener,
   });
 

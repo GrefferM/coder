@@ -45,11 +45,14 @@ const CONFIG = aConfig({
 function hubOn(script: Record<string, string>): { hub: WalkHub; record: MemoryRecord; voice: RecordingVoice } {
   const record = new MemoryRecord();
   const voice = new RecordingVoice();
+  const llm = new ScriptedLlm(script);
+  const providers = new KnownProviders();
+  const servers = new NoServers();
   const hub = new WalkHub({
     record,
-    llm: new ScriptedLlm(script),
-    providers: new KnownProviders(),
-    servers: new NoServers(),
+    llm,
+    providers,
+    servers,
     voice,
   });
 

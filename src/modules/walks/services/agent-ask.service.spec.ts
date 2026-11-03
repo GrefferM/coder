@@ -84,12 +84,15 @@ function askOn(
   providers: ProviderLister = new KnownProviders(),
   llm: ScriptedLlm = new ScriptedLlm(script),
 ) {
+  const record = new MemoryRecord();
+  const servers = new NoServers();
+  const voice = new RecordingVoice();
   const hub = new WalkHub({
-    record: new MemoryRecord(),
+    record,
     llm,
     providers,
-    servers: new NoServers(),
-    voice: new RecordingVoice(),
+    servers,
+    voice,
   });
 
   return new AgentAsk(hub, projects);

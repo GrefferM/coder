@@ -101,8 +101,9 @@ describe("ProjectFileService", () => {
   beforeEach(async () => {
     const serializer = new ProjectConfigSerializer();
     const reader = new ProjectFileReader(serializer, folder);
+    const writer = new ProjectFileWriter(serializer, folder, reader);
 
-    projectFileService = new ProjectFileService(reader, new ProjectFileWriter(serializer, folder, reader));
+    projectFileService = new ProjectFileService(reader, writer);
     projectDirectory = await mkdtemp(path.join(os.tmpdir(), "coder-project-"));
   });
 

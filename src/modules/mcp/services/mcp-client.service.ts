@@ -246,7 +246,10 @@ export class McpClient {
       version: MCP_CLIENT_VERSION,
     });
 
-    await client.connect(new StreamableHTTPClientTransport(new URL(server.address), await this.opened(server)), {
+    const address = new URL(server.address);
+    const transport = new StreamableHTTPClientTransport(address, await this.opened(server));
+
+    await client.connect(transport, {
       timeout: MCP_CONNECT_TIMEOUT_MS,
     });
 
