@@ -1534,6 +1534,6 @@ than passed on, since nothing but text reaches a model.
 ## What the interface deliberately does not have
 
 Groups. A minimap. Empty spheres. Ports on a sphere. Alignment guides or snapping. A finish marker.
-Triggers, schemas, a store, Git, a notification centre, a history of deletions on screen — struck
-out, not postponed. Quorum thresholds where lines converge. Any judgement of a graph beyond the three
+Triggers, schemas, a store, Git, a notification centre, a history of deletions on screen — none of
+them, by design. Quorum thresholds where lines converge. Any judgement of a graph beyond the three
 rules that make it a map of calls — no ring, no line drawn twice, no two things under one id.

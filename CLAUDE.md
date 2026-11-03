@@ -196,16 +196,11 @@ conventions, and testing patterns, and `FRONTEND.md` the Electron app and render
 system as it stands — at the same bar as a
 comment: short, factual, no prose or narrative around the fact.
 
-`TODO.md` says what the product is missing: the gaps inside what is built, each with why. There are
-no steps left in it — nothing beyond the built product is planned. **None of them may contradict another.**
-A doc may describe something that doesn't exist, but only while `TODO.md` carries its line —
-otherwise the description is a claim nobody can check. Finishing the work then deletes that line and
-leaves the docs untouched, which is the point: architecture is written once, not re-hedged at every
-stage of being built.
-
-`TODO.md` is a living list, and it is the only place work waits in. Anything found on the way — a
-defect, a decision that turned into work — is written there in the commit that found it, in the
-order it will be done. A line leaves only when the work is done.
+`TODO.md` says what the product lacks: the gaps inside what is built, each with why. **None of these
+documents may contradict another.** A doc may describe something that doesn't exist only while
+`TODO.md` carries its line — otherwise the description is a claim nobody can check — and closing the
+gap deletes that line and leaves the docs untouched. A gap found on the way is written there in the
+commit that found it.
 
 Syncing them is the last step of a change, before the three checks and in the same commit — not a
 separate cleanup later. Re-read every section the change touched and correct whatever stopped being
@@ -245,7 +240,7 @@ how the interface behaves always touches one of these files.
 - **The subject names the piece; the body tells it whole.** Every commit has one. It says what was
   actually done — not a file list, but the piece as a person would describe it — why it was needed,
   what was decided along the way, what a frame asked for and what was done instead, what was left
-  for later, and what the change makes possible next. A reader of the log should not have to open
+  undone, and what the change makes possible. A reader of the log should not have to open
   the diff to learn what happened.
 - **A commit holds what the piece touched, and nothing that wandered in beside it.** Read
   `git status` first and stage by name — `git add <path> <path>`. `git add -A` is allowed only when
