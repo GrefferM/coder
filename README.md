@@ -28,8 +28,9 @@ runs nothing it wrote.
 - `tests` — the end-to-end suite, run by `test:back`; every other test stands beside the file it is
   about.
 - `scripts` — what `package.json` calls: the dev run, the migration CLI, the feature graph.
+- `design` — the agreed design, frame by frame.
 
-## Documents
+## Documents and design
 
 - `OPERATOR.md` — for whoever composes a pipeline: the project file, every field, the system
   commands, the providers, the limits and the usual troubles (in Ukrainian).
@@ -37,6 +38,10 @@ runs nothing it wrote.
 - `BACKEND.md` and `FRONTEND.md` — how the code is built: modules, contracts, the renderer.
 - `CLAUDE.md` — how work is done in this repository: conventions, checks, commits.
 - `TODO.md` — what the built product is still missing.
+- `design/` — the two canvases of frames. Open `Полотно пайплайну - офлайн.html` and
+  `Полотно пайплайну 2 - офлайн.html` in a browser: each carries everything inside and needs neither
+  a server nor the network. `Карта кадрів.md` indexes every frame; `plain/` holds the same canvases
+  as readable HTML for search and diff.
 
 ## Running it
 
@@ -64,4 +69,5 @@ card already carries. `docker-compose.yml` says which model to pull and why that
 
 Copyright © 2026 [Mykhailo Biloshkurskyi](https://www.linkedin.com/in/mykhailo-biloshkurskyi/).
 Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0) — see `LICENSE`
-and `NOTICE`.
+and `NOTICE`. The design carries IBM Plex under the SIL Open Font License 1.1
+(`design/plain/fonts/OFL.txt`) and React under the MIT License (`design/LICENSE-react.txt`).

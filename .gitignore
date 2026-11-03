@@ -23,9 +23,6 @@ logs/
 .scratch/
 .tools/
 
-# The frames join the repository once their notes and map hold no history
-design/
-
 # Editors, and the systems they run on
 .idea/
 .vscode/

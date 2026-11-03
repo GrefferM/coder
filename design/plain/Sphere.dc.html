@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:relative;width:100%;height:100%;opacity:{{ opacity }}">
+  <div style="position:absolute;left:-12.5%;top:-12.5%;width:125%;height:125%;border-radius:50%;background:{{ ambientGlow }}"></div>
+  <sc-if value="{{ targeted }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:-26%;top:-26%;width:152%;height:152%;border-radius:50%;background:{{ breatheGlow }};animation:sphereBreathe 3.8s ease-in-out infinite;pointer-events:none"></div>
+  </sc-if>
+  <svg viewBox="0 0 160 160" width="100%" height="100%" style="position:relative;display:block;overflow:visible">
+    <defs>
+      <filter id="sphere-glow" x="-100%" y="-100%" width="300%" height="300%">
+        <feGaussianBlur stdDeviation="4"></feGaussianBlur>
+      </filter>
+    </defs>
+    <g filter="url(#sphere-glow)" stroke="{{ glowColor }}" stroke-width="2" fill="none">
+      <sc-for list="{{ paths }}" as="p" hint-placeholder-count="15"><path d="{{ p }}" fill="none"></path></sc-for>
+    </g>
+    <g stroke="{{ gridColor }}" stroke-width="1" fill="none">
+      <sc-for list="{{ paths }}" as="p" hint-placeholder-count="15"><path d="{{ p }}" fill="none"></path></sc-for>
+    </g>
+  </svg>
+
+  <sc-if value="{{ hasAttention }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:100%;top:14%;transform:translate(-13px,0);width:16px;height:16px;border-radius:50%;background:#0d0f16;border:1px solid {{ attentionTone }};display:flex;align-items:center;justify-content:center;color:{{ attentionTone }};font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1">?</div>
+  </sc-if>
+
+  <sc-for list="{{ orbs }}" as="o" hint-placeholder-count="0">
+    <div style="position:absolute;left:{{ o.left }};top:{{ o.top }};width:{{ o.size }};height:{{ o.size }};border-radius:{{ o.radius }};background:{{ o.fill }};box-shadow:{{ o.glow }};display:flex;align-items:center;justify-content:center">
+      <sc-if value="{{ o.isSquare }}" hint-placeholder-val="{{ false }}">
+        <svg viewBox="0 0 24 24" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible">
+          <rect x="1" y="1" width="22" height="22" rx="6" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}"></rect>
+          <path d="M6 8.5 9 12l-3 3.5M12.5 15.5h5.5" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}" stroke-linecap="round" stroke-linejoin="round" opacity="0.62"></path>
+        </svg>
+      </sc-if>
+      <sc-if value="{{ o.isRound }}" hint-placeholder-val="{{ true }}">
+        <svg viewBox="0 0 24 24" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible">
+          <circle cx="12" cy="12" r="11" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}"></circle>
+          <ellipse cx="12" cy="12" rx="11" ry="4.2" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}" opacity="0.62" transform="rotate(-35 12 12)"></ellipse>
+          <ellipse cx="12" cy="12" rx="4.2" ry="11" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}" opacity="0.62" transform="rotate(-35 12 12)"></ellipse>
+        </svg>
+      </sc-if>
+      <sc-if value="{{ o.isAgent }}" hint-placeholder-val="{{ false }}">
+        <svg viewBox="0 0 24 24" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible">
+          <circle cx="12" cy="12" r="11" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}"></circle>
+          <ellipse cx="12" cy="12" rx="11" ry="4.6" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}" opacity="0.62"></ellipse>
+          <ellipse cx="12" cy="12" rx="4.6" ry="11" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}" opacity="0.62"></ellipse>
+          <circle cx="12" cy="12" r="2" fill="{{ o.color }}" opacity="0.8"></circle>
+        </svg>
+      </sc-if>
+      <sc-if value="{{ o.isBolt }}" hint-placeholder-val="{{ false }}">
+        <svg viewBox="0 0 24 24" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible">
+          <circle cx="12" cy="12" r="11" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}"></circle>
+          <ellipse cx="12" cy="12" rx="11" ry="4.6" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}" opacity="0.62"></ellipse>
+          <ellipse cx="12" cy="12" rx="4.6" ry="11" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}" opacity="0.62"></ellipse>
+        </svg>
+      </sc-if>
+      <sc-if value="{{ o.isRestSquare }}" hint-placeholder-val="{{ false }}">
+        <svg viewBox="0 0 24 24" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible">
+          <rect x="1" y="1" width="22" height="22" rx="6" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}" stroke-dasharray="3 2.6"></rect>
+        </svg>
+      </sc-if>
+      <sc-if value="{{ o.isRestRound }}" hint-placeholder-val="{{ false }}">
+        <svg viewBox="0 0 24 24" width="100%" height="100%" style="position:absolute;inset:0;overflow:visible">
+          <circle cx="12" cy="12" r="11" fill="none" stroke="{{ o.color }}" stroke-width="{{ o.width }}" stroke-dasharray="3 2.6"></circle>
+        </svg>
+      </sc-if>
+      <sc-if value="{{ o.hasMore }}" hint-placeholder-val="{{ false }}">
+        <span style="position:relative;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0;color:#dde1ee">{{ o.more }}</span>
+      </sc-if>
+    </div>
+  </sc-for>
+
+  <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:12px;border:1px dashed #4a5164;background:rgba(13,15,22,0.72);color:#6b7490;font:300 22px/1 'IBM Plex Sans',sans-serif;display:flex;align-items:center;justify-content:center">+</div>
+  </sc-if>
+
+  <div style="position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:20px;display:flex;flex-direction:column;align-items:center;text-align:center;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;white-space:nowrap">
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ true }}">
+      <div style="color:#6b7490;font-size:11px;letter-spacing:2px">Додати агента</div>
+    </sc-if>
+    <sc-if value="{{ showName }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:4px;font-size:11px;letter-spacing:2px;color:{{ nameColor }}">
+        {{ label }}
+        <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:{{ dotColor }};box-shadow:{{ dotShadow }}"></span>
+      </div>
+      <div style="color:rgba(221,225,238,0.5);font-size:9px;letter-spacing:2px">{{ sub }}</div>
+    </sc-if>
+    <sc-if value="{{ hasMarks }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#6b7490;font-size:9px;letter-spacing:1.5px">
+        <sc-if value="{{ hasPrompt }}" hint-placeholder-val="{{ false }}">
+          <span style="display:flex;align-items:center;gap:3px">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#6b7490" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8l4 4v12H6z"></path><path d="M14 4v4h4"></path></svg>
+          </span>
+        </sc-if>
+        <sc-if value="{{ hasTools }}" hint-placeholder-val="{{ false }}">
+          <span style="display:flex;align-items:center;gap:3px">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#6b7490" stroke-width="2" stroke-linejoin="round"><path d="M14.8 3.6a4.6 4.6 0 0 0-1.1 4.6L4.6 17.3a1.8 1.8 0 0 0 2.5 2.5l9.1-9.1a4.6 4.6 0 0 0 5.3-6.2l-2.9 2.9-2.5-.6-.6-2.5 2.9-2.9a4.6 4.6 0 0 0-3.6 2.2Z"></path></svg>
+            {{ tools }}
+          </span>
+        </sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasAttention }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:7px;display:flex;align-items:center;gap:5px;padding:2px 7px;border-radius:6px;background:{{ attentionBg }};border:1px dashed {{ attentionBorder }};color:{{ attentionTone }};font-size:9px;letter-spacing:1.5px">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"></circle><path d="M12 7.5v5.5M12 16.5h.01"></path></svg>
+        {{ attention }}
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:7px;padding:2px 7px;border-radius:6px;border:1px solid {{ noteBorder }};color:{{ noteColor }};font-size:9px;letter-spacing:1.5px">{{ note }}</div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:320,&quot;height&quot;:340},&quot;label&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;EDITOR&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;sub&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;claude-sonnet-4.5&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;color&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#b18aff&quot;,&quot;options&quot;:[&quot;#b18aff&quot;,&quot;#6fd3d8&quot;,&quot;#e8c46a&quot;,&quot;#e9a3d0&quot;,&quot;#f5a97f&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;on&quot;,&quot;off&quot;,&quot;empty&quot;],&quot;default&quot;:&quot;on&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;selected&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;targeted&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;attention&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;attentionBroken&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;note&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;dim&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;hideLabel&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const SEG = 96, R = 80, TILT = (35 * Math.PI) / 180;
+
+function path(points) {
+  return points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x + R},${p.y + R}`).join(" ");
+}
+function angles(count) {
+  const a = [];
+  for (let i = 1; i <= count; i++) a.push((i * Math.PI) / (count + 1));
+  return a;
+}
+function meridianPoint(lon, psi) {
+  const cp = Math.cos(psi), sp = Math.sin(psi);
+  return {
+    x: R * Math.cos(lon) * cp,
+    y: R * (Math.cos(TILT) * sp - Math.sin(lon) * Math.sin(TILT) * cp),
+    z: R * (Math.sin(TILT) * sp + Math.sin(lon) * Math.cos(TILT) * cp),
+  };
+}
+function parallelPoint(lat, theta) {
+  const lr = R * Math.cos(lat);
+  return {
+    x: lr * Math.cos(theta),
+    y: R * Math.sin(lat) * Math.cos(TILT) - lr * Math.sin(TILT) * Math.sin(theta),
+    z: R * Math.sin(lat) * Math.sin(TILT) + lr * Math.cos(TILT) * Math.sin(theta),
+  };
+}
+function visibleRuns(pointAt) {
+  const pts = Array.from({ length: SEG }, (_, i) => pointAt((i / SEG) * 2 * Math.PI));
+  const vis = pts.map((p) => p.z <= 0);
+  if (vis.every(Boolean)) return [[...pts, pts[0]]];
+  if (!vis.some(Boolean)) return [];
+  const start = vis.findIndex((v, i) => v && !vis[(i - 1 + SEG) % SEG]);
+  const op = [...pts.slice(start), ...pts.slice(0, start)];
+  const ov = [...vis.slice(start), ...vis.slice(0, start)];
+  const runs = [];
+  let cur = [];
+  op.forEach((p, i) => {
+    if (ov[i]) cur.push(p);
+    else if (cur.length) { runs.push(cur); cur = []; }
+  });
+  if (cur.length) runs.push(cur);
+  return runs;
+}
+function gridPaths() {
+  const boundary = path([...Array.from({ length: SEG }, (_, i) => {
+    const a = (i / SEG) * 2 * Math.PI;
+    return { x: R * Math.cos(a), y: R * Math.sin(a), z: 0 };
+  })].concat([{ x: R, y: 0, z: 0 }]));
+  const mer = angles(7).flatMap((lon) => visibleRuns((psi) => meridianPoint(lon, psi)).map(path));
+  const par = angles(7).map((a) => a - Math.PI / 2).flatMap((lat) => visibleRuns((t) => parallelPoint(lat, t)).map(path));
+  return [boundary, ...mer, ...par];
+}
+const PATHS = gridPaths();
+const mix = (c, p) => `color-mix(in srgb, ${c} ${p}%, transparent)`;
+
+class Component extends DCLogic {
+  renderVals() {
+    const state = this.props.state ?? "on";
+    const color = this.props.color ?? "#b18aff";
+    const selected = this.props.selected ?? false;
+    const dim = this.props.dim ?? false;
+    const isEmpty = state === "empty";
+    const isOff = state === "off";
+    const accent = isEmpty ? "#4a5164" : isOff ? "#4a5268" : color;
+    const lit = !isEmpty && !isOff;
+
+    let glowColor, ambientGlow;
+    if (lit) {
+      glowColor = mix(accent, selected ? 90 : 55);
+      ambientGlow = `radial-gradient(circle, ${mix(accent, selected ? 60 : 35)} 0%, transparent 70%)`;
+    } else if (selected) {
+      glowColor = accent;
+      ambientGlow = `radial-gradient(circle, ${accent} 0%, transparent 70%)`;
+    } else {
+      glowColor = "rgba(74, 81, 100, 0.4)";
+      ambientGlow = "radial-gradient(circle, rgba(74, 81, 100, 0.22) 0%, transparent 70%)";
+    }
+
+    return {
+      paths: PATHS,
+      gridColor: accent,
+      glowColor,
+      ambientGlow,
+      isEmpty: isEmpty && !this.props.hideLabel,
+      showName: !isEmpty && !this.props.hideLabel,
+      label: this.props.label ?? "",
+      sub: this.props.sub ?? "",
+      nameColor: accent,
+      dotColor: lit ? "#4ade80" : "#4a5268",
+      dotShadow: lit ? "0 0 6px #4ade80" : "none",
+      tools: this.props.tools ?? 0,
+      hasTools: Boolean(this.props.tools),
+      hasPrompt: Boolean(this.props.prompt),
+      hasMarks: Boolean(this.props.tools || this.props.prompt) && !this.props.hideLabel,
+      orbs: (() => {
+        const list = this.props.orbs;
+        if (!Array.isArray(list) || !list.length) return [];
+        const n = list.length;
+        const spread = Math.min(Math.PI * 1.15, 0.42 * n);
+        const start = -Math.PI / 2 - spread / 2;
+        const R2 = 104;
+        return list.map((o, i) => {
+          const a = n === 1 ? -Math.PI / 2 : start + (spread * i) / (n - 1);
+          const d = o.size ?? 22;
+          const square = Boolean(o.square || o.kind === "command");
+          const rest = Boolean(o.rest);
+          const agentK = o.kind === "agent", boltK = o.kind === "system";
+          return {
+            isSquare: square && !rest,
+            isRound: !square && !rest && !agentK && !boltK,
+            isAgent: agentK && !rest,
+            isBolt: boltK && !rest,
+            isRestSquare: square && rest,
+            isRestRound: !square && rest,
+            radius: square ? Math.max(4, Math.round(d * 0.27)) + "px" : "50%",
+            left: (80 + R2 * Math.cos(a) - d / 2).toFixed(1) + "px",
+            top: (80 + R2 * Math.sin(a) - d / 2).toFixed(1) + "px",
+            size: d + "px",
+            color: o.broken ? "#a9808a" : o.color ?? "#6b7490",
+            fill: o.active ? `color-mix(in srgb, ${o.color ?? "#6fd3d8"} 22%, #0d0f16)` : "#0d0f16",
+            width: o.active ? 1.8 : 1,
+            glow: o.active ? `0 0 12px color-mix(in srgb, ${o.color ?? "#6fd3d8"} 60%, transparent)` : "none",
+            more: o.more ?? "",
+            hasMore: Boolean(o.more),
+          };
+        });
+      })(),
+      targeted: Boolean(this.props.targeted) && lit,
+      breatheGlow: `radial-gradient(circle, ${mix(accent, 26)} 0%, ${mix(accent, 10)} 46%, transparent 68%)`,
+      attention: this.props.attention ?? "",
+      hasAttention: Boolean(this.props.attention),
+      attentionTone: this.props.attentionBroken ? "#f0a5ac" : "#838ba6",
+      attentionBorder: this.props.attentionBroken ? "#4a2530" : "#2c3550",
+      attentionBg: this.props.attentionBroken ? "#1f1a20" : "#171b26",
+      note: this.props.note ?? "",
+      hasNote: Boolean(this.props.note),
+      noteColor: this.props.noteColor ?? "#6b7490",
+      noteBorder: this.props.noteColor ? `color-mix(in srgb, ${this.props.noteColor} 45%, transparent)` : "#262b3a",
+      opacity: dim ? 0.35 : 1,
+    };
+  }
+  componentDidUpdate() {}
+}
+</script>
+</body>
+</html>

@@ -1,2 +1,9 @@
 Coder
 Copyright 2026 Mykhailo Biloshkurskyi
+
+This product includes, under design/:
+
+- IBM Plex Sans and IBM Plex Mono (design/plain/fonts/), Copyright 2017–2019 IBM Corp.,
+  licensed under the SIL Open Font License 1.1 (design/plain/fonts/OFL.txt).
+- React 18.3.1, embedded in the offline canvases (design/*офлайн.html), Copyright Meta Platforms,
+  Inc. and affiliates, licensed under the MIT License (design/LICENSE-react.txt).

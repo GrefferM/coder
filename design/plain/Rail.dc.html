@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="width:44px;margin:6px 0;padding:10px 0;display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0">
+  <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ agentsBg }};color:{{ agentsFg }}">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="7" width="16" height="12" rx="3"></rect><path d="M12 3v4" stroke-linecap="round"></path><path d="M9 12h.01M15 12h.01" stroke-linecap="round"></path><path d="M9.5 16h5" stroke-linecap="round"></path></svg>
+  </div>
+  <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ modelsBg }};color:{{ modelsFg }}">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 8.5 12 4.5l8 4-8 4-8-4Z" stroke-linejoin="round"></path><path d="M4 12.5 12 16.5l8-4" stroke-linejoin="round"></path><path d="M4 16.5 12 20.5l8-4" stroke-linejoin="round"></path></svg>
+  </div>
+  <div style="position:relative;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ mcpBg }};color:{{ mcpFg }}">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v5"></path><path d="M15 3v5"></path><path d="M6 8h12v3a6 6 0 0 1-12 0Z"></path><path d="M12 17v4"></path></svg>
+    <sc-if value="{{ mcpBroken }}" hint-placeholder-val="{{ false }}">
+      <span style="position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:#f0a5ac;box-shadow:0 0 0 2px #12151f"></span>
+    </sc-if>
+  </div>
+  <div style="position:relative;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ toolsBg }};color:{{ toolsFg }}">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m7 10 3 2.5-3 2.5M13 15h4"></path></svg>
+    <sc-if value="{{ toolsBroken }}" hint-placeholder-val="{{ false }}">
+      <span style="position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:#f0a5ac;box-shadow:0 0 0 2px #12151f"></span>
+    </sc-if>
+  </div>
+  <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ promptsBg }};color:{{ promptsFg }}">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8l4 4v12H6z"></path><path d="M14 4v4h4"></path><path d="M9 12h6M9 15.5h4"></path></svg>
+  </div>
+  <div style="width:20px;height:1px;background:#262b3a;margin:9px 0 6px"></div>
+  <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ chatBg }};color:{{ chatFg }}">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-7l-4 3.2V16H6a2 2 0 0 1-2-2Z"></path><path d="M8.5 9.5h7M8.5 12.5h4"></path></svg>
+  </div>
+  <div style="position:relative;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ providersBg }};color:{{ providersFg }}">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15.5" r="4.5"></circle><path d="m11.2 12.3 8.8-8.8"></path><path d="m15.5 8 3 3"></path></svg>
+    <sc-if value="{{ providersBroken }}" hint-placeholder-val="{{ false }}">
+      <span style="position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:#f0a5ac;box-shadow:0 0 0 2px #12151f"></span>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:44,&quot;height&quot;:320},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;chat&quot;,&quot;agents&quot;,&quot;models&quot;,&quot;mcp&quot;,&quot;tools&quot;,&quot;prompts&quot;,&quot;providers&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;broken&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;mcp&quot;,&quot;tools&quot;,&quot;providers&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const active = this.props.active ?? "none";
+    const broken = this.props.broken ?? "none";
+    const on = (k) => ({ bg: active === k ? "#1b1f2c" : "transparent", fg: active === k ? "#38a3ff" : "#838ba6" });
+    const ch = on("chat"), a = on("agents"), m = on("models"), mc = on("mcp"), t = on("tools"), p = on("prompts"), v = on("providers");
+    return {
+      agentsBg: a.bg, agentsFg: a.fg,
+      modelsBg: m.bg, modelsFg: m.fg,
+      mcpBg: mc.bg, mcpFg: mc.fg,
+      toolsBg: t.bg, toolsFg: t.fg,
+      promptsBg: p.bg, promptsFg: p.fg,
+      chatBg: ch.bg, chatFg: ch.fg,
+      providersBg: v.bg, providersFg: v.fg,
+      mcpBroken: broken === "mcp",
+      toolsBroken: broken === "tools",
+      providersBroken: broken === "providers",
+    };
+  }
+}
+</script>
+</body>
+</html>
