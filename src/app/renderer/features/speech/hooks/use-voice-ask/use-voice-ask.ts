@@ -161,6 +161,8 @@ export function useVoiceAsk(hands: VoiceAskHands): VoiceAsk {
     const begun = Date.now();
 
     listening.createMediaStreamSource(stream).connect(meter);
+    // A context made after the microphone's answer has lost the press that would start it, so it is started by hand.
+    void listening.resume();
     heardLevels.current = [];
 
     // The microphone's loudness is taken while it records; the wave runs on it.

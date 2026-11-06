@@ -49,6 +49,8 @@ class StandInListening {
     };
   }
 
+  async resume(): Promise<void> {}
+
   async close(): Promise<void> {}
 }
 

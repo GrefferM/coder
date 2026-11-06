@@ -30,6 +30,7 @@ export function VoiceRow({ standing, startedAt, levels, onCancel }: VoiceRowProp
       className="d-flex align-items-center flex-fill"
       style={{
         gap: VOICE_ROW_GAP_PX,
+        minWidth: 0,
       }}
     >
       <span
