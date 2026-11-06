@@ -1,4 +1,5 @@
 import type { ChatCost, ChatStep } from "../../../../../interfaces";
+import type { CardAloud } from "./card-aloud.interface";
 
 /** `cost` is `null` both while streaming and when the provider reported nothing; `isCounting` tells them apart. */
 export interface AnswerCardProps {
@@ -15,4 +16,6 @@ export interface AnswerCardProps {
   isFound?: boolean;
   /** The word the stream's search is looking for, lit inside the words; empty where none. */
   looked?: string;
+  /** The speaker at the head's far end; `null` where the card is not read aloud (4k). */
+  aloud?: CardAloud | null;
 }

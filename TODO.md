@@ -9,9 +9,9 @@ the same commit; the change that closes it removes the line.
   screen says so meanwhile; the frame has no state drawn for either.
 - A long call output is shown whole: frame 24b's fold — the first two hundred lines, the rest under
   «показати повністю», and «скопіювати все» taking the whole of it — is not built.
-- Speech is drawn and not built: the microphone under the field (4j), an answer read aloud (4k), the
-  «Мовлення» section of the rail (38c) and a model's kind (49d). Until then a question can only be
-  typed.
+- An agent whose model is a recognition model, written so by hand in `project.yaml`, is not stopped
+  at its start: the picker never offers one, but nothing in `agentReadiness` refuses it, and its
+  turn goes to the provider's chat as if the model could talk.
 
 ## Outside the consent to start a server (36k)
 

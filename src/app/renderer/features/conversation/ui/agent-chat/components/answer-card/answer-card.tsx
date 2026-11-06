@@ -33,6 +33,7 @@ import {
   ANSWER_CARD_STEP_LETTER_SPACING_PX,
   ANSWER_CARD_STEP_PREFIX,
 } from "./constants";
+import { AloudButton } from "./components";
 import type { AnswerCardProps } from "./interfaces";
 
 /** An agent answer, streaming or complete; cost is known only after the stream ends. */
@@ -46,6 +47,7 @@ export function AnswerCard({
   step = null,
   isFound,
   looked = "",
+  aloud = null,
 }: AnswerCardProps) {
   // What the counts are read against, where the turn ran under a ceiling.
   const ceiling =
@@ -114,7 +116,8 @@ export function AnswerCard({
          * A plain gap holds the step at the far end; a panel too narrow for the line drops the step to its own line
          * rather than splitting a count or price.
          */}
-        {step !== null && (
+        {/* While the card is read, «ЧИТАЄ» stands where the step stood. */}
+        {step !== null && aloud?.isReading !== true && (
           <span
             className="ms-auto text-nowrap"
             style={{
@@ -124,6 +127,11 @@ export function AnswerCard({
             }}
           >
             {`${ANSWER_CARD_STEP_PREFIX}${step.level}${ANSWER_CARD_FACT_SEPARATOR}${timeLabel(new Date(step.at))}`}
+          </span>
+        )}
+        {aloud !== null && (
+          <span className={step === null || aloud.isReading ? "ms-auto" : undefined}>
+            <AloudButton aloud={aloud} />
           </span>
         )}
       </span>

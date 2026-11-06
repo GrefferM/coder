@@ -8,7 +8,7 @@ import {
 } from "../constants";
 import type { ModelFormValues } from "../interfaces";
 
-/** Required fields still empty: name, provider, both ceilings, both prices. */
+/** Required fields still empty: name and provider, and for a text model both ceilings and both prices. */
 export function modelBlocker(values: ModelFormValues): string[] {
   const missing: string[] = [];
 
@@ -18,6 +18,11 @@ export function modelBlocker(values: ModelFormValues): string[] {
 
   if (!values.provider.trim()) {
     missing.push(MODEL_PROVIDER_DROPPED_LABEL);
+  }
+
+  // A model that recognises speech has no ceilings and no prices.
+  if (values.kind === "listen") {
+    return missing;
   }
 
   if (!values.contextCeiling.trim()) {

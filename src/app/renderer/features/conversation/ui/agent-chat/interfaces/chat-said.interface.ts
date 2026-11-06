@@ -1,6 +1,7 @@
 import type { NamedAgent, WorkingAgent } from "../../../../../interfaces";
 import type { ChatMessage } from "../../../interfaces";
 import type { OpenCalls } from "../../../hooks";
+import type { ReadAloud } from "../../../../speech";
 
 /** What stands in the stream: the words, who said them, and what is still being said. */
 export interface ChatSaid {
@@ -14,4 +15,6 @@ export interface ChatSaid {
   saidAgain: string[];
   /** The message the search drove to; the stream scrolls to it and it wears the edge. */
   foundId: string | null;
+  /** The one voice that reads an answer aloud, and which message it is reading. */
+  aloud: ReadAloud;
 }

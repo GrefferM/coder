@@ -82,6 +82,18 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     off or on at once, an off one's last answer let go — while `ProvidersPanel` keeps what was typed
     per provider in its own state, so a card folded by its chevron, by opening another provider or by
     a switch shows it again at the next opening, and «СКАСУВАТИ» and «ЗБЕРЕГТИ» drop it;
+    `useSpeech`, this machine's voice, read once and changed by laying each change over the settings as
+    they stand — a change the machine refuses is said on the line and the settings are read again —
+    and the OS's voices, told again whenever the OS hands them over; `useSpeechWrites`, the project's
+    choice of its recognition model, written through the project's writer; `useVoiceAsk`, a question
+    said into the field (4j) — the microphone, the recording, the project's recognition model hearing
+    it (`hearingChoice` finds the model by its id and stands on nothing where it does not stand), and
+    its words written after the draft through `heardIntoDraft`, with every refusal handed to the
+    page's line as a `SpeechNote` carrying its act; `useReadAloud`, the window's one voice (4k), which
+    reads an answer by the message's own id with `spokenText` leaving the code out, and which the
+    sample in «Мовлення» shares — the page composes them, stands `SpeechSection` on the rail after
+    the prompts, hands `voice` and `aloud` to the chat, and the chat section drops a recording and
+    silences a reading when the stream is left;
     `useAgentChat`, the chat as the screen shows it: the walks are run by the backend and come back as
     a snapshot, and what is typed, aimed at and attached, and the repeats, stay here — with the files
     picked for the next question waiting under its field, per stream, and the pick refused said back
@@ -220,7 +232,8 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     open, configure, put a question, stop, say again, start afresh, go on in a run, let one go — and
     the pick of files for a question and the pack of them as it goes, `servers/` one holding the
     look at a server, the letting go, the putting out of its news and the asking and giving of
-    consent to its run line, and `models/`, `prompts/` and `commands/` never will, since they are
+    consent to its run line, `speech/` one holding this machine's voice, its save, the hearing of a
+    recording and the system's page of the microphone, and `models/`, `prompts/` and `commands/` never will, since they are
     written through the project's own write path. **No `invoke` stands outside an `api/` at all.**
     What does is the subscriptions, which are not calls and answer nothing — `useProjectFile` on the
     change channel and `useAgentChat` on the walks' channels and the one a turn arrives in piece by
@@ -343,8 +356,8 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
 - `src/app/services/` holds the main process's own collaborators: `SafeStorageCipher`, which hands
   `secrets` the OS keychain; `WindowVoice`, `WindowProjectVoice` and `WindowWalkVoice`, through
   which a module says something to the window without knowing there is one, and `QuietVoice`, which
-  says it to nobody, for the command line; and `SystemShell`, wrapping Electron's folder chooser and
-  file-manager reveal. They live here rather than in a module because each is Electron's to do, and
+  says it to nobody, for the command line; and `SystemShell`, wrapping Electron's folder chooser,
+  file-manager reveal and the system's page of who may use the microphone. They live here rather than in a module because each is Electron's to do, and
   `src/modules` stays free of Electron.
 - `assets/icon.png` is the app icon — `main.ts` points both the window's `icon` option and the macOS
   Dock icon (`app.dock?.setIcon`) at it.
@@ -352,7 +365,8 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
 ## Testing
 
 - Renderer components are tested with Vitest and React Testing Library, not the backend's
-  `node:test` — `npm run test:front` runs them, and `vitest.setup.ts` wires up jest-dom's matchers.
+  `node:test` — `npm run test:front` runs them, and `vitest.setup.ts` wires up jest-dom's matchers
+  and stands in for what jsdom lacks, the OS's speech synthesis among it.
   A test renders into jsdom and checks what's in the DOM and how it responds to interaction, not
   what it looks like.
 - **`renderer/testing/` holds what more than one spec would otherwise write out.** `standInBridge`
@@ -360,7 +374,8 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
   channel, so a spec answering them by hand cannot line up with either, and this is the one place
   that says so instead of every spec casting through `unknown`; a spec that hears a push names its
   shape as the type argument. Beside it stand the builders of the shapes a spec needs whole —
-  `anAgent`, `aModel`, `aPrompt`, `aCommand`, `aLink`, `aConfig`, `aDraft` and `aStep` —
+  `anAgent`, `aModel`, `aPrompt`, `aCommand`, `aLink`, `aConfig`, `aDraft`, `aStep`, `aVoiceAsk`
+  and `aReadAloud` —
   each building its shape entire and taking a `Partial` of what the spec is actually about, so a
   field added to a shape lands here once rather than in every spec that names it. Nothing else
   belongs in the folder: a fixture only one spec builds stays in that spec.

@@ -43,7 +43,8 @@ import {
 import { DEBUG_BAND_LABEL } from "../../../projection/ui/debug-band/constants";
 import type { WorkingAgent } from "../../../../interfaces";
 import type { AgentChatProps, ChatActs, ChatAimed, ChatBand, ChatField, ChatSaid } from "./interfaces";
-import { anAgent } from "../../../../testing";
+import { aReadAloud, aVoiceAsk, anAgent } from "../../../../testing";
+import { READ_ALOUD_LABEL, READ_STOP_LABEL } from "../../../speech";
 
 /** What one case changes; everything left out stands as the fixture sets it. */
 interface ChatOverrides {
@@ -92,6 +93,7 @@ function renderChat(overrides: ChatOverrides = {}) {
         },
         saidAgain: [],
         foundId: null,
+        aloud: aReadAloud(),
         ...overrides.said,
       }}
       field={{
@@ -108,6 +110,7 @@ function renderChat(overrides: ChatOverrides = {}) {
         repeats: 1,
         onRepeats: () => {},
         repeating: null,
+        voice: aVoiceAsk(),
         ...overrides.field,
       }}
       band={{
@@ -511,6 +514,67 @@ describe("AgentChat", () => {
     await userEvent.click(screen.getByText(`${CALL_ROW_CODE_LABEL}0`));
 
     expect(screen.getByText(/maxdepth/)).toBeInTheDocument();
+  });
+
+  it("reads an agent's answer by the message's own id, and stands no speaker over the person's words", async () => {
+    const read = vi.fn();
+
+    renderChat({
+      said: {
+        messages: [
+          asked("question-0"),
+          {
+            ...asked("question-0"),
+            id: "message-1",
+            from: "agent",
+            text: "Готово.",
+          },
+        ],
+        aloud: aReadAloud({
+          read,
+        }),
+      },
+    });
+
+    const speakers = screen.getAllByRole("button", {
+      name: READ_ALOUD_LABEL,
+    });
+
+    expect(speakers).toHaveLength(1);
+
+    await userEvent.click(speakers[0]);
+
+    expect(read).toHaveBeenCalledWith("message-1", "Готово.");
+  });
+
+  it("stops the answer it is reading on a second press", async () => {
+    const stop = vi.fn();
+
+    renderChat({
+      said: {
+        messages: [
+          asked("question-0"),
+          {
+            ...asked("question-0"),
+            id: "message-1",
+            from: "agent",
+            text: "Готово.",
+          },
+        ],
+        aloud: aReadAloud({
+          readingId: "message-1",
+          stop,
+        }),
+      },
+    });
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: READ_STOP_LABEL,
+      }),
+    );
+
+    expect(stop).toHaveBeenCalledTimes(1);
   });
 
   it("stands with the stream and no aim when nobody was asked yet", () => {

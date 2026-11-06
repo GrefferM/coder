@@ -1,6 +1,7 @@
 import type { PickedAttachment } from "../../../../../interfaces";
 import type { RepeatProgress } from "../../../interfaces";
-/** The field under the stream: its text, its height and its two acts. */
+import type { VoiceAsk } from "../../../../speech";
+/** The field under the stream: its text, its height, its two acts and the question said into it. */
 export interface ChatField {
   draft: string;
   /** The height the person pulled this project's field to; `null` if never pulled. */
@@ -20,4 +21,6 @@ export interface ChatField {
   onRepeats: (count: number) => void;
   /** Repeats under way, for «2/5»; the field is shut while they go. */
   repeating: RepeatProgress | null;
+  /** The microphone and what it is doing (4j). */
+  voice: VoiceAsk;
 }

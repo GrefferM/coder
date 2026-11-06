@@ -34,7 +34,7 @@ export function aLink(patch: Partial<Link> = {}): Link {
 
 export function aConfig(patch: Partial<ProjectConfig> = {}): ProjectConfig {
   return {
-    version: 1,
+    version: 2,
     name: "coder",
     models: [],
     prompts: [],
@@ -42,6 +42,9 @@ export function aConfig(patch: Partial<ProjectConfig> = {}): ProjectConfig {
     servers: [],
     agents: [],
     links: [],
+    speech: {
+      listenModelId: null,
+    },
     ...patch,
   };
 }
@@ -50,6 +53,7 @@ export function aModel(patch: Partial<ProjectModel> = {}): ProjectModel {
   return {
     id: "model-1",
     title: "deepseek-v4-flash",
+    kind: "text",
     provider: "openrouter",
     inputPrice: 3,
     outputPrice: 15,

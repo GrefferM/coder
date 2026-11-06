@@ -23,6 +23,9 @@ export const MODEL_ROW_META_COLOR = SECOND_LEVEL_TEXT_COLOR;
 export const MODEL_ROW_META_LETTER_SPACING_PX = 1;
 export const MODEL_ROW_META_SEPARATOR = " · ";
 export const MODEL_ROW_PRICE_UNIT = "/ 1M";
+/** The kind after the name (49d), in the facts' own mark: «· ТЕКСТОВА». */
+export const MODEL_ROW_KIND_MARK = "· ";
+export const MODEL_ROW_KIND_GAP_PX = 6;
 
 /** Open-row detail labels. */
 export const MODEL_ROW_PROVIDER_LABEL = "Провайдер";

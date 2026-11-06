@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { AgentChat, ChatTabs } from "../../../../features/conversation";
 import { RunHistory } from "../../../../features/record";
 import type { ChatSectionProps } from "./interfaces";
@@ -8,12 +9,26 @@ export function ChatSection({
   stream,
   agents,
   aimed,
+  voice,
+  aloud,
   onOpenDebug,
   onOpenProviders,
   onOpenModel,
   onShowConsent,
   onOpenAgentAt,
 }: ChatSectionProps) {
+  const { cancel } = voice;
+  const { stop } = aloud;
+
+  // Leaving the stream, for the history or another section, drops a recording and silences a reading.
+  useEffect(
+    () => () => {
+      cancel();
+      stop();
+    },
+    [stream.tab, cancel, stop],
+  );
+
   return (
     <div
       className="d-flex flex-column flex-fill"
@@ -48,6 +63,7 @@ export function ChatSection({
             saidAgain: chat.saidAgain,
             // The message the search stands on: the row's promise, or the match Enter walked to.
             foundId: stream.foundId,
+            aloud,
           }}
           field={{
             draft: chat.draft,
@@ -63,6 +79,7 @@ export function ChatSection({
             repeats: chat.repeats,
             onRepeats: chat.setRepeats,
             repeating: chat.repeating,
+            voice,
           }}
           band={{
             head: stream.head,

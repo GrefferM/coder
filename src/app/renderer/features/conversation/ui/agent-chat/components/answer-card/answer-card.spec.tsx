@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { AnswerCard } from "./answer-card";
+import { READ_ALOUD_LABEL, READ_STOP_LABEL, READING_LABEL } from "../../../../../speech";
 
 describe("AnswerCard", () => {
   it("writes what the turn cost beside the name, both counts and the money", () => {
@@ -82,5 +83,74 @@ describe("AnswerCard", () => {
     expect(screen.getByText("КРОК 2 · 19:29")).toBeInTheDocument();
     expect(screen.getByText(/0\.3К\/2\.5К/)).toBeInTheDocument();
     expect(screen.getByText(/\$0\.02/)).toBeInTheDocument();
+  });
+
+  it("stands a speaker at the head's far end, and a press on it reads the card", () => {
+    const onPress = vi.fn();
+
+    render(
+      <AnswerCard
+        agentName="EDITOR"
+        agentColor="#38a3ff"
+        text="Готово"
+        cost={null}
+        isCounting={false}
+        step={{
+          level: 1,
+          at: "2026-11-06T12:02:00.000Z",
+        }}
+        aloud={{
+          isReading: false,
+          onPress,
+        }}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: READ_ALOUD_LABEL,
+      }),
+    );
+
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(screen.getByText(/КРОК 1/)).toBeInTheDocument();
+  });
+
+  it("says «ЧИТАЄ» where the step stood while the card is read, beside a stop", () => {
+    render(
+      <AnswerCard
+        agentName="EDITOR"
+        agentColor="#38a3ff"
+        text="Готово"
+        cost={null}
+        isCounting={false}
+        step={{
+          level: 1,
+          at: "2026-11-06T12:02:00.000Z",
+        }}
+        aloud={{
+          isReading: true,
+          onPress: () => {},
+        }}
+      />,
+    );
+
+    expect(screen.getByText(READING_LABEL)).toBeInTheDocument();
+    expect(screen.queryByText(/КРОК 1/)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: READ_STOP_LABEL,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("stands no speaker where the card is not read aloud", () => {
+    render(<AnswerCard agentName="EDITOR" agentColor="#38a3ff" text="Готово" cost={null} isCounting={false} />);
+
+    expect(
+      screen.queryByRole("button", {
+        name: READ_ALOUD_LABEL,
+      }),
+    ).not.toBeInTheDocument();
   });
 });

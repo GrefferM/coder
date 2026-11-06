@@ -15,6 +15,7 @@ import {
   ProjectMcpServerDto,
   ProjectModelDto,
   ProjectPromptDto,
+  ProjectSpeechDto,
 } from "../dto";
 import type { ToolGrantDto } from "../dto";
 import {
@@ -37,7 +38,7 @@ import {
   PROJECT_FROM_NEWER_BUILD,
   wouldMakeCycle,
 } from "../../../contracts";
-import type { AgentMemory } from "../../../contracts";
+import type { AgentMemory, ModelKind } from "../../../contracts";
 import { brokenPlace } from "../logic";
 import { Refusal } from "../../../utils/refusals";
 
@@ -117,6 +118,7 @@ export class ProjectConfigSerializer {
     config.servers = this.toList(source.servers, (item) => this.toMcpServer(item));
     config.agents = this.toList(source.agents, (item) => this.toAgent(item));
     config.links = this.toList(source.links, (item) => this.toLink(item));
+    config.speech = this.toSpeech(source.speech);
 
     return config;
   }
@@ -146,11 +148,23 @@ export class ProjectConfigSerializer {
     return source.map((item) => toEntry(<Record<string, unknown>>item));
   }
 
+  /** What the project recognises speech with; a file that never chose reads as nothing chosen. */
+  private toSpeech(source: unknown): ProjectSpeechDto {
+    const speech = new ProjectSpeechDto();
+    const held = typeof source === "object" && source !== null ? <Record<string, unknown>>source : {};
+
+    speech.listenModelId = held.listenModelId === undefined ? null : <string | null>held.listenModelId;
+
+    return speech;
+  }
+
   private toModel(source: Record<string, unknown>): ProjectModelDto {
     const model = new ProjectModelDto();
 
     model.id = <string>source.id;
     model.title = <string>source.title;
+    // A model written before kinds existed is a text model.
+    model.kind = source.kind === undefined ? "text" : <ModelKind>source.kind;
     model.provider = <string>source.provider;
     // A missing or wrongly written number leaves the field empty, the file whole.
     model.inputPrice = written(source.inputPrice, 0);

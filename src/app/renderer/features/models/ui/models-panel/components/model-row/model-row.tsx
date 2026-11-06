@@ -30,6 +30,8 @@ import {
   MODEL_ROW_EDIT_LABEL,
   MODEL_ROW_GAP_PX,
   MODEL_ROW_INPUT_PRICE_LABEL,
+  MODEL_ROW_KIND_GAP_PX,
+  MODEL_ROW_KIND_MARK,
   MODEL_ROW_META_COLOR,
   MODEL_ROW_META_LETTER_SPACING_PX,
   MODEL_ROW_META_SEPARATOR,
@@ -47,6 +49,7 @@ import {
   MODEL_ROW_TITLE_FONT_SIZE_PX,
 } from "./constants";
 import { NOT_INSTALLED_SUFFIX } from "../../constants";
+import { MODEL_HEARD_LABEL, MODEL_KIND_NAMES, MODEL_NOT_HEARD_LABEL } from "../../../../constants";
 import { LOST_PROVIDER_COLOR, LOST_PROVIDER_SUFFIX } from "../../../../../../constants";
 import type { ModelRowProps } from "./interfaces";
 import { focusRing } from "../../../../../../utils/focus";
@@ -55,6 +58,7 @@ import { focusRing } from "../../../../../../utils/focus";
 export function ModelRow({
   model,
   agents,
+  isHeard,
   isProviderKnown,
   isInstalled,
   isOpen,
@@ -67,6 +71,13 @@ export function ModelRow({
   const isWrong = !isProviderKnown || isInstalled === false;
   const providerSuffix = isProviderKnown ? (isInstalled === false ? NOT_INSTALLED_SUFFIX : "") : LOST_PROVIDER_SUFFIX;
   const isLit = isPointedAt || isFocused || isOpen;
+  const isText = model.kind === "text";
+  /** After the kind: a text model's prices and agents, a listening model's place in speech. */
+  const facts = isText
+    ? [priceLabel(model), agentsCountLabel(agents.length)].join(MODEL_ROW_META_SEPARATOR)
+    : isHeard
+      ? MODEL_HEARD_LABEL
+      : MODEL_NOT_HEARD_LABEL;
   // An unfinished model says so where its prices would be, naming the empty field.
   const notFilled = notFilledLabel(modelNumbers(model));
   /** Open, the row names which price is which; closed, it reads like every other row. */
@@ -112,14 +123,30 @@ export function ModelRow({
             minWidth: 0,
           }}
         >
+          {/* The kind stands after the name, in the type of the facts under it. */}
           <span
-            className="font-monospace head-truncate"
+            className="d-flex align-items-baseline"
             style={{
-              color: isLit ? MODEL_ROW_OPEN_TITLE_COLOR : MODEL_ROW_TITLE_COLOR,
-              fontSize: MODEL_ROW_TITLE_FONT_SIZE_PX,
+              gap: MODEL_ROW_KIND_GAP_PX,
+              minWidth: 0,
             }}
           >
-            {model.title}
+            <span
+              className="font-monospace head-truncate"
+              style={{
+                color: isLit ? MODEL_ROW_OPEN_TITLE_COLOR : MODEL_ROW_TITLE_COLOR,
+                fontSize: MODEL_ROW_TITLE_FONT_SIZE_PX,
+              }}
+            >
+              {model.title}
+            </span>
+            <Mark
+              color={MODEL_ROW_META_COLOR}
+              spacing={MODEL_ROW_META_LETTER_SPACING_PX}
+              className="flex-shrink-0 text-nowrap"
+            >
+              {`${MODEL_ROW_KIND_MARK}${MODEL_KIND_NAMES[model.kind]}`}
+            </Mark>
           </span>
           {!isOpen && (
             <Mark
@@ -127,7 +154,7 @@ export function ModelRow({
               spacing={MODEL_ROW_META_LETTER_SPACING_PX}
               className="text-truncate"
             >
-              {`${[priceLabel(model), agentsCountLabel(agents.length)].join(MODEL_ROW_META_SEPARATOR)}${isInstalled === false ? NOT_INSTALLED_SUFFIX : ""}`}
+              {`${facts}${isInstalled === false ? NOT_INSTALLED_SUFFIX : ""}`}
             </Mark>
           )}
         </span>
@@ -173,38 +200,41 @@ export function ModelRow({
               fontSize: MODEL_ROW_OPEN_TEXT_FONT_SIZE_PX,
             }}
           >
-            {openPrices.join(MODEL_ROW_META_SEPARATOR)}
+            {isText ? openPrices.join(MODEL_ROW_META_SEPARATOR) : facts}
           </span>
-          <div
-            className="d-flex flex-wrap align-items-center"
-            style={{
-              gap: MODEL_ROW_CHIP_GAP_PX,
-            }}
-          >
-            <Mark color={MODEL_ROW_OPEN_TEXT_COLOR} spacing={MODEL_ROW_META_LETTER_SPACING_PX}>
-              {agents.length === 0 ? agentsCountLabel(0) : `${MODEL_ROW_AGENTS_LABEL}:`}
-            </Mark>
-            {agents.map((agent) => (
-              <span
-                key={agent.id}
-                className="d-flex align-items-center font-monospace"
-                style={{
-                  maxWidth: "100%",
-                  minWidth: 0,
-                  gap: MODEL_ROW_CHIP_GAP_PX,
-                  padding: MODEL_ROW_CHIP_PADDING,
-                  borderRadius: MODEL_ROW_CHIP_BORDER_RADIUS_PX,
-                  background: MODEL_ROW_CHIP_BACKGROUND_COLOR,
-                  border: `1px solid ${MODEL_ROW_CHIP_BORDER_COLOR}`,
-                  color: MODEL_ROW_CHIP_COLOR,
-                  fontSize: MODEL_ROW_CHIP_FONT_SIZE_PX,
-                }}
-              >
-                <Dot color={agent.color} size={MODEL_ROW_CHIP_DOT_SIZE_PX} />
-                <span className="text-truncate">{agent.name}</span>
-              </span>
-            ))}
-          </div>
+          {/* Agents stand only on a text model. */}
+          {isText && (
+            <div
+              className="d-flex flex-wrap align-items-center"
+              style={{
+                gap: MODEL_ROW_CHIP_GAP_PX,
+              }}
+            >
+              <Mark color={MODEL_ROW_OPEN_TEXT_COLOR} spacing={MODEL_ROW_META_LETTER_SPACING_PX}>
+                {agents.length === 0 ? agentsCountLabel(0) : `${MODEL_ROW_AGENTS_LABEL}:`}
+              </Mark>
+              {agents.map((agent) => (
+                <span
+                  key={agent.id}
+                  className="d-flex align-items-center font-monospace"
+                  style={{
+                    maxWidth: "100%",
+                    minWidth: 0,
+                    gap: MODEL_ROW_CHIP_GAP_PX,
+                    padding: MODEL_ROW_CHIP_PADDING,
+                    borderRadius: MODEL_ROW_CHIP_BORDER_RADIUS_PX,
+                    background: MODEL_ROW_CHIP_BACKGROUND_COLOR,
+                    border: `1px solid ${MODEL_ROW_CHIP_BORDER_COLOR}`,
+                    color: MODEL_ROW_CHIP_COLOR,
+                    fontSize: MODEL_ROW_CHIP_FONT_SIZE_PX,
+                  }}
+                >
+                  <Dot color={agent.color} size={MODEL_ROW_CHIP_DOT_SIZE_PX} />
+                  <span className="text-truncate">{agent.name}</span>
+                </span>
+              ))}
+            </div>
+          )}
           <div
             className="d-flex align-items-center justify-content-end"
             style={{

@@ -78,6 +78,7 @@ function draw(message: ChatMessage, patch: Partial<Parameters<typeof SaidTurn>[0
       live={[]}
       isFound={false}
       looked=""
+      aloud={null}
       {...patch}
     />,
   );
@@ -119,6 +120,7 @@ describe("SaidTurn", () => {
         live={[]}
         isFound={false}
         looked=""
+        aloud={null}
       />,
     );
 

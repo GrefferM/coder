@@ -15,6 +15,7 @@ describe("modelFormValues", () => {
       ),
     ).toEqual({
       title: "hy-mt2",
+      kind: "text",
       provider: "tencent",
       contextCeiling: "700000",
       answerCeiling: "4096",

@@ -72,6 +72,7 @@ export class ProjectFileWriter {
   private describedModel(model: ProjectModelDto): Record<string, unknown> {
     return {
       title: model.title,
+      kind: model.kind,
       inputPrice: model.inputPrice,
       outputPrice: model.outputPrice,
       contextCeiling: model.contextCeiling,
@@ -134,6 +135,9 @@ export class ProjectFileWriter {
         tools: agent.tools,
       })),
       links: config.links,
+      speech: {
+        listenModelId: config.speech.listenModelId,
+      },
     };
   }
 

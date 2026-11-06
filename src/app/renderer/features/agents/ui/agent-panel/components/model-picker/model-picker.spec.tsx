@@ -67,6 +67,31 @@ describe("ModelPicker", () => {
     expect(screen.getByText("БЕЗ АГЕНТІВ")).toBeInTheDocument();
   });
 
+  it("offers no model that recognises speech, since such a model carries no conversation", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ModelPicker
+        models={[
+          ...MODELS,
+          aModel({
+            id: "whisper",
+            title: "openai/whisper-large-v3",
+            kind: "listen",
+            provider: "openrouter",
+          }),
+        ]}
+        agents={AGENTS}
+        modelId=""
+        onModelIdChange={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByText(MODEL_PICKER_PLACEHOLDER));
+
+    expect(screen.getByText("claude-sonnet-4.5")).toBeInTheDocument();
+    expect(screen.queryByText("openai/whisper-large-v3")).not.toBeInTheDocument();
+  });
+
   it("narrows the list as it is searched, and says how many of how many are left", async () => {
     const user = userEvent.setup();
 

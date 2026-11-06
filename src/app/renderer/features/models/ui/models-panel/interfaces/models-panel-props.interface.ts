@@ -7,6 +7,8 @@ export interface ModelsPanelProps {
   providerAnswers: Record<string, ProviderAnswer>;
   models: ProjectModel[];
   agents: Agent[];
+  /** The model the project hears speech with; `null` while none is chosen. */
+  listenModelId: string | null;
   openModelId: string | "new" | null;
   isMending: boolean;
   form: ModelFormValues | null;

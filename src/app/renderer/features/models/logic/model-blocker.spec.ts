@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { modelBlocker } from "./model-blocker";
+import type { ModelFormValues } from "../interfaces";
 import {
   MODEL_ANSWER_CEILING_DROPPED_LABEL,
   MODEL_CONTEXT_CEILING_DROPPED_LABEL,
@@ -7,8 +8,9 @@ import {
   MODEL_PROVIDER_DROPPED_LABEL,
 } from "../constants";
 
-const FILLED = {
+const FILLED: ModelFormValues = {
   title: "claude-sonnet-4-5",
+  kind: "text",
   provider: "anthropic",
   contextCeiling: "200000",
   answerCeiling: "4096",
@@ -57,5 +59,16 @@ describe("modelBlocker", () => {
         provider: "",
       }),
     ).toEqual([MODEL_PROVIDER_DROPPED_LABEL]);
+  });
+
+  it("asks a recognition model for its name and provider only", () => {
+    expect(
+      modelBlocker({
+        ...FILLED,
+        kind: "listen",
+        contextCeiling: "",
+        inputPrice: "",
+      }),
+    ).toEqual([]);
   });
 });

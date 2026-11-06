@@ -1,5 +1,6 @@
 import type { PickedAttachment } from "../../../../../../../interfaces";
 import type { RepeatProgress } from "../../../../../interfaces";
+import type { VoiceAsk } from "../../../../../../speech";
 
 export interface ComposerProps {
   /** The agent the stream is aimed at; `null` when none, so nothing can be sent. */
@@ -28,4 +29,6 @@ export interface ComposerProps {
   fieldHeight: number | null;
   /** Called at the end of a pull, not on every pixel. */
   onFieldHeight: (height: number) => void;
+  /** The question said rather than typed: the microphone beside the send, and the row while it is recorded and heard. */
+  voice: VoiceAsk;
 }

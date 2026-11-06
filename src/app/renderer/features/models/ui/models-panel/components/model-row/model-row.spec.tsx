@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { ModelRow } from "./model-row";
+import { MODEL_HEARD_LABEL, MODEL_KIND_NAMES, MODEL_NOT_HEARD_LABEL } from "../../../../constants";
 import { MODEL_ROW_DELETE_LABEL, MODEL_ROW_EDIT_LABEL, MODEL_ROW_META_SEPARATOR } from "./constants";
 import { NOT_INSTALLED_SUFFIX } from "../../constants";
 import { LOST_PROVIDER_SUFFIX } from "../../../../../../constants";
@@ -32,7 +33,17 @@ function acts() {
 
 describe("ModelRow", () => {
   it("closed, names the model with its prices and how many agents stand on it", () => {
-    render(<ModelRow model={model()} agents={[seeker]} isProviderKnown isInstalled isOpen={false} {...acts()} />);
+    render(
+      <ModelRow
+        isHeard={false}
+        model={model()}
+        agents={[seeker]}
+        isProviderKnown
+        isInstalled
+        isOpen={false}
+        {...acts()}
+      />,
+    );
 
     expect(screen.getByText("deepseek/deepseek-v4-flash-0731")).toBeInTheDocument();
     expect(
@@ -53,7 +64,17 @@ describe("ModelRow", () => {
       inputPrice: null,
     });
 
-    render(<ModelRow model={unfinished} agents={[]} isProviderKnown isInstalled isOpen={false} {...acts()} />);
+    render(
+      <ModelRow
+        isHeard={false}
+        model={unfinished}
+        agents={[]}
+        isProviderKnown
+        isInstalled
+        isOpen={false}
+        {...acts()}
+      />,
+    );
 
     expect(
       screen.getByText(notFilledLabel(modelNumbers(unfinished)) ?? "", {
@@ -65,7 +86,15 @@ describe("ModelRow", () => {
   it("says a provider this build does not know, and one that no longer holds the model", () => {
     // Both wrongs read the same: what was named is not there to ask.
     const { rerender } = render(
-      <ModelRow model={model()} agents={[]} isProviderKnown={false} isInstalled={null} isOpen {...acts()} />,
+      <ModelRow
+        isHeard={false}
+        model={model()}
+        agents={[]}
+        isProviderKnown={false}
+        isInstalled={null}
+        isOpen
+        {...acts()}
+      />,
     );
 
     expect(
@@ -74,7 +103,9 @@ describe("ModelRow", () => {
       }),
     ).toBeInTheDocument();
 
-    rerender(<ModelRow model={model()} agents={[]} isProviderKnown isInstalled={false} isOpen {...acts()} />);
+    rerender(
+      <ModelRow isHeard={false} model={model()} agents={[]} isProviderKnown isInstalled={false} isOpen {...acts()} />,
+    );
 
     expect(
       screen.getByText(NOT_INSTALLED_SUFFIX, {
@@ -84,7 +115,9 @@ describe("ModelRow", () => {
   });
 
   it("says nothing of the machine where nobody has asked it yet", () => {
-    render(<ModelRow model={model()} agents={[]} isProviderKnown isInstalled={null} isOpen {...acts()} />);
+    render(
+      <ModelRow isHeard={false} model={model()} agents={[]} isProviderKnown isInstalled={null} isOpen {...acts()} />,
+    );
 
     expect(
       screen.queryByText(NOT_INSTALLED_SUFFIX, {
@@ -101,12 +134,12 @@ describe("ModelRow", () => {
   it("keeps the two acts for the open row", async () => {
     const said = acts();
     const { rerender } = render(
-      <ModelRow model={model()} agents={[]} isProviderKnown isInstalled isOpen={false} {...said} />,
+      <ModelRow isHeard={false} model={model()} agents={[]} isProviderKnown isInstalled isOpen={false} {...said} />,
     );
 
     expect(screen.queryByText(MODEL_ROW_EDIT_LABEL)).not.toBeInTheDocument();
 
-    rerender(<ModelRow model={model()} agents={[]} isProviderKnown isInstalled isOpen {...said} />);
+    rerender(<ModelRow isHeard={false} model={model()} agents={[]} isProviderKnown isInstalled isOpen {...said} />);
     await userEvent.click(screen.getByText(MODEL_ROW_EDIT_LABEL));
 
     expect(said.onEdit).toHaveBeenCalledOnce();
@@ -118,13 +151,51 @@ describe("ModelRow", () => {
 
   it("says to a reader whether it stands open", () => {
     const { rerender } = render(
-      <ModelRow model={model()} agents={[]} isProviderKnown isInstalled isOpen={false} {...acts()} />,
+      <ModelRow isHeard={false} model={model()} agents={[]} isProviderKnown isInstalled isOpen={false} {...acts()} />,
     );
 
     expect(screen.getByText(model().title).closest("[aria-expanded]")).toHaveAttribute("aria-expanded", "false");
 
-    rerender(<ModelRow model={model()} agents={[]} isProviderKnown isInstalled isOpen {...acts()} />);
+    rerender(<ModelRow isHeard={false} model={model()} agents={[]} isProviderKnown isInstalled isOpen {...acts()} />);
 
     expect(screen.getByText(model().title).closest("[aria-expanded]")).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("names the model's kind after its name", () => {
+    render(
+      <ModelRow isHeard={false} model={model()} agents={[]} isProviderKnown isInstalled isOpen={false} {...acts()} />,
+    );
+
+    expect(
+      screen.getByText(MODEL_KIND_NAMES.text, {
+        exact: false,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("says of a recognition model whether speech hears with it, not its prices", () => {
+    const whisper = model({
+      kind: "listen",
+      inputPrice: null,
+      outputPrice: null,
+      contextCeiling: null,
+      answerCeiling: null,
+    });
+    const { rerender } = render(
+      <ModelRow isHeard model={whisper} agents={[]} isProviderKnown isInstalled isOpen={false} {...acts()} />,
+    );
+
+    expect(
+      screen.getByText(MODEL_KIND_NAMES.listen, {
+        exact: false,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(MODEL_HEARD_LABEL)).toBeInTheDocument();
+
+    rerender(
+      <ModelRow isHeard={false} model={whisper} agents={[]} isProviderKnown isInstalled isOpen={false} {...acts()} />,
+    );
+
+    expect(screen.getByText(MODEL_NOT_HEARD_LABEL)).toBeInTheDocument();
   });
 });

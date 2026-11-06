@@ -114,6 +114,7 @@ function PanelHarness({
       isMending={isMending}
       models={[...MODELS, UNFILLED]}
       agents={AGENTS}
+      listenModelId={null}
       openModelId={openId}
       form={openId === null ? null : values}
       onOpenForm={(modelId) => {
@@ -232,6 +233,7 @@ describe("ModelsPanel", () => {
 
     expect(onSaveForm).toHaveBeenCalledWith({
       title: "claude-opus-4.1",
+      kind: "text",
       provider: "anthropic",
       contextCeiling: "200000",
       answerCeiling: "4096",
@@ -292,6 +294,7 @@ describe("ModelsPanel", () => {
 
     expect(onSaveForm).toHaveBeenCalledWith({
       title: MODELS[0].title,
+      kind: "text",
       provider: MODELS[0].provider,
       contextCeiling: "200000",
       answerCeiling: "4096",

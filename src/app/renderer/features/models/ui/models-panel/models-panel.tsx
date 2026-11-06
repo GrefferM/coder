@@ -28,6 +28,7 @@ import {
   MODELS_PANEL_SEARCH_PLACEHOLDER,
 } from "./constants";
 import { modelInstalled } from "../../logic";
+import { kindLockNote } from "../../words";
 import type { ModelsPanelProps } from "./interfaces";
 import { focusRing } from "../../../../utils/focus";
 
@@ -38,6 +39,7 @@ export function ModelsPanel({
   saved,
   models,
   agents,
+  listenModelId,
   openModelId,
   isMending,
   form,
@@ -60,6 +62,14 @@ export function ModelsPanel({
         saved={saved}
         isNew={openModelId === "new"}
         isMending={isMending}
+        kindLock={
+          openModelId === "new" || openModelId === null
+            ? null
+            : kindLockNote(
+                agents.filter((agent) => agent.modelId === openModelId).length,
+                openModelId === listenModelId,
+              )
+        }
         onChange={onFormChange}
         onSave={onSaveForm}
         onCancel={onCancelForm}
@@ -168,6 +178,7 @@ export function ModelsPanel({
             key={model.id}
             model={model}
             agents={agents.filter((agent) => agent.modelId === model.id)}
+            isHeard={model.id === listenModelId}
             isProviderKnown={providers.some((provider) => provider.id === model.provider)}
             isInstalled={modelInstalled(model, providers, providerAnswers)}
             isOpen={model.id === chosenModelId}

@@ -10,6 +10,8 @@ import {
   MODEL_NAME_NOTE_PREFIX,
   MODEL_NAME_NOTE_UNCHOSEN,
   MODEL_NAME_NOTES,
+  MODEL_KIND_HINTS,
+  MODELS_PANEL_CEILING_FIELD_LABEL,
 } from "../../constants";
 import { FIELD_SLOT_WAS_PREFIX } from "../../../../../../components/field-slot/constants";
 import type { ModelFormValues } from "../../../../interfaces";
@@ -42,6 +44,7 @@ const local: ProviderState = {
 function values(patch: Partial<ModelFormValues> = {}): ModelFormValues {
   return {
     title: "deepseek-v4-flash",
+    kind: "text",
     provider: "openrouter",
     contextCeiling: "700000",
     answerCeiling: "4096",
@@ -71,6 +74,7 @@ describe("ModelForm", () => {
         saved={null}
         isNew
         isMending={false}
+        kindLock={null}
         {...acts()}
       />,
     );
@@ -86,6 +90,7 @@ describe("ModelForm", () => {
         saved={null}
         isNew
         isMending={false}
+        kindLock={null}
         {...acts()}
       />,
     );
@@ -93,7 +98,15 @@ describe("ModelForm", () => {
     expect(screen.getByText(MODEL_NAME_NOTE_LOCAL)).toBeInTheDocument();
 
     rerender(
-      <ModelForm providers={[remote, local]} values={values()} saved={null} isNew isMending={false} {...acts()} />,
+      <ModelForm
+        providers={[remote, local]}
+        values={values()}
+        saved={null}
+        isNew
+        isMending={false}
+        kindLock={null}
+        {...acts()}
+      />,
     );
 
     expect(
@@ -126,6 +139,7 @@ describe("ModelForm", () => {
         saved={null}
         isNew
         isMending={false}
+        kindLock={null}
         {...acts()}
       />,
     );
@@ -146,6 +160,7 @@ describe("ModelForm", () => {
         saved={null}
         isNew
         isMending={false}
+        kindLock={null}
         {...said}
       />,
     );
@@ -157,7 +172,17 @@ describe("ModelForm", () => {
   it("saves once every field is written", async () => {
     const said = acts();
 
-    render(<ModelForm providers={[remote]} values={values()} saved={null} isNew isMending={false} {...said} />);
+    render(
+      <ModelForm
+        providers={[remote]}
+        values={values()}
+        saved={null}
+        isNew
+        isMending={false}
+        kindLock={null}
+        {...said}
+      />,
+    );
     await userEvent.click(screen.getByText(MODELS_PANEL_CREATE_LABEL));
 
     expect(said.onSave).toHaveBeenCalledOnce();
@@ -174,6 +199,7 @@ describe("ModelForm", () => {
         saved={values()}
         isNew={false}
         isMending={false}
+        kindLock={null}
         {...acts()}
       />,
     );
@@ -189,7 +215,17 @@ describe("ModelForm", () => {
   it("gives every keystroke up as it is typed, the draft living outside the form", async () => {
     const said = acts();
 
-    render(<ModelForm providers={[remote]} values={values()} saved={null} isNew isMending={false} {...said} />);
+    render(
+      <ModelForm
+        providers={[remote]}
+        values={values()}
+        saved={null}
+        isNew
+        isMending={false}
+        kindLock={null}
+        {...said}
+      />,
+    );
     await userEvent.type(screen.getByLabelText(MODELS_PANEL_TITLE_FIELD_LABEL), "x");
 
     expect(said.onChange).toHaveBeenCalledWith({
@@ -200,10 +236,89 @@ describe("ModelForm", () => {
   it("goes back without saving", async () => {
     const said = acts();
 
-    render(<ModelForm providers={[remote]} values={values()} saved={null} isNew isMending={false} {...said} />);
+    render(
+      <ModelForm
+        providers={[remote]}
+        values={values()}
+        saved={null}
+        isNew
+        isMending={false}
+        kindLock={null}
+        {...said}
+      />,
+    );
     await userEvent.click(screen.getByText(MODELS_PANEL_CANCEL_LABEL));
 
     expect(said.onCancel).toHaveBeenCalledOnce();
     expect(said.onSave).not.toHaveBeenCalled();
+  });
+
+  it("takes a recognition model with a name and a provider only: no ceilings, no prices", () => {
+    render(
+      <ModelForm
+        providers={[remote, local]}
+        values={values({
+          kind: "listen",
+        })}
+        saved={null}
+        isNew
+        isMending={false}
+        kindLock={null}
+        {...acts()}
+      />,
+    );
+
+    expect(screen.getByText(MODEL_KIND_HINTS.listen)).toBeInTheDocument();
+    expect(screen.queryByText(MODELS_PANEL_CEILING_FIELD_LABEL)).not.toBeInTheDocument();
+  });
+
+  it("lets go of a provider that cannot hear when the kind turns to recognition", async () => {
+    const said = acts();
+
+    render(
+      <ModelForm
+        providers={[remote, local]}
+        values={values({
+          provider: "ollama",
+        })}
+        saved={null}
+        isNew
+        isMending={false}
+        kindLock={null}
+        {...said}
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("radio", {
+        name: "Розпізнавання",
+      }),
+    );
+
+    expect(said.onChange).toHaveBeenCalledWith({
+      kind: "listen",
+      provider: "",
+    });
+  });
+
+  it("holds the kind still where something stands on the model, and says why", () => {
+    render(
+      <ModelForm
+        providers={[remote]}
+        values={values()}
+        saved={values()}
+        isNew={false}
+        isMending={false}
+        kindLock="На ній стоять 2 агенти — вид не змінити, поки вони на ній."
+        {...acts()}
+      />,
+    );
+
+    expect(screen.getByText("На ній стоять 2 агенти — вид не змінити, поки вони на ній.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("radio", {
+        name: "Розпізнавання",
+      }),
+    ).toBeDisabled();
   });
 });

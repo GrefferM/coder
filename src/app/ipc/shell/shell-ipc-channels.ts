@@ -2,6 +2,7 @@ import type { IpcChannelMap } from "../register-ipc-channels";
 import type { SystemShell } from "../../services";
 import {
   CHOOSE_DIRECTORY_CHANNEL,
+  OPEN_MICROPHONE_SETTINGS_CHANNEL,
   PACK_ATTACHMENTS_CHANNEL,
   PICK_ATTACHMENT_CHANNEL,
   REVEAL_PROJECT_CHANNEL,
@@ -9,11 +10,15 @@ import {
 } from "../../../contracts";
 import type { PackAttachmentsAsk, PickAttachmentsAsk, SaveTextAsk } from "../../../contracts";
 
-/** Desktop channels: pick a working folder, reveal a project file, pick and pack files for a question, save a text. */
+/**
+ * Desktop channels: pick a working folder, reveal a project file, pick and pack files for a question, save a text, open
+ * the microphone's page.
+ */
 export const SHELL_IPC_CHANNELS: IpcChannelMap<SystemShell> = {
   [CHOOSE_DIRECTORY_CHANNEL]: (systemShell) => systemShell.choose(),
   [REVEAL_PROJECT_CHANNEL]: (systemShell, payload) => systemShell.revealProject(<string>payload),
   [PICK_ATTACHMENT_CHANNEL]: (systemShell, payload) => systemShell.attach(<PickAttachmentsAsk>payload),
   [PACK_ATTACHMENTS_CHANNEL]: (systemShell, payload) => systemShell.pack(<PackAttachmentsAsk>payload),
   [SAVE_TEXT_FILE_CHANNEL]: (systemShell, payload) => systemShell.saveText(<SaveTextAsk>payload),
+  [OPEN_MICROPHONE_SETTINGS_CHANNEL]: (systemShell) => systemShell.openMicrophoneSettings(),
 };

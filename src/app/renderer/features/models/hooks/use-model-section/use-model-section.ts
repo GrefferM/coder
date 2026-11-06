@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { modelBlocker, modelFormValues, modelChanges } from "../../logic";
+import { modelBlocker, modelFormValues, modelChanges, modelFromForm } from "../../logic";
 import type { OpenProject, UnsavedWork } from "../../../../interfaces";
 import type { ModelFormValues } from "../../interfaces";
 import type { ModelWrites } from "../use-model-writes";
@@ -61,14 +61,7 @@ export function useModelSection(project: OpenProject, writes: ModelWrites): Mode
       return;
     }
 
-    await writes.saveModel(openModel?.id ?? null, {
-      title: form.title,
-      provider: form.provider,
-      contextCeiling: Number(form.contextCeiling),
-      answerCeiling: Number(form.answerCeiling),
-      inputPrice: Number(form.inputPrice),
-      outputPrice: Number(form.outputPrice),
-    });
+    await writes.saveModel(openModel?.id ?? null, modelFromForm(form));
     setEdits(null);
     setOpenModelId(null);
   }

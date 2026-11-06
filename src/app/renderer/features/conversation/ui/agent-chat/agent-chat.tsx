@@ -17,6 +17,7 @@ import { NOT_STARTED_ENDS } from "../../constants";
 import type { NotStartedReason } from "../../../../interfaces";
 import type { AgentChatProps } from "./interfaces";
 import type { ChatMessage, ChatStep } from "../../interfaces";
+import type { CardAloud } from "./components";
 /** Chat column: the person and every agent in one card recipe, in stream order; a day header where the day changes. */
 export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
   const { messages, agents, working, openCalls } = said;
@@ -47,6 +48,22 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
 
     return () => open(asked.questionId);
   }
+  /** The speaker over an agent's answer, by the message's own id; a turn with no words has nothing to read. */
+  function aloudOf(message: ChatMessage): CardAloud | null {
+    const { readingId, read, stop } = said.aloud;
+
+    if (message.from !== "agent" || message.notStarted !== null || message.text === "") {
+      return null;
+    }
+
+    const isReading = readingId === message.id;
+
+    return {
+      isReading,
+      onPress: () => (isReading ? stop() : read(message.id, message.text)),
+    };
+  }
+
   /** Whether this message ends its question's block, so what is still out follows it. */
   const endsBlock = (at: number) => isLastSaid(at) || messages[at + 1].questionId !== messages[at].questionId;
 
@@ -167,6 +184,7 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
                     live={endsBlock(index) ? liveIn(message.questionId) : []}
                     isFound={message.id === lit}
                     looked={band.search.query.trim()}
+                    aloud={aloudOf(message)}
                   />
                 );
               })}
@@ -192,6 +210,7 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
         repeating={field.repeating}
         fieldHeight={field.height}
         onFieldHeight={field.onHeight}
+        voice={field.voice}
       />
     </div>
   );

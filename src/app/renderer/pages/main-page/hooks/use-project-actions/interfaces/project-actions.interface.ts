@@ -4,6 +4,7 @@ import type { ModelWrites } from "../../../../../features/models";
 import type { CommandWrites } from "../../../../../features/commands";
 import type { ServerWrites } from "../../../../../features/servers";
 import type { PromptWrites } from "../../../../../features/prompts";
+import type { SpeechWrites } from "../../../../../features/speech";
 import type { ProjectWrite } from "../../../../../features/project";
 
 /** The project's writer plus each subject's writes over it. */
@@ -13,4 +14,5 @@ export type ProjectActions = ProjectWrite &
   ModelWrites &
   CommandWrites &
   ServerWrites &
-  PromptWrites;
+  PromptWrites &
+  SpeechWrites;

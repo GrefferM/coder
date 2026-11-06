@@ -6,4 +6,6 @@ export interface SegmentedProps<Value extends string> {
   value: Value;
   onChange: (value: Value) => void;
   isChips?: boolean;
+  /** Stands dim and takes no press; the caller says why beside it. */
+  isDisabled?: boolean;
 }

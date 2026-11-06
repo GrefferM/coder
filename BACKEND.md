@@ -14,10 +14,12 @@ re-reads.
   tie stands in `project.yaml`, and everything a thing is about itself stands in a file of its own**,
   named by its own id: `agents/<id>.yaml`, `models/<id>.yaml`, `commands/<id>.yaml`,
   `servers/<id>.yaml`, and a prompt's body as plain text in `prompts/<id>.md`. The project file
-  holds the links and, for an agent, its model, its prompt and its granted functions; the agent's
+  holds the links, the model the project hears speech with (`speech.listenModelId`, its id), and, for
+  an agent, its model, its prompt and its granted functions; the agent's
   own file holds its name, short description, colour, place, whether it is switched on, its maximum
   of calls and its temperature. A model's provider is a tie, so it stands in the project file; the
-  model's own file holds its name, its prices and its two ceilings — what may be sent to it, and
+  model's own file holds its name, its kind (`text`, or `listen` for one that recognises speech, which
+  holds no numbers; a file that names none is `text`), its prices and its two ceilings — what may be sent to it, and
   what it may say back. An MCP server has no ties, so its whole self stands in its own file: its
   name, whether it is local, the line that starts it or the address it answers at, and how it is
   signed in to. What moves is in no file — the connection's state and the functions a server hands
@@ -105,6 +107,17 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   its key and address, `ProviderState.isOff` says so, and `agentReadiness` stops any agent on it
   with `providerOff`. It is the one module a screen asks about providers, so a key is written
   through the provider it belongs to and `secrets` has no channel of its own.
+- **`speech`** — hearing a recording, and the one thing of speech that is this machine's: the OS
+  voice an answer is read with, by name, in the clear in `speech.json` beside `providers.json` (a file
+  missing or not of its shape reads as no voice). Which model hears is the project's (38c): the
+  window sends each recording with that model's provider and name, and only OpenAI, OpenRouter and
+  RunPod OpenAI hear (`SPEECH_LISTEN_PROVIDER_IDS` in `contracts/speech`), all at the OpenAI
+  protocol's `/audio/transcriptions`. The key and RunPod's address are asked of `providers` through
+  the `SpeechReach` port, inside the main process. A recording whose provider holds no key, or no
+  address where it needs one, is refused `SPEECH_NOT_SET`; a provider's own refusal, or a network
+  that did not carry, is `SPEECH_HEARING_FAILED` with the provider's sentence after it. The sound is
+  kept nowhere. The voice reads in the window, through the OS's own synthesis, so nothing of reading
+  crosses the bridge.
 - **`llm`** — the one module that imports LangChain. It takes messages, tools and a model, and gives
   back an answer or a list of tool calls; it also holds the one mechanical check between a model and
   a command (see Validation). A tool it is handed is of one of three kinds. A declared command is
@@ -253,7 +266,7 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   write out lives in `src/utils/testing/` instead.
 - **A shape that crosses the bridge is written in `src/contracts` and re-exported, never declared
   twice.** A module whose own vocabulary reaches a screen — `llm`, `mcp`, `projects`, `providers`,
-  `runs` — opens its `interfaces/index.ts` with `export * from "../../../contracts/<domain>"` and
+  `runs`, `speech` — opens its `interfaces/index.ts` with `export * from "../../../contracts/<domain>"` and
   declares only what stays behind: its ports, its records, its module shape. Two declarations of one
   shape read as two subjects and drift in silence: each side mends its own copy, both keep
   compiling, and the two meanings part without a single error anywhere.
@@ -561,7 +574,7 @@ it needs, never inline.
 - `src/utils/refusals/` — `Refusal`, the error a module throws when the answer is «ні» rather than a
   fault: the app turns it into words on a screen instead of a line in the terminal.
 - `src/utils/addresses/` — `atProtocol`, an address with a protocol's path on its end once, which
-  `llm` puts an OpenAI-protocol endpoint through.
+  `llm` and `speech` both put RunPod's endpoint through.
 
 ## Testing
 

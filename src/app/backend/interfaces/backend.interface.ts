@@ -2,6 +2,7 @@ import type { McpController } from "../../../modules/mcp";
 import type { DeletionController, ProjectController, ProjectWatch } from "../../../modules/projects";
 import type { ProviderController } from "../../../modules/providers";
 import type { RunController, RunKeeper } from "../../../modules/runs";
+import type { SpeechController } from "../../../modules/speech";
 import type { ProjectCatalog, WalkController, WalkHub } from "../../../modules/walks";
 
 /** Everything the backend is made of, wired once: the doors a window knocks on, and what a command line reaches. */
@@ -9,6 +10,7 @@ export interface Backend {
   projectController: ProjectController;
   deletionController: DeletionController;
   providerController: ProviderController;
+  speechController: SpeechController;
   mcpController: McpController;
   runController: RunController;
   walkController: WalkController;

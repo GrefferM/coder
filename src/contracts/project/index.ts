@@ -51,3 +51,6 @@ export * from "./agent-numbers";
 export * from "./model-numbers";
 export * from "./unfilled-field";
 export * from "./would-make-cycle";
+export * from "./model-kind.type";
+export * from "./model-kinds.constant";
+export * from "./project-speech.interface";

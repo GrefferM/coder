@@ -10,6 +10,7 @@ export function modelFormValues(model: ProjectModel | null): ModelFormValues {
 
   return {
     title: model.title,
+    kind: model.kind,
     provider: model.provider,
     // An unwritten number opens as an empty field, not «null».
     contextCeiling: typed(model.contextCeiling),

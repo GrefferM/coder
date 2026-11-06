@@ -20,6 +20,14 @@ import {
 import type { ComposerProps } from "./interfaces";
 import type { PickedAttachment } from "../../../../../../interfaces";
 import { FIELD_LEAST_HEIGHT_PX, FIELD_MOST_HEIGHT_PX } from "../../../../constants";
+import { aVoiceAsk } from "../../../../../../testing";
+import {
+  HEARING_LABEL,
+  MICROPHONE_FINISH_LABEL,
+  MICROPHONE_LABEL,
+  RECORDING_CANCEL_LABEL,
+  RECORDING_LABEL,
+} from "../../../../../speech";
 
 const FIELD = `${AGENT_CHAT_FIELD_PLACEHOLDER_PREFIX}Шукач`;
 
@@ -68,6 +76,120 @@ describe("Composer · the field's own height", () => {
   });
 });
 
+describe("Composer · a question said into the field (4j)", () => {
+  it("stands the microphone beside the send, and a press on it begins a recording", async () => {
+    const press = vi.fn();
+
+    render(
+      <Composer
+        {...props({
+          voice: aVoiceAsk({
+            press,
+          }),
+        })}
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: MICROPHONE_LABEL,
+      }),
+    );
+
+    expect(press).toHaveBeenCalledTimes(1);
+    expect(screen.getByText(AGENT_CHAT_ATTACH_LABEL)).toBeInTheDocument();
+  });
+
+  it("stands no microphone under a walk, just as it stands no «+»", () => {
+    render(
+      <Composer
+        {...props({
+          isWalking: true,
+        })}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", {
+        name: MICROPHONE_LABEL,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("stands no microphone in a stitched field", () => {
+    render(
+      <Composer
+        {...props({
+          isAgentActive: false,
+        })}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", {
+        name: MICROPHONE_LABEL,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("says the recording where «+» stood, offers to drop it, and sends nothing while it runs", async () => {
+    const cancel = vi.fn();
+    const onSend = vi.fn();
+
+    render(
+      <Composer
+        {...props({
+          draft: "Подивись, чому падає вихід,",
+          onSend,
+          voice: aVoiceAsk({
+            standing: "recording",
+            startedAt: Date.now(),
+            cancel,
+          }),
+        })}
+      />,
+    );
+
+    expect(screen.getByText(new RegExp(RECORDING_LABEL))).toBeInTheDocument();
+    expect(screen.queryByText(AGENT_CHAT_ATTACH_LABEL)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: MICROPHONE_FINISH_LABEL,
+      }),
+    ).toHaveAttribute("aria-pressed", "true");
+    expect(
+      screen.getByRole("button", {
+        name: AGENT_CHAT_SEND_LABEL,
+      }),
+    ).toBeDisabled();
+
+    await userEvent.type(screen.getByLabelText(FIELD), "{Meta>}{Enter}{/Meta}");
+    await userEvent.click(screen.getByText(RECORDING_CANCEL_LABEL));
+
+    expect(onSend).not.toHaveBeenCalled();
+    expect(cancel).toHaveBeenCalledTimes(1);
+  });
+
+  it("says the recording is being heard, the microphone dead until it is", () => {
+    render(
+      <Composer
+        {...props({
+          voice: aVoiceAsk({
+            standing: "hearing",
+          }),
+        })}
+      />,
+    );
+
+    expect(screen.getByText(HEARING_LABEL)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: MICROPHONE_LABEL,
+      }),
+    ).toBeDisabled();
+  });
+});
+
 function props(patch: Partial<ComposerProps> = {}): ComposerProps {
   return {
     agentId: "agent-1",
@@ -78,6 +200,7 @@ function props(patch: Partial<ComposerProps> = {}): ComposerProps {
     onDraftChange: vi.fn(),
     attachments: [],
     onAttach: vi.fn(),
+    voice: aVoiceAsk(),
     onDetach: vi.fn(),
     onSend: vi.fn(),
     onStop: vi.fn(),

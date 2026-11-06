@@ -12,7 +12,7 @@ import type { AgentChatState } from "../../../../features/conversation";
 import type { ShownStream } from "../../hooks/use-shown-stream";
 import type { AgentDraft } from "../../../../features/agents";
 import type { ChatSectionProps } from "./interfaces";
-import { aDraft } from "../../../../testing";
+import { aDraft, aReadAloud, aVoiceAsk } from "../../../../testing";
 
 const aimed: AgentDraft = aDraft({});
 
@@ -101,6 +101,8 @@ function props(patch: Partial<ChatSectionProps> = {}): ChatSectionProps {
     stream: stream(),
     agents: [],
     aimed,
+    voice: aVoiceAsk(),
+    aloud: aReadAloud(),
     onOpenDebug: null,
     onOpenProviders: vi.fn(),
     onShowConsent: vi.fn(),

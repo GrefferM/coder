@@ -865,6 +865,30 @@ apart, each file apart with its path and its packed text, a snapshot of the mome
 opened out of the history carries the same «ПРИКРІПЛЕНО:» row, and «Спитати ще раз» on a question
 that never went glues the files in again with the same hand, in the same order.
 
+**A question can be said instead of typed** (4j). A microphone stands left of the send arrow, the same
+28px square, second-level at rest and accent under the pointer, with no word beside it; it stands
+exactly where «+ ПРИКРІПИТИ» does — not under a walk, not on a stitched field. A press records, a
+second press ends it. While it records, «ЗАПИС · 00:07» stands where «+» stood, its dot breathing at
+1.6s like a running call, the microphone filled with the accent and «СКАСУВАТИ» beside it, which drops
+the recording and leaves the field as it was; the arrow is dimmed and ⌘↵ sends nothing. No red: nothing
+fell. Then «РОЗПІЗНАЄМО…» while the project's recognition model (38c) hears it, and **the heard words are written into
+the field after whatever was typed, never sent**: the hand sends, as always, and can mend them first.
+The sound is kept nowhere, and the person's card does not say the question was spoken. What stops it
+is said on the line over the canvas, with an act where there is one: «Розпізнавання не налаштоване»
+and «МОВЛЕННЯ», «Немає доступу до мікрофона» and «ПАРАМЕТРИ СИСТЕМИ», «‹provider› не розпізнав: ‹its
+words›» and «ЩЕ РАЗ», which sends the same sound again, and «У записі не почуто слів» with none. The
+field is never touched by a refusal. Leaving the stream drops a recording that is running.
+
+**An answer can be heard** (4k). A speaker stands at the far end of an agent's answer head, after
+«КРОК N · година», quiet as the head and accent under the pointer. A press reads the card's words in
+this machine's voice (38c); while it reads, «ЧИТАЄ» stands where the step stood and the speaker turns
+into the stop square in the accent. A second press, or a press on another card, stops it: the window
+has one voice, and the sample in «Мовлення» is read by the same one. Fenced code is not read —
+a pause stands in its place — and the card does not change while it is read. The person's words, the
+app's words on the rule and a card still being written carry no speaker. Nothing is read by itself,
+and leaving the stream silences it. Where no voice is chosen, or the chosen one is gone from this
+machine, the press says «Голос не налаштований» with «МОВЛЕННЯ» on the line.
+
 **One act empties the stream, and it is called what it does** — «+ НОВИЙ ЧАТ», at the far end of the
 tabs where the stream itself is. One place and no second: the tabs stand over an opened run as well
 as over a live one, so that one act is the way out of a run too, and a second copy inside the run's
@@ -1121,6 +1145,31 @@ provider's and «НЕ ВМІЄ ФУНКЦІЙ» too, and its turn is a card of 4
 the provider and «ВІДКРИТИ ПРОВАЙДЕРА». Such a model can still be chosen: the agent's model picker
 says «· провайдер вимкнено» after its prices, and under the field with the provider's name when it is
 the chosen one; the model form's provider picker says it after the provider's row and in the field.
+
+**Speech is a section of its own on the rail** (frame 38c), the last above the rule, its glyph a
+sound wave: what the project recognises speech with travels with the folder. «Розпізнавання» is a
+model of the catalogue whose kind is «Розпізнавання» (49d), chosen from a list that holds only those
+— never typed — and written to `project.yaml` by its id the moment it is chosen; the field names the
+model's provider at its far end. With no such model in the catalogue the field says «НЕ ЗАПОВНЕНО»
+and «ДО МОДЕЛЕЙ» under it opens the models; a chosen model since deleted is an ordinary broken tie,
+«моделі немає». The list carries no foot sentence, the same as the agent's model picker in the app.
+«Голос» is one of the OS's own voices and the one thing of this machine's in the section: its card
+says «Ця машина · у project.yaml не йде», it is written the moment it is chosen, and «ПОСЛУХАТИ»
+stands at its label's edge once one is. A change of the voice the machine does not take is said on
+the line over the canvas, «Мовлення не збережено: …», and the card stands again on what the machine
+holds. The language of recognition is not chosen; the model hears it.
+
+**A model has a kind** (frame 49d): right after its name the form carries «ВИД», «Текстова» or
+«Розпізнавання». A text model is 49a's. A recognition model has a name and a provider and nothing
+else — no ceilings, no prices per token — and only OpenAI, OpenRouter and RunPod OpenAI are offered
+for it; turning the kind to recognition lets go of a provider that cannot hear. The kind is written
+into the model's own file. A model whose file names no kind is a text model, the one exception
+`CLAUDE.md` names. In the catalogue the kind follows the model's name after «·», in the mark of the facts
+under it — 9px mono capitals in `#6b7490`, «ТЕКСТОВА» or «РОЗПІЗНАВАННЯ», on the name's baseline; under the
+name a text model keeps its prices and agents, a recognition model says «Обрана в «Мовленні»» or
+«Не обрана», and its open row carries no agents. The agent's model picker offers text models only. The kind of a model agents
+stand on, or the one speech hears with, cannot change: the track is dim and the sentence under it
+says why.
 
 Choosing a model on an agent opens a list of the project's models with their prices and how many
 agents already run on each — and nothing else. That list has no row for making a model: a model is

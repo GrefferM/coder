@@ -4,4 +4,5 @@ export * from "./mcp";
 export * from "./projects";
 export * from "./providers";
 export * from "./secrets";
+export * from "./speech";
 export * from "./data-source";

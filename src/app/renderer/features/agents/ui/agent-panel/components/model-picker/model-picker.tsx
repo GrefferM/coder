@@ -20,7 +20,7 @@ import { MODEL_PICKER_LOST_GAP_PX, MODEL_PICKER_LOST_LETTER_SPACING_PX, MODEL_PI
 import { LOST_PROVIDER_COLOR, LOST_PROVIDER_SUFFIX, PROVIDER_OFF_SUFFIX } from "../../../../../../constants";
 import type { ModelPickerProps } from "./interfaces";
 
-/** Model choice: project models with prices and agent counts, in the shared picker shell. */
+/** Model choice: the project's text models with prices and agent counts, in the shared picker shell. */
 export function ModelPicker({
   models,
   agents,
@@ -34,6 +34,8 @@ export function ModelPicker({
   onModelIdChange,
 }: ModelPickerProps) {
   const chosen = models.find((model) => model.id === modelId) ?? null;
+  /** Only a text model carries a conversation; one that recognises speech is chosen in «Мовлення». */
+  const offered = models.filter((model) => model.kind === "text");
 
   return (
     <div
@@ -49,7 +51,7 @@ export function ModelPicker({
         fieldColor={chosen ? PICKER_VALUE_COLOR : PICKER_PLACEHOLDER_COLOR}
         isInvalid={isInvalid || isLost || lostProviderId !== null}
         isChanged={isChanged}
-        items={models}
+        items={offered}
         matches={(model, query) => model.title.toLowerCase().includes(query)}
         choose={(model, close) => {
           onModelIdChange(model.id);

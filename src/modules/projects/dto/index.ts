@@ -19,3 +19,4 @@ export * from "./save-project.dto";
 export * from "./remember-deletion.dto";
 export * from "./forget-deletion.dto";
 export * from "./remember-project-view.dto";
+export * from "./project-speech.dto";

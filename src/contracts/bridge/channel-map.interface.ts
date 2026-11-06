@@ -32,6 +32,10 @@ import type {
   REMEMBER_PROJECT_VIEW_CHANNEL,
   REVEAL_PROJECT_CHANNEL,
   SAVE_TEXT_FILE_CHANNEL,
+  OPEN_MICROPHONE_SETTINGS_CHANNEL,
+  SPEECH_SETTINGS_CHANNEL,
+  SAVE_SPEECH_CHANNEL,
+  HEAR_SPEECH_CHANNEL,
   SAVE_PROJECT_CHANNEL,
   SAVE_MCP_ENV_VALUE_CHANNEL,
   SAVE_MCP_TOKEN_CHANNEL,
@@ -54,6 +58,7 @@ import type { McpLook, McpSecretsHeld } from "../mcp";
 import type { CallPlace, RunHit, RunRow, WholeRun } from "../runs";
 import type { AttachmentPick, PackAttachmentsAsk, PackedAttachment, PickAttachmentsAsk } from "../attachments";
 import type { SaveTextAsk } from "../shell";
+import type { HeardSound, SpeechSettings } from "../speech";
 import type { WalkSnapshot } from "../walks";
 import type {
   AskProvider,
@@ -105,6 +110,11 @@ export interface ChannelMap {
   [SAVE_PROVIDER_ADDRESS_CHANNEL]: { payload: SaveProviderValue; answer: void };
   [SWITCH_PROVIDER_CHANNEL]: { payload: SwitchProvider; answer: void };
 
+  [SPEECH_SETTINGS_CHANNEL]: { payload: void; answer: SpeechSettings };
+  [SAVE_SPEECH_CHANNEL]: { payload: SpeechSettings; answer: void };
+  /** The words heard in the recording; empty where none were. */
+  [HEAR_SPEECH_CHANNEL]: { payload: HeardSound; answer: string };
+
   [LOOK_MCP_SERVER_CHANNEL]: { payload: LookMcpServer; answer: McpLook };
   [SEEN_MCP_SERVER_CHANNEL]: { payload: { id: string }; answer: void };
   [MCP_CONSENTED_CHANNEL]: { payload: OfMcpServer; answer: boolean };
@@ -148,6 +158,7 @@ export interface ChannelMap {
    * The person chooses where a text file goes and it is written there; returns the saved path, or null when dismissed.
    */
   [SAVE_TEXT_FILE_CHANNEL]: { payload: SaveTextAsk; answer: string | null };
+  [OPEN_MICROPHONE_SETTINGS_CHANNEL]: { payload: void; answer: void };
 }
 
 /** Every channel; a name outside this is not one. */

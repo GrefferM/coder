@@ -6,6 +6,7 @@ import { createProjectModule } from "../../modules/projects";
 import { createProvidersModule } from "../../modules/providers";
 import { createRunModule } from "../../modules/runs";
 import { createSecretsModule } from "../../modules/secrets";
+import { createSpeechModule } from "../../modules/speech";
 import { RunRecordStore, createWalksModule } from "../../modules/walks";
 import type { SecretCipher } from "../../modules/secrets";
 import type { Backend, BackendVoices } from "./interfaces";
@@ -35,6 +36,7 @@ export async function createBackend(
     secretService,
     userDataPath,
   );
+  const { controller: speechController } = createSpeechModule(providerService, userDataPath);
   const { controller: runController, keeper, reader: runReader, writer: runWriter } = createRunModule(dataSource);
   const { runner: commandRunner } = createCommandsModule();
   // A local server is a process this backend started, so this backend stops it.
@@ -52,6 +54,7 @@ export async function createBackend(
     projectController,
     deletionController,
     providerController,
+    speechController,
     mcpController,
     runController,
     walkController,

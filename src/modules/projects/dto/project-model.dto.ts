@@ -1,4 +1,6 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, Min } from "class-validator";
+import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, Min } from "class-validator";
+import { MODEL_KINDS } from "../../../contracts";
+import type { ModelKind } from "../../../contracts";
 import {
   MODEL_ANSWER_CEILING_LEAST,
   MODEL_ANSWER_CEILING_MOST,
@@ -8,8 +10,8 @@ import {
 } from "../constants";
 
 /**
- * A model: which, its provider, cost per million tokens and two ceilings. An unwritten number is `null` and never
- * refuses the file.
+ * A model: which, what it does, its provider, cost per million tokens and two ceilings. An unwritten number is `null`
+ * and never refuses the file.
  */
 export class ProjectModelDto {
   @IsUUID()
@@ -18,6 +20,9 @@ export class ProjectModelDto {
   @IsString()
   @IsNotEmpty()
   declare title: string;
+
+  @IsIn(MODEL_KINDS)
+  declare kind: ModelKind;
 
   @IsString()
   @IsNotEmpty()

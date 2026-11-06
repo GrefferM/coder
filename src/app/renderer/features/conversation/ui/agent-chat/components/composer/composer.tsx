@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AttachChip, RepeatCount } from "./components";
+import { AttachChip, MicButton, RepeatCount, VoiceRow } from "./components";
 import { Mark, TextButton } from "../../../../../../components";
 import { useInteraction } from "../../../../../../hooks";
 import { INTERACTION_HOVER_BACKGROUND_COLOR, INTERACTION_TRANSITION } from "../../../../../../constants";
@@ -68,6 +68,7 @@ export function Composer({
   repeating,
   fieldHeight,
   onFieldHeight,
+  voice,
 }: ComposerProps) {
   const send = useInteraction();
   const grip = useInteraction();
@@ -78,7 +79,9 @@ export function Composer({
   const isGoing = isWalking || repeating !== null;
   const standing = fieldStanding(agentId, isAgentActive, isGoing);
   const ground = AGENT_CHAT_FIELD_GROUNDS[standing];
-  const canSend = canAsk(draft, standing);
+  /** While a question is being said, half of it is not in the field yet, so nothing is sent. */
+  const isSaying = voice.standing !== "idle";
+  const canSend = canAsk(draft, standing) && !isSaying;
 
   // Quiets the blink when a walk ends.
   useEffect(() => {
@@ -231,6 +234,9 @@ export function Composer({
             </svg>
             {AGENT_CHAT_STOP_LABEL}
           </TextButton>
+        ) : standing === "open" && voice.standing !== "idle" ? (
+          // While a question is said, its word stands where «+» stood.
+          <VoiceRow standing={voice.standing} startedAt={voice.startedAt} onCancel={voice.cancel} />
         ) : standing === "open" ? (
           // «+ ПРИКРІПИТИ» left, send right.
           <>
@@ -244,6 +250,8 @@ export function Composer({
           <Mark className="flex-fill">{aimLabel()}</Mark>
         )}
         <RepeatCount repeats={repeats} repeating={repeating} isShut={standing === "stitched"} onRepeats={onRepeats} />
+        {/* The microphone stands where «+» does: only while there is somewhere to send. */}
+        {standing === "open" && <MicButton standing={voice.standing} onPress={voice.press} />}
         <button
           type="button"
           aria-label={AGENT_CHAT_SEND_LABEL}

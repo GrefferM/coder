@@ -7,6 +7,7 @@ import {
   SEGMENTED_CHOSEN_BACKGROUND_COLOR,
   SEGMENTED_CHOSEN_COLOR,
   SEGMENTED_COLOR,
+  SEGMENTED_DISABLED_OPACITY,
   SEGMENTED_OPTION_BORDER_RADIUS_PX,
   SEGMENTED_OPTION_FONT_SIZE_PX,
   SEGMENTED_OPTION_PADDING,
@@ -19,7 +20,13 @@ import {
 import type { SegmentedProps } from "./interfaces";
 
 /** Segmented choice: options on one track, or as chips for machine-read names. */
-export function Segmented<Value extends string>({ options, value, onChange, isChips = false }: SegmentedProps<Value>) {
+export function Segmented<Value extends string>({
+  options,
+  value,
+  onChange,
+  isChips = false,
+  isDisabled = false,
+}: SegmentedProps<Value>) {
   const [pointedAtValue, setPointedAtValue] = useState<Value | null>(null);
 
   return (
@@ -33,6 +40,7 @@ export function Segmented<Value extends string>({ options, value, onChange, isCh
         borderRadius: isChips ? undefined : SEGMENTED_TRACK_BORDER_RADIUS_PX,
         border: isChips ? undefined : `1px solid ${SEGMENTED_TRACK_BORDER_COLOR}`,
         background: isChips ? undefined : SEGMENTED_TRACK_BACKGROUND_COLOR,
+        opacity: isDisabled ? SEGMENTED_DISABLED_OPACITY : 1,
       }}
     >
       {options.map((option) => {
@@ -46,6 +54,7 @@ export function Segmented<Value extends string>({ options, value, onChange, isCh
             type="button"
             role="radio"
             aria-checked={isChosen}
+            disabled={isDisabled}
             onClick={() => onChange(option.value)}
             onMouseEnter={() => setPointedAtValue(option.value)}
             onMouseLeave={() => setPointedAtValue((current) => (current === option.value ? null : current))}
@@ -59,7 +68,7 @@ export function Segmented<Value extends string>({ options, value, onChange, isCh
               background: isChosen ? SEGMENTED_CHOSEN_BACKGROUND_COLOR : "transparent",
               color: isChosen || isLit ? SEGMENTED_CHOSEN_COLOR : SEGMENTED_COLOR,
               fontSize: isChips ? SEGMENTED_CHIP_FONT_SIZE_PX : SEGMENTED_OPTION_FONT_SIZE_PX,
-              cursor: "pointer",
+              cursor: isDisabled ? "default" : "pointer",
               transition: INTERACTION_TRANSITION,
             }}
           >

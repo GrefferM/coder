@@ -12,6 +12,17 @@ import { PromptsIcon, PromptsPanel } from "../../../../features/prompts";
 import { ProvidersIcon, ProvidersPanel, useProviders } from "../../../../features/providers";
 import { ServersIcon, useServerConsent, useServers } from "../../../../features/servers";
 import {
+  SpeechIcon,
+  SpeechSection,
+  VOICE_SAMPLE,
+  VOICE_SAMPLE_ID,
+  hearingChoice,
+  heardIntoDraft,
+  useReadAloud,
+  useSpeech,
+  useVoiceAsk,
+} from "../../../../features/speech";
+import {
   AGENTS_PANEL_LABEL,
   AGENTS_SECTION_ID,
   CHAT_PANEL_LABEL,
@@ -27,8 +38,11 @@ import {
   PROVIDERS_SECTION_ID,
   SERVERS_PANEL_LABEL,
   SERVERS_SECTION_ID,
+  SPEECH_PANEL_LABEL,
+  SPEECH_SECTION_ID,
 } from "../../constants";
 import type { SidePanelItem } from "../../../../components";
+import type { SpeechNote } from "../../../../features/speech";
 import type { PageSubjects } from "../../interfaces";
 import type { PageParts } from "./interfaces";
 
@@ -61,6 +75,19 @@ export function usePageParts(
       }),
     [sayNote],
   );
+  /** A recording or a reading that did not go is said on the same line, with the act that mends it. */
+  const saySpeech = useCallback(
+    (note: SpeechNote) =>
+      sayNote({
+        label: note.words,
+        detail: null,
+        reason: note.words,
+        isRefusal: true,
+        act: note.act,
+      }),
+    [sayNote],
+  );
+  const speech = useSpeech(saySpeech);
   const chat = useAgentChat(project, agents.selectedAgentId, machine.providers, machine.heard, sayRefused);
   /** The agent the stream targets; the selected one uses its unsaved draft. */
   const aimed =
@@ -73,6 +100,20 @@ export function usePageParts(
   const rail = useRailStanding(subjects, pass);
   // Opens the call a catalogue row refers to, in the chat.
   const showCall = useShowCall(stream, rail, chat.openCalls);
+  const openSpeech = () => rail.handleActiveIdChange(SPEECH_SECTION_ID);
+  /** A question said into the field, heard by the project's recognition model; the words land after what is typed. */
+  const voice = useVoiceAsk({
+    hearing: hearingChoice(project.config, machine.providers),
+    onHeard: (words) => chat.changeDraft(heardIntoDraft(chat.draft, words)),
+    onNote: saySpeech,
+    onOpenSpeech: openSpeech,
+  });
+  /** One voice for the window: an answer in the chat and the sample in «Мовлення» share it. */
+  const aloud = useReadAloud({
+    voiceName: speech.settings.voiceName,
+    onNote: saySpeech,
+    onOpenSpeech: openSpeech,
+  });
 
   /** Opens the projection for the run's pass; `null` when the stream has no row. */
   function openDebug(runId: string | null): ((questionId: string) => void) | null {
@@ -90,7 +131,7 @@ export function usePageParts(
     fellAt: chat.fellAt,
   });
 
-  // Rail order: agents, models, MCP, commands, prompts; then the machine's chat and providers.
+  // Rail order: agents, models, MCP, commands, prompts, speech; then the machine's chat and providers.
   const items: SidePanelItem[] = [
     {
       id: AGENTS_SECTION_ID,
@@ -133,6 +174,7 @@ export function usePageParts(
           saved={models.saved}
           models={project.config.models}
           agents={project.config.agents}
+          listenModelId={project.config.speech.listenModelId}
           openModelId={models.openModelId}
           isMending={models.isMending}
           form={models.form}
@@ -201,6 +243,24 @@ export function usePageParts(
       ),
     },
     {
+      id: SPEECH_SECTION_ID,
+      realm: "project",
+      glyph: <SpeechIcon />,
+      label: SPEECH_PANEL_LABEL,
+      hasUnsaved: false,
+      content: (
+        <SpeechSection
+          models={project.config.models}
+          listenModelId={project.config.speech.listenModelId}
+          providers={machine.providers}
+          speech={speech}
+          onChooseListenModel={(modelId) => void actions.chooseListenModel(modelId)}
+          onOpenModels={() => rail.handleActiveIdChange(MODELS_SECTION_ID)}
+          onListen={() => aloud.read(VOICE_SAMPLE_ID, VOICE_SAMPLE)}
+        />
+      ),
+    },
+    {
       id: CHAT_SECTION_ID,
       realm: "machine",
       glyph: <ChatIcon />,
@@ -227,6 +287,8 @@ export function usePageParts(
           agents={project.config.agents}
           aimed={aimed}
           onOpenDebug={openDebug(stream.shownRunId)}
+          voice={voice}
+          aloud={aloud}
           onOpenProviders={() => rail.handleActiveIdChange(PROVIDERS_SECTION_ID)}
           onOpenModel={() => rail.openAgentModel(chat.aimedAgentId)}
           onShowConsent={consent.ask}

@@ -22,6 +22,28 @@ if (typeof globalThis.ResizeObserver === "undefined") {
   };
 }
 
+// jsdom has no speech synthesis: a voice list that is empty, and readings that go nowhere.
+if (typeof window !== "undefined" && window.speechSynthesis === undefined) {
+  const synthesis = Object.assign(new EventTarget(), {
+    getVoices: (): SpeechSynthesisVoice[] => [],
+    speak: (): void => {},
+    cancel: (): void => {},
+  });
+
+  Object.defineProperty(window, "speechSynthesis", {
+    value: synthesis,
+    configurable: true,
+  });
+  globalThis.SpeechSynthesisUtterance = <typeof SpeechSynthesisUtterance>(<unknown>class {
+    voice: SpeechSynthesisVoice | null = null;
+    lang = "";
+    onend: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+
+    constructor(readonly text: string) {}
+  });
+}
+
 /**
  * @testing-library/react registers auto-cleanup only when `afterEach` is global. The empty `act` settles late `quietly`
  * writes, so React does not warn about updates outside it.

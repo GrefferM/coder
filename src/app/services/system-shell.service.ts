@@ -1,7 +1,13 @@
 import { dialog, shell } from "electron";
 import { stat, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { ATTACHMENT_PICKER_TITLE, DIRECTORY_PICKER_TITLE, TEXT_SAVE_FILTER_LABEL, TEXT_SAVE_TITLE } from "../constants";
+import {
+  ATTACHMENT_PICKER_TITLE,
+  DIRECTORY_PICKER_TITLE,
+  MICROPHONE_SETTINGS_PAGES,
+  TEXT_SAVE_FILTER_LABEL,
+  TEXT_SAVE_TITLE,
+} from "../constants";
 import { PROJECT_FILE_NAME } from "../../modules/projects/constants";
 import { AttachmentPacker } from "../../modules/attachments";
 import type {
@@ -13,7 +19,7 @@ import type {
   SaveTextAsk,
 } from "../../contracts";
 
-/** Electron's desktop calls: choosers, file-manager reveal, and packing a question's files. */
+/** Electron's desktop calls: choosers, file-manager reveal, packing a question's files, and the microphone's page. */
 export class SystemShell {
   constructor(private readonly packer = new AttachmentPacker()) {}
 
@@ -83,6 +89,17 @@ export class SystemShell {
   /** Reveals a project's config file in the file manager, with the project's folder open around it. */
   async revealProject(directory: string): Promise<void> {
     shell.showItemInFolder(path.join(directory, PROJECT_FILE_NAME));
+  }
+
+  /** Opens the system's page of who may use the microphone; a platform without one opens nothing. */
+  async openMicrophoneSettings(): Promise<void> {
+    const page = MICROPHONE_SETTINGS_PAGES[process.platform];
+
+    if (page === undefined) {
+      return;
+    }
+
+    await shell.openExternal(page);
   }
 
   /**

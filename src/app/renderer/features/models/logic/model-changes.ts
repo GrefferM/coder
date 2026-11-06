@@ -4,6 +4,8 @@ import {
   MODEL_CONTEXT_CEILING_CHANGE_LABEL,
   MODEL_CONTEXT_CEILING_DROPPED_LABEL,
   MODEL_INPUT_PRICE_CHANGE_LABEL,
+  MODEL_KIND_CHANGE_LABEL,
+  MODEL_KIND_DROPPED_LABEL,
   MODEL_INPUT_PRICE_DROPPED_LABEL,
   MODEL_OUTPUT_PRICE_CHANGE_LABEL,
   MODEL_OUTPUT_PRICE_DROPPED_LABEL,
@@ -23,6 +25,12 @@ export function modelChanges(saved: ModelFormValues, form: ModelFormValues): Fie
       droppedLabel: MODEL_TITLE_DROPPED_LABEL,
       was: saved.title,
       now: form.title,
+    },
+    {
+      label: MODEL_KIND_CHANGE_LABEL,
+      droppedLabel: MODEL_KIND_DROPPED_LABEL,
+      was: saved.kind,
+      now: form.kind,
     },
     {
       label: MODEL_PROVIDER_CHANGE_LABEL,

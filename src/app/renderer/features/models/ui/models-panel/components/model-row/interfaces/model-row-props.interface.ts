@@ -7,6 +7,8 @@ export interface ModelRowProps {
   /** `null` when unasked: a remote provider, or a local one still quiet. */
   isInstalled: boolean | null;
   agents: Agent[];
+  /** The project hears speech with this model (38c). */
+  isHeard: boolean;
   isOpen: boolean;
   onOpen: () => void;
   onEdit: () => void;

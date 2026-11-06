@@ -16,6 +16,9 @@ different cost and capability to each one, and granting each the tools it may ca
   project's declared commands, system commands and other agents. A local server's run line starts
   only once this machine has agreed to it, word for word, so opening somebody else's project runs
   nothing it wrote.
+- A question can be spoken: the microphone under the field records it, OpenAI, OpenRouter or RunPod OpenAI turns
+  it into words, and they land in the field to be sent by hand. An answer is read aloud in one of the
+  OS's own voices.
 - `npm run agent -- <project> <agent> "question"` runs one agent's walk without the window and exits
   0 when it stood whole, 1 when something fell, 2 when the question did not go.
 - A project is a folder on disk with its `project.yaml`, so an automation is committed and shared
@@ -41,7 +44,8 @@ MCP TypeScript SDK.
   that shows what the backend pushes.
 - `src/modules` — what runs outside the window, one directory per responsibility: `projects` (the
   folder on disk and the registry of the ones opened), `providers` and `secrets` (the keys, in a file encrypted with a
-  key the OS keychain holds), `mcp` (the servers and what they hand over), `commands` (a declared line and what
+  key the OS keychain holds), `speech` (a recording turned into words by the project's recognition model, and this
+  machine's voice), `mcp` (the servers and what they hand over), `commands` (a declared line and what
   it printed), `attachments` (the files sent with a question), `llm` (one turn of an agent, and the only
   place LangChain is imported), `walks` (a conversation's walk along the canvas lines, from the
   question to the last answer) and `runs` (the record of every run). The registry and the record live in SQLite through TypeORM;

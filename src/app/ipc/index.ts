@@ -3,6 +3,7 @@ export * from "./mcp";
 export * from "./projects";
 export * from "./providers";
 export * from "./shell";
+export * from "./speech";
 export * from "./deletions";
 export * from "./runs";
 export * from "./walks";

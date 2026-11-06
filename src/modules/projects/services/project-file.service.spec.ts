@@ -262,6 +262,56 @@ describe("ProjectFileService", () => {
     assert.equal(config.models[0].answerCeiling, 4096);
   });
 
+  it("reads a model whose file names no kind as a text model, and writes the kind down on the next save", async () => {
+    const serializer = new ProjectConfigSerializer();
+
+    await mkdir(projectDirectory, {
+      recursive: true,
+    });
+    await writeFile(path.join(projectDirectory, "project.yaml"), serializer.text(fullConfig()), "utf8");
+
+    const config = await projectFileService.read(projectDirectory);
+
+    assert.equal(config.models[0].kind, "text");
+
+    await projectFileService.write(projectDirectory, config);
+
+    assert.match(await readFile(path.join(projectDirectory, "models", `${MODEL_ID}.yaml`), "utf8"), /kind: text/);
+  });
+
+  it("keeps a recognition model's kind in its own file, and the project's choice of it in the project file", async () => {
+    const serializer = new ProjectConfigSerializer();
+    const source = fullConfig();
+    const [model] = <Record<string, unknown>[]>source.models;
+
+    model.kind = "listen";
+    source.speech = {
+      listenModelId: MODEL_ID,
+    };
+
+    await projectFileService.write(projectDirectory, await serializer.toValidConfig(source));
+
+    const index = await readFile(path.join(projectDirectory, "project.yaml"), "utf8");
+
+    assert.match(index, new RegExp(`listenModelId: ${MODEL_ID}`));
+    assert.match(await readFile(path.join(projectDirectory, "models", `${MODEL_ID}.yaml`), "utf8"), /kind: listen/);
+
+    const config = await projectFileService.read(projectDirectory);
+
+    assert.equal(config.models[0].kind, "listen");
+    assert.equal(config.speech.listenModelId, MODEL_ID);
+  });
+
+  it("reads a project that never chose how to hear as having chosen nothing", async () => {
+    const serializer = new ProjectConfigSerializer();
+
+    await projectFileService.write(projectDirectory, await serializer.toValidConfig(fullConfig()));
+
+    const config = await projectFileService.read(projectDirectory);
+
+    assert.equal(config.speech.listenModelId, null);
+  });
+
   it("puts an empty skeleton where a description is gone, instead of refusing the project", async () => {
     const serializer = new ProjectConfigSerializer();
 

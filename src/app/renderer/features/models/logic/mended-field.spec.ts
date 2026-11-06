@@ -5,6 +5,7 @@ import type { ModelFormValues } from "../interfaces";
 function values(patch: Partial<ModelFormValues> = {}): ModelFormValues {
   return {
     title: "claude-sonnet-4.5",
+    kind: "text",
     provider: "anthropic",
     contextCeiling: "200000",
     answerCeiling: "4096",

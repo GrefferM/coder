@@ -24,7 +24,9 @@ wrote, and opening it would mean saving it back without those fields.
 
 **But nothing is carried for the sake of an old file.** No default, no conversion, no constant
 standing in for a field an earlier build never wrote — an old file is owed an open door and an
-honest question, not its old meanings. The database is different: it is this machine's, and every
+honest question, not its old meanings. One exception stands, the owner's own: a model whose file
+names no `kind` is a text model (49d), since every model before kinds was one, and asking would stop
+every older project at once. The database is different: it is this machine's, and every
 change to its schema is a migration of its own that keeps the rows already there (`BACKEND.md`).
 
 ## Project structure

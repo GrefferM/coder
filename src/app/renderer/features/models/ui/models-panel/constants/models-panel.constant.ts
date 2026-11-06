@@ -1,3 +1,5 @@
+import type { SegmentedOption } from "../../../../../components";
+import type { ModelKind } from "../../../../../interfaces";
 import { BORDER_AT_REST_COLOR, FIRST_LEVEL_TEXT_COLOR, SECOND_LEVEL_TEXT_COLOR } from "../../../../../constants";
 import { groupedNumber } from "../../../../../utils/numbers";
 import {
@@ -38,6 +40,23 @@ export const MODELS_PANEL_SEARCH_EMPTY_LABEL = "Нічого не знайшло
 
 /** Model form field labels and the two exits. */
 export const MODELS_PANEL_TITLE_FIELD_LABEL = "НАЗВА";
+
+/** The kind right after the name (49d): what the model does, and a sentence on what that means. */
+export const MODEL_KIND_FIELD_LABEL = "ВИД";
+export const MODEL_KIND_OPTIONS: SegmentedOption<ModelKind>[] = [
+  {
+    value: "text",
+    label: "Текстова",
+  },
+  {
+    value: "listen",
+    label: "Розпізнавання",
+  },
+];
+export const MODEL_KIND_HINTS: Record<ModelKind, string> = {
+  text: "",
+  listen: "Слухає запис і повертає слова. Агентові її не поставити — її обирають у розділі «Мовлення».",
+};
 export const MODELS_PANEL_PROVIDER_FIELD_LABEL = "ПРОВАЙДЕР";
 export const MODELS_PANEL_CEILING_FIELD_LABEL = "СТЕЛЯ КОНТЕКСТУ";
 export const MODELS_PANEL_ANSWER_CEILING_FIELD_LABEL = "СТЕЛЯ ВІДПОВІДІ";

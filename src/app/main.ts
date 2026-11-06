@@ -7,6 +7,7 @@ import {
   PROVIDERS_IPC_CHANNELS,
   RUNS_IPC_CHANNELS,
   SHELL_IPC_CHANNELS,
+  SPEECH_IPC_CHANNELS,
   WALKS_IPC_CHANNELS,
 } from "./ipc";
 import { SafeStorageCipher, SystemShell, WindowProjectVoice, WindowVoice, WindowWalkVoice } from "./services";
@@ -46,6 +47,7 @@ async function initializeIpc(): Promise<void> {
   registerIpcChannels(wired.projectController, PROJECTS_IPC_CHANNELS);
   registerIpcChannels(wired.deletionController, DELETIONS_IPC_CHANNELS);
   registerIpcChannels(wired.providerController, PROVIDERS_IPC_CHANNELS);
+  registerIpcChannels(wired.speechController, SPEECH_IPC_CHANNELS);
   registerIpcChannels(wired.mcpController, MCP_IPC_CHANNELS);
   registerIpcChannels(wired.runController, RUNS_IPC_CHANNELS);
   registerIpcChannels(wired.walkController, WALKS_IPC_CHANNELS);

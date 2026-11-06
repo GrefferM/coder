@@ -5,6 +5,7 @@ import { ProjectLinkDto } from "./project-link.dto";
 import { ProjectMcpServerDto } from "./project-mcp-server.dto";
 import { ProjectModelDto } from "./project-model.dto";
 import { ProjectPromptDto } from "./project-prompt.dto";
+import { ProjectSpeechDto } from "./project-speech.dto";
 
 /** The whole project file, parsed and raised to the current version. */
 export class ProjectConfigDto {
@@ -60,4 +61,7 @@ export class ProjectConfigDto {
   })
   @ArrayUnique((link: ProjectLinkDto) => link.id)
   declare links: ProjectLinkDto[];
+
+  @ValidateNested()
+  declare speech: ProjectSpeechDto;
 }

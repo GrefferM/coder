@@ -1,6 +1,7 @@
 import type { OpenCalls } from "../../../../../hooks";
 import type { NamedAgent, WorkingAgent } from "../../../../../../../interfaces";
 import type { ChatMessage, ChatStep } from "../../../../../interfaces";
+import type { CardAloud } from "../../answer-card";
 
 export interface SaidTurnProps {
   message: ChatMessage;
@@ -32,4 +33,6 @@ export interface SaidTurnProps {
   isFound: boolean;
   /** The searched word, lit only in the person's question and an agent's answer: the only places the search counts. */
   looked: string;
+  /** The speaker over an agent's answer; `null` where the turn has no words to read (4k). */
+  aloud: CardAloud | null;
 }
