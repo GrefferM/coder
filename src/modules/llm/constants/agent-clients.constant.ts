@@ -28,14 +28,8 @@ import {
 import { opencodeModelName, opencodeProtocolOf } from "../logic";
 import { RUNPOD_OPENAI_FAILURE_HINT } from "./runpod.constant";
 import { RunPodChat } from "../services/runpod-chat.service";
+import { atProtocol } from "../../../utils/addresses";
 import type { AgentClient } from "../interfaces";
-
-/** The address with the protocol's path on its end, once, whatever trailing slashes it was written with. */
-function atProtocol(address: string | null, protocolPath: string): string {
-  const machine = (address ?? "").replace(/\/+$/, "");
-
-  return machine.endsWith(protocolPath) ? machine : `${machine}${protocolPath}`;
-}
 
 /** A call that says who makes it: the OpenAI client puts its own library's name on the header, whatever it is given. */
 const asCoder: typeof fetch = (input, init) => {

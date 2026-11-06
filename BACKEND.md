@@ -560,6 +560,8 @@ it needs, never inline.
   database.
 - `src/utils/refusals/` — `Refusal`, the error a module throws when the answer is «ні» rather than a
   fault: the app turns it into words on a screen instead of a line in the terminal.
+- `src/utils/addresses/` — `atProtocol`, an address with a protocol's path on its end once, which
+  `llm` puts an OpenAI-protocol endpoint through.
 
 ## Testing
 
