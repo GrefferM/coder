@@ -145,7 +145,7 @@ lands far from where it was made.
 ### Design
 
 `design/` holds the agreed design, frame by frame, and it is the **only** source for
-anything visual. Two canvases: `Полотно пайплайну - офлайн.html` (121 frames, everything but the
+anything visual. Two canvases: `Полотно пайплайну - офлайн.html` (125 frames, everything but the
 details) and `Полотно пайплайну 2 - офлайн.html` (19 frames, 23f–23n, 23r, 23t–23x, 24g–24i and 24k —
 details of the chat, the history and the projection). Each has a plain twin under `plain/` for grep and `git diff`; the
 bundles are what you open. Never build or correct a screen from memory of it, from a screenshot in
@@ -173,7 +173,7 @@ the conversation, or from what seems reasonable — open the frame and read the 
   rather than redrawing them.
 - **A bundle can lag its own canvas**, since it is rebuilt by hand: before trusting one, count the
   frames in it against the plain twin beside it — `id="<number>"` with the letter optional, since 11
-  and 43 carry none: 121 in the first canvas and 19 in the second — and check a word the design has
+  and 43 carry none: 125 in the first canvas and 19 in the second — and check a word the design has
   since dropped.
 - **Take the numbers, not the impression** — size, padding, radius, colour, font size, letter
   spacing. A value that looks close is a value that is wrong.
