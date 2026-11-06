@@ -33,7 +33,7 @@ import {
   ANSWER_CARD_STEP_LETTER_SPACING_PX,
   ANSWER_CARD_STEP_PREFIX,
 } from "./constants";
-import { AloudButton } from "./components";
+import { AloudButton, ReadingBar, SpokenWords } from "./components";
 import type { AnswerCardProps } from "./interfaces";
 
 /** An agent answer, streaming or complete; cost is known only after the stream ends. */
@@ -135,6 +135,8 @@ export function AnswerCard({
           </span>
         )}
       </span>
+      {/* While the card is read, a bar of what is behind stands between its head and its words. */}
+      {aloud?.isReading === true && <ReadingBar ratio={aloud.spoken?.ratio ?? 0} />}
       <span
         style={{
           padding: AGENT_CHAT_CARD_PADDING,
@@ -154,7 +156,11 @@ export function AnswerCard({
           cursor: "text",
         }}
       >
-        <FoundWords words={text} looked={looked} />
+        {aloud?.spoken === null || aloud?.spoken === undefined ? (
+          <FoundWords words={text} looked={looked} />
+        ) : (
+          <SpokenWords words={text} spoken={aloud.spoken} />
+        )}
       </span>
     </div>
   );

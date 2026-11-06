@@ -90,7 +90,7 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     it (`hearingChoice` finds the model by its id and stands on nothing where it does not stand), and
     its words written after the draft through `heardIntoDraft`, with every refusal handed to the
     page's line as a `SpeechNote` carrying its act; `useReadAloud`, the window's one voice (4k), which
-    reads an answer by the message's own id with `spokenText` leaving the code out, and which the
+    reads an answer by the message's own id with `spokenParts` leaving the code out and following the word the voice reaches (`spokenWord`) for the card to light, and which the
     sample in «Мовлення» shares — the page composes them, stands `SpeechSection` on the rail after
     the prompts, hands `voice` and `aloud` to the chat, and the chat section drops a recording and
     silences a reading when the stream is left;

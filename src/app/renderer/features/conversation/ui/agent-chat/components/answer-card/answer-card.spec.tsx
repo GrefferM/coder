@@ -101,6 +101,7 @@ describe("AnswerCard", () => {
         }}
         aloud={{
           isReading: false,
+          spoken: null,
           onPress,
         }}
       />,
@@ -130,6 +131,7 @@ describe("AnswerCard", () => {
         }}
         aloud={{
           isReading: true,
+          spoken: null,
           onPress: () => {},
         }}
       />,
@@ -152,5 +154,37 @@ describe("AnswerCard", () => {
         name: READ_ALOUD_LABEL,
       }),
     ).not.toBeInTheDocument();
+  });
+
+  it("lights the word being read and shows how much is behind, while the card is read", () => {
+    render(
+      <AnswerCard
+        agentName="EDITOR"
+        agentColor="#38a3ff"
+        text="Додав кеш на 60 секунд."
+        cost={null}
+        isCounting={false}
+        aloud={{
+          isReading: true,
+          spoken: {
+            start: 6,
+            end: 9,
+            ratio: 0.25,
+          },
+          onPress: () => {},
+        }}
+      />,
+    );
+
+    expect(screen.getByText("кеш")).toHaveStyle({
+      background: "rgba(56, 163, 255, 0.22)",
+    });
+    expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "25");
+  });
+
+  it("draws no bar while the card is not read", () => {
+    render(<AnswerCard agentName="EDITOR" agentColor="#38a3ff" text="Готово" cost={null} isCounting={false} />);
+
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
   });
 });

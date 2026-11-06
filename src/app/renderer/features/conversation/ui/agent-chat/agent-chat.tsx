@@ -50,7 +50,7 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
   }
   /** The speaker over an agent's answer, by the message's own id; a turn with no words has nothing to read. */
   function aloudOf(message: ChatMessage): CardAloud | null {
-    const { readingId, read, stop } = said.aloud;
+    const { readingId, spoken, read, stop } = said.aloud;
 
     if (message.from !== "agent" || message.notStarted !== null || message.text === "") {
       return null;
@@ -60,6 +60,7 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
 
     return {
       isReading,
+      spoken: isReading ? spoken : null,
       onPress: () => (isReading ? stop() : read(message.id, message.text)),
     };
   }

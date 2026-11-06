@@ -15,6 +15,7 @@ export function aVoiceAsk(patch: Partial<VoiceAsk> = {}): VoiceAsk {
 export function aReadAloud(patch: Partial<ReadAloud> = {}): ReadAloud {
   return {
     readingId: null,
+    spoken: null,
     read: () => {},
     stop: () => {},
     ...patch,

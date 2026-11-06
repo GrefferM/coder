@@ -116,4 +116,44 @@ describe("useReadAloud", () => {
 
     expect(cancel).toHaveBeenCalledTimes(1);
   });
+
+  it("follows the word the voice reaches, and lets it go when the reading ends", () => {
+    const { spoken } = synthesisWithLesya();
+    const { result } = renderHook(() => useReadAloud(hands()));
+
+    act(() => result.current.read("message-1", "Додав кеш."));
+    act(() =>
+      spoken[0].onboundary?.(<SpeechSynthesisEvent>(<unknown>{
+        name: "word",
+        charIndex: 6,
+      })),
+    );
+
+    expect(result.current.spoken).toEqual({
+      start: 6,
+      end: 10,
+      ratio: 0.6,
+    });
+
+    act(() => spoken[0].onend?.(<SpeechSynthesisEvent>(<unknown>{})));
+
+    expect(result.current.spoken).toBeNull();
+  });
+
+  it("lights no word of a reading another one has replaced", () => {
+    const { spoken } = synthesisWithLesya();
+    const { result } = renderHook(() => useReadAloud(hands()));
+
+    act(() => result.current.read("message-1", "Перша відповідь."));
+    act(() => result.current.read("message-2", "Друга."));
+    act(() =>
+      spoken[0].onboundary?.(<SpeechSynthesisEvent>(<unknown>{
+        name: "word",
+        charIndex: 6,
+      })),
+    );
+
+    expect(result.current.readingId).toBe("message-2");
+    expect(result.current.spoken).toBeNull();
+  });
 });

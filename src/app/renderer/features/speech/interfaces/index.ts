@@ -7,3 +7,5 @@ export * from "./speech-note.interface";
 export * from "./speech-state.interface";
 export * from "./voice-ask.interface";
 export * from "./voice-ask-hands.interface";
+export * from "./spoken-parts.interface";
+export * from "./spoken-word.interface";

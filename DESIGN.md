@@ -881,13 +881,16 @@ field is never touched by a refusal. Leaving the stream drops a recording that i
 
 **An answer can be heard** (4k). A speaker stands at the far end of an agent's answer head, after
 «КРОК N · година», quiet as the head and accent under the pointer. A press reads the card's words in
-this machine's voice (38c); while it reads, «ЧИТАЄ» stands where the step stood and the speaker turns
-into the stop square in the accent. A second press, or a press on another card, stops it: the window
-has one voice, and the sample in «Мовлення» is read by the same one. Fenced code is not read —
-a pause stands in its place — and the card does not change while it is read. The person's words, the
-app's words on the rule and a card still being written carry no speaker. Nothing is read by itself,
-and leaving the stream silences it. Where no voice is chosen, or the chosen one is gone from this
-machine, the press says «Голос не налаштований» with «МОВЛЕННЯ» on the line.
+this machine's voice (38c); while it reads, «ЧИТАЄ» stands where the step stood, the speaker turns
+into the stop square in the accent, the word being spoken is lit on the accent's ground at 22 %, and
+a 2px bar of what has been read runs between the head and the card. The OS's voice hands no sound
+over, so there is no wave and no seeking; a voice that does not say which word it reached leaves the
+bar empty and lights nothing. A second press, or a press on another card, stops it: the window has
+one voice, and the sample in «Мовлення» is read by the same one. Fenced code is not read — a pause
+stands in its place — and is never lit. The person's words, the app's words on the rule and a card
+still being written carry no speaker. Nothing is read by itself, and leaving the stream silences
+it. Where no voice is chosen, or the chosen one is gone from this machine, the press says «Голос не
+налаштований» with «МОВЛЕННЯ» on the line.
 
 **One act empties the stream, and it is called what it does** — «+ НОВИЙ ЧАТ», at the far end of the
 tabs where the stream itself is. One place and no second: the tabs stand over an opened run as well
