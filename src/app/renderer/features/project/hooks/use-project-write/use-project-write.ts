@@ -50,6 +50,7 @@ export function useProjectWrite(
               detail: null,
               reason: PROJECT_CHANGED_ON_DISK_NOTE,
               isRefusal: true,
+              act: null,
             },
             config,
           });
@@ -60,6 +61,7 @@ export function useProjectWrite(
               detail: null,
               reason: `${WRITE_FAILED_PREFIX}${errorMessage(reason)}`,
               isRefusal: false,
+              act: null,
             },
             config,
           });
@@ -86,6 +88,7 @@ export function useProjectWrite(
                 detail: null,
                 reason: null,
                 isRefusal: false,
+                act: null,
               },
               config,
             },

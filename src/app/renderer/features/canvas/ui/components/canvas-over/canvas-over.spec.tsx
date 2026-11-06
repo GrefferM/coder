@@ -94,6 +94,7 @@ describe("CanvasOver", () => {
       detail: null,
       reason: null,
       isRefusal: false,
+      act: null,
     };
     const { rerender } = render(
       <CanvasOver

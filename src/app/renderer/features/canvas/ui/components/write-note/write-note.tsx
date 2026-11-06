@@ -19,7 +19,7 @@ import type { WriteNoteProps } from "./interfaces";
 
 /**
  * Write result line. Done: green check, auto-dismisses. Failed: reason and retry, stays until answered. Refused: red
- * cross and reason, no retry, leaves by itself after a while.
+ * cross and reason, no retry, leaves by itself after a while; its act, where it has one, stands after the reason.
  */
 export function WriteNote({ note, onRetry, onDismiss }: WriteNoteProps) {
   const isDone = note.reason === null;
@@ -110,6 +110,21 @@ export function WriteNote({ note, onRetry, onDismiss }: WriteNoteProps) {
         >
           {note.detail}
         </span>
+      )}
+      {/* A refusal that leads somewhere offers that one act; the line goes once it is taken. */}
+      {note.act !== null && (
+        <TextButton
+          tone={{
+            rest: WRITE_NOTE_RETRY_COLOR,
+            lit: INTERACTION_HOVER_TEXT_COLOR,
+          }}
+          onPress={() => {
+            note.act?.onPress();
+            onDismiss();
+          }}
+        >
+          {note.act.label}
+        </TextButton>
       )}
       {!isDone && !note.isRefusal && (
         <TextButton

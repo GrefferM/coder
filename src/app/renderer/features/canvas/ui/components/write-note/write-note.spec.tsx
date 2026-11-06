@@ -20,6 +20,7 @@ describe("WriteNote", () => {
           detail: null,
           reason: null,
           isRefusal: false,
+          act: null,
         }}
         onRetry={() => {}}
         onDismiss={onDismiss}
@@ -49,6 +50,7 @@ describe("WriteNote", () => {
           detail: null,
           reason: "Не збереглося · немає доступу до файла",
           isRefusal: false,
+          act: null,
         }}
         onRetry={onRetry}
         onDismiss={onDismiss}
@@ -77,6 +79,7 @@ describe("WriteNote", () => {
           detail: null,
           reason: null,
           isRefusal: false,
+          act: null,
         }}
         onRetry={() => {}}
         onDismiss={() => {}}
@@ -98,6 +101,7 @@ describe("WriteNote", () => {
           detail: null,
           reason: "«big-repo/» не влізе",
           isRefusal: true,
+          act: null,
         }}
         onRetry={() => {}}
         onDismiss={onDismiss}
@@ -120,5 +124,37 @@ describe("WriteNote", () => {
     });
 
     expect(onDismiss).toHaveBeenCalled();
+  });
+
+  it("offers a refusal's own act after its words, and takes the line off once it is pressed", () => {
+    const onPress = vi.fn();
+    const onDismiss = vi.fn();
+
+    render(
+      <WriteNote
+        note={{
+          label: "Розпізнавання не налаштоване",
+          detail: null,
+          reason: "Розпізнавання не налаштоване",
+          isRefusal: true,
+          act: {
+            label: "ПРОВАЙДЕРИ",
+            onPress,
+          },
+        }}
+        onRetry={() => {}}
+        onDismiss={onDismiss}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "ПРОВАЙДЕРИ",
+      }),
+    );
+
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText(WRITE_NOTE_RETRY_LABEL)).not.toBeInTheDocument();
   });
 });

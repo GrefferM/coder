@@ -101,6 +101,7 @@ describe("useProjectFile", () => {
       detail: "+2 агенти",
       reason: null,
       isRefusal: false,
+      act: null,
     });
   });
 

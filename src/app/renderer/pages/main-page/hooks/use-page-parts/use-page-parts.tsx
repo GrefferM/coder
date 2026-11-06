@@ -57,6 +57,7 @@ export function usePageParts(
         detail: null,
         reason: words,
         isRefusal: true,
+        act: null,
       }),
     [sayNote],
   );

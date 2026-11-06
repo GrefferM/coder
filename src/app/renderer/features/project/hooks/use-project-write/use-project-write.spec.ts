@@ -101,6 +101,7 @@ describe("useProjectWrite · one write", () => {
       detail: null,
       reason: null,
       isRefusal: false,
+      act: null,
     });
   });
 
@@ -144,6 +145,7 @@ describe("useProjectWrite · one write", () => {
       detail: null,
       reason: PROJECT_CHANGED_ON_DISK_NOTE,
       isRefusal: true,
+      act: null,
     });
   });
 
@@ -176,6 +178,7 @@ describe("useProjectWrite · one write", () => {
         detail: null,
         reason: null,
         isRefusal: false,
+        act: null,
       }),
     );
 

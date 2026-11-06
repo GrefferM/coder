@@ -32,6 +32,7 @@ export function useProjectFile(
         detail: fileChangeDetail(project.config, read.config),
         reason: null,
         isRefusal: false,
+        act: null,
       });
     },
     [project.config, sayNote, setProject],
