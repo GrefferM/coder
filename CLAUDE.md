@@ -249,6 +249,11 @@ how the interface behaves always touches one of these files.
   that same `git status` shows nothing but the piece, which on a long session it rarely does.
 - Write the message through a heredoc — `git commit -q -F - <<'MSG' … MSG` — rather than `-m`. Every
   message here has a body of prose, and a shell eats its quotes and dashes.
+- **A release ends with a commit of its own that moves the version, and the tag stands on it.** That
+  commit holds only `npm version <x.y.z> --no-git-tag-version`, so `package-lock.json` moves with
+  `package.json`; its subject is `feat: release <x.y.z>` and its body says what the release brings.
+  The tag goes on that commit and nowhere else, so a tag never stands on a tree whose `package.json`
+  names another version.
 - Where a file cannot be deleted from the working environment, it is moved into `_to_delete/`
   (gitignored) and the report says so; staging then records the removal, and the person deletes the
   folder.
