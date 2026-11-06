@@ -31,6 +31,8 @@ import type {
   GrantTargets,
   McpLook,
   PutTurn,
+  PutWalkAnswer,
+  RecordedSound,
   RunLedger,
   TurnMemory,
   WalkAct,
@@ -58,6 +60,8 @@ import type {
  */
 export class WalkRunner implements RecordWatcher {
   private state: WalkState = emptyWalk();
+  /** The recordings of questions put and not yet written, by the question's id. */
+  private readonly heard = new Map<string, RecordedSound[]>();
   /** The row this conversation writes into; one conversation is one row, and a new chat ends it. */
   private flowRunId: string | null = null;
   private freshStream = randomUUID();
@@ -99,10 +103,13 @@ export class WalkRunner implements RecordWatcher {
     return isWalking(this.snapshot());
   }
 
-  /** Begins a walk from the person's question; returns the walk's id. */
-  put(question: PutQuestion): string {
+  /** Begins a walk from the person's question; returns the walk's id and the question's. */
+  put(question: PutQuestion): PutWalkAnswer {
     const runKey = randomUUID();
+    const questionId = randomUUID();
 
+    // The recordings wait here by the question's id until the question is written; the walk never carries them.
+    this.heard.set(questionId, question.recordings);
     this.dispatch({
       kind: "put",
       agent: question.agent,
@@ -110,13 +117,16 @@ export class WalkRunner implements RecordWatcher {
       attached: question.attached,
       fedFrom: [],
       isAgain: false,
-      questionId: randomUUID(),
+      questionId,
       runKey,
       askedAt: Date.now(),
       turnId: randomUUID(),
     });
 
-    return runKey;
+    return {
+      walkId: runKey,
+      questionId,
+    };
   }
 
   /** Ends every turn of the walks on screen; a stopped turn hands nothing on. */
@@ -343,6 +353,9 @@ export class WalkRunner implements RecordWatcher {
   private openWalk(act: WalkAct<"openWalk">): void {
     const ledger = this.ledgerOf(act);
 
+    const recordings = this.heard.get(act.questionId) ?? [];
+
+    this.heard.delete(act.questionId);
     this.writer.hold(act.runKey, ledger);
 
     void this.writer
@@ -352,6 +365,7 @@ export class WalkRunner implements RecordWatcher {
         agent: act.agent,
         text: act.asked,
         attached: act.attached,
+        recordings,
         runKey: act.runKey,
       })
       .then(

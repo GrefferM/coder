@@ -47,6 +47,7 @@ function run(walk: WholeStep[], questions: { id: string; askedAt: string }[] = [
         askedAt: new Date("2026-08-22T19:26:56"),
         askedAgentId: "agent-1",
         attached: [],
+        recordings: [],
       },
       ...questions.map((one, at) => ({
         id: one.id,
@@ -55,6 +56,7 @@ function run(walk: WholeStep[], questions: { id: string; askedAt: string }[] = [
         askedAt: new Date(one.askedAt),
         askedAgentId: "agent-1",
         attached: [],
+        recordings: [],
         compressed: null,
       })),
     ],

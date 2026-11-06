@@ -35,6 +35,8 @@ export function SaidTurn({
   looked,
   openCalls,
   aloud,
+  tracks,
+  player,
 }: SaidTurnProps) {
   const said = new Date(message.at);
   /** A turn whose word the step said draws nothing, not even an empty block that would add the list's gap. */
@@ -111,6 +113,8 @@ export function SaidTurn({
           text={message.text}
           at={said}
           attached={message.attached}
+          tracks={tracks}
+          player={player}
           onDebug={onDebug}
           isFound={isFound}
           looked={looked}

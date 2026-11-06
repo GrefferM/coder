@@ -35,6 +35,7 @@ function opening(patch: Partial<OpenRun> = {}): OpenRun {
     startedAt: ASKED_AT,
     asked: "Знайди md-файли",
     attached: [],
+    recordings: [],
     ...patch,
   };
 }

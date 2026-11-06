@@ -18,7 +18,14 @@ export class AgentAsk {
 
     this.hub.open(directory, config);
 
-    if (this.hub.put(asked.id, question, []) === null) {
+    const put = this.hub.put({
+      agentId: asked.id,
+      text: question,
+      attached: [],
+      recordings: [],
+    });
+
+    if (put === null) {
       throw new Error(AGENT_ASK_NOT_TAKEN_NOTE);
     }
 

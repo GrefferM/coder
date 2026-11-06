@@ -43,7 +43,7 @@ import {
 import { DEBUG_BAND_LABEL } from "../../../projection/ui/debug-band/constants";
 import type { WorkingAgent } from "../../../../interfaces";
 import type { AgentChatProps, ChatActs, ChatAimed, ChatBand, ChatField, ChatSaid } from "./interfaces";
-import { aReadAloud, aVoiceAsk, anAgent } from "../../../../testing";
+import { aReadAloud, aSoundPlayer, aVoiceAsk, anAgent } from "../../../../testing";
 import { READ_ALOUD_LABEL, READ_STOP_LABEL } from "../../../speech";
 
 /** What one case changes; everything left out stands as the fixture sets it. */
@@ -94,6 +94,8 @@ function renderChat(overrides: ChatOverrides = {}) {
         saidAgain: [],
         foundId: null,
         aloud: aReadAloud(),
+        tracks: {},
+        player: aSoundPlayer(),
         ...overrides.said,
       }}
       field={{
@@ -105,6 +107,8 @@ function renderChat(overrides: ChatOverrides = {}) {
         attachments: [],
         onAttach: () => {},
         onDetach: () => {},
+        clips: [],
+        onDropClip: () => {},
         onSend: () => {},
         onStop: () => {},
         repeats: 1,

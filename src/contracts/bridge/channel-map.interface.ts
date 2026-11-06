@@ -6,6 +6,7 @@ import type {
   FORGET_DELETION_CHANNEL,
   FORGET_PROJECT_CHANNEL,
   FORGET_RUNS_CHANNEL,
+  RECORDING_SOUND_CHANNEL,
   FORGET_RUN_CHANNEL,
   LIST_DELETIONS_CHANNEL,
   CLOSE_PROJECT_CHANNEL,
@@ -59,7 +60,7 @@ import type { CallPlace, RunHit, RunRow, WholeRun } from "../runs";
 import type { AttachmentPick, PackAttachmentsAsk, PackedAttachment, PickAttachmentsAsk } from "../attachments";
 import type { SaveTextAsk } from "../shell";
 import type { HeardSound, SpeechSettings } from "../speech";
-import type { WalkSnapshot } from "../walks";
+import type { PutWalkAnswer, WalkSnapshot } from "../walks";
 import type {
   AskProvider,
   SearchRuns,
@@ -136,13 +137,15 @@ export interface ChannelMap {
   [SEARCH_RUNS_CHANNEL]: { payload: SearchRuns; answer: RunHit[] };
   [FORGET_RUN_CHANNEL]: { payload: OfOne; answer: boolean };
   [FORGET_RUNS_CHANNEL]: { payload: OfProject; answer: number };
+  /** One kept recording's sound, by the recording's id; null when the record no longer holds it. */
+  [RECORDING_SOUND_CHANNEL]: { payload: OfOne; answer: Uint8Array | null };
 
   /** The conversation of the open project; its walks are said back by push. */
   [OPEN_WALKS_CHANNEL]: { payload: OpenWalks; answer: WalkSnapshot };
   [CONFIGURE_WALKS_CHANNEL]: { payload: ConfigureWalks; answer: void };
   [WALKS_STATE_CHANNEL]: { payload: void; answer: WalkSnapshot | null };
-  /** The walk's id, or null when the conversation took no question: no such agent, no words, or a walk is out. */
-  [PUT_WALK_CHANNEL]: { payload: PutWalk; answer: string | null };
+  /** The walk and the question it began, or null when the conversation took none: no such agent, no words, or a walk is out. */
+  [PUT_WALK_CHANNEL]: { payload: PutWalk; answer: PutWalkAnswer | null };
   [STOP_WALKS_CHANNEL]: { payload: void; answer: void };
   [SAY_WALK_AGAIN_CHANNEL]: { payload: SayWalkAgain; answer: void };
   [FRESH_WALKS_CHANNEL]: { payload: void; answer: void };

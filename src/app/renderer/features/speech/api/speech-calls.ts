@@ -1,6 +1,7 @@
 import {
   HEAR_SPEECH_CHANNEL,
   OPEN_MICROPHONE_SETTINGS_CHANNEL,
+  RECORDING_SOUND_CHANNEL,
   SAVE_SPEECH_CHANNEL,
   SPEECH_SETTINGS_CHANNEL,
 } from "../../../../../contracts";
@@ -29,4 +30,11 @@ export async function hearSpeech(sound: HeardSound): Promise<string> {
 /** Opens the system's page of who may use the microphone. */
 export async function openMicrophoneSettings(): Promise<void> {
   await window.electronApi.invoke(OPEN_MICROPHONE_SETTINGS_CHANNEL);
+}
+
+/** The sound of a recording kept with a question, by its id; `null` when the record holds none under it. */
+export async function recordingSound(id: string): Promise<Uint8Array | null> {
+  return window.electronApi.invoke(RECORDING_SOUND_CHANNEL, {
+    id,
+  });
 }

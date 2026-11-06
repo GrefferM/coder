@@ -425,6 +425,15 @@ Applies to the SQLite-backed modules only.
   stays the typed words, so the history, the search and the row's name read what the person wrote; a
   repeat glues the turn's input from both again with the walk's own function. A question sent
   without its list is refused, not read as one without files.
+- **A question's recordings are rows beside it, their sound a blob.** `run_question_recordings` keeps
+  each recording a question was said with — its own id, place, type, length in ms, the wave's peaks as
+  JSON and the sound — written in the question's own transaction and going with the run by cascade, so
+  no file outside the database can be left behind or found missing. A run read back carries them
+  without the sound (`QuestionRecording`); the sound is read alone, by the recording's id, over
+  `runs:recording-sound` (`RunReader.recordingSound`), and an id that finds none answers `null`. The
+  sound never passes the walk machine: `walks:put` answers the walk and the question's id it minted
+  (`PutWalkAnswer`), the runner holds the recordings under that id until the question's write takes
+  them into `askQuestion`, and no snapshot carries them.
 - **A column that names another row is a table; a column that holds a frozen value is not.** The two
   edges of a walk — whose work came into a step, and where a step's work went — are `run_step_feeds`
   and `run_handoffs`, each with its keys and its own order: a name of a row hidden in text is a name
@@ -461,7 +470,8 @@ Applies to the SQLite-backed modules only.
   `1793697764855-Initial`, which builds the base schema: `project_entries`, `deletions`, `runs`,
   `run_questions`, `run_question_attachments`, `run_steps`, `run_calls`, `run_handoffs`,
   `run_step_agents`, `run_step_models`, `run_step_settings`, `run_step_feeds`, `run_memories`,
-  `mcp_server_looks`, `mcp_dropped_servers` and `mcp_server_consents`.
+  `mcp_server_looks`, `mcp_dropped_servers` and `mcp_server_consents`. `1793991075893-QuestionRecordings`
+  adds `run_question_recordings`.
 - **A committed migration is never edited or deleted.** Databases that have already run it will not
   run it again, so a change to it reaches none of them. A mistake is fixed by the next migration, a
   compensating one; where it has to repair, it is written to stand on a database in either state —

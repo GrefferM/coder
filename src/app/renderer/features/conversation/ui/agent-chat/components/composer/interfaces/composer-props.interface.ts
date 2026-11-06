@@ -1,6 +1,6 @@
 import type { PickedAttachment } from "../../../../../../../interfaces";
 import type { RepeatProgress } from "../../../../../interfaces";
-import type { VoiceAsk } from "../../../../../../speech";
+import type { HeardClip, SoundPlayer, VoiceAsk } from "../../../../../../speech";
 
 export interface ComposerProps {
   /** The agent the stream is aimed at; `null` when none, so nothing can be sent. */
@@ -18,6 +18,12 @@ export interface ComposerProps {
   onAttach: () => void;
   /** The × on a chip — takes one attachment off by its own path. */
   onDetach: (path: string) => void;
+  /** Recordings made for the next question, as chips beside the attachments. */
+  clips: HeardClip[];
+  /** The × on a recording's chip, by the recording's own id: the sound goes, the words stay. */
+  onDropClip: (clipId: string) => void;
+  /** The one player of the window, which a chip's «▶» plays through. */
+  player: SoundPlayer;
   onSend: () => void;
   onStop: () => void;
   /** «x1»: how many times the next question goes in a row. */

@@ -26,6 +26,7 @@ export class RunRecordStore implements RunRecord {
       startedByAgentColor: question.agent.color,
       asked: question.asked,
       attached: question.attached,
+      recordings: question.recordings,
       startedAt: question.askedAt,
     });
   }
@@ -38,6 +39,7 @@ export class RunRecordStore implements RunRecord {
       askedAgentId: question.agent.id,
       askedAgentName: question.agent.name,
       attached: question.attached,
+      recordings: question.recordings,
       askedAt: question.askedAt,
     });
 

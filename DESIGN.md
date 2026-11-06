@@ -868,16 +868,31 @@ that never went glues the files in again with the same hand, in the same order.
 **A question can be said instead of typed** (4j). A microphone stands left of the send arrow, the same
 28px square, second-level at rest and accent under the pointer, with no word beside it; it stands
 exactly where «+ ПРИКРІПИТИ» does — not under a walk, not on a stitched field. A press records, a
-second press ends it. While it records, «ЗАПИС · 00:07» stands where «+» stood, its dot breathing at
-1.6s like a running call, the microphone filled with the accent and «СКАСУВАТИ» beside it, which drops
-the recording and leaves the field as it was; the arrow is dimmed and ⌘↵ sends nothing. No red: nothing
-fell. Then «РОЗПІЗНАЄМО…» while the project's recognition model (38c) hears it, and **the heard words are written into
+second press ends it. While it records, the row where «+» stood holds its dot breathing at 1.6s like a
+running call, a **running wave** — the microphone's loudness every 100ms as 2px bars 2px apart, 18px
+high at full, never under 2px, the newest at the right and the oldest going past the left edge, all
+in the accent — then «00:07» in the accent and «СКАСУВАТИ», which drops the recording and leaves the
+field as it was; the microphone is filled with the accent, the arrow is dimmed and ⌘↵ sends nothing.
+Silence draws low bars, so a live microphone shows, and where the pauses were. No red: nothing fell. Then «РОЗПІЗНАЄМО…» while the project's recognition model (38c) hears it, and **the heard words are written into
 the field after whatever was typed, never sent**: the hand sends, as always, and can mend them first.
-The sound is kept nowhere, and the person's card does not say the question was spoken. What stops it
+**The recording itself becomes a chip under the field**, in the attachments' row (4i): «▶» in a 22px
+circle, its wave of 46 bars 16px high, its length «0:07», and «×», which takes the sound off and leaves
+the words. A second recording for the same question is a second chip. They go with the question and
+leave the field with it; a question that does not go brings them back with its words. What stops it
 is said on the line over the canvas, with an act where there is one: «Розпізнавання не налаштоване»
 and «МОВЛЕННЯ», «Немає доступу до мікрофона» and «ПАРАМЕТРИ СИСТЕМИ», «‹provider› не розпізнав: ‹its
 words›» and «ЩЕ РАЗ», which sends the same sound again, and «У записі не почуто слів» with none. The
 field is never touched by a refusal. Leaving the stream drops a recording that is running.
+
+**A question said aloud can be heard again** (4l). Its recordings stand on the «ВИ» card under the
+words, inside the card's frame, as the same chip with no «×»: once sent, a recording is a record, like
+«ПРИКРІПЛЕНО:». A press plays it: «▶» turns into the stop square in the accent, the bars played turn
+to the accent and the rest stay quiet, the time reads «0:03 / 0:07»; a press in the wave plays from
+there, and a second press on the square stops it. The window has one sound: a recording and an answer
+being read (4k) stop each other, and leaving the stream silences it. The sound lies in the run's record
+on this machine and goes with the run — at thirty days or when it is deleted (26a) — so a run opened
+from the history plays the same. «СПИТАТИ ЩЕ РАЗ» (23m) takes the words; the sound stays on its own
+question.
 
 **An answer can be heard** (4k). A speaker stands at the far end of an agent's answer head, after
 «КРОК N · година», quiet as the head and accent under the pointer. A press reads the card's words in
@@ -886,7 +901,8 @@ into the stop square in the accent, the word being spoken is lit on the accent's
 a 2px bar of what has been read runs between the head and the card. The OS's voice hands no sound
 over, so there is no wave and no seeking; a voice that does not say which word it reached leaves the
 bar empty and lights nothing. A second press, or a press on another card, stops it: the window has
-one voice, and the sample in «Мовлення» is read by the same one. Fenced code is not read — a pause
+one voice, and the sample in «Мовлення» is read by the same one; a recording that begins to play (4l)
+stops it too. Fenced code is not read — a pause
 stands in its place — and is never lit. The person's words, the app's words on the rule and a card
 still being written carry no speaker. Nothing is read by itself, and leaving the stream silences
 it. Where no voice is chosen, or the chosen one is gone from this machine, the press says «Голос не

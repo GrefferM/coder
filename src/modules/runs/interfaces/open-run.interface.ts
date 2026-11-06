@@ -1,4 +1,4 @@
-import type { PackedAttachment } from "../../../contracts";
+import type { PackedAttachment, RecordedSound } from "../../../contracts";
 
 /** A run beginning: its project, whom the person asked, and what. */
 export interface OpenRun {
@@ -12,6 +12,8 @@ export interface OpenRun {
   asked: string;
   /** The files and folders sent with the question, in the order they were glued in. */
   attached: PackedAttachment[];
+  /** The recordings the question was said with, in the order they were made. */
+  recordings: RecordedSound[];
   /** When the person asked, not when the first step landed. */
   startedAt: number;
 }

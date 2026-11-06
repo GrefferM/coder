@@ -1,6 +1,7 @@
 import type { ChatHead, ChatMessage, ChatTab } from "../../../../../features/conversation";
 import type { RunHit } from "../../../../../features/record";
 import type { NamedAgent } from "../../../../../interfaces";
+import type { SoundTrack } from "../../../../../features/speech";
 import type { RunRow } from "../../../../../features/record";
 
 /** Which stream is shown, the live one or a run read back, and the list's actions. */
@@ -9,6 +10,8 @@ export interface ShownStream {
   tab: ChatTab;
   showTab: (tab: ChatTab) => void;
   messages: ChatMessage[];
+  /** The recordings each question on screen was said with, by the question's id. */
+  tracks: Record<string, SoundTrack[]>;
   /** The stream's agents: today's, or the record's own for a removed one. */
   agents: NamedAgent[];
   head: ChatHead | null;

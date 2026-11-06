@@ -1,6 +1,4 @@
 /** The row under the field while a recording is made and heard (4j). */
-export const RECORDING_LABEL = "ЗАПИС";
-export const RECORDING_SEPARATOR = " · ";
 export const HEARING_LABEL = "РОЗПІЗНАЄМО…";
 export const RECORDING_CANCEL_LABEL = "СКАСУВАТИ";
 export const MICROPHONE_LABEL = "Сказати питання";
@@ -41,3 +39,10 @@ export const VOICE_NAME_SEPARATOR = " · ";
 export const WRITE_SPEECH_LABEL = "Мовлення збережено";
 /** The line when the machine did not take a change of its speech; its own words follow. */
 export const SPEECH_SAVE_FAILED_PREFIX = "Мовлення не збережено: ";
+
+/** A recording's length and how far it is played (4j, 4l). */
+export const CLOCK_SEPARATOR = ":";
+export const PLAYED_SEPARATOR = " / ";
+export const PLAY_CLIP_LABEL = "Програти запис";
+export const STOP_CLIP_LABEL = "Зупинити запис";
+export const DROP_CLIP_LABEL = "Зняти запис";

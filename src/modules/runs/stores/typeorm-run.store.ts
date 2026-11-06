@@ -5,6 +5,7 @@ import type {
   RunHandoffEntity,
   RunMemoryEntity,
   RunQuestionAttachmentEntity,
+  RunQuestionRecordingEntity,
   RunQuestionEntity,
   RunStepAgentEntity,
   RunStepEntity,
@@ -14,6 +15,7 @@ import type {
 } from "../entities";
 import type {
   NewAttachment,
+  NewRecording,
   NewCall,
   NewFeed,
   NewGiven,
@@ -174,6 +176,64 @@ export class TypeormRunStore implements RunStore {
     }
 
     await this.tables.attachments.delete({
+      question: {
+        id: In(asked.map((question) => question.id)),
+      },
+    });
+  }
+
+  async keepRecording(recording: NewRecording): Promise<void> {
+    await this.tables.recordings.save({
+      place: recording.place,
+      mimeType: recording.mimeType,
+      durationMs: recording.durationMs,
+      peaks: recording.peaks,
+      sound: recording.sound,
+      question: {
+        id: recording.questionId,
+      },
+    });
+  }
+
+  async recordingsOf(questionIds: string[]): Promise<RunQuestionRecordingEntity[]> {
+    if (questionIds.length === 0) {
+      return [];
+    }
+
+    return this.tables.recordings.find({
+      where: {
+        question: {
+          id: In(questionIds),
+        },
+      },
+      relations: {
+        question: true,
+      },
+    });
+  }
+
+  async recordingSound(id: string): Promise<Buffer | null> {
+    const row = await this.tables.recordings.findOne({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        sound: true,
+      },
+    });
+
+    return row?.sound ?? null;
+  }
+
+  async dropRecordingsOf(runId: string): Promise<void> {
+    const asked = await this.askedIn(runId);
+
+    if (asked.length === 0) {
+      return;
+    }
+
+    await this.tables.recordings.delete({
       question: {
         id: In(asked.map((question) => question.id)),
       },

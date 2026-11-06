@@ -1,5 +1,6 @@
 import type { PackedAttachment } from "../attachments";
 import type { Agent } from "../project";
+import type { RecordedSound } from "../speech";
 
 /** One question of a conversation as the record takes it: its id, whom it went to, and when. */
 export interface AskedQuestion {
@@ -10,5 +11,7 @@ export interface AskedQuestion {
   asked: string;
   /** The files and folders sent with it, packed as they went into the turn. */
   attached: PackedAttachment[];
+  /** The recordings it was said with, kept beside it. */
+  recordings: RecordedSound[];
   askedAt: number;
 }

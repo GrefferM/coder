@@ -4,6 +4,7 @@ import {
   ForgetRunsDto,
   ListRunsDto,
   ReadRunDto,
+  RecordingSoundDto,
   RunController,
   SearchRunsDto,
 } from "../../../modules/runs";
@@ -14,6 +15,7 @@ import {
   LIST_RUNS_CHANNEL,
   CALL_PLACE_CHANNEL,
   READ_RUN_CHANNEL,
+  RECORDING_SOUND_CHANNEL,
   SEARCH_RUNS_CHANNEL,
 } from "../../../contracts";
 
@@ -21,6 +23,8 @@ import {
 export const RUNS_IPC_CHANNELS: IpcChannelMap<RunController> = {
   [LIST_RUNS_CHANNEL]: (controller, payload) => controller.list(Object.assign(new ListRunsDto(), payload)),
   [READ_RUN_CHANNEL]: (controller, payload) => controller.one(Object.assign(new ReadRunDto(), payload)),
+  [RECORDING_SOUND_CHANNEL]: (controller, payload) =>
+    controller.recordingSound(Object.assign(new RecordingSoundDto(), payload)),
   [CALL_PLACE_CHANNEL]: (controller, payload) => controller.placeOfCall(Object.assign(new CallPlaceDto(), payload)),
   [SEARCH_RUNS_CHANNEL]: (controller, payload) => controller.find(Object.assign(new SearchRunsDto(), payload)),
   [FORGET_RUN_CHANNEL]: (controller, payload) => controller.forget(Object.assign(new ForgetRunDto(), payload)),

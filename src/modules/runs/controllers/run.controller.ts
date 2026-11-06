@@ -1,6 +1,14 @@
 import { Validate } from "../../../utils/dto-validation";
 import { RunKeeper, RunReader, RunSearch } from "../services";
-import { CallPlaceDto, ForgetRunDto, ForgetRunsDto, ListRunsDto, ReadRunDto, SearchRunsDto } from "../dto";
+import {
+  CallPlaceDto,
+  ForgetRunDto,
+  ForgetRunsDto,
+  ListRunsDto,
+  ReadRunDto,
+  RecordingSoundDto,
+  SearchRunsDto,
+} from "../dto";
 import type { CallPlace, Run, RunHit, RunWhole } from "../interfaces";
 
 /** Entry point to a run's record, read afterwards; the walks write it from the backend. */
@@ -25,6 +33,12 @@ export class RunController {
   @Validate()
   async placeOfCall(payload: CallPlaceDto): Promise<CallPlace | null> {
     return this.reader.placeOfCall(payload.callId);
+  }
+
+  /** One recording kept with a question: its sound, played on the person's card. */
+  @Validate()
+  async recordingSound(payload: RecordingSoundDto): Promise<Uint8Array | null> {
+    return this.reader.recordingSound(payload.id);
   }
 
   @Validate()

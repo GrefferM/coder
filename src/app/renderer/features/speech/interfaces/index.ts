@@ -9,3 +9,7 @@ export * from "./voice-ask.interface";
 export * from "./voice-ask-hands.interface";
 export * from "./spoken-parts.interface";
 export * from "./spoken-word.interface";
+export * from "./heard-clip.interface";
+export * from "./sound-track.interface";
+export * from "./sound-player.interface";
+export * from "./sound-player-hands.interface";

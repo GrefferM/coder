@@ -27,12 +27,14 @@ import type {
   RunMemoryEntity,
   RunQuestionAttachmentEntity,
   RunQuestionEntity,
+  RunQuestionRecordingEntity,
   RunStepEntity,
 } from "../entities";
 import type {
   AttachmentKind,
   OwnThread,
   PackedAttachment,
+  QuestionRecording,
   SharedMemory,
   UnwrittenMemory,
   WholeMemory,
@@ -73,6 +75,7 @@ export class RunReader {
 
     const asked = await this.store.askedIn(id);
     const attached = await this.store.attachedTo(asked.map((question) => question.id));
+    const recorded = await this.store.recordingsOf(asked.map((question) => question.id));
 
     return {
       ...this.toRun(row, stood, asked),
@@ -85,6 +88,7 @@ export class RunReader {
         // A question without an addressee falls back to the agent the run started from.
         askedAgentId: question.askedAgentId ?? row.startedByAgentId,
         attached: this.attachedOf(attached, question.id),
+        recordings: this.recordingsOf(recorded, question.id),
       })),
       walk,
       memories: await this.memoriesOf(id),
@@ -289,6 +293,27 @@ export class RunReader {
       endedAt: row.endedAt,
       calls: made.sort((one, other) => one.place - other.place).map((call) => this.toCall(call)),
     };
+  }
+
+  /** One kept recording's sound, by its id; null for a recording the record does not hold. */
+  async recordingSound(id: string): Promise<Uint8Array | null> {
+    const sound = await this.store.recordingSound(id);
+
+    return sound === null ? null : new Uint8Array(sound);
+  }
+
+  /** One question's recordings without their sound, in the order they were made. */
+  private recordingsOf(rows: RunQuestionRecordingEntity[], questionId: string): QuestionRecording[] {
+    return rows
+      .filter((row) => row.question.id === questionId)
+      .sort((one, other) => one.place - other.place)
+      .map((row) => ({
+        id: row.id,
+        place: row.place,
+        mimeType: row.mimeType,
+        durationMs: row.durationMs,
+        peaks: <number[]>JSON.parse(row.peaks),
+      }));
   }
 
   /** One question's attachments as they went with it, in the order they were glued in. */

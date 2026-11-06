@@ -84,3 +84,4 @@ export * from "./memory-text";
 export * from "./answer-ceiling-note";
 export * from "./fell-note";
 export * from "./calls-exhausted-note";
+export * from "./put-walk-answer.interface";

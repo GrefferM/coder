@@ -1,4 +1,4 @@
-import type { PackedAttachment } from "../../../contracts";
+import type { PackedAttachment, RecordedSound } from "../../../contracts";
 import type { AddCall, AddStep, AskAgain, CloseRun, OpenRun, RunOpened, RunStore } from "../interfaces";
 
 /** The record as written: a run opened, steps landing one by one, its end. */
@@ -27,6 +27,7 @@ export class RunWriter {
       });
 
       await this.attach(store, question.id, payload.attached);
+      await this.keep(store, question.id, payload.recordings);
 
       return {
         runId: row.id,
@@ -60,6 +61,7 @@ export class RunWriter {
       });
 
       await this.attach(store, question.id, payload.attached);
+      await this.keep(store, question.id, payload.recordings);
       await store.endRun(payload.runId, null);
 
       return question.id;
@@ -163,6 +165,20 @@ export class RunWriter {
         kind: one.kind,
         text: one.text,
         binaries: JSON.stringify(one.binaries),
+        questionId,
+      });
+    }
+  }
+
+  /** The recordings a question was said with, beside it and in the order they were made. */
+  private async keep(store: RunStore, questionId: string, recordings: RecordedSound[]): Promise<void> {
+    for (const [index, one] of recordings.entries()) {
+      await store.keepRecording({
+        place: index + 1,
+        mimeType: one.mimeType,
+        durationMs: one.durationMs,
+        peaks: JSON.stringify(one.peaks),
+        sound: Buffer.from(one.audio),
         questionId,
       });
     }

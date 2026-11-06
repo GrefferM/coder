@@ -33,10 +33,11 @@ import { PERSON_COLOR, PERSON_NAME } from "../../../../../../constants";
 import { DebugBand } from "../../../../../projection";
 import { AttachGlyph } from "../attach-glyph";
 import { attachedName } from "../../../../words";
+import { SoundClip } from "../../../../../speech";
 import type { PersonCardProps } from "./interfaces";
 
 /** The person's reply, signed like an agent's but with no step; the way into the projection sits under the text. */
-export function PersonCard({ text, at, attached, onDebug, isFound, looked = "" }: PersonCardProps) {
+export function PersonCard({ text, at, attached, tracks, player, onDebug, isFound, looked = "" }: PersonCardProps) {
   return (
     <div
       className="d-flex flex-column"
@@ -96,6 +97,10 @@ export function PersonCard({ text, at, attached, onDebug, isFound, looked = "" }
         >
           <FoundWords words={text} looked={looked} />
         </span>
+        {/* The same question as said, under its words; a record, so no ×. */}
+        {tracks.map((track) => (
+          <SoundClip key={track.id} track={track} player={player} onDrop={null} />
+        ))}
         {/* The way into the projection, under the question. */}
         {onDebug !== null && (
           <span className="d-flex">

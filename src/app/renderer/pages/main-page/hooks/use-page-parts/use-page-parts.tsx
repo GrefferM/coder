@@ -19,6 +19,7 @@ import {
   hearingChoice,
   heardIntoDraft,
   useReadAloud,
+  useSoundPlayer,
   useSpeech,
   useVoiceAsk,
 } from "../../../../features/speech";
@@ -42,7 +43,7 @@ import {
   SPEECH_SECTION_ID,
 } from "../../constants";
 import type { SidePanelItem } from "../../../../components";
-import type { SpeechNote } from "../../../../features/speech";
+import type { ReadAloud, SpeechNote } from "../../../../features/speech";
 import type { PageSubjects } from "../../interfaces";
 import type { PageParts } from "./interfaces";
 
@@ -104,16 +105,30 @@ export function usePageParts(
   /** A question said into the field, heard by the project's recognition model; the words land after what is typed. */
   const voice = useVoiceAsk({
     hearing: hearingChoice(project.config, machine.providers),
-    onHeard: (words) => chat.changeDraft(heardIntoDraft(chat.draft, words)),
+    onHeard: (words, clip) => {
+      chat.changeDraft(heardIntoDraft(chat.draft, words));
+      chat.addClip(clip);
+    },
     onNote: saySpeech,
     onOpenSpeech: openSpeech,
   });
   /** One voice for the window: an answer in the chat and the sample in «Мовлення» share it. */
-  const aloud = useReadAloud({
+  const reading = useReadAloud({
     voiceName: speech.settings.voiceName,
     onNote: saySpeech,
     onOpenSpeech: openSpeech,
   });
+  /** One recording for the window; it and a reading stop each other (4l). */
+  const player = useSoundPlayer({
+    onPlay: reading.stop,
+  });
+  const aloud: ReadAloud = {
+    ...reading,
+    read: (id, text) => {
+      player.stop();
+      reading.read(id, text);
+    },
+  };
 
   /** Opens the projection for the run's pass; `null` when the stream has no row. */
   function openDebug(runId: string | null): ((questionId: string) => void) | null {
@@ -289,6 +304,7 @@ export function usePageParts(
           onOpenDebug={openDebug(stream.shownRunId)}
           voice={voice}
           aloud={aloud}
+          player={player}
           onOpenProviders={() => rail.handleActiveIdChange(PROVIDERS_SECTION_ID)}
           onOpenModel={() => rail.openAgentModel(chat.aimedAgentId)}
           onShowConsent={consent.ask}

@@ -1,5 +1,5 @@
 import { IsArray, IsString } from "class-validator";
-import type { PackedAttachment } from "../../../contracts";
+import type { PackedAttachment, RecordedSound } from "../../../contracts";
 
 export class PutWalkDto {
   @IsString()
@@ -10,4 +10,7 @@ export class PutWalkDto {
 
   @IsArray()
   declare attached: PackedAttachment[];
+
+  @IsArray()
+  declare recordings: RecordedSound[];
 }

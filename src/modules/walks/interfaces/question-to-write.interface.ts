@@ -1,4 +1,4 @@
-import type { Agent, PackedAttachment, RunLedger } from "../../../contracts";
+import type { Agent, PackedAttachment, RecordedSound, RunLedger } from "../../../contracts";
 
 export interface QuestionToWrite {
   ledger: RunLedger;
@@ -6,5 +6,7 @@ export interface QuestionToWrite {
   agent: Agent;
   text: string;
   attached: PackedAttachment[];
+  /** The recordings the question was said with; none for a repeat or work down a line. */
+  recordings: RecordedSound[];
   runKey: string;
 }

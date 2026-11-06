@@ -4,7 +4,7 @@ import { walkSnapshot } from "../logic";
 import { HeldProject } from "./held-project.service";
 import { WalkEars } from "./walk-ears.service";
 import { WalkRunner } from "./walk-runner.service";
-import type { ChatMessage, PackedAttachment, ProjectConfig, WalkSnapshot } from "../../../contracts";
+import type { ChatMessage, ProjectConfig, PutWalk, PutWalkAnswer, WalkSnapshot } from "../../../contracts";
 import type { EarsOwner, WalkHubParts, WalkListener } from "../interfaces";
 
 /** The conversation of the open project: one runner at a time, begun by the screen and told back by push. */
@@ -52,7 +52,8 @@ export class WalkHub implements EarsOwner {
   }
 
   /** Puts the person's question to an agent; null where it did not go: no such agent, nothing asked, or a walk out. */
-  put(agentId: string, text: string, attached: PackedAttachment[]): string | null {
+  put(ask: PutWalk): PutWalkAnswer | null {
+    const { agentId, text, attached, recordings } = ask;
     const runner = this.opened();
     const agent = this.project?.configNow().agents.find((held) => held.id === agentId) ?? null;
 
@@ -64,6 +65,7 @@ export class WalkHub implements EarsOwner {
       agent,
       text,
       attached,
+      recordings,
     });
   }
 

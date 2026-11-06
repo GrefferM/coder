@@ -52,6 +52,7 @@ const RUN: WholeRun = {
       askedAt: new Date("2026-09-02T15:41:00"),
       askedAgentId: "agent-1",
       attached: [],
+      recordings: [],
     },
     {
       id: "question-2",
@@ -60,6 +61,7 @@ const RUN: WholeRun = {
       askedAt: new Date("2026-09-02T15:50:00"),
       askedAgentId: "agent-1",
       attached: [],
+      recordings: [],
     },
   ],
   memories: [],

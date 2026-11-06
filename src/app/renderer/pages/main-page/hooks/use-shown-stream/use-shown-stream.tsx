@@ -6,6 +6,7 @@ import {
   foundInStream,
   foundMessage,
   openedStream,
+  questionTracks,
   saveChatText,
   standingIn,
 } from "../../../../features/conversation";
@@ -163,6 +164,7 @@ export function useShownStream(
 
   return {
     tab,
+    tracks: questionTracks(chat.heardBy, openedRunId === null ? null : opened.run),
     showTab: setTab,
     messages: shown,
     agents: shownAgents,

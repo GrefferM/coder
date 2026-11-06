@@ -5,6 +5,7 @@ import type {
   RunHandoffEntity,
   RunMemoryEntity,
   RunQuestionAttachmentEntity,
+  RunQuestionRecordingEntity,
   RunQuestionEntity,
   RunStepAgentEntity,
   RunStepEntity,
@@ -13,7 +14,7 @@ import type {
   RunStepSettingEntity,
 } from "../entities";
 
-/** The eleven tables of one record, named so callers cannot pass them in the wrong order. */
+/** The twelve tables of one record, named so callers cannot pass them in the wrong order. */
 export interface RunTables {
   runs: Repository<RunEntity>;
   steps: Repository<RunStepEntity>;
@@ -24,6 +25,7 @@ export interface RunTables {
   memories: Repository<RunMemoryEntity>;
   questions: Repository<RunQuestionEntity>;
   attachments: Repository<RunQuestionAttachmentEntity>;
+  recordings: Repository<RunQuestionRecordingEntity>;
   /** Who ran the step, what it ran on and what it was given; one row each beside the step. */
   who: Repository<RunStepAgentEntity>;
   ran: Repository<RunStepModelEntity>;

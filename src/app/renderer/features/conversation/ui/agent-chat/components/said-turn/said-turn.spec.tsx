@@ -8,7 +8,7 @@ import { FOUND_WORDS_BACKGROUND_COLOR } from "../../../../../../components/found
 import { TODAY_LABEL } from "../../../../../../utils/dates/constants";
 import type { Agent } from "../../../../../../interfaces";
 import type { ChatMessage } from "../../../../interfaces";
-import { anAgent } from "../../../../../../testing";
+import { aSoundPlayer, anAgent } from "../../../../../../testing";
 
 const AGENTS: Agent[] = [
   anAgent({
@@ -79,6 +79,8 @@ function draw(message: ChatMessage, patch: Partial<Parameters<typeof SaidTurn>[0
       isFound={false}
       looked=""
       aloud={null}
+      tracks={[]}
+      player={aSoundPlayer()}
       {...patch}
     />,
   );
@@ -121,6 +123,8 @@ describe("SaidTurn", () => {
         isFound={false}
         looked=""
         aloud={null}
+        tracks={[]}
+        player={aSoundPlayer()}
       />,
     );
 

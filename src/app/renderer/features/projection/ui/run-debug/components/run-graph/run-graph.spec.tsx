@@ -45,6 +45,7 @@ function run(walk: WholeStep[]): WholeRun {
         askedAt: new Date("2026-08-31T15:41:00"),
         askedAgentId: "agent-1",
         attached: [],
+        recordings: [],
       },
     ],
     steps: walk.length,

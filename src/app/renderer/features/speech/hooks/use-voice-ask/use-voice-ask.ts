@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { hearSpeech, openMicrophoneSettings } from "../../api";
-import { recordingType, refusalParts } from "../../logic";
+import { recordingType, refusalParts, soundLevel, wavePeaks } from "../../logic";
 import { hearingFailedWords } from "../../words";
 import { errorMessage, providerWords } from "../../../../utils/errors";
 import { SPEECH_HEARING_FAILED, SPEECH_NOT_SET } from "../../../../../../contracts";
@@ -11,9 +11,12 @@ import {
   NOTHING_HEARD_NOTE,
   SPEECH_NOT_SET_NOTE,
   SPEECH_SECTION_ACT,
+  CLIP_BARS,
+  LEVEL_EVERY_MS,
+  LIVE_BARS,
 } from "../../constants";
 import type { HeardSound } from "../../../../../../contracts";
-import type { SpeechNote, VoiceAsk, VoiceAskHands, VoiceStanding } from "../../interfaces";
+import type { HeardClip, SpeechNote, VoiceAsk, VoiceAskHands, VoiceStanding } from "../../interfaces";
 
 /**
  * A question said rather than typed (4j): the microphone records, the provider hears, and the words go to the field —
@@ -22,12 +25,16 @@ import type { SpeechNote, VoiceAsk, VoiceAskHands, VoiceStanding } from "../../i
 export function useVoiceAsk(hands: VoiceAskHands): VoiceAsk {
   const [standing, setStanding] = useState<VoiceStanding>("idle");
   const [startedAt, setStartedAt] = useState(0);
+  /** The latest moments of the recording being made, for the running wave. */
+  const [levels, setLevels] = useState<number[]>([]);
   /** Held in a ref, so words heard after a re-render reach the field as it stands then. */
   const held = useRef(hands);
   /** The recording being made; `null` once it is ended or dropped. */
   const recorder = useRef<MediaRecorder | null>(null);
   /** The microphone is being asked for; a second press meanwhile opens no second recording. */
   const isOpening = useRef(false);
+  /** Every moment of the recording being made, for the wave its clip keeps. */
+  const heardLevels = useRef<number[]>([]);
 
   held.current = hands;
 
@@ -74,7 +81,7 @@ export function useVoiceAsk(hands: VoiceAskHands): VoiceAsk {
   }, []);
 
   const hear = useCallback(
-    async (sound: HeardSound) => {
+    async (sound: HeardSound, clip: HeardClip) => {
       setStanding("hearing");
 
       let words: string;
@@ -83,7 +90,7 @@ export function useVoiceAsk(hands: VoiceAskHands): VoiceAsk {
         words = await hearSpeech(sound);
       } catch (failure) {
         setStanding("idle");
-        held.current.onNote(failureNote(failure, () => void hear(sound)));
+        held.current.onNote(failureNote(failure, () => void hear(sound, clip)));
 
         return;
       }
@@ -99,7 +106,7 @@ export function useVoiceAsk(hands: VoiceAskHands): VoiceAsk {
         return;
       }
 
-      held.current.onHeard(words);
+      held.current.onHeard(words, clip);
     },
     [failureNote],
   );
@@ -148,10 +155,27 @@ export function useVoiceAsk(hands: VoiceAskHands): VoiceAsk {
 
     const made = new MediaRecorder(stream);
     const chunks: Blob[] = [];
+    const listening = new AudioContext();
+    const meter = listening.createAnalyser();
+    const samples = new Uint8Array(meter.fftSize);
+    const begun = Date.now();
+
+    listening.createMediaStreamSource(stream).connect(meter);
+    heardLevels.current = [];
+
+    // The microphone's loudness is taken while it records; the wave runs on it.
+    const metering = window.setInterval(() => {
+      meter.getByteTimeDomainData(samples);
+      heardLevels.current.push(soundLevel(samples));
+      setLevels(heardLevels.current.slice(-LIVE_BARS));
+    }, LEVEL_EVERY_MS);
 
     made.ondataavailable = (event) => chunks.push(event.data);
     made.onstop = async () => {
+      window.clearInterval(metering);
+      void listening.close();
       stream.getTracks().forEach((track) => track.stop());
+      setLevels([]);
 
       // A recording dropped by «СКАСУВАТИ» or by the field going is heard by nobody.
       if (recorder.current !== made) {
@@ -161,19 +185,30 @@ export function useVoiceAsk(hands: VoiceAskHands): VoiceAsk {
       recorder.current = null;
 
       const recorded = new Blob(chunks);
+      const audio = new Uint8Array(await recorded.arrayBuffer());
+      const mimeType = recordingType(made.mimeType);
 
-      await hear({
-        audio: new Uint8Array(await recorded.arrayBuffer()),
-        mimeType: recordingType(made.mimeType),
-        providerId: hearing.providerId,
-        model: hearing.model,
-      });
+      await hear(
+        {
+          audio,
+          mimeType,
+          providerId: hearing.providerId,
+          model: hearing.model,
+        },
+        {
+          id: crypto.randomUUID(),
+          audio,
+          mimeType,
+          durationMs: Date.now() - begun,
+          peaks: wavePeaks(heardLevels.current, CLIP_BARS),
+        },
+      );
     };
 
     isOpening.current = false;
     recorder.current = made;
     made.start();
-    setStartedAt(Date.now());
+    setStartedAt(begun);
     setStanding("recording");
   }, [hear]);
 
@@ -202,6 +237,7 @@ export function useVoiceAsk(hands: VoiceAskHands): VoiceAsk {
   return {
     standing,
     startedAt,
+    levels,
     press,
     cancel,
   };

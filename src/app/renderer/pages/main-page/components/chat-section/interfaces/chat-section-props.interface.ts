@@ -3,7 +3,7 @@ import type { NamedAgent } from "../../../../../interfaces";
 import type { AgentDraft } from "../../../../../features/agents";
 import type { AgentMend } from "../../../../../features/agents";
 import type { ShownStream } from "../../../hooks/use-shown-stream";
-import type { ReadAloud, VoiceAsk } from "../../../../../features/speech";
+import type { ReadAloud, SoundPlayer, VoiceAsk } from "../../../../../features/speech";
 
 export interface ChatSectionProps {
   chat: AgentChatState;
@@ -16,6 +16,8 @@ export interface ChatSectionProps {
   voice: VoiceAsk;
   /** The one voice an answer is read with (4k). */
   aloud: ReadAloud;
+  /** The one recording playing in the window: a question's track or a chip under the field. */
+  player: SoundPlayer;
   onOpenDebug: ((questionId: string) => void) | null;
   onOpenProviders: () => void;
   onOpenModel: () => void;

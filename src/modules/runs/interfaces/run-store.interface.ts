@@ -5,6 +5,7 @@ import type {
   RunHandoffEntity,
   RunMemoryEntity,
   RunQuestionAttachmentEntity,
+  RunQuestionRecordingEntity,
   RunQuestionEntity,
   RunStepAgentEntity,
   RunStepEntity,
@@ -43,6 +44,17 @@ export interface NewAttachment {
   text: string;
   /** The paths that went in as base64, as JSON. */
   binaries: string;
+  questionId: string;
+}
+
+/** One recording a question was said with, in the place it was made. */
+export interface NewRecording {
+  place: number;
+  mimeType: string;
+  durationMs: number;
+  /** The wave's loudness, as JSON. */
+  peaks: string;
+  sound: Buffer;
   questionId: string;
 }
 
@@ -178,6 +190,14 @@ export interface RunStore {
   attachedTo(questionIds: string[]): Promise<RunQuestionAttachmentEntity[]>;
   /** Every attachment of one flow's questions. */
   dropAttachedOf(runId: string): Promise<void>;
+
+  keepRecording(recording: NewRecording): Promise<void>;
+  /** The recordings of many questions at once, each with its question and without its sound. */
+  recordingsOf(questionIds: string[]): Promise<RunQuestionRecordingEntity[]>;
+  /** One recording's sound; null for a recording the record does not hold. */
+  recordingSound(id: string): Promise<Buffer | null>;
+  /** Every recording of one flow's questions. */
+  dropRecordingsOf(runId: string): Promise<void>;
 
   stepsOf(runId: string): Promise<RunStepEntity[]>;
   /** The steps with the question each grew from. */

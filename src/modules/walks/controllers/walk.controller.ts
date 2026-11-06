@@ -1,7 +1,7 @@
 import { Validate } from "../../../utils/dto-validation";
 import { WalkHub } from "../services";
 import { ConfigureWalksDto, GoOnInWalksDto, LetGoWalksDto, OpenWalksDto, PutWalkDto, SayWalkAgainDto } from "../dto";
-import type { WalkSnapshot } from "../../../contracts";
+import type { PutWalkAnswer, WalkSnapshot } from "../../../contracts";
 
 export class WalkController {
   constructor(private readonly hub: WalkHub) {}
@@ -21,8 +21,8 @@ export class WalkController {
   }
 
   @Validate()
-  async put(payload: PutWalkDto): Promise<string | null> {
-    return this.hub.put(payload.agentId, payload.text, payload.attached);
+  async put(payload: PutWalkDto): Promise<PutWalkAnswer | null> {
+    return this.hub.put(payload);
   }
 
   async stop(): Promise<void> {

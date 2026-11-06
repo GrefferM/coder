@@ -9,3 +9,5 @@ export * from "./not-started-end.interface";
 export * from "./packed-send.interface";
 export * from "./words-awaiting-hand.interface";
 export * from "./repeat-progress.interface";
+export * from "./field-return.interface";
+export * from "./question-to-put.interface";

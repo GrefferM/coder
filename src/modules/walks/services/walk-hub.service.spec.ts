@@ -69,9 +69,18 @@ describe("WalkHub", () => {
   });
 
   it("refuses a question that reaches it before any conversation is open", () => {
-    assert.throws(() => hubOn({}).hub.put("agent-1", "питання", []), {
-      message: WALKS_NOT_OPEN,
-    });
+    assert.throws(
+      () =>
+        hubOn({}).hub.put({
+          agentId: "agent-1",
+          text: "питання",
+          attached: [],
+          recordings: [],
+        }),
+      {
+        message: WALKS_NOT_OPEN,
+      },
+    );
   });
 
   it("opens with nothing said, and keeps the walks of a project that is opened again", async () => {
@@ -80,7 +89,12 @@ describe("WalkHub", () => {
     });
 
     hub.open("/work/coder", CONFIG);
-    hub.put("agent-1", "питання", []);
+    hub.put({
+      agentId: "agent-1",
+      text: "питання",
+      attached: [],
+      recordings: [],
+    });
 
     await new Promise((resolve) => setTimeout(resolve, 20));
 
@@ -97,12 +111,46 @@ describe("WalkHub", () => {
 
     hub.open("/work/coder", CONFIG);
 
-    const runKey = hub.put("agent-1", "питання", []);
+    const put = hub.put({
+      agentId: "agent-1",
+      text: "питання",
+      attached: [],
+      recordings: [],
+    });
 
     await new Promise((resolve) => setTimeout(resolve, 20));
 
-    assert.equal(typeof runKey, "string");
+    assert.equal(typeof put?.walkId, "string");
+    assert.equal(typeof put?.questionId, "string");
     assert.equal(record.steps.length, 1);
+  });
+
+  it("writes the recordings a question was said with beside that question, by the question's own id", async () => {
+    const { hub, record } = hubOn({
+      "agent-1": "відповідь",
+    });
+    const recording = {
+      audio: new Uint8Array([1, 2, 3]),
+      mimeType: "audio/webm",
+      durationMs: 7_000,
+      peaks: [0.4, 0.8],
+    };
+
+    hub.open("/work/coder", CONFIG);
+
+    const put = hub.put({
+      agentId: "agent-1",
+      text: "питання",
+      attached: [],
+      recordings: [recording],
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    const [asked] = record.questions;
+
+    assert.equal(asked.questionId, put?.questionId);
+    assert.deepEqual(asked.recordings, [recording]);
   });
 
   it("takes no question for an agent the project does not hold, or for words that say nothing", () => {
@@ -110,8 +158,24 @@ describe("WalkHub", () => {
 
     hub.open("/work/coder", CONFIG);
 
-    assert.equal(hub.put("agent-9", "питання", []), null);
-    assert.equal(hub.put("agent-1", "   ", []), null);
+    assert.equal(
+      hub.put({
+        agentId: "agent-9",
+        text: "питання",
+        attached: [],
+        recordings: [],
+      }),
+      null,
+    );
+    assert.equal(
+      hub.put({
+        agentId: "agent-1",
+        text: "   ",
+        attached: [],
+        recordings: [],
+      }),
+      null,
+    );
   });
 
   it("takes no second question while a walk is out", () => {
@@ -120,9 +184,22 @@ describe("WalkHub", () => {
     });
 
     hub.open("/work/coder", CONFIG);
-    hub.put("agent-1", "перше", []);
+    hub.put({
+      agentId: "agent-1",
+      text: "перше",
+      attached: [],
+      recordings: [],
+    });
 
-    assert.equal(hub.put("agent-1", "друге", []), null);
+    assert.equal(
+      hub.put({
+        agentId: "agent-1",
+        text: "друге",
+        attached: [],
+        recordings: [],
+      }),
+      null,
+    );
   });
 
   it("is idle at once where no conversation is open, and after the walk where one is", async () => {
@@ -132,7 +209,12 @@ describe("WalkHub", () => {
 
     await hub.whenIdle();
     hub.open("/work/coder", CONFIG);
-    hub.put("agent-1", "питання", []);
+    hub.put({
+      agentId: "agent-1",
+      text: "питання",
+      attached: [],
+      recordings: [],
+    });
     await hub.whenIdle();
 
     assert.equal(record.steps.length, 1);
@@ -152,7 +234,15 @@ describe("WalkHub", () => {
       }),
     );
 
-    assert.equal(typeof hub.put("agent-2", "питання", []), "string");
+    assert.equal(
+      typeof hub.put({
+        agentId: "agent-2",
+        text: "питання",
+        attached: [],
+        recordings: [],
+      })?.walkId,
+      "string",
+    );
   });
 
   it("falls silent about a conversation once another project's is open", async () => {
@@ -161,7 +251,12 @@ describe("WalkHub", () => {
     });
 
     hub.open("/work/coder", CONFIG);
-    hub.put("agent-1", "питання", []);
+    hub.put({
+      agentId: "agent-1",
+      text: "питання",
+      attached: [],
+      recordings: [],
+    });
     hub.open("/work/other", CONFIG);
 
     const told = voice.snapshots.length;

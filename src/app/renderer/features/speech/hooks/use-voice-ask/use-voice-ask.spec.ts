@@ -34,6 +34,24 @@ class StandInRecorder {
   }
 }
 
+/** A microphone heard as a steady loud tone: every sample at the top of its swing. */
+class StandInListening {
+  createAnalyser() {
+    return {
+      fftSize: 4,
+      getByteTimeDomainData: (samples: Uint8Array) => samples.fill(255),
+    };
+  }
+
+  createMediaStreamSource() {
+    return {
+      connect: () => {},
+    };
+  }
+
+  async close(): Promise<void> {}
+}
+
 const track = {
   stop: vi.fn(),
 };
@@ -76,6 +94,7 @@ function heardAs(answer: string | Error) {
 describe("useVoiceAsk", () => {
   beforeEach(() => {
     vi.stubGlobal("MediaRecorder", StandInRecorder);
+    vi.stubGlobal("AudioContext", StandInListening);
     Object.defineProperty(navigator, "mediaDevices", {
       value: {
         getUserMedia: vi.fn(async () => ({
@@ -106,7 +125,15 @@ describe("useVoiceAsk", () => {
     expect(result.current.standing).toBe("recording");
 
     await act(async () => result.current.press());
-    await waitFor(() => expect(onHeard).toHaveBeenCalledWith("Прогони тести."));
+    await waitFor(() =>
+      expect(onHeard).toHaveBeenCalledWith(
+        "Прогони тести.",
+        expect.objectContaining({
+          mimeType: "audio/webm",
+          audio: expect.any(Uint8Array),
+        }),
+      ),
+    );
 
     const [[, sound]] = invoke.mock.calls;
 
@@ -117,6 +144,32 @@ describe("useVoiceAsk", () => {
     });
     expect(result.current.standing).toBe("idle");
     expect(track.stop).toHaveBeenCalled();
+  });
+
+  it("runs the wave while it records, and the clip keeps the wave and how long it went", async () => {
+    heardAs("Прогони тести.");
+    const onHeard = vi.fn();
+    const { result } = renderHook(() =>
+      useVoiceAsk(
+        hands({
+          onHeard,
+        }),
+      ),
+    );
+
+    await act(async () => result.current.press());
+    await waitFor(() => expect(result.current.levels.length).toBeGreaterThan(1));
+
+    expect(result.current.levels.every((level) => level === 1)).toBe(true);
+
+    await act(async () => result.current.press());
+    await waitFor(() => expect(onHeard).toHaveBeenCalled());
+
+    const [[, clip]] = onHeard.mock.calls;
+
+    expect(clip.peaks.length).toBeGreaterThan(1);
+    expect(clip.durationMs).toBeGreaterThan(0);
+    expect(result.current.levels).toEqual([]);
   });
 
   it("drops a cancelled recording: nobody hears it and nothing reaches the field", async () => {

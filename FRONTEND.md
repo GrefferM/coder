@@ -86,14 +86,21 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     they stand — a change the machine refuses is said on the line and the settings are read again —
     and the OS's voices, told again whenever the OS hands them over; `useSpeechWrites`, the project's
     choice of its recognition model, written through the project's writer; `useVoiceAsk`, a question
-    said into the field (4j) — the microphone, the recording, the project's recognition model hearing
-    it (`hearingChoice` finds the model by its id and stands on nothing where it does not stand), and
-    its words written after the draft through `heardIntoDraft`, with every refusal handed to the
-    page's line as a `SpeechNote` carrying its act; `useReadAloud`, the window's one voice (4k), which
+    said into the field (4j) — the microphone, the recording metered every 100ms for the running wave
+    (`soundLevel`, `levels`), the project's recognition model hearing it (`hearingChoice` finds the
+    model by its id and stands on nothing where it does not stand), and its words written after the
+    draft through `heardIntoDraft` with the recording handed over as a `HeardClip` (its own id, sound,
+    length and `wavePeaks`), which `useAgentChat` keeps under the field and, once the question goes,
+    by the question's id in `heardBy`; every refusal is handed to the page's line as a `SpeechNote`
+    carrying its act; `useSoundPlayer`, the window's one recording (4l), playing a `SoundTrack` from
+    the sound at hand or read from the record by its id, following how far it played frame by frame
+    and seeking where its wave is pressed — `questionTracks` gives each question on screen its tracks,
+    the opened run's from the record and this screen's from `heardBy`; `useReadAloud`, the window's one voice (4k), which
     reads an answer by the message's own id with `spokenParts` leaving the code out and following the word the voice reaches (`spokenWord`) for the card to light, and which the
     sample in «Мовлення» shares — the page composes them, stands `SpeechSection` on the rail after
-    the prompts, hands `voice` and `aloud` to the chat, and the chat section drops a recording and
-    silences a reading when the stream is left;
+    the prompts, hands `voice`, `aloud` and the player to the chat — a recording beginning silences
+    the reading and a reading beginning stops the recording — and the chat section drops a recording
+    and silences a reading and a playing one when the stream is left;
     `useAgentChat`, the chat as the screen shows it: the walks are run by the backend and come back as
     a snapshot, and what is typed, aimed at and attached, and the repeats, stay here — with the files
     picked for the next question waiting under its field, per stream, and the pick refused said back

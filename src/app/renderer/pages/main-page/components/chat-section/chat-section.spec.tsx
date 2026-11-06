@@ -12,7 +12,7 @@ import type { AgentChatState } from "../../../../features/conversation";
 import type { ShownStream } from "../../hooks/use-shown-stream";
 import type { AgentDraft } from "../../../../features/agents";
 import type { ChatSectionProps } from "./interfaces";
-import { aDraft, aReadAloud, aVoiceAsk } from "../../../../testing";
+import { aDraft, aReadAloud, aSoundPlayer, aVoiceAsk } from "../../../../testing";
 
 const aimed: AgentDraft = aDraft({});
 
@@ -48,6 +48,10 @@ function chat(patch: Partial<AgentChatState> = {}): AgentChatState {
     attachments: [],
     attach: vi.fn(),
     detach: vi.fn(),
+    clips: [],
+    heardBy: {},
+    addClip: vi.fn(),
+    dropClip: vi.fn(),
     send: vi.fn(),
     stop: vi.fn(),
     repeats: 1,
@@ -62,6 +66,7 @@ function stream(patch: Partial<ShownStream> = {}): ShownStream {
     tab: "stream",
     showTab: vi.fn(),
     messages: [],
+    tracks: {},
     agents: [],
     head: null,
     exportChat: vi.fn(),
@@ -103,6 +108,7 @@ function props(patch: Partial<ChatSectionProps> = {}): ChatSectionProps {
     aimed,
     voice: aVoiceAsk(),
     aloud: aReadAloud(),
+    player: aSoundPlayer(),
     onOpenDebug: null,
     onOpenProviders: vi.fn(),
     onShowConsent: vi.fn(),

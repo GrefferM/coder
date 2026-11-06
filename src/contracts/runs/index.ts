@@ -20,6 +20,7 @@ export * from "./thread-step.interface";
 export * from "./own-thread.interface";
 export * from "./whole-call.interface";
 export * from "./whole-question.interface";
+export * from "./question-recording.interface";
 export * from "./whole-run.interface";
 export * from "./whole-step.interface";
 export * from "./written-call.interface";

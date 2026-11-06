@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AttachChip, MicButton, RepeatCount, VoiceRow } from "./components";
+import { SoundClip } from "../../../../../speech";
 import { Mark, TextButton } from "../../../../../../components";
 import { useInteraction } from "../../../../../../hooks";
 import { INTERACTION_HOVER_BACKGROUND_COLOR, INTERACTION_TRANSITION } from "../../../../../../constants";
@@ -61,6 +62,9 @@ export function Composer({
   attachments,
   onAttach,
   onDetach,
+  clips,
+  onDropClip,
+  player,
   onSend,
   onStop,
   repeats,
@@ -193,8 +197,8 @@ export function Composer({
           outline: "none",
         }}
       />
-      {/* Chips sit between field and hand, only while something is attached, wrapping into rows. */}
-      {attachments.length > 0 && (
+      {/* Chips sit between field and hand, only while something is attached or recorded, wrapping into rows. */}
+      {(attachments.length > 0 || clips.length > 0) && (
         <div
           className="d-flex flex-wrap"
           style={{
@@ -203,6 +207,9 @@ export function Composer({
         >
           {attachments.map((attachment) => (
             <AttachChip key={attachment.path} attachment={attachment} onDetach={onDetach} />
+          ))}
+          {clips.map((clip) => (
+            <SoundClip key={clip.id} track={clip} player={player} onDrop={() => onDropClip(clip.id)} />
           ))}
         </div>
       )}
@@ -236,7 +243,12 @@ export function Composer({
           </TextButton>
         ) : standing === "open" && voice.standing !== "idle" ? (
           // While a question is said, its word stands where «+» stood.
-          <VoiceRow standing={voice.standing} startedAt={voice.startedAt} onCancel={voice.cancel} />
+          <VoiceRow
+            standing={voice.standing}
+            startedAt={voice.startedAt}
+            levels={voice.levels}
+            onCancel={voice.cancel}
+          />
         ) : standing === "open" ? (
           // «+ ПРИКРІПИТИ» left, send right.
           <>

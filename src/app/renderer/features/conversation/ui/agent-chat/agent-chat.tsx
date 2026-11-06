@@ -186,6 +186,8 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
                     isFound={message.id === lit}
                     looked={band.search.query.trim()}
                     aloud={aloudOf(message)}
+                    tracks={said.tracks[message.questionId] ?? []}
+                    player={said.player}
                   />
                 );
               })}
@@ -204,6 +206,9 @@ export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
         attachments={field.attachments}
         onAttach={field.onAttach}
         onDetach={field.onDetach}
+        clips={field.clips}
+        onDropClip={field.onDropClip}
+        player={said.player}
         onSend={field.onSend}
         onStop={field.onStop}
         repeats={field.repeats}

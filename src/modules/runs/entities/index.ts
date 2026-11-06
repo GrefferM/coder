@@ -9,3 +9,4 @@ export * from "./run-step-model.entity";
 export * from "./run-step-setting.entity";
 export * from "./run-step.entity";
 export * from "./run.entity";
+export * from "./run-question-recording.entity";

@@ -20,13 +20,14 @@ import {
 import type { ComposerProps } from "./interfaces";
 import type { PickedAttachment } from "../../../../../../interfaces";
 import { FIELD_LEAST_HEIGHT_PX, FIELD_MOST_HEIGHT_PX } from "../../../../constants";
-import { aVoiceAsk } from "../../../../../../testing";
+import { aHeardClip, aSoundPlayer, aVoiceAsk } from "../../../../../../testing";
 import {
   HEARING_LABEL,
   MICROPHONE_FINISH_LABEL,
   MICROPHONE_LABEL,
+  DROP_CLIP_LABEL,
+  PLAY_CLIP_LABEL,
   RECORDING_CANCEL_LABEL,
-  RECORDING_LABEL,
 } from "../../../../../speech";
 
 const FIELD = `${AGENT_CHAT_FIELD_PLACEHOLDER_PREFIX}Шукач`;
@@ -132,7 +133,7 @@ describe("Composer · a question said into the field (4j)", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("says the recording where «+» stood, offers to drop it, and sends nothing while it runs", async () => {
+  it("runs the wave and the clock where «+» stood, offers to drop it, and sends nothing while it runs", async () => {
     const cancel = vi.fn();
     const onSend = vi.fn();
 
@@ -144,13 +145,14 @@ describe("Composer · a question said into the field (4j)", () => {
           voice: aVoiceAsk({
             standing: "recording",
             startedAt: Date.now(),
+            levels: [0.1, 0.6, 1],
             cancel,
           }),
         })}
       />,
     );
 
-    expect(screen.getByText(new RegExp(RECORDING_LABEL))).toBeInTheDocument();
+    expect(screen.getByText(/^\d\d:\d\d$/)).toBeInTheDocument();
     expect(screen.queryByText(AGENT_CHAT_ATTACH_LABEL)).not.toBeInTheDocument();
     expect(
       screen.getByRole("button", {
@@ -202,6 +204,9 @@ function props(patch: Partial<ComposerProps> = {}): ComposerProps {
     onAttach: vi.fn(),
     voice: aVoiceAsk(),
     onDetach: vi.fn(),
+    clips: [],
+    onDropClip: vi.fn(),
+    player: aSoundPlayer(),
     onSend: vi.fn(),
     onStop: vi.fn(),
     repeats: 1,
@@ -425,6 +430,37 @@ describe("Composer · attaching files", () => {
     await userEvent.click(screen.getByLabelText(`${AGENT_CHAT_ATTACH_CLOSE_LABEL} logout.log`));
 
     expect(said.onDetach).toHaveBeenCalledWith("/proj/logout.log");
+  });
+
+  it("shows each recording as a chip: «▶» plays it, «×» takes it off by its own id", async () => {
+    const toggle = vi.fn();
+    const clip = aHeardClip({
+      id: "clip-7",
+    });
+    const said = props({
+      clips: [clip],
+      player: aSoundPlayer({
+        toggle,
+      }),
+    });
+
+    render(<Composer {...said} />);
+
+    expect(screen.getByText("0:07")).toBeInTheDocument();
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: PLAY_CLIP_LABEL,
+      }),
+    );
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: DROP_CLIP_LABEL,
+      }),
+    );
+
+    expect(toggle).toHaveBeenCalledWith(clip);
+    expect(said.onDropClip).toHaveBeenCalledWith("clip-7");
   });
 
   it("draws no chip row while nothing is attached", () => {

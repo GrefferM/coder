@@ -1,11 +1,6 @@
 import { Dot, Mark, TextButton } from "../../../../../../../../components";
 import { useElapsed } from "../../../../../../../../hooks";
-import {
-  HEARING_LABEL,
-  RECORDING_CANCEL_LABEL,
-  RECORDING_LABEL,
-  RECORDING_SEPARATOR,
-} from "../../../../../../../speech";
+import { HEARING_LABEL, RECORDING_CANCEL_LABEL, SoundWave } from "../../../../../../../speech";
 import {
   VOICE_ROW_BREATH_CLASS,
   VOICE_ROW_BREATH_MS,
@@ -14,11 +9,12 @@ import {
   VOICE_ROW_DOT_SIZE_PX,
   VOICE_ROW_GAP_PX,
   VOICE_ROW_HEARING_COLOR,
+  VOICE_ROW_WAVE_HEIGHT_PX,
 } from "./constants";
 import type { VoiceRowProps } from "./interfaces";
 
-/** The row's left while a question is said: «ЗАПИС · 00:07» with its breathing dot and «СКАСУВАТИ», then «РОЗПІЗНАЄМО…». */
-export function VoiceRow({ standing, startedAt, onCancel }: VoiceRowProps) {
+/** The row's left while a question is said: the breathing dot, the running wave, «00:07» and «СКАСУВАТИ», then «РОЗПІЗНАЄМО…». */
+export function VoiceRow({ standing, startedAt, levels, onCancel }: VoiceRowProps) {
   const clock = useElapsed(startedAt);
 
   if (standing === "hearing") {
@@ -44,7 +40,18 @@ export function VoiceRow({ standing, startedAt, onCancel }: VoiceRowProps) {
       >
         <Dot color={VOICE_ROW_COLOR} size={VOICE_ROW_DOT_SIZE_PX} />
       </span>
-      <Mark color={VOICE_ROW_COLOR} className="flex-fill">{`${RECORDING_LABEL}${RECORDING_SEPARATOR}${clock}`}</Mark>
+      <SoundWave
+        peaks={levels}
+        height={VOICE_ROW_WAVE_HEIGHT_PX}
+        played={levels.length}
+        playedColor={VOICE_ROW_COLOR}
+        color={VOICE_ROW_COLOR}
+        isRunning
+        onPress={null}
+      />
+      <Mark color={VOICE_ROW_COLOR} className="flex-shrink-0">
+        {clock}
+      </Mark>
       <TextButton tone={VOICE_ROW_CANCEL_TONE} onPress={onCancel} className="flex-shrink-0">
         {RECORDING_CANCEL_LABEL}
       </TextButton>

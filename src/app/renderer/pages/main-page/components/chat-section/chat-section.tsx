@@ -11,6 +11,7 @@ export function ChatSection({
   aimed,
   voice,
   aloud,
+  player,
   onOpenDebug,
   onOpenProviders,
   onOpenModel,
@@ -19,14 +20,16 @@ export function ChatSection({
 }: ChatSectionProps) {
   const { cancel } = voice;
   const { stop } = aloud;
+  const { stop: silence } = player;
 
-  // Leaving the stream, for the history or another section, drops a recording and silences a reading.
+  // Leaving the stream, for the history or another section, drops a recording and silences a reading and a playing one.
   useEffect(
     () => () => {
       cancel();
       stop();
+      silence();
     },
-    [stream.tab, cancel, stop],
+    [stream.tab, cancel, stop, silence],
   );
 
   return (
@@ -64,6 +67,8 @@ export function ChatSection({
             // The message the search stands on: the row's promise, or the match Enter walked to.
             foundId: stream.foundId,
             aloud,
+            tracks: stream.tracks,
+            player,
           }}
           field={{
             draft: chat.draft,
@@ -74,6 +79,14 @@ export function ChatSection({
             attachments: chat.attachments,
             onAttach: chat.attach,
             onDetach: chat.detach,
+            clips: chat.clips,
+            onDropClip: (clipId) => {
+              if (player.playingId === clipId) {
+                silence();
+              }
+
+              chat.dropClip(clipId);
+            },
             onSend: chat.send,
             onStop: chat.stop,
             repeats: chat.repeats,

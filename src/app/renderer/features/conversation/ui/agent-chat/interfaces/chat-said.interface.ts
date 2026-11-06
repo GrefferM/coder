@@ -1,7 +1,7 @@
 import type { NamedAgent, WorkingAgent } from "../../../../../interfaces";
 import type { ChatMessage } from "../../../interfaces";
 import type { OpenCalls } from "../../../hooks";
-import type { ReadAloud } from "../../../../speech";
+import type { ReadAloud, SoundPlayer, SoundTrack } from "../../../../speech";
 
 /** What stands in the stream: the words, who said them, and what is still being said. */
 export interface ChatSaid {
@@ -17,4 +17,8 @@ export interface ChatSaid {
   foundId: string | null;
   /** The one voice that reads an answer aloud, and which message it is reading. */
   aloud: ReadAloud;
+  /** The recordings each question was said with, by the question's own id (4l). */
+  tracks: Record<string, SoundTrack[]>;
+  /** The one player of the window, for the person's tracks and the chips under the field. */
+  player: SoundPlayer;
 }

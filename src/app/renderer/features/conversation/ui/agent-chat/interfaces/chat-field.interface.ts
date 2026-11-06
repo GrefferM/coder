@@ -1,6 +1,6 @@
 import type { PickedAttachment } from "../../../../../interfaces";
 import type { RepeatProgress } from "../../../interfaces";
-import type { VoiceAsk } from "../../../../speech";
+import type { HeardClip, VoiceAsk } from "../../../../speech";
 /** The field under the stream: its text, its height, its two acts and the question said into it. */
 export interface ChatField {
   draft: string;
@@ -14,6 +14,9 @@ export interface ChatField {
   attachments: PickedAttachment[];
   onAttach: () => void;
   onDetach: (path: string) => void;
+  /** Recordings waiting to go with the question, as chips beside the attachments; empty for none. */
+  clips: HeardClip[];
+  onDropClip: (clipId: string) => void;
   onSend: () => void;
   onStop: () => void;
   /** «x1»: how many times the next question goes in a row. */

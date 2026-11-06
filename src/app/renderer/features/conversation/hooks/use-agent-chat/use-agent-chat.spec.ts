@@ -15,10 +15,10 @@ import {
   WALKS_WRITTEN_CHANNEL,
 } from "../../../../../../contracts";
 import { begunWalk, emptyWalk } from "../../logic";
-import type { WalkSnapshot } from "../../../../../../contracts";
+import type { PutWalkAnswer, WalkSnapshot } from "../../../../../../contracts";
 import type { Agent, OpenProject, ProviderState } from "../../../../interfaces";
 import type { ChatMessage } from "../../interfaces";
-import { aConfig, aLink, aModel, anAgent, standInBridge } from "../../../../testing";
+import { aConfig, aHeardClip, aLink, aModel, anAgent, standInBridge } from "../../../../testing";
 
 function agent(id: string, name: string, x: number): Agent {
   return anAgent({
@@ -122,7 +122,7 @@ function walking(isOut: boolean, words: ChatMessage[] = [], patch: Partial<WalkS
 }
 
 /** A backend that takes every question under the next walk id; what it was sent is kept, and pushes can be made. */
-function backend(answers: { opened?: WalkSnapshot; put?: (nth: number) => string | null } = {}) {
+function backend(answers: { opened?: WalkSnapshot; put?: (nth: number) => PutWalkAnswer | null } = {}) {
   const listeners: Record<string, ((pushed: unknown) => void)[]> = {};
   const sent: { channel: string; payload: unknown }[] = [];
   let puts = 0;
@@ -139,7 +139,12 @@ function backend(answers: { opened?: WalkSnapshot; put?: (nth: number) => string
     if (channel === PUT_WALK_CHANNEL) {
       puts += 1;
 
-      return answers.put === undefined ? `walk-${puts}` : answers.put(puts);
+      return answers.put === undefined
+        ? {
+            walkId: `walk-${puts}`,
+            questionId: `question-${puts}`,
+          }
+        : answers.put(puts);
     }
 
     return undefined;
@@ -260,6 +265,7 @@ describe("useAgentChat", () => {
           agentId: "agent-1",
           text: "Зроби це",
           attached: [],
+          recordings: [],
         },
       ]),
     );
@@ -340,6 +346,7 @@ describe("useAgentChat", () => {
       agentId: "agent-1",
       text: "Зроби це",
       attached: [],
+      recordings: [],
     });
   });
 
@@ -489,5 +496,52 @@ describe("useAgentChat", () => {
 
     expect(result.current.written).toBe(2);
     expect(heard).toHaveBeenCalledWith("anthropic", true);
+  });
+
+  it("sends the recordings under the field with the question, and keeps them by the question's id", async () => {
+    const door = backend();
+    const { result } = await opened();
+    const clip = aHeardClip();
+
+    act(() => result.current.changeDraft("Подивись, чому падає вихід"));
+    act(() => result.current.addClip(clip));
+    act(() => result.current.send());
+
+    await waitFor(() => expect(result.current.heardBy["question-1"]).toEqual([clip]));
+    expect(door.sentOn(PUT_WALK_CHANNEL)).toEqual([
+      {
+        agentId: "agent-1",
+        text: "Подивись, чому падає вихід",
+        attached: [],
+        recordings: [
+          {
+            audio: clip.audio,
+            mimeType: clip.mimeType,
+            durationMs: clip.durationMs,
+            peaks: clip.peaks,
+          },
+        ],
+      },
+    ]);
+    expect(result.current.clips).toEqual([]);
+  });
+
+  it("takes a recording off the field by its own id, leaving the words", async () => {
+    backend();
+    const { result } = await opened();
+
+    act(() => result.current.changeDraft("Подивись"));
+    act(() => result.current.addClip(aHeardClip()));
+    act(() =>
+      result.current.addClip(
+        aHeardClip({
+          id: "clip-2",
+        }),
+      ),
+    );
+    act(() => result.current.dropClip("clip-1"));
+
+    expect(result.current.clips.map((clip) => clip.id)).toEqual(["clip-2"]);
+    expect(result.current.draft).toBe("Подивись");
   });
 });

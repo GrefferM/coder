@@ -2,6 +2,7 @@ import type { OpenCalls } from "../../../../../hooks";
 import type { NamedAgent, WorkingAgent } from "../../../../../../../interfaces";
 import type { ChatMessage, ChatStep } from "../../../../../interfaces";
 import type { CardAloud } from "../../answer-card";
+import type { SoundPlayer, SoundTrack } from "../../../../../../speech";
 
 export interface SaidTurnProps {
   message: ChatMessage;
@@ -35,4 +36,7 @@ export interface SaidTurnProps {
   looked: string;
   /** The speaker over an agent's answer; `null` where the turn has no words to read (4k). */
   aloud: CardAloud | null;
+  /** The recordings the person's question was said with; empty for a typed one. */
+  tracks: SoundTrack[];
+  player: SoundPlayer;
 }

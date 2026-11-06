@@ -63,6 +63,7 @@ function run(walk: WholeStep[]): WholeRun {
         askedAt: aimed.startedAt,
         askedAgentId: aimed.agentId,
         attached: [],
+        recordings: [],
       };
     }),
     steps: walk.length,

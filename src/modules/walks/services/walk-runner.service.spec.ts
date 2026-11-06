@@ -107,6 +107,7 @@ describe("WalkRunner", () => {
       agent: first,
       text: "питання",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
 
@@ -156,6 +157,7 @@ describe("WalkRunner", () => {
       agent: asker,
       text: "питання",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
 
@@ -185,6 +187,7 @@ describe("WalkRunner", () => {
       agent: first,
       text: "питання",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
 
@@ -215,6 +218,7 @@ describe("WalkRunner", () => {
       agent: first,
       text: "питання",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
 
@@ -248,6 +252,7 @@ describe("WalkRunner", () => {
       agent: first,
       text: "питання",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
 
@@ -276,6 +281,7 @@ describe("WalkRunner", () => {
       agent: first,
       text: "питання",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
 
@@ -299,6 +305,7 @@ describe("WalkRunner", () => {
       agent: first,
       text: "питання",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
 
@@ -320,6 +327,7 @@ describe("WalkRunner", () => {
       agent: first,
       text: "питання",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
 
@@ -347,12 +355,14 @@ describe("WalkRunner", () => {
       agent: first,
       text: "перше",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
     stood.runner.put({
       agent: first,
       text: "друге",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
 
@@ -375,6 +385,7 @@ describe("WalkRunner", () => {
       agent: first,
       text: "перше",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
     stood.runner.fresh();
@@ -382,6 +393,7 @@ describe("WalkRunner", () => {
       agent: first,
       text: "друге",
       attached: [],
+      recordings: [],
     });
     await stood.runner.whenIdle();
 

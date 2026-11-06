@@ -1,6 +1,7 @@
 import type { ChatMessage, RepeatProgress } from "../../../interfaces";
 import type { PickedAttachment } from "../../../../../interfaces";
 import type { OpenCalls } from "../../use-open-calls";
+import type { HeardClip } from "../../../../speech";
 import type { LinkLife, WaitingAgent, WorkingAgent } from "../../../../../interfaces";
 
 /** Chat state the agents section holds for the selected agent. */
@@ -51,6 +52,14 @@ export interface AgentChatState {
   attach: () => void;
   /** The × on a chip: removes the attachment with that path. */
   detach: (path: string) => void;
+  /** Recordings under the on-screen stream's field, to go with the next question. */
+  clips: HeardClip[];
+  /** The recordings each question went with on this screen, by the question's id. */
+  heardBy: Record<string, HeardClip[]>;
+  /** A recording just heard goes under the field. */
+  addClip: (clip: HeardClip) => void;
+  /** The × on a recording's chip: the sound goes, the words stay. */
+  dropClip: (clipId: string) => void;
   send: () => void;
   /** Ends the on-screen walk and any repeats under way. */
   stop: () => void;

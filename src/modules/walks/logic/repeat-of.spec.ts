@@ -47,6 +47,7 @@ function run(walk: WholeStep[]): WholeRun {
       // The agent this question stood before, which a repeat goes back to.
       askedAgentId: walk.find((one) => one.questionId === id)?.agentId ?? "agent-1",
       attached: [],
+      recordings: [],
     })),
     steps: walk.length,
     money: 0.0001,

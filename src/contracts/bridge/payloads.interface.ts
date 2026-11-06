@@ -1,3 +1,4 @@
+import type { RecordedSound } from "../speech";
 import type { ProjectConfig, TakenThings } from "../project";
 import type { ProjectMcpServer } from "../project";
 import type { PackedAttachment } from "../attachments";
@@ -101,6 +102,8 @@ export interface PutWalk {
   agentId: string;
   text: string;
   attached: PackedAttachment[];
+  /** The recordings the question was said with; kept beside it in the record. */
+  recordings: RecordedSound[];
 }
 
 /** The card a repeat was pressed under. */

@@ -46,6 +46,7 @@ function opening(patch: Partial<OpenRun> = {}): OpenRun {
     questionId: QUESTION,
     asked: "Знайди md-файли",
     attached: [],
+    recordings: [],
     startedAt: ASKED_AT,
     ...patch,
   };
@@ -274,6 +275,7 @@ describe("the record on a real database of its own", () => {
           text: "=== todo.md ===\n- тести",
         }),
       ],
+      recordings: [],
       askedAt: ASKED_AT + 5_000,
     });
 

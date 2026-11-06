@@ -36,8 +36,15 @@ import {
 } from "../../logic";
 import { refusedPickNote } from "../../words";
 import { REPEAT_LEAST } from "../../constants";
-import type { Agent, OpenProject, PackedAttachment, PickedAttachment, ProviderState } from "../../../../interfaces";
-import type { ChatMessage, WalkSnapshot } from "../../interfaces";
+import type {
+  OpenProject,
+  PackedAttachment,
+  PickedAttachment,
+  ProviderState,
+  PutWalkAnswer,
+} from "../../../../interfaces";
+import type { ChatMessage, FieldReturn, QuestionToPut, WalkSnapshot } from "../../interfaces";
+import type { HeardClip } from "../../../speech";
 import type { AgentChatState, RepeatCycle } from "./interfaces";
 
 /** What is typed and attached on this screen, by stream; the backend knows nothing of it. */
@@ -46,11 +53,14 @@ interface Screen {
   drafts: Record<string, string>;
   /** Files and folders attached in each stream, waiting under the field for the question to go. */
   attachments: Record<string, PickedAttachment[]>;
+  /** Recordings made in each stream, waiting under the field for the question to go. */
+  clips: Record<string, HeardClip[]>;
 }
 
 const EMPTY_SCREEN: Screen = {
   drafts: {},
   attachments: {},
+  clips: {},
 };
 
 /**
@@ -93,6 +103,8 @@ export function useAgentChat(
   const seen = useRef<string | null>(null);
   /** A question sent that the backend has not answered yet; a second one waits. */
   const putting = useRef(false);
+  /** The recordings each question went with, by the question's id, for the person's card. */
+  const [heardBy, setHeardBy] = useState<Record<string, HeardClip[]>>({});
   /** Remembers which calls a hand opened; nothing opens itself. */
   const openCalls = useOpenCalls();
   /** Whom the chat is aimed at; picking a sphere aims it, releasing the sphere keeps the aim. */
@@ -125,8 +137,11 @@ export function useAgentChat(
   }, []);
 
   /** Updates what is typed and attached and the ref with it, so the next callback sees the new one. */
-  const change = useCallback((moved: (standing: Screen) => Screen) => {
-    screen.current = moved(screen.current);
+  const change = useCallback((moved: (standing: Screen) => Partial<Screen>) => {
+    screen.current = {
+      ...screen.current,
+      ...moved(screen.current),
+    };
     setScreened(screen.current);
   }, []);
 
@@ -207,17 +222,33 @@ export function useAgentChat(
    * One walk from this question to the last step it reaches, written into the conversation's record (older than the
    * walk). The walk's id, or `null` when the backend took no question.
    */
-  const put = useCallback(async (agent: Agent, text: string, attached: PackedAttachment[]): Promise<string | null> => {
+  const put = useCallback(async (question: QuestionToPut): Promise<PutWalkAnswer | null> => {
+    const { agent, text, attached, clips } = question;
+
     try {
-      return await putWalk(agent.id, text, attached);
+      const answer = await putWalk({
+        agentId: agent.id,
+        text,
+        attached,
+        recordings: clips.map(({ id: _id, ...sound }) => sound),
+      });
+
+      if (answer !== null && clips.length > 0) {
+        setHeardBy((standing) => ({
+          ...standing,
+          [answer.questionId]: clips,
+        }));
+      }
+
+      return answer;
     } catch {
       return null;
     }
   }, []);
 
-  /** A question that did not go returns to its field with its attachments; newer typed words stay. */
+  /** A question that did not go returns to its field with its attachments and recordings; newer typed words stay. */
   const giveBack = useCallback(
-    (at: string, text: string, picked: PickedAttachment[]) => {
+    ({ at, text, picked, clips }: FieldReturn) => {
       change((standing) => ({
         drafts: {
           ...standing.drafts,
@@ -226,6 +257,10 @@ export function useAgentChat(
         attachments: {
           ...standing.attachments,
           [at]: [...picked, ...(standing.attachments[at] ?? [])],
+        },
+        clips: {
+          ...standing.clips,
+          [at]: [...clips, ...(standing.clips[at] ?? [])],
         },
       }));
     },
@@ -255,8 +290,15 @@ export function useAgentChat(
     }
 
     const picked = screen.current.attachments[at] ?? [];
+    const clips = screen.current.clips[at] ?? [];
+    const returned: FieldReturn = {
+      at,
+      text,
+      picked,
+      clips,
+    };
 
-    // The question and its files leave the field together, which is left clear.
+    // The question, its files and its recordings leave the field together, which is left clear.
     change((standing) => ({
       drafts: {
         ...standing.drafts,
@@ -264,6 +306,10 @@ export function useAgentChat(
       },
       attachments: {
         ...standing.attachments,
+        [at]: [],
+      },
+      clips: {
+        ...standing.clips,
         [at]: [],
       },
     }));
@@ -284,15 +330,22 @@ export function useAgentChat(
     /** Puts the first question; the walk's id opens the repeats, no walk gives the question back. */
     const go = (attached: PackedAttachment[]): void => {
       putting.current = true;
-      void put(agent, text, attached).then((runKey) => {
+      void put({
+        agent,
+        text,
+        attached,
+        clips,
+      }).then((answer) => {
         putting.current = false;
 
-        if (runKey === null) {
+        if (answer === null) {
           turnCycle(null);
-          giveBack(at, text, picked);
+          giveBack(returned);
 
           return;
         }
+
+        const runKey = answer.walkId;
 
         // Stopped while packing, there are no repeats left and the question goes alone.
         if (cycling.current !== null) {
@@ -319,7 +372,7 @@ export function useAgentChat(
       onPacked: go,
       onGivenBack: () => {
         turnCycle(null);
-        giveBack(at, text, picked);
+        giveBack(returned);
       },
     });
   }, [aimedAgentId, change, giveBack, packed, put, repeats, turnCycle]);
@@ -363,17 +416,22 @@ export function useAgentChat(
     };
 
     turnCycle(next);
-    void put(agent, going.text, going.attached).then((runKey) => {
+    void put({
+      agent,
+      text: going.text,
+      attached: going.attached,
+      clips: [],
+    }).then((answer) => {
       if (cycling.current !== next) {
         return;
       }
 
       turnCycle(
-        runKey === null
+        answer === null
           ? null
           : {
               ...next,
-              runKey,
+              runKey: answer.walkId,
             },
       );
     });
@@ -429,6 +487,36 @@ export function useAgentChat(
         attachments: {
           ...standing.attachments,
           [at]: (standing.attachments[at] ?? []).filter((one) => one.path !== path),
+        },
+      }));
+    },
+    [change],
+  );
+
+  /** A recording just heard goes under the on-screen stream's field, to go with the next question. */
+  const addClip = useCallback(
+    (clip: HeardClip) => {
+      const at = stream.current;
+
+      change((standing) => ({
+        clips: {
+          ...standing.clips,
+          [at]: [...(standing.clips[at] ?? []), clip],
+        },
+      }));
+    },
+    [change],
+  );
+
+  /** The × on a recording's chip: its sound goes, the words it left in the field stay. */
+  const dropClip = useCallback(
+    (clipId: string) => {
+      const at = stream.current;
+
+      change((standing) => ({
+        clips: {
+          ...standing.clips,
+          [at]: (standing.clips[at] ?? []).filter((one) => one.id !== clipId),
         },
       }));
     },
@@ -513,6 +601,8 @@ export function useAgentChat(
     messages: chatStream(walked),
     draft: screened.drafts[stream.current] ?? "",
     attachments: screened.attachments[stream.current] ?? [],
+    clips: screened.clips[stream.current] ?? [],
+    heardBy,
     isWorking: turn !== undefined,
     /** Bumped by every step written and every run closed, so the history can follow. */
     written,
@@ -525,6 +615,8 @@ export function useAgentChat(
     changeDraft,
     attach,
     detach,
+    addClip,
+    dropClip,
     send,
     stop,
     repeats,

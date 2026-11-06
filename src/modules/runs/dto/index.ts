@@ -4,3 +4,4 @@ export * from "./forget-runs.dto";
 export * from "./list-runs.dto";
 export * from "./read-run.dto";
 export * from "./search-runs.dto";
+export * from "./recording-sound.dto";
