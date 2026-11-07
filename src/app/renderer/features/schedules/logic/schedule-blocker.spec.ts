@@ -10,6 +10,7 @@ const FILLED = {
   agentId: "agent-1",
   task: "Перевір main.",
   everyMinutes: "15",
+  isActive: false,
 };
 
 describe("scheduleBlocker", () => {
@@ -23,6 +24,7 @@ describe("scheduleBlocker", () => {
         agentId: null,
         task: "  ",
         everyMinutes: "",
+        isActive: false,
       }),
     ).toEqual([SCHEDULE_AGENT_DROPPED_LABEL, SCHEDULE_TASK_DROPPED_LABEL, SCHEDULE_INTERVAL_DROPPED_LABEL]);
   });
@@ -32,6 +34,7 @@ describe("scheduleBlocker", () => {
       scheduleBlocker({
         ...FILLED,
         everyMinutes: "0",
+        isActive: false,
       }),
     ).toEqual([SCHEDULE_INTERVAL_DROPPED_LABEL]);
   });

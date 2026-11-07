@@ -3,4 +3,5 @@ export interface ScheduleFormValues {
   agentId: string | null;
   task: string;
   everyMinutes: string;
+  isActive: boolean;
 }

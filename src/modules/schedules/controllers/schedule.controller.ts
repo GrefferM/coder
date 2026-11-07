@@ -1,22 +1,17 @@
 import { Validate } from "../../../utils/dto-validation";
-import { FollowSchedulesDto, SwitchScheduleDto } from "../dto";
-import { OpenSchedules } from "../services";
+import { FollowSchedulesDto } from "../dto";
+import { ScheduleClock } from "../services";
 import type { ScheduleStanding } from "../interfaces";
 
 export class ScheduleController {
-  constructor(private readonly schedules: OpenSchedules) {}
+  constructor(private readonly clock: ScheduleClock) {}
 
   @Validate()
   async follow(payload: FollowSchedulesDto): Promise<void> {
-    await this.schedules.follow(payload);
+    this.clock.follow(payload);
   }
 
   async standings(): Promise<ScheduleStanding[]> {
-    return this.schedules.standings();
-  }
-
-  @Validate()
-  async switch(payload: SwitchScheduleDto): Promise<void> {
-    await this.schedules.switch(payload);
+    return this.clock.standings();
   }
 }

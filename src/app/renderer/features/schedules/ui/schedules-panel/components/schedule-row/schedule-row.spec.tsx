@@ -16,10 +16,10 @@ const SCHEDULE: ProjectSchedule = {
   agentId: "agent-1",
   task: "Переглянь нові коміти",
   everyMinutes: 90,
+  isActive: true,
 };
 const ON: ScheduleStanding = {
   scheduleId: "schedule-1",
-  isOn: true,
   nextAt: 72 * MINUTE,
   outSince: null,
 };
@@ -37,11 +37,13 @@ describe("ScheduleRow", () => {
   it("says no countdown for a schedule switched off", () => {
     render(
       <ScheduleRow
-        schedule={SCHEDULE}
+        schedule={{
+          ...SCHEDULE,
+          isActive: false,
+        }}
         agents={AGENTS}
         standing={{
           ...ON,
-          isOn: false,
           nextAt: null,
         }}
         now={0}
@@ -78,6 +80,7 @@ describe("ScheduleRow", () => {
         schedule={{
           ...SCHEDULE,
           everyMinutes: null,
+          isActive: true,
         }}
         agents={AGENTS}
         standing={ON}

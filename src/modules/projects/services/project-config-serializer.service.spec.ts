@@ -528,6 +528,12 @@ describe("ProjectConfigSerializer", () => {
     assert.equal(schedule.everyMinutes, null);
   });
 
+  it("reads a schedule that never said it runs as switched off", async () => {
+    const config = await serializer.parse(`${VALID_YAML}schedules:\n  - id: ${SCHEDULE_ID}\n`);
+
+    assert.equal(config.schedules[0].isActive, false);
+  });
+
   it("reads an interval under a minute as not written yet, leaving the file whole", async () => {
     const config = await serializer.parse(`${VALID_YAML}schedules:\n  - id: ${SCHEDULE_ID}\n    everyMinutes: 0\n`);
 

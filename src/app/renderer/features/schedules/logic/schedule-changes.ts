@@ -1,4 +1,8 @@
 import {
+  SCHEDULE_ACTIVE_CHANGE_LABEL,
+  SCHEDULE_ACTIVE_DROPPED_LABEL,
+  SCHEDULE_ACTIVE_OFF_LABEL,
+  SCHEDULE_ACTIVE_ON_LABEL,
   SCHEDULE_AGENT_CHANGE_LABEL,
   SCHEDULE_AGENT_DROPPED_LABEL,
   SCHEDULE_INTERVAL_CHANGE_LABEL,
@@ -34,6 +38,12 @@ export function scheduleChanges(saved: ScheduleFormValues, form: ScheduleFormVal
       droppedLabel: SCHEDULE_INTERVAL_DROPPED_LABEL,
       was: saved.everyMinutes,
       now: form.everyMinutes,
+    },
+    {
+      label: SCHEDULE_ACTIVE_CHANGE_LABEL,
+      droppedLabel: SCHEDULE_ACTIVE_DROPPED_LABEL,
+      was: saved.isActive ? SCHEDULE_ACTIVE_ON_LABEL : SCHEDULE_ACTIVE_OFF_LABEL,
+      now: form.isActive ? SCHEDULE_ACTIVE_ON_LABEL : SCHEDULE_ACTIVE_OFF_LABEL,
     },
   ];
 

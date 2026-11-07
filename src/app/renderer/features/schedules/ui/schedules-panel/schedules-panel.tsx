@@ -17,7 +17,7 @@ import {
 } from "./constants";
 import type { SchedulesPanelProps } from "./interfaces";
 
-/** The project's schedules as they stand on this machine; a row opens its form as a step of the tab. */
+/** The project's schedules as they stand with the clock; a row opens its form as a step of the tab. */
 export function SchedulesPanel({ schedules, agents, clock, section, onOpenForm, onCancelForm }: SchedulesPanelProps) {
   const { form, openSchedule, openScheduleId } = section;
 
@@ -27,10 +27,8 @@ export function SchedulesPanel({ schedules, agents, clock, section, onOpenForm, 
         values={form}
         schedule={openSchedule}
         agents={agents}
-        isOn={openSchedule === null ? section.isNewOn : (clock.standings[openSchedule.id]?.isOn ?? false)}
         isDirty={section.unsaved !== null}
         onChange={section.editForm}
-        onSwitch={section.switchOpen}
         onSave={section.saveForm}
         onCancel={onCancelForm}
         onRevert={() => section.openForm(openScheduleId)}

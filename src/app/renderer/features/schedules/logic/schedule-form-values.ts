@@ -12,5 +12,6 @@ export function scheduleFormValues(schedule: ProjectSchedule | null): ScheduleFo
     agentId: schedule.agentId,
     task: schedule.task ?? "",
     everyMinutes: schedule.everyMinutes === null ? "" : String(schedule.everyMinutes),
+    isActive: schedule.isActive,
   };
 }

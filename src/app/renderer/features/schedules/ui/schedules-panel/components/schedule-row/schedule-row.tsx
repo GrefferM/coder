@@ -39,7 +39,7 @@ import type { ScheduleRowProps } from "./interfaces";
 export function ScheduleRow({ schedule, agents, standing, now, onOpen }: ScheduleRowProps) {
   const { isPointedAt, isFocused, handlers } = usePressable(onOpen);
   const trouble = scheduleTrouble(schedule, agents);
-  const state = scheduleRowState(trouble, standing);
+  const state = scheduleRowState(schedule, trouble, standing);
   const agent = agents.find((standingAgent) => standingAgent.id === schedule.agentId) ?? null;
   const outSince = standing?.outSince ?? null;
   const worked = useElapsedSeconds(outSince ?? now);

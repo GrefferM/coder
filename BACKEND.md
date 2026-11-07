@@ -18,8 +18,8 @@ re-reads.
   an agent, its model, its prompt and its granted functions; the agent's
   own file holds its name, short description, colour, place, whether it is switched on, its maximum
   of calls and its temperature. A schedule's agent is a tie, so it stands in the project file; the
-  schedule's own file holds the task it puts and its interval in whole minutes, one at the least,
-  and nothing of whether it runs — that is each machine's own. A model's provider is a tie, so it stands in the project file; the
+  schedule's own file holds the task it puts, its interval in whole minutes, one at the least, and
+  whether it is switched on — a file that never said so is off. A model's provider is a tie, so it stands in the project file; the
   model's own file holds its name, its kind (`text`, or `listen` for one that recognises speech, which
   holds no numbers; a file that names none is `text`), its prices and its two ceilings — what may be sent to it, and
   what it may say back. An MCP server has no ties, so its whole self stands in its own file: its
@@ -44,7 +44,7 @@ re-reads.
 - **In SQLite:** only what is genuinely large or genuinely local — the registry of known projects,
   the history of what this machine has deleted from them, the record of runs, the last look taken at
   each MCP server, the servers this machine deleted whose keys are owed a sweep, the run line of
-  each local server this machine agreed to start, and the schedules this machine switched on. The
+  each local server this machine agreed to start. The
   registry is a list of folders and, beside each, where this machine was last looking in it — the
   canvas's place and scale and the section that stood open, kept as one string the module never
   opens. Whether a folder still holds a project is asked of the disk when the list is read, never
@@ -241,20 +241,17 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   conversation, walks to its end and answers. The window and `npm run agent` build the backend the
   same way, through `createBackend` in `src/app/backend`; only who is spoken to differs.
 
-- **`schedules`** — when a schedule's task is put, and whether this machine puts it. Whether a
-  schedule runs is this machine's own, so a colleague who pulls the project starts no clock:
-  **`ScheduleSwitches`** keeps the ones switched on in `schedule_switches`, by the schedule's id, and
-  a schedule with no row is off. **`ScheduleClock`** holds one timer for each schedule that can run —
-  switched on here, its agent standing, its task and interval written (`runnableSchedules` in
-  `logic/`) — and puts the task once a whole interval has passed since it began to hold it, then at
-  every interval after, reading the task and the agent as the project stands at the tick. A task
-  still walking when the next is due lets that one pass; nothing is queued, and nothing missed while
-  the app was closed is caught up. A changed interval is counted afresh from the change, another
-  folder lets every timer go, and so does quitting. **`OpenSchedules`** is what the controller
-  reaches: the project the window follows over `schedules:follow` — only the window, so `npm run
-agent` starts no clock — the switch over `schedules:switch`, and each schedule's standing over
-  `schedules:standings` (switched on, when next, since when a task is out). The task is put through the
-  `ScheduledAsker` port, which `walks`' `ScheduledWalks` answers.
+- **`schedules`** — when a schedule's task is put. **`ScheduleClock`** holds one timer for each
+  schedule that can run — switched on in its file, its agent standing, its task and interval written
+  (`runnableSchedules` in `logic/`) — and puts the task once a whole interval has passed since it
+  began to hold it, then at every interval after, reading the task and the agent as the project
+  stands at the tick. A task still walking when the next is due lets that one pass; nothing is
+  queued, and nothing missed while the app was closed is caught up. A changed interval is counted
+  afresh from the change, another folder lets every timer go, and so does quitting. The controller
+  hands it the project the window follows over `schedules:follow` — only the window, so `npm run
+agent` starts no clock — and answers each schedule's standing over `schedules:standings` (when
+  next, since when a task is out). The task is put through the `ScheduledAsker` port, which
+  `walks`' `ScheduledWalks` answers.
 
 - **`attachments`** — a file or a folder packed into text for a question. It is one service,
   **`AttachmentPacker`**, with two hands. `measure` names and weighs a pick without reading a byte:
@@ -493,8 +490,11 @@ Applies to the SQLite-backed modules only.
   `run_questions`, `run_question_attachments`, `run_steps`, `run_calls`, `run_handoffs`,
   `run_step_agents`, `run_step_models`, `run_step_settings`, `run_step_feeds`, `run_memories`,
   `mcp_server_looks`, `mcp_dropped_servers` and `mcp_server_consents`. `1793991075893-QuestionRecordings`
-  adds `run_question_recordings`, and `1794050709712-Schedules` adds `schedule_switches` and the
-  nullable `startedByScheduleId` of `runs`, rebuilding `runs` with every row it held.
+  adds `run_question_recordings`, `1794050709712-Schedules` adds `schedule_switches` and the
+  nullable `startedByScheduleId` of `runs`, rebuilding `runs` with every row it held, and
+  `1794060000000-ScheduleSwitchesGone` drops `schedule_switches` again, since whether a schedule runs
+  went into its own file. A table whose entity is gone is the one change the generator cannot see, so
+  that migration is written by hand, in the generator's own form.
 - **A committed migration is never edited or deleted.** Databases that have already run it will not
   run it again, so a change to it reaches none of them. A mistake is fixed by the next migration, a
   compensating one; where it has to repair, it is written to stand on a database in either state —

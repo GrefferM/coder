@@ -706,7 +706,7 @@ colour into the name field.
 A project is a folder, and its config file travels with the repository. **Project scope** — agents,
 links, positions, prompts, models with prices, declared commands, MCP registrations, schedules — is
 committed and reaches whoever opens the folder. **Machine scope** — provider keys and addresses, secret
-values, run history, whether a schedule runs — stays here.
+values, run history — stays here.
 
 Every panel must make its own scope obvious: if the boundary isn't visible, someone puts a token
 where it will be committed. **The rail draws that boundary as a rule** (frame 38a): above it stand
@@ -1512,9 +1512,10 @@ ends, islands and missing exits are all normal, and there is no "finish" marker.
 ## Schedules
 
 A schedule puts one task to one agent every N minutes while the project stands open (frame 51a). Its
-section is the last above the rule, after «Мовлення», with a clock face for its glyph: the agent, the
-task and the interval travel with the folder, **whether it runs is this machine's** — a colleague who
-pulls the project starts nothing until they switch it on themselves.
+section is the last above the rule, after «Мовлення», with a clock face for its glyph. **A schedule
+belongs to the project whole**: the agent, the task, the interval and whether it is switched on all
+travel with the folder, so a schedule switched on runs for whoever opens the project, the way a
+switched-on agent answers for them.
 
 A row reads like a history row: a dot, a quiet state word, the agent's name in its colour; the task
 under it; then the interval and, while it counts, «НАСТУПНИЙ ЧЕРЕЗ …». The words are five — ІДЕ (a
@@ -1528,9 +1529,9 @@ A press on a row opens its form as a step of the tab (51b), headed «‹ РОЗ�
 НОВИЙ» for a new one and «‹ РОЗКЛАД» alone where the agent is gone; «‹» and Escape go back. The task
 stands first, since it is what tells two schedules of one agent apart, then the agent from the chat's
 list — switched-off agents together at the bottom — and the interval in whole minutes, one at the
-least: a typed zero reddens the field with «Найменше 1.», as a ceiling does. **The switch acts at the
-press**, without «Зберегти», under «ЦЯ МАШИНА · У ТЕКУ ПРОЄКТУ НЕ ЙДЕ»; a new schedule begins
-switched off, and one switched on before it is created is switched on once it is. The foot is the
+least: a typed zero reddens the field with «Найменше 1.», as a ceiling does. The switch is a field of
+the form like the agent's «Увімкнено» (21a), written with «Зберегти»; a new schedule begins switched
+off. The foot is the
 agent panel's: «Видалити» and «Зберегти», «Скасувати» in place of «Видалити» while the draft moved,
 «Скасувати» and «Створити» for a new one. Deleting asks 44d's box, «Видалити розклад NIGHTLY?», and
 says the runs it already put stay in the history; ⌘Z brings the schedule back. Deleting an agent says

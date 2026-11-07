@@ -36,7 +36,6 @@ export function MainPage({ project, setProject }: MainPageProps) {
   const schedules = useScheduleSection({
     project,
     writes: actions,
-    schedules: clock,
   });
   // Only the open section can be holding unsaved work.
   const wayOut = useWayOut(

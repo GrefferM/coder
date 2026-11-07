@@ -13250,11 +13250,11 @@ Call log:
       <div style="display:flex;align-items:baseline;gap:12px;max-width:1100px">
         <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:#38a3ff;background:#12151f;border:1px solid #262b3a;border-radius:6px;padding:3px 8px;flex-shrink:0">51a</span>
         <span style="font-size:15px;font-weight:600;flex-shrink:0">Розклад — розділ рейки</span>
-        <span style="font-size:13px;line-height:1.6;color:#838ba6;text-wrap:pretty">Розклад ставить агентові одне завдання кожні N хвилин, поки застосунок відкритий. Розділ стоїть у рейці <b style="color:#dde1ee;font-weight:600">над рискою</b>, сьомим, після «Мовлення» (<a href="#38c">38c</a>); гліф — циферблат: агент, завдання й інтервал їдуть із текою проєкту. <b style="color:#dde1ee;font-weight:600">Чи розклад працює — рішення цієї машини</b>, і в теку воно не йде: колега, що стягнув проєкт, нічого не запускає, доки не ввімкне сам. Рядок — за рецептом рядка історії (<a href="#23a">23a</a>): крапка, тихе слово стану, ім'я агента в його кольорі; під ним завдання; нижче — інтервал і, коли увімкнено, «НАСТУПНИЙ ЧЕРЕЗ …». Від години інтервал і відлік кажуть години: «КОЖНІ 2 ГОД», «КОЖНІ 1 ГОД 30 ХВ»; відлік округлює вниз, під хвилину — «&lt; 1 ХВ». Шеврон на кожному рядку (<a href="#36h">36h</a>), натиск відкриває крок форми (<a href="#51b">51b</a>). Каталог — за правилом <a href="#40a">40a</a>.</span>
+        <span style="font-size:13px;line-height:1.6;color:#838ba6;text-wrap:pretty">Розклад ставить агентові одне завдання кожні N хвилин, поки застосунок відкритий. Розділ стоїть у рейці <b style="color:#dde1ee;font-weight:600">над рискою</b>, сьомим, після «Мовлення» (<a href="#38c">38c</a>); гліф — циферблат: агент, завдання, інтервал і вмикач їдуть із текою проєкту. <b style="color:#dde1ee;font-weight:600">Розклад цілком належить проєкту</b>: і те, чи він увімкнений, лежить у його файлі в теці й їде з git, як «Увімкнено» агента, — увімкнений розклад запускається в кожного, хто відкрив проєкт. Рядок — за рецептом рядка історії (<a href="#23a">23a</a>): крапка, тихе слово стану, ім'я агента в його кольорі; під ним завдання; нижче — інтервал і, коли увімкнено, «НАСТУПНИЙ ЧЕРЕЗ …». Від години інтервал і відлік кажуть години: «КОЖНІ 2 ГОД», «КОЖНІ 1 ГОД 30 ХВ»; відлік округлює вниз, під хвилину — «&lt; 1 ХВ». Шеврон на кожному рядку (<a href="#36h">36h</a>), натиск відкриває крок форми (<a href="#51b">51b</a>). Каталог — за правилом <a href="#40a">40a</a>.</span>
       </div>
       <div style="width:1300px;flex-shrink:0;background:#262b3a;background-image:radial-gradient(circle, rgba(255,255,255,0.14) 1px, transparent 1px);background-size:8px 8px;background-position:3px 3px;padding:35px;display:flex;gap:28px;align-items:flex-start;box-sizing:border-box;border-radius:4px">
         <div style="display:flex;flex-direction:column;gap:10px">
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#aab3cc">СПИСОК · СТАН НА ЦІЙ МАШИНІ</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#aab3cc">СПИСОК · СТАНИ РОЗКЛАДІВ</span>
           <div style="display:flex;background:#0d0f16;border-radius:12px;overflow:hidden">
             <div style="width:380px;background:#12151f;display:flex;flex-direction:column">
               <div style="background:#191d29;padding:8px 10px;border-bottom:1px solid #262b3a;display:flex;align-items:center;gap:8px;flex-shrink:0">
@@ -13303,7 +13303,7 @@ Call log:
             <dc-import name="Rail" active="schedule" hint-size="44px,100%"></dc-import>
           </div>
           <div style="width:424px;display:flex;flex-direction:column;gap:9px">
-            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ГЛІФ — ЦИФЕРБЛАТ, СЬОМИЙ НАД РИСКОЮ: ТЕ, ЩО В ТЕЦІ; ВМИКАЧ — ЄДИНЕ МАШИННЕ В РОЗДІЛІ (51b)</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ГЛІФ — ЦИФЕРБЛАТ, СЬОМИЙ НАД РИСКОЮ: УСЕ В РОЗДІЛІ, ЗОКРЕМА ВМИКАЧ, ЛЕЖИТЬ У ТЕЦІ ПРОЄКТУ (51b)</span>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:10px">
@@ -13349,7 +13349,7 @@ Call log:
       <div style="display:flex;align-items:baseline;gap:12px;max-width:1100px">
         <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:#38a3ff;background:#12151f;border:1px solid #262b3a;border-radius:6px;padding:3px 8px;flex-shrink:0">51b</span>
         <span style="font-size:15px;font-weight:600;flex-shrink:0">Форма розкладу</span>
-        <span style="font-size:13px;line-height:1.6;color:#838ba6;text-wrap:pretty">Форма — <b style="color:#dde1ee;font-weight:600">окремий крок вкладки</b> з головою «‹ РОЗКЛАД · NIGHTLY», як сторінка сервера (<a href="#36j">36j</a>); «‹» і Escape вертають у список. Два розклади одного агента мають однакову голову — розрізняє їх завдання, що стоїть першим полем під нею. <b style="color:#dde1ee;font-weight:600">Агента</b> обирають тим самим списком, що в шапці чату (<a href="#23d">23d</a>). <b style="color:#dde1ee;font-weight:600">Інтервал</b> — ціле число хвилин, щонайменше одна; поле з одиницею праворуч, як стелі моделі (<a href="#49a">49a</a>). <b style="color:#dde1ee;font-weight:600">Вмикач</b> — картка «Увімкнено» агента (<a href="#21a">21a</a>) зі словами «ЦЯ МАШИНА · У ТЕКУ ПРОЄКТУ НЕ ЙДЕ» над нею, як голос у <a href="#38c">38c</a>: його стан у базі цієї машини, не в теці. Новий розклад створюється вимкненим; вмикач діє одразу, без «Зберегти». Порожнє поле каже «НЕ ЗАПОВНЕНО» (4e); агент, якого видалили, — обірваний зв'язок, реченням <a href="#41a">41a</a>; вмикач і тоді вмикається, але рядок списку каже слово проблеми (<a href="#51a">51a</a>). Видаляють із підвалу кроку, коробкою за формою <a href="#44d">44d</a>.</span>
+        <span style="font-size:13px;line-height:1.6;color:#838ba6;text-wrap:pretty">Форма — <b style="color:#dde1ee;font-weight:600">окремий крок вкладки</b> з головою «‹ РОЗКЛАД · NIGHTLY», як сторінка сервера (<a href="#36j">36j</a>); «‹» і Escape вертають у список. Два розклади одного агента мають однакову голову — розрізняє їх завдання, що стоїть першим полем під нею. <b style="color:#dde1ee;font-weight:600">Агента</b> обирають тим самим списком, що в шапці чату (<a href="#23d">23d</a>). <b style="color:#dde1ee;font-weight:600">Інтервал</b> — ціле число хвилин, щонайменше одна; поле з одиницею праворуч, як стелі моделі (<a href="#49a">49a</a>). <b style="color:#dde1ee;font-weight:600">Вмикач</b> — картка «Увімкнено» агента (<a href="#21a">21a</a>) і звичайне поле форми: його стан пишеться у файл розкладу в теці проєкту й зберігається разом із формою через «Зберегти», як «Увімкнено» агента. Новий розклад створюється вимкненим. Порожнє поле каже «НЕ ЗАПОВНЕНО» (4e); агент, якого видалили, — обірваний зв'язок, реченням <a href="#41a">41a</a>; вмикач і тоді вмикається, але рядок списку каже слово проблеми (<a href="#51a">51a</a>). Видаляють із підвалу кроку, коробкою за формою <a href="#44d">44d</a>.</span>
       </div>
       <div style="width:1340px;flex-shrink:0;background:#262b3a;background-image:radial-gradient(circle, rgba(255,255,255,0.14) 1px, transparent 1px);background-size:8px 8px;background-position:3px 3px;padding:35px;display:flex;gap:28px;align-items:flex-start;box-sizing:border-box;border-radius:4px">
         <div style="display:flex;flex-direction:column;gap:10px">
@@ -13373,7 +13373,6 @@ Call log:
                 <div style="background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:9px"><span style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0px;color:#e6e9f2">15</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#4a5164">ХВИЛИН</span></div>
               </label>
               <div style="display:flex;flex-direction:column;gap:5px">
-                  <span style="display:flex;align-items:center"><span style="flex:1"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#4a5164">ЦЯ МАШИНА · У ТЕКУ ПРОЄКТУ НЕ ЙДЕ</span></span>
                   <div style="display:flex;align-items:center;justify-content:space-between;background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px">
                     <span style="font-size:12.5px;color:#dde1ee">Увімкнено</span>
                     <span style="width:36px;height:20px;border-radius:10px;background:#3a4258;position:relative;flex-shrink:0">
@@ -13395,7 +13394,7 @@ Call log:
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:10px">
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#aab3cc">ПРАВКА · ПРАЦЮЄ НА ЦІЙ МАШИНІ</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#aab3cc">ПРАВКА · УВІМКНЕНИЙ</span>
           <div style="width:380px;display:flex;flex-direction:column;background:#12151f;border-radius:10px;overflow:hidden">
             <div style="background:#12151f;padding:11px 14px;border-bottom:1px solid #262b3a;flex-shrink:0;display:flex;align-items:center;gap:8px">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#838ba6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m14 6-6 6 6 6"></path></svg>
@@ -13415,7 +13414,6 @@ Call log:
                 <div style="background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:9px"><span style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0px;color:#e6e9f2">15</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#4a5164">ХВИЛИН</span></div>
               </label>
               <div style="display:flex;flex-direction:column;gap:5px">
-                  <span style="display:flex;align-items:center"><span style="flex:1"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#4a5164">ЦЯ МАШИНА · У ТЕКУ ПРОЄКТУ НЕ ЙДЕ</span></span>
                   <div style="display:flex;align-items:center;justify-content:space-between;background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px">
                     <span style="font-size:12.5px;color:#dde1ee">Увімкнено</span>
                     <span style="width:36px;height:20px;border-radius:10px;background:#3ddc84;position:relative;flex-shrink:0">
@@ -13431,7 +13429,7 @@ Call log:
           </div>
           <div style="width:380px;display:flex;flex-direction:column;gap:9px">
             <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ДВА РОЗКЛАДИ NIGHTLY — ДВІ ОДНАКОВІ ГОЛОВИ; РІЗНИТЬ ЇХ ЗАВДАННЯ ПІД НЕЮ</span>
-            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ВМИКАЧ ДІЄ ОДРАЗУ, БЕЗ «ЗБЕРЕГТИ», ЯК «ВИМКНУТИ» ПРОВАЙДЕРА (38b): ВІН НЕ В ФАЙЛІ, ЗБЕРІГАТИ НІЧОГО</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ВМИКАЧ — ПОЛЕ ФОРМИ, ЯК «УВІМКНЕНО» АГЕНТА (21a): СТАН ПИШЕТЬСЯ У ФАЙЛ РОЗКЛАДУ Й ЗБЕРІГАЄТЬСЯ З ФОРМОЮ ЧЕРЕЗ «ЗБЕРЕГТИ»</span>
             <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ПІДВАЛ — ЯК У ПАНЕЛІ АГЕНТА: «ВИДАЛИТИ» Й «ЗБЕРЕГТИ» ПОРУЧ</span>
           </div>
         </div>
@@ -13458,7 +13456,6 @@ Call log:
               <span style="font-size:11px;line-height:1.5;color:#f0a5ac;text-wrap:pretty">Найменше 1.</span>
               </div>
               <div style="display:flex;flex-direction:column;gap:5px">
-                  <span style="display:flex;align-items:center"><span style="flex:1"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#4a5164">ЦЯ МАШИНА · У ТЕКУ ПРОЄКТУ НЕ ЙДЕ</span></span>
                   <div style="display:flex;align-items:center;justify-content:space-between;background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px">
                     <span style="font-size:12.5px;color:#dde1ee">Увімкнено</span>
                     <span style="width:36px;height:20px;border-radius:10px;background:#3ddc84;position:relative;flex-shrink:0">

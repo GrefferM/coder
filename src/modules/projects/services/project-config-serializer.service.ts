@@ -268,6 +268,8 @@ export class ProjectConfigSerializer {
     schedule.agentId = <string | null>(source.agentId ?? null);
     schedule.task = <string | null>(source.task ?? null);
     schedule.everyMinutes = written(source.everyMinutes, SCHEDULE_EVERY_MINUTES_LEAST);
+    // A schedule that never said it runs does not.
+    schedule.isActive = source.isActive === true;
 
     return schedule;
   }

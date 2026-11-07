@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { WALKS_WRITTEN_CHANNEL } from "../../../../../../contracts";
-import { followSchedules, scheduleStandings, switchSchedule } from "../../api";
+import { followSchedules, scheduleStandings } from "../../api";
 import { SCHEDULE_BEAT_MS } from "../../constants";
 import type { OpenProject, ScheduleStanding } from "../../../../interfaces";
 import type { SchedulesState } from "./interfaces";
 
 /**
- * The open project's schedules on this machine. The clock is handed the project whenever it changes, so the schedules
+ * The open project's schedules with the clock. The clock is handed the project whenever it changes, so the schedules
  * run while the project stays open, whatever section is on screen; their standings are asked again after every
  * write to the record, since a task put or ended moves them, and on a beat the countdowns read against.
  */
@@ -41,17 +41,8 @@ export function useSchedules(project: OpenProject): SchedulesState {
     return () => clearInterval(beat);
   }, [refresh]);
 
-  const switchOn = useCallback(
-    async (scheduleId: string, isOn: boolean) => {
-      await switchSchedule(scheduleId, isOn);
-      await refresh();
-    },
-    [refresh],
-  );
-
   return {
     standings,
     now,
-    switchOn,
   };
 }

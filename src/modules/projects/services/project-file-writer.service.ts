@@ -108,6 +108,7 @@ export class ProjectFileWriter {
     return {
       task: schedule.task,
       everyMinutes: schedule.everyMinutes,
+      isActive: schedule.isActive,
     };
   }
 

@@ -1,11 +1,7 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { useSchedules } from "./use-schedules";
-import {
-  FOLLOW_SCHEDULES_CHANNEL,
-  SCHEDULE_STANDINGS_CHANNEL,
-  SWITCH_SCHEDULE_CHANNEL,
-} from "../../../../../../contracts";
+import { FOLLOW_SCHEDULES_CHANNEL, SCHEDULE_STANDINGS_CHANNEL } from "../../../../../../contracts";
 import { aConfig, standInBridge } from "../../../../testing";
 import type { OpenProject, ScheduleStanding } from "../../../../interfaces";
 
@@ -17,7 +13,6 @@ const PROJECT: OpenProject = {
 };
 const STANDING: ScheduleStanding = {
   scheduleId: "schedule-1",
-  isOn: true,
   nextAt: 1_000,
   outSince: null,
 };
@@ -52,22 +47,5 @@ describe("useSchedules", () => {
         config: PROJECT.config,
       },
     ]);
-  });
-
-  it("switches a schedule on this machine and reads the standings again", async () => {
-    const calls = machine();
-    const { result } = renderHook(() => useSchedules(PROJECT));
-
-    await act(async () => {
-      await result.current.switchOn("schedule-1", true);
-    });
-
-    const switchAt = calls.findIndex(([channel]) => channel === SWITCH_SCHEDULE_CHANNEL);
-
-    expect(calls[switchAt][1]).toEqual({
-      scheduleId: "schedule-1",
-      isOn: true,
-    });
-    expect(calls.slice(switchAt).some(([channel]) => channel === SCHEDULE_STANDINGS_CHANNEL)).toBe(true);
   });
 });

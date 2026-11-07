@@ -28,6 +28,7 @@ function aSchedule(patch: Partial<ProjectSchedule> = {}): ProjectSchedule {
     agentId: "agent-1",
     task: "Перевір main.",
     everyMinutes: 10,
+    isActive: true,
     ...patch,
   };
 }
@@ -64,7 +65,6 @@ describe("ScheduleClock", () => {
     clock.follow({
       directory: DIRECTORY,
       config: configWith(aSchedule()),
-      switchedOn: new Set(["schedule-1"]),
     });
 
     mock.timers.tick(10 * MINUTE - 1);
@@ -82,7 +82,6 @@ describe("ScheduleClock", () => {
     clock.follow({
       directory: DIRECTORY,
       config: configWith(aSchedule()),
-      switchedOn: new Set(["schedule-1"]),
     });
 
     mock.timers.tick(10 * MINUTE);
@@ -96,7 +95,6 @@ describe("ScheduleClock", () => {
     clock.follow({
       directory: DIRECTORY,
       config: configWith(aSchedule()),
-      switchedOn: new Set(["schedule-1"]),
     });
     asker.out.add("schedule-1");
 
@@ -110,11 +108,14 @@ describe("ScheduleClock", () => {
     assert.equal(asker.asked.length, 1);
   });
 
-  it("puts nothing for a schedule this machine has not switched on", () => {
+  it("puts nothing for a schedule not switched on", () => {
     clock.follow({
       directory: DIRECTORY,
-      config: configWith(aSchedule()),
-      switchedOn: new Set(),
+      config: configWith(
+        aSchedule({
+          isActive: false,
+        }),
+      ),
     });
 
     mock.timers.tick(60 * MINUTE);
@@ -126,12 +127,14 @@ describe("ScheduleClock", () => {
     clock.follow({
       directory: DIRECTORY,
       config: configWith(aSchedule()),
-      switchedOn: new Set(["schedule-1"]),
     });
     clock.follow({
       directory: DIRECTORY,
-      config: configWith(aSchedule()),
-      switchedOn: new Set(),
+      config: configWith(
+        aSchedule({
+          isActive: false,
+        }),
+      ),
     });
 
     mock.timers.tick(60 * MINUTE);
@@ -143,7 +146,6 @@ describe("ScheduleClock", () => {
     clock.follow({
       directory: DIRECTORY,
       config: configWith(aSchedule()),
-      switchedOn: new Set(["schedule-1"]),
     });
     clock.follow({
       directory: DIRECTORY,
@@ -152,7 +154,6 @@ describe("ScheduleClock", () => {
           task: "Перевір реліз.",
         }),
       ),
-      switchedOn: new Set(["schedule-1"]),
     });
 
     mock.timers.tick(10 * MINUTE);
@@ -164,7 +165,6 @@ describe("ScheduleClock", () => {
     clock.follow({
       directory: DIRECTORY,
       config: configWith(aSchedule()),
-      switchedOn: new Set(["schedule-1"]),
     });
 
     mock.timers.tick(5 * MINUTE);
@@ -175,7 +175,6 @@ describe("ScheduleClock", () => {
           everyMinutes: 20,
         }),
       ),
-      switchedOn: new Set(["schedule-1"]),
     });
     mock.timers.tick(19 * MINUTE);
 
@@ -190,12 +189,10 @@ describe("ScheduleClock", () => {
     clock.follow({
       directory: DIRECTORY,
       config: configWith(aSchedule()),
-      switchedOn: new Set(["schedule-1"]),
     });
     clock.follow({
       directory: "/work/other",
       config: configWith(),
-      switchedOn: new Set(["schedule-1"]),
     });
 
     mock.timers.tick(60 * MINUTE);
@@ -203,28 +200,26 @@ describe("ScheduleClock", () => {
     assert.deepEqual(asker.asked, []);
   });
 
-  it("says how each schedule stands: switched on, and when it puts its task next", () => {
+  it("says when each schedule puts its task next, and nothing for one switched off", () => {
     clock.follow({
       directory: DIRECTORY,
       config: configWith(
         aSchedule(),
         aSchedule({
           id: "schedule-2",
+          isActive: false,
         }),
       ),
-      switchedOn: new Set(["schedule-1"]),
     });
 
     assert.deepEqual(clock.standings(), [
       {
         scheduleId: "schedule-1",
-        isOn: true,
         nextAt: 10 * MINUTE,
         outSince: null,
       },
       {
         scheduleId: "schedule-2",
-        isOn: false,
         nextAt: null,
         outSince: null,
       },
@@ -235,7 +230,6 @@ describe("ScheduleClock", () => {
     clock.follow({
       directory: DIRECTORY,
       config: configWith(aSchedule()),
-      switchedOn: new Set(["schedule-1"]),
     });
 
     mock.timers.tick(10 * MINUTE);

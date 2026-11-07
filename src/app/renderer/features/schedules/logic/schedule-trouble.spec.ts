@@ -15,6 +15,7 @@ function aSchedule(patch: Partial<ProjectSchedule> = {}): ProjectSchedule {
     agentId: "agent-1",
     task: "Перевір main.",
     everyMinutes: 15,
+    isActive: true,
     ...patch,
   };
 }
@@ -44,6 +45,7 @@ describe("scheduleTrouble", () => {
         aSchedule({
           task: null,
           everyMinutes: null,
+          isActive: true,
         }),
         AGENTS,
       ),

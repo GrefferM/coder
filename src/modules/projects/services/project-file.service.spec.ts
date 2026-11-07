@@ -96,6 +96,7 @@ function fullConfig(): Record<string, unknown> {
         agentId: AGENT_ID,
         task: "Перевір, чи зелений main.",
         everyMinutes: 30,
+        isActive: true,
       },
     ],
   };
@@ -423,7 +424,7 @@ describe("ProjectFileService", () => {
     assert.deepEqual(config.servers, []);
   });
 
-  it("writes a schedule into its own file, its task and interval, and its agent in the project file", async () => {
+  it("writes a schedule into its own file, its task, interval and switch, and its agent in the project file", async () => {
     const serializer = new ProjectConfigSerializer();
 
     await projectFileService.write(projectDirectory, await serializer.toValidConfig(fullConfig()));
@@ -436,6 +437,7 @@ describe("ProjectFileService", () => {
     assert.doesNotMatch(index, /main/);
     assert.match(schedule, /task: Перевір, чи зелений main\./);
     assert.match(schedule, /everyMinutes: 30/);
+    assert.match(schedule, /isActive: true/);
     assert.doesNotMatch(schedule, /agentId/);
   });
 

@@ -34,11 +34,8 @@ export class ScheduleClock {
       return [];
     }
 
-    const { config, switchedOn } = this.followed;
-
-    return config.schedules.map((schedule) => ({
+    return this.followed.config.schedules.map((schedule) => ({
       scheduleId: schedule.id,
-      isOn: switchedOn.has(schedule.id),
       nextAt: this.ticking.get(schedule.id)?.nextAt ?? null,
       outSince: this.asker.isOut(schedule.id) ? (this.askedAt.get(schedule.id) ?? null) : null,
     }));
@@ -111,6 +108,6 @@ export class ScheduleClock {
       return [];
     }
 
-    return runnableSchedules(this.followed.config, this.followed.switchedOn);
+    return runnableSchedules(this.followed.config);
   }
 }

@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString, IsUUID, Min } from "class-validator";
+import { IsBoolean, IsInt, IsOptional, IsString, IsUUID, Min } from "class-validator";
 import { SCHEDULE_EVERY_MINUTES_LEAST } from "../constants";
 
 export class ProjectScheduleDto {
@@ -18,4 +18,7 @@ export class ProjectScheduleDto {
   @IsInt()
   @Min(SCHEDULE_EVERY_MINUTES_LEAST)
   declare everyMinutes: number | null;
+
+  @IsBoolean()
+  declare isActive: boolean;
 }

@@ -14,27 +14,28 @@ function aSchedule(patch: Partial<ProjectSchedule> = {}): ProjectSchedule {
     agentId: "agent-1",
     task: "Перевір main.",
     everyMinutes: 30,
+    isActive: true,
     ...patch,
   };
 }
 
-function runnableOf(schedule: ProjectSchedule, switchedOn = new Set(["schedule-1"])): string[] {
+function runnableOf(schedule: ProjectSchedule): string[] {
   const config = aConfig({
     agents: [AGENT],
     schedules: [schedule],
   });
 
-  return runnableSchedules(config, switchedOn).map((runnable) => runnable.scheduleId);
+  return runnableSchedules(config).map((runnable) => runnable.scheduleId);
 }
 
 describe("runnableSchedules", () => {
-  it("runs a schedule switched on here, with its agent, task and interval in milliseconds", () => {
+  it("runs a schedule switched on, with its agent, task and interval in milliseconds", () => {
     const config = aConfig({
       agents: [AGENT],
       schedules: [aSchedule()],
     });
 
-    assert.deepEqual(runnableSchedules(config, new Set(["schedule-1"])), [
+    assert.deepEqual(runnableSchedules(config), [
       {
         scheduleId: "schedule-1",
         agent: AGENT,
@@ -44,8 +45,15 @@ describe("runnableSchedules", () => {
     ]);
   });
 
-  it("leaves out a schedule this machine never switched on", () => {
-    assert.deepEqual(runnableOf(aSchedule(), new Set()), []);
+  it("leaves out a schedule switched off", () => {
+    assert.deepEqual(
+      runnableOf(
+        aSchedule({
+          isActive: false,
+        }),
+      ),
+      [],
+    );
   });
 
   it("leaves out a schedule whose agent is gone, rather than putting the task to another", () => {

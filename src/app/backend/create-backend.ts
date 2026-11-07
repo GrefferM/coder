@@ -54,7 +54,7 @@ export async function createBackend(
     servers: client,
     voice: voices.walk,
   });
-  const { controller: scheduleController, clock } = createSchedulesModule(dataSource, scheduled);
+  const { controller: scheduleController, clock } = createSchedulesModule(scheduled);
 
   return {
     projectController,

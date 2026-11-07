@@ -81,9 +81,8 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     among its questions; `useSchedules`, the clock's side of the window: the open project handed over
     `schedules:follow` whenever its config changes, whatever section stands, so the schedules run while
     the project is open, and each schedule's standing read back after every write to the record and
-    on a fifteen-second beat the countdowns are read against — its `switchOn` is this machine's switch,
-    which writes nothing to the project; `useScheduleSection`, the section's open form and its draft,
-    the switch of a schedule not yet written held until it is, and the deletion question; `useProviders`, every local provider that is not turned off asked on a
+    on a fifteen-second beat the countdowns are read against; `useScheduleSection`, the section's open
+    form and its draft, the switch included, and the deletion question; `useProviders`, every local provider that is not turned off asked on a
     fifteen-second beat, told by the chat what each turn heard at that address, and turning a provider
     off or on at once, an off one's last answer let go — while `ProvidersPanel` keeps what was typed
     per provider in its own state, so a card folded by its chevron, by opening another provider or by

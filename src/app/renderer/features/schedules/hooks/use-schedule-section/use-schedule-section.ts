@@ -5,10 +5,9 @@ import type { ScheduleFormValues } from "../../interfaces";
 import type { ScheduleSection, ScheduleSectionParts } from "./interfaces";
 
 /** The one form of the schedules section, opened on a schedule or on `new`, and the deletion question. */
-export function useScheduleSection({ project, writes, schedules }: ScheduleSectionParts): ScheduleSection {
+export function useScheduleSection({ project, writes }: ScheduleSectionParts): ScheduleSection {
   const [openScheduleId, setOpenScheduleId] = useState<string | "new" | null>(null);
   const [edits, setEdits] = useState<Partial<ScheduleFormValues> | null>(null);
-  const [isNewOn, setIsNewOn] = useState(false);
   const [armedScheduleId, setArmedScheduleId] = useState<string | null>(null);
 
   const { agents } = project.config;
@@ -39,7 +38,6 @@ export function useScheduleSection({ project, writes, schedules }: ScheduleSecti
   function openForm(scheduleId: string | "new" | null) {
     setOpenScheduleId(scheduleId);
     setEdits(null);
-    setIsNewOn(false);
   }
 
   function editForm(patch: Partial<ScheduleFormValues>) {
@@ -49,28 +47,13 @@ export function useScheduleSection({ project, writes, schedules }: ScheduleSecti
     }));
   }
 
-  function switchOpen(isOn: boolean) {
-    if (openSchedule === null) {
-      setIsNewOn(isOn);
-
-      return;
-    }
-
-    void schedules.switchOn(openSchedule.id, isOn);
-  }
-
-  /** Writes the form and closes it; a new schedule switched on in the form is switched on once written. */
+  /** Writes the form and closes it, new schedules included. */
   async function saveForm() {
     if (form === null || scheduleBlocker(form).length > 0) {
       return;
     }
 
-    const scheduleId = await writes.saveSchedule(openSchedule?.id ?? null, form);
-
-    if (openSchedule === null && isNewOn) {
-      await schedules.switchOn(scheduleId, true);
-    }
-
+    await writes.saveSchedule(openSchedule?.id ?? null, form);
     openForm(null);
   }
 
@@ -95,12 +78,10 @@ export function useScheduleSection({ project, writes, schedules }: ScheduleSecti
     openScheduleId,
     openSchedule,
     form,
-    isNewOn,
     unsaved,
     armedSchedule,
     openForm,
     editForm,
-    switchOpen,
     saveForm,
     arm: setArmedScheduleId,
     confirmDelete,

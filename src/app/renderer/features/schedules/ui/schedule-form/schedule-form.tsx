@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActionButton, Field, Mark, SettingRow, StepHead, Toggle } from "../../../../components";
+import { ActionButton, Field, SettingRow, StepHead, Toggle } from "../../../../components";
 import { FIELD_INVALID_MS } from "../../../../components/field/constants";
 import { useStandingStep, useWindowKeydown } from "../../../../hooks";
 import { scheduleBlocker, writtenMinutes } from "../../logic";
@@ -20,27 +20,20 @@ import {
   SCHEDULE_FORM_INTERVAL_LABEL,
   SCHEDULE_FORM_INTERVAL_UNIT,
   SCHEDULE_FORM_INTERVAL_WRONG_NOTE,
-  SCHEDULE_FORM_MACHINE_NOTE,
-  SCHEDULE_FORM_MACHINE_NOTE_COLOR,
-  SCHEDULE_FORM_MACHINE_NOTE_FONT_SIZE_PX,
-  SCHEDULE_FORM_MACHINE_NOTE_LETTER_SPACING_PX,
   SCHEDULE_FORM_SAVE_LABEL,
-  SCHEDULE_FORM_SWITCH_GAP_PX,
   SCHEDULE_FORM_SWITCH_LABEL,
   SCHEDULE_FORM_TASK_LABEL,
   SCHEDULE_FORM_UNFILLED_PLACEHOLDER,
 } from "./constants";
 import type { ScheduleFormProps } from "./interfaces";
 
-/** One schedule as a step of the tab: the task, whom it goes to, how often, and this machine's switch. */
+/** One schedule as a step of the tab: the task, whom it goes to, how often, and whether it runs. */
 export function ScheduleForm({
   values,
   schedule,
   agents,
-  isOn,
   isDirty,
   onChange,
-  onSwitch,
   onSave,
   onCancel,
   onRevert,
@@ -142,24 +135,17 @@ export function ScheduleForm({
             })
           }
         />
-        <div
-          className="d-flex flex-column"
-          style={{
-            gap: SCHEDULE_FORM_SWITCH_GAP_PX,
-          }}
-        >
-          <Mark
-            color={SCHEDULE_FORM_MACHINE_NOTE_COLOR}
-            size={SCHEDULE_FORM_MACHINE_NOTE_FONT_SIZE_PX}
-            spacing={SCHEDULE_FORM_MACHINE_NOTE_LETTER_SPACING_PX}
-            className="text-end"
-          >
-            {SCHEDULE_FORM_MACHINE_NOTE}
-          </Mark>
-          <SettingRow label={SCHEDULE_FORM_SWITCH_LABEL}>
-            <Toggle label={SCHEDULE_FORM_SWITCH_LABEL} isOn={isOn} onChange={onSwitch} />
-          </SettingRow>
-        </div>
+        <SettingRow label={SCHEDULE_FORM_SWITCH_LABEL}>
+          <Toggle
+            label={SCHEDULE_FORM_SWITCH_LABEL}
+            isOn={values.isActive}
+            onChange={(isActive) =>
+              onChange({
+                isActive,
+              })
+            }
+          />
+        </SettingRow>
       </div>
       <div
         className="d-flex flex-shrink-0"

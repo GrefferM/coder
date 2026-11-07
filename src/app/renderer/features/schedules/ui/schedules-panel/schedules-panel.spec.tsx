@@ -18,22 +18,20 @@ const SCHEDULE: ProjectSchedule = {
   agentId: "agent-1",
   task: "Прогони всі тести",
   everyMinutes: 15,
+  isActive: true,
 };
 const CLOCK: SchedulesState = {
   standings: {},
   now: 0,
-  switchOn: vi.fn(async () => {}),
 };
 const CLOSED: ScheduleSection = {
   openScheduleId: null,
   openSchedule: null,
   form: null,
-  isNewOn: false,
   unsaved: null,
   armedSchedule: null,
   openForm: vi.fn(),
   editForm: vi.fn(),
-  switchOpen: vi.fn(),
   saveForm: vi.fn(async () => {}),
   arm: vi.fn(),
   confirmDelete: vi.fn(),
@@ -101,6 +99,7 @@ describe("SchedulesPanel", () => {
               agentId: "agent-1",
               task: "Прогони всі тести",
               everyMinutes: "15",
+              isActive: false,
             },
           },
         })}

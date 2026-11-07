@@ -15,13 +15,8 @@ export const SCHEDULE_FORM_INTERVAL_UNIT = "ХВИЛИН";
 export const SCHEDULE_FORM_INTERVAL_WRONG_NOTE = "Найменше 1.";
 export const SCHEDULE_FORM_UNFILLED_PLACEHOLDER = "НЕ ЗАПОВНЕНО";
 
-/** The switch: this machine's, said above it. */
+/** The switch, a field of the form like the agent's (21a). */
 export const SCHEDULE_FORM_SWITCH_LABEL = "Увімкнено";
-export const SCHEDULE_FORM_MACHINE_NOTE = "ЦЯ МАШИНА · У ТЕКУ ПРОЄКТУ НЕ ЙДЕ";
-export const SCHEDULE_FORM_MACHINE_NOTE_COLOR = "#4a5164";
-export const SCHEDULE_FORM_MACHINE_NOTE_FONT_SIZE_PX = 9;
-export const SCHEDULE_FORM_MACHINE_NOTE_LETTER_SPACING_PX = 1;
-export const SCHEDULE_FORM_SWITCH_GAP_PX = 5;
 
 export const SCHEDULE_FORM_CANCEL_LABEL = "Скасувати";
 export const SCHEDULE_FORM_CREATE_LABEL = "Створити";

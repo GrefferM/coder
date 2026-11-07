@@ -2,10 +2,10 @@ import { MINUTE_MS } from "../constants";
 import type { ProjectConfig, ProjectSchedule } from "../../../contracts";
 import type { RunnableSchedule } from "../interfaces";
 
-/** The schedules switched on here whose agent stands and whose task and interval are written. */
-export function runnableSchedules(config: ProjectConfig, switchedOn: ReadonlySet<string>): RunnableSchedule[] {
+/** The schedules switched on whose agent stands and whose task and interval are written. */
+export function runnableSchedules(config: ProjectConfig): RunnableSchedule[] {
   return config.schedules
-    .filter((schedule) => switchedOn.has(schedule.id))
+    .filter((schedule) => schedule.isActive)
     .map((schedule) => runnableOf(config, schedule))
     .filter((runnable) => runnable !== null);
 }

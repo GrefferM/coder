@@ -17,6 +17,7 @@ const SCHEDULE: ProjectSchedule = {
   agentId: "agent-1",
   task: "Прогони всі тести",
   everyMinutes: 15,
+  isActive: true,
 };
 
 function props(patch: Partial<ScheduleFormProps> = {}): ScheduleFormProps {
@@ -25,13 +26,12 @@ function props(patch: Partial<ScheduleFormProps> = {}): ScheduleFormProps {
       agentId: "agent-1",
       task: "Прогони всі тести",
       everyMinutes: "15",
+      isActive: false,
     },
     schedule: SCHEDULE,
     agents: AGENTS,
-    isOn: false,
     isDirty: false,
     onChange: vi.fn(),
-    onSwitch: vi.fn(),
     onSave: vi.fn(async () => {}),
     onCancel: vi.fn(),
     onRevert: vi.fn(),
@@ -82,6 +82,7 @@ describe("ScheduleForm", () => {
             agentId: "agent-gone",
             task: "Прогони всі тести",
             everyMinutes: "15",
+            isActive: false,
           },
         })}
       />,
@@ -99,6 +100,7 @@ describe("ScheduleForm", () => {
             agentId: "agent-1",
             task: "Прогони всі тести",
             everyMinutes: "0",
+            isActive: false,
           },
         })}
       />,
@@ -117,6 +119,7 @@ describe("ScheduleForm", () => {
             agentId: null,
             task: "",
             everyMinutes: "",
+            isActive: false,
           },
           schedule: null,
           onSave,
@@ -132,13 +135,15 @@ describe("ScheduleForm", () => {
     expect(onSave).not.toHaveBeenCalled();
   });
 
-  it("switches this machine at the press, without a save", async () => {
-    const onSwitch = vi.fn();
+  it("takes the switch into the draft, to be written with the form", async () => {
+    const onChange = vi.fn();
+    const onSave = vi.fn(async () => {});
 
     render(
       <ScheduleForm
         {...props({
-          onSwitch,
+          onChange,
+          onSave,
         })}
       />,
     );
@@ -148,6 +153,9 @@ describe("ScheduleForm", () => {
       }),
     );
 
-    expect(onSwitch).toHaveBeenCalledWith(true);
+    expect(onChange).toHaveBeenCalledWith({
+      isActive: true,
+    });
+    expect(onSave).not.toHaveBeenCalled();
   });
 });

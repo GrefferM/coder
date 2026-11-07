@@ -20,6 +20,7 @@ export function useScheduleWrites(project: OpenProject, write: ProjectWrite): Sc
         agentId: values.agentId,
         task: values.task.trim(),
         everyMinutes: writtenMinutes(values.everyMinutes),
+        isActive: values.isActive,
       };
 
       await save(
@@ -32,8 +33,6 @@ export function useScheduleWrites(project: OpenProject, write: ProjectWrite): Sc
         },
         WRITE_SCHEDULE_LABEL,
       );
-
-      return schedule.id;
     },
     [project.config, save],
   );
