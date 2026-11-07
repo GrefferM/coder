@@ -31,6 +31,7 @@ function run(walk: WholeStep[], state = RUN_DONE): WholeRun {
     startedByAgentId: "agent-1",
     startedByAgentName: "EDITOR",
     startedByAgentColor: "#38a3ff",
+    startedByScheduleId: null,
     askedAgentId: "agent-1",
     askedAgentName: "EDITOR",
     asked: "Додай кешування у fetchUser і онови тести",

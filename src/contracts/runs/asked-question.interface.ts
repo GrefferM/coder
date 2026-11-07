@@ -14,4 +14,6 @@ export interface AskedQuestion {
   /** The recordings it was said with, kept beside it. */
   recordings: RecordedSound[];
   askedAt: number;
+  /** The schedule that put it; null where a person asked. */
+  scheduleId: string | null;
 }

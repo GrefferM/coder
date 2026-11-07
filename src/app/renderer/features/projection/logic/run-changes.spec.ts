@@ -39,6 +39,7 @@ function run(walk: WholeStep[]): WholeRun {
     startedByAgentId: "agent-1",
     startedByAgentName: "WRITER",
     startedByAgentColor: "#6fd3d8",
+    startedByScheduleId: null,
     askedAgentId: "agent-1",
     askedAgentName: "WRITER",
     asked: "Перепиши обробку помилок",

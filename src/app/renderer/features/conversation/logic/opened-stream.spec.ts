@@ -32,6 +32,7 @@ function run(walk: WholeStep[], questions: { id: string; askedAt: string }[] = [
     startedByAgentId: "agent-1",
     startedByAgentName: "ТЕЗАР",
     startedByAgentColor: "#b18aff",
+    startedByScheduleId: null,
     askedAgentId: "agent-1",
     askedAgentName: "ТЕЗАР",
     asked: "Розбий текст на тези",

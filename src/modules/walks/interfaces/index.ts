@@ -19,3 +19,4 @@ export * from "./ears-owner.interface";
 export * from "./agent-answered.interface";
 export * from "./agent-asked.interface";
 export * from "./project-catalog.interface";
+export * from "./scheduled-conversation.interface";

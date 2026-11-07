@@ -36,6 +36,7 @@ function run(walk: WholeStep[], state = RUN_DONE): WholeRun {
     startedByAgentId: "agent-1",
     startedByAgentName: "ТЕЗАР",
     startedByAgentColor: "#b18aff",
+    startedByScheduleId: null,
     askedAgentId: "agent-1",
     askedAgentName: "ТЕЗАР",
     asked: "Розбий текст на тези",

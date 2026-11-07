@@ -32,6 +32,7 @@ function opening(patch: Partial<OpenRun> = {}): OpenRun {
     startedByAgentId: SEEKER,
     startedByAgentName: "Шукач",
     startedByAgentColor: "#6fd3d8",
+    startedByScheduleId: null,
     startedAt: ASKED_AT,
     asked: "Знайди md-файли",
     attached: [],

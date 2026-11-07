@@ -21,6 +21,8 @@ export interface Run {
   /** The agent it started from, as it then stood. */
   startedByAgentName: string;
   startedByAgentColor: string;
+  /** The schedule that began the flow; null where a person did. */
+  startedByScheduleId: string | null;
   /** Whom the flow was last asked; names the row's head. */
   askedAgentId: string;
   /** The agent's name then; today's name wins, this covers a gone agent. */

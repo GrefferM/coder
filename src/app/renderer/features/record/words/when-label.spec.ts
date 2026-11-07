@@ -9,6 +9,7 @@ function row(patch: Partial<RunRow> = {}): RunRow {
     startedByAgentId: "55555555-5555-4555-8555-555555555555",
     startedByAgentName: "ПОШУКАЧ",
     startedByAgentColor: "#b18aff",
+    startedByScheduleId: null,
     asked: "порахуй файли",
     state: RUN_DONE,
     startedAt: new Date("2026-05-05T10:00:00Z"),

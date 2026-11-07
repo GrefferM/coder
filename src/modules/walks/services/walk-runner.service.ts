@@ -70,6 +70,7 @@ export class WalkRunner implements RecordWatcher {
   private readonly providers: ProviderLister;
   private readonly servers: ServerLooker;
   private readonly listener: WalkListener;
+  private readonly scheduleId: string | null;
   private readonly asker: TurnAsker;
   private readonly writer: RecordWriter;
   /** Who waits for the next change of the conversation. */
@@ -81,6 +82,7 @@ export class WalkRunner implements RecordWatcher {
     this.providers = parts.providers;
     this.servers = parts.servers;
     this.listener = parts.listener;
+    this.scheduleId = parts.scheduleId;
     this.asker = new TurnAsker(parts.llm);
     this.writer = new RecordWriter(this.record, this);
   }
@@ -367,6 +369,7 @@ export class WalkRunner implements RecordWatcher {
         attached: act.attached,
         recordings,
         runKey: act.runKey,
+        scheduleId: this.scheduleId,
       })
       .then(
         () =>

@@ -371,6 +371,7 @@ export class RunReader {
       worked: steps.reduce((sum, step) => sum + (step.endedAt.getTime() - step.startedAt.getTime()), 0),
       startedByAgentName: row.startedByAgentName,
       startedByAgentColor: row.startedByAgentColor,
+      startedByScheduleId: row.startedByScheduleId,
       // Names whom the flow was last asked; a question without an addressee falls back to the agent the run started
       // from.
       askedAgentId: last?.askedAgentId ?? row.startedByAgentId,

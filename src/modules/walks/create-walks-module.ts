@@ -1,5 +1,5 @@
 import { WalkController } from "./controllers";
-import { WalkHub } from "./services";
+import { ScheduledWalks, WalkHub } from "./services";
 import type { WalkHubParts, WalksModule } from "./interfaces";
 
 export function createWalksModule(parts: WalkHubParts): WalksModule {
@@ -8,5 +8,6 @@ export function createWalksModule(parts: WalkHubParts): WalksModule {
   return {
     controller: new WalkController(hub),
     hub,
+    scheduled: new ScheduledWalks(parts),
   };
 }

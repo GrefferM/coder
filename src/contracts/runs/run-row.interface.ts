@@ -5,6 +5,8 @@ export interface RunRow {
   /** The agent as it stood when the run walked. */
   startedByAgentName: string;
   startedByAgentColor: string;
+  /** The schedule that began the flow; null where a person did. */
+  startedByScheduleId: string | null;
   asked: string;
   state: string;
   /** The day the flow began. */

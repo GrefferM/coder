@@ -43,8 +43,8 @@ re-reads.
   screen gets is a hint of it.
 - **In SQLite:** only what is genuinely large or genuinely local — the registry of known projects,
   the history of what this machine has deleted from them, the record of runs, the last look taken at
-  each MCP server, the servers this machine deleted whose keys are owed a sweep, and the run line of
-  each local server this machine agreed to start. The
+  each MCP server, the servers this machine deleted whose keys are owed a sweep, the run line of
+  each local server this machine agreed to start, and the schedules this machine switched on. The
   registry is a list of folders and, beside each, where this machine was last looking in it — the
   canvas's place and scale and the section that stood open, kept as one string the module never
   opens. Whether a folder still holds a project is asked of the disk when the list is read, never
@@ -232,9 +232,29 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   line `finished`, and those lines then go the way a line to a switched-off agent goes (`notTaken`,
   `released`, `settled` with nothing, `letDown`). A converging point released with some suppliers
   empty carries their count (`missing`) with the ask, and the turn's words end with it.
+  **`ScheduledWalks`** gives each schedule a conversation of its own beside the person's: every task
+  begins it afresh, so each tick is a run of its own with fresh threads, and its `WalkRunner` writes
+  the schedule's id into the run it opens. Its walks are on no screen — `ScheduleEars` tells the
+  window only that the record was written and which provider answered, so the history moves and the
+  person's stream does not.
   **`AgentAsk`** is the same conversation begun from a command line: it opens the project's
   conversation, walks to its end and answers. The window and `npm run agent` build the backend the
   same way, through `createBackend` in `src/app/backend`; only who is spoken to differs.
+
+- **`schedules`** — when a schedule's task is put, and whether this machine puts it. Whether a
+  schedule runs is this machine's own, so a colleague who pulls the project starts no clock:
+  **`ScheduleSwitches`** keeps the ones switched on in `schedule_switches`, by the schedule's id, and
+  a schedule with no row is off. **`ScheduleClock`** holds one timer for each schedule that can run —
+  switched on here, its agent standing, its task and interval written (`runnableSchedules` in
+  `logic/`) — and puts the task once a whole interval has passed since it began to hold it, then at
+  every interval after, reading the task and the agent as the project stands at the tick. A task
+  still walking when the next is due lets that one pass; nothing is queued, and nothing missed while
+  the app was closed is caught up. A changed interval is counted afresh from the change, another
+  folder lets every timer go, and so does quitting. **`OpenSchedules`** is what the controller
+  reaches: the project the window follows over `schedules:follow` — only the window, so `npm run
+agent` starts no clock — the switch over `schedules:switch`, and each schedule's standing over
+  `schedules:standings` (switched on, when next, whether a task is out). The task is put through the
+  `ScheduledAsker` port, which `walks`' `ScheduledWalks` answers.
 
 - **`attachments`** — a file or a folder packed into text for a question. It is one service,
   **`AttachmentPacker`**, with two hands. `measure` names and weighs a pick without reading a byte:
@@ -267,7 +287,7 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   scripted model, a recording voice and a stood project. What more than one module's specs would
   write out lives in `src/utils/testing/` instead.
 - **A shape that crosses the bridge is written in `src/contracts` and re-exported, never declared
-  twice.** A module whose own vocabulary reaches a screen — `llm`, `mcp`, `projects`, `providers`,
+  twice.** A module whose own vocabulary reaches a screen — `llm`, `mcp`, `projects`, `providers`, `schedules`,
   `runs`, `speech` — opens its `interfaces/index.ts` with `export * from "../../../contracts/<domain>"` and
   declares only what stays behind: its ports, its records, its module shape. Two declarations of one
   shape read as two subjects and drift in silence: each side mends its own copy, both keep
@@ -284,8 +304,8 @@ The modules are flat, one responsibility each, and none of them nests inside ano
 - Every category folder has its own `index.ts` re-exporting everything in it. A module's root
   `index.ts` re-exports the category barrels it has and makes public — `./dto`, `./entities`,
   `./interfaces`, `./controllers`, and in every module but `projects` its `./constants` too;
-  `./services` stands in the barrels of `attachments`, `commands`, `llm`, `mcp`, `runs` and `walks`,
-  `./stores` in `mcp` and `runs`, `./logic` in `mcp` and `walks`, `./words` in `walks`, and a module
+  `./services` stands in the barrels of `attachments`, `commands`, `llm`, `mcp`, `runs`, `schedules`
+  and `walks`, `./stores` in `mcp` and `runs`, `./logic` in `mcp`, `schedules` and `walks`, `./words` in `walks`, and a module
   without a category has no line for it. `testing/` is the one folder no barrel names: a spec
   reaches its stand-in by path, and nothing else may.
 - Every interface and every constant lives in `interfaces/` or `constants/`, never inline in the
@@ -473,7 +493,8 @@ Applies to the SQLite-backed modules only.
   `run_questions`, `run_question_attachments`, `run_steps`, `run_calls`, `run_handoffs`,
   `run_step_agents`, `run_step_models`, `run_step_settings`, `run_step_feeds`, `run_memories`,
   `mcp_server_looks`, `mcp_dropped_servers` and `mcp_server_consents`. `1793991075893-QuestionRecordings`
-  adds `run_question_recordings`.
+  adds `run_question_recordings`, and `1794050709712-Schedules` adds `schedule_switches` and the
+  nullable `startedByScheduleId` of `runs`, rebuilding `runs` with every row it held.
 - **A committed migration is never edited or deleted.** Databases that have already run it will not
   run it again, so a change to it reaches none of them. A mistake is fixed by the next migration, a
   compensating one; where it has to repair, it is written to stand on a database in either state —
@@ -525,6 +546,9 @@ Applies to the SQLite-backed modules only.
   ids the feeds name) — never the whole run, which only the run's own page reads
   (`RunReader.ownThread`, `RunReader.sharedMemory`). Rows go with their run, and nothing is ever
   deleted to make room.
+- **A run keeps the schedule that began it** (`startedByScheduleId`), and `null` where a person
+  asked — a row from before schedules included. It is not a key: schedules live in the project file,
+  and a run outlives its schedule being deleted.
 - **A run keeps the name and colour of the agent it began with, beside that agent's id.** Read off
   the run's first step instead, a row whose question was written but whose first turn had not landed
   would stand nameless, since the row is opened by the question before that step exists (23a).

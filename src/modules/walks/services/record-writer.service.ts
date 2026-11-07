@@ -46,7 +46,7 @@ export class RecordWriter {
 
   /** Writes the walk's question into its row, opening the row where the stream has none. */
   askQuestion(question: QuestionToWrite): Promise<void> {
-    const { ledger, agent, text, attached, recordings, runKey } = question;
+    const { ledger, agent, text, attached, recordings, runKey, scheduleId } = question;
     const asked: AskedQuestion = {
       questionId: ledger.questionId,
       agent,
@@ -54,6 +54,7 @@ export class RecordWriter {
       attached,
       recordings,
       askedAt: ledger.askedAt,
+      scheduleId,
     };
     // The row is settled when the question is asked, not when the queue reaches it.
     const placed = this.rowOf(question, asked);

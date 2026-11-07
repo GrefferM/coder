@@ -20,6 +20,8 @@ export interface NewRun {
   startedByAgentId: string;
   startedByAgentName: string;
   startedByAgentColor: string;
+  /** The schedule that asked; null for a person's question. */
+  startedByScheduleId: string | null;
   startedAt: Date;
 }
 

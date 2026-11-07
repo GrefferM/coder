@@ -97,6 +97,17 @@ export interface ConfigureWalks {
   config: ProjectConfig;
 }
 
+/** The project open on screen, whose schedules the clock follows. */
+export interface FollowSchedules extends OfProject {
+  config: ProjectConfig;
+}
+
+/** One schedule switched on or off on this machine. */
+export interface SwitchSchedule {
+  scheduleId: string;
+  isOn: boolean;
+}
+
 /** The person's question, put to one agent with the files packed for it. */
 export interface PutWalk {
   agentId: string;

@@ -27,9 +27,10 @@ the same commit; the change that closes it removes the line.
 
 ## Schedules
 
-- A schedule is read from the project folder and written back, but nothing runs it yet: no clock
-  puts its task, no machine can switch it on, and the window shows none — it stands only in a file
-  written by hand.
+- The window has no section for schedules: it neither follows the open project over
+  `schedules:follow` nor switches a schedule on, so the backend's clock holds no timer, and a
+  schedule stands only in a file written by hand. Nor does a history row mark the run a schedule
+  began, though the record keeps it.
 
 ## Limits
 

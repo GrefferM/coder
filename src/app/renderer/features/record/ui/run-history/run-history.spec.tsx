@@ -41,6 +41,7 @@ function run(patch: Partial<RunRow> = {}): RunRow {
     startedByAgentId: "agent-1",
     startedByAgentName: "Тезар",
     startedByAgentColor: "#b18aff",
+    startedByScheduleId: null,
     asked: "Розбий текст на тези",
     state: "done",
     startedAt: new Date("2026-08-22T15:10:00"),

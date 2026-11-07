@@ -52,6 +52,9 @@ import type {
   SAY_WALK_AGAIN_CHANNEL,
   STOP_WALKS_CHANNEL,
   WALKS_STATE_CHANNEL,
+  FOLLOW_SCHEDULES_CHANNEL,
+  SCHEDULE_STANDINGS_CHANNEL,
+  SWITCH_SCHEDULE_CHANNEL,
 } from "../channels";
 import type { Deletion, FolderContents, ProjectEntry, ProjectOnDisk } from "../project";
 import type { ProviderReply, ProviderState } from "../providers";
@@ -61,6 +64,7 @@ import type { AttachmentPick, PackAttachmentsAsk, PackedAttachment, PickAttachme
 import type { SaveTextAsk } from "../shell";
 import type { HeardSound, SpeechSettings } from "../speech";
 import type { PutWalkAnswer, WalkSnapshot } from "../walks";
+import type { ScheduleStanding } from "../schedules";
 import type {
   AskProvider,
   SearchRuns,
@@ -83,6 +87,8 @@ import type {
   OpenWalks,
   PutWalk,
   SayWalkAgain,
+  FollowSchedules,
+  SwitchSchedule,
 } from "./payloads.interface";
 
 /** What is sent over each channel and what comes back. `void` where nothing is handed over or nothing is answered. */
@@ -151,6 +157,11 @@ export interface ChannelMap {
   [FRESH_WALKS_CHANNEL]: { payload: void; answer: void };
   [GO_ON_IN_WALKS_CHANNEL]: { payload: GoOnInWalks; answer: void };
   [LET_GO_WALKS_CHANNEL]: { payload: LetGoWalks; answer: void };
+
+  /** The open project's schedules run on this machine while it is followed. */
+  [FOLLOW_SCHEDULES_CHANNEL]: { payload: FollowSchedules; answer: void };
+  [SCHEDULE_STANDINGS_CHANNEL]: { payload: void; answer: ScheduleStanding[] };
+  [SWITCH_SCHEDULE_CHANNEL]: { payload: SwitchSchedule; answer: void };
 
   /** Desktop calls: choose a folder, reveal a project's file, pick and pack files for a question. */
   [CHOOSE_DIRECTORY_CHANNEL]: { payload: void; answer: string | null };

@@ -38,6 +38,7 @@ function row(patch: Partial<RunRow> = {}): RunRow {
     startedByAgentId: "agent-1",
     startedByAgentName: "Шукач",
     startedByAgentColor: "#6fd3d8",
+    startedByScheduleId: null,
     askedAgentId: "agent-1",
     askedAgentName: "Шукач",
     asked: "Знайди md-файли",

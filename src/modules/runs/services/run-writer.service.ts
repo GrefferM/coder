@@ -13,6 +13,7 @@ export class RunWriter {
         startedByAgentId: payload.startedByAgentId,
         startedByAgentName: payload.startedByAgentName,
         startedByAgentColor: payload.startedByAgentColor,
+        startedByScheduleId: payload.startedByScheduleId,
         startedAt: new Date(payload.startedAt),
       });
       const question = await store.askIn({

@@ -11,6 +11,7 @@ function row(startedAt: Date): RunRow {
     startedByAgentId: "88888888-8888-4888-8888-888888888888",
     startedByAgentName: "ПОШУКАЧ",
     startedByAgentColor: "#b18aff",
+    startedByScheduleId: null,
     asked: "порахуй файли",
     state: RUN_DONE,
     startedAt,

@@ -6,4 +6,5 @@ export * from "./shell";
 export * from "./speech";
 export * from "./deletions";
 export * from "./runs";
+export * from "./schedules";
 export * from "./walks";

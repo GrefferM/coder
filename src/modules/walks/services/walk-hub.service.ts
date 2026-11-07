@@ -37,6 +37,7 @@ export class WalkHub implements EarsOwner {
       providers: this.parts.providers,
       servers: this.parts.servers,
       listener: this.ears,
+      scheduleId: null,
     });
 
     return walkSnapshot(this.runner.snapshot());

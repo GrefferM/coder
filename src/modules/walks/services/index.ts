@@ -6,3 +6,5 @@ export * from "./held-project.service";
 export * from "./walk-ears.service";
 export * from "./walk-hub.service";
 export * from "./agent-ask.service";
+export * from "./schedule-ears.service";
+export * from "./scheduled-walks.service";

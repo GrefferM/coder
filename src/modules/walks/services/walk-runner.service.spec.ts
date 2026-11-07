@@ -70,6 +70,7 @@ function standing(
     providers: known,
     servers,
     listener,
+    scheduleId: null,
   });
 
   return {

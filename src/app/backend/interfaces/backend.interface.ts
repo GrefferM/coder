@@ -2,6 +2,7 @@ import type { McpController } from "../../../modules/mcp";
 import type { DeletionController, ProjectController, ProjectWatch } from "../../../modules/projects";
 import type { ProviderController } from "../../../modules/providers";
 import type { RunController, RunKeeper } from "../../../modules/runs";
+import type { ScheduleController } from "../../../modules/schedules";
 import type { SpeechController } from "../../../modules/speech";
 import type { ProjectCatalog, WalkController, WalkHub } from "../../../modules/walks";
 
@@ -14,6 +15,7 @@ export interface Backend {
   mcpController: McpController;
   runController: RunController;
   walkController: WalkController;
+  scheduleController: ScheduleController;
   /** Asked to look again whenever the window comes to the front. */
   watch: ProjectWatch;
   /** Finds a project by the name or folder a command line was given. */
@@ -24,4 +26,6 @@ export interface Backend {
   keeper: RunKeeper;
   /** Stops the MCP servers this backend started. */
   stopServers(): Promise<void>;
+  /** Lets go of every schedule's timer. */
+  stopSchedules(): void;
 }

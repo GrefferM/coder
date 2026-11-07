@@ -3,6 +3,7 @@ import {
   registerIpcChannels,
   DELETIONS_IPC_CHANNELS,
   MCP_IPC_CHANNELS,
+  SCHEDULES_IPC_CHANNELS,
   PROJECTS_IPC_CHANNELS,
   PROVIDERS_IPC_CHANNELS,
   RUNS_IPC_CHANNELS,
@@ -51,6 +52,7 @@ async function initializeIpc(): Promise<void> {
   registerIpcChannels(wired.mcpController, MCP_IPC_CHANNELS);
   registerIpcChannels(wired.runController, RUNS_IPC_CHANNELS);
   registerIpcChannels(wired.walkController, WALKS_IPC_CHANNELS);
+  registerIpcChannels(wired.scheduleController, SCHEDULES_IPC_CHANNELS);
   registerIpcChannels(new SystemShell(), SHELL_IPC_CHANNELS);
 }
 
@@ -105,5 +107,6 @@ app.on("window-all-closed", () => {
 });
 
 app.on("before-quit", () => {
+  backend?.stopSchedules();
   void backend?.stopServers();
 });

@@ -19,6 +19,7 @@ function run(walk: WholeStep[], patch: Partial<WholeRun> = {}): WholeRun {
     startedByAgentId: "agent-1",
     startedByAgentName: "Розвідник",
     startedByAgentColor: "#b18aff",
+    startedByScheduleId: null,
     askedAgentId: "agent-1",
     askedAgentName: "Розвідник",
     asked: "Розбий текст на тези",

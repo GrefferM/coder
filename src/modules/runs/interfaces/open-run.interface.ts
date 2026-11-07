@@ -7,6 +7,8 @@ export interface OpenRun {
   /** That agent's name and colour then; the row is named by this, not a later step. */
   startedByAgentName: string;
   startedByAgentColor: string;
+  /** The schedule that put the first question; null where a person asked it. */
+  startedByScheduleId: string | null;
   /** The question's own id, minted when it was asked. */
   questionId: string;
   asked: string;

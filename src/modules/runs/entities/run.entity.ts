@@ -34,6 +34,13 @@ export class RunEntity implements RunRecord {
   })
   declare startedByAgentColor: string;
 
+  /** The schedule that put the run's first question; null where a person asked it. */
+  @Column({
+    type: "varchar",
+    nullable: true,
+  })
+  declare startedByScheduleId: string | null;
+
   @Column({
     type: "datetime",
   })

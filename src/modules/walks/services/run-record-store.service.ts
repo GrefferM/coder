@@ -24,6 +24,7 @@ export class RunRecordStore implements RunRecord {
       startedByAgentId: question.agent.id,
       startedByAgentName: question.agent.name,
       startedByAgentColor: question.agent.color,
+      startedByScheduleId: question.scheduleId,
       asked: question.asked,
       attached: question.attached,
       recordings: question.recordings,

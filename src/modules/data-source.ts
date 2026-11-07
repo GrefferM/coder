@@ -17,6 +17,7 @@ import {
   RunStepSettingEntity,
   RunStepFeedEntity,
 } from "./runs";
+import { ScheduleSwitchEntity } from "./schedules";
 import { DATA_SOURCE_DATABASE_FILE_NAME } from "./constants";
 
 export const MODULES_ENTITIES = [
@@ -37,6 +38,7 @@ export const MODULES_ENTITIES = [
   RunStepAgentEntity,
   RunStepModelEntity,
   RunStepSettingEntity,
+  ScheduleSwitchEntity,
 ];
 
 /** Returned not initialized. */

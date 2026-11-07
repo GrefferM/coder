@@ -5,6 +5,7 @@ import { createMcpModule } from "../../modules/mcp";
 import { createProjectModule } from "../../modules/projects";
 import { createProvidersModule } from "../../modules/providers";
 import { createRunModule } from "../../modules/runs";
+import { createSchedulesModule } from "../../modules/schedules";
 import { createSecretsModule } from "../../modules/secrets";
 import { createSpeechModule } from "../../modules/speech";
 import { RunRecordStore, createWalksModule } from "../../modules/walks";
@@ -42,13 +43,18 @@ export async function createBackend(
   // A local server is a process this backend started, so this backend stops it.
   const { controller: mcpController, client } = createMcpModule(secretService, dataSource);
   const { service: llmService } = createLlmModule(providerService, voices.agent, commandRunner, client, runReader);
-  const { controller: walkController, hub } = createWalksModule({
+  const {
+    controller: walkController,
+    hub,
+    scheduled,
+  } = createWalksModule({
     record: new RunRecordStore(runWriter, runReader),
     llm: llmService,
     providers: providerService,
     servers: client,
     voice: voices.walk,
   });
+  const { controller: scheduleController, clock } = createSchedulesModule(dataSource, scheduled);
 
   return {
     projectController,
@@ -58,10 +64,12 @@ export async function createBackend(
     mcpController,
     runController,
     walkController,
+    scheduleController,
     watch,
     finder,
     hub,
     keeper,
     stopServers: () => client.closeAll(),
+    stopSchedules: () => clock.stop(),
   };
 }

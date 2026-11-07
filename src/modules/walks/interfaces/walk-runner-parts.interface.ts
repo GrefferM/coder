@@ -12,4 +12,6 @@ export interface WalkRunnerParts {
   providers: ProviderLister;
   servers: ServerLooker;
   listener: WalkListener;
+  /** The schedule this conversation is; null for the person's own. */
+  scheduleId: string | null;
 }

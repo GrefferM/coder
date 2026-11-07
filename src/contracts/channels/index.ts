@@ -8,3 +8,4 @@ export * from "./runs.channel";
 export * from "./shell.channel";
 export * from "./speech.channel";
 export * from "./walks.channel";
+export * from "./schedules.channel";

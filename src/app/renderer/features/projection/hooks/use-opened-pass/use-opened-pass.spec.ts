@@ -34,6 +34,7 @@ const RUN: WholeRun = {
   startedByAgentId: "agent-1",
   startedByAgentName: "EDITOR",
   startedByAgentColor: "#b18aff",
+  startedByScheduleId: null,
   askedAgentId: "agent-1",
   askedAgentName: "EDITOR",
   asked: "Друге питання",
