@@ -32,6 +32,9 @@
   <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ speechBg }};color:{{ speechFg }}">
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"></path></svg>
   </div>
+  <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ scheduleBg }};color:{{ scheduleFg }}">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l2.5 2"></path></svg>
+  </div>
   <div style="width:20px;height:1px;background:#262b3a;margin:9px 0 6px"></div>
   <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ chatBg }};color:{{ chatFg }}">
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-7l-4 3.2V16H6a2 2 0 0 1-2-2Z"></path><path d="M8.5 9.5h7M8.5 12.5h4"></path></svg>
@@ -44,13 +47,13 @@
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:44,&quot;height&quot;:320},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;chat&quot;,&quot;agents&quot;,&quot;models&quot;,&quot;mcp&quot;,&quot;tools&quot;,&quot;prompts&quot;,&quot;speech&quot;,&quot;providers&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;broken&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;mcp&quot;,&quot;tools&quot;,&quot;providers&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:44,&quot;height&quot;:356},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;chat&quot;,&quot;agents&quot;,&quot;models&quot;,&quot;mcp&quot;,&quot;tools&quot;,&quot;prompts&quot;,&quot;speech&quot;,&quot;schedule&quot;,&quot;providers&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;broken&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;mcp&quot;,&quot;tools&quot;,&quot;providers&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
 class Component extends DCLogic {
   renderVals() {
     const active = this.props.active ?? "none";
     const broken = this.props.broken ?? "none";
     const on = (k) => ({ bg: active === k ? "#1b1f2c" : "transparent", fg: active === k ? "#38a3ff" : "#838ba6" });
-    const ch = on("chat"), a = on("agents"), m = on("models"), mc = on("mcp"), t = on("tools"), p = on("prompts"), sp = on("speech"), v = on("providers");
+    const ch = on("chat"), a = on("agents"), m = on("models"), mc = on("mcp"), t = on("tools"), p = on("prompts"), sp = on("speech"), sc = on("schedule"), v = on("providers");
     return {
       agentsBg: a.bg, agentsFg: a.fg,
       modelsBg: m.bg, modelsFg: m.fg,
@@ -58,6 +61,7 @@ class Component extends DCLogic {
       toolsBg: t.bg, toolsFg: t.fg,
       promptsBg: p.bg, promptsFg: p.fg,
       speechBg: sp.bg, speechFg: sp.fg,
+      scheduleBg: sc.bg, scheduleFg: sc.fg,
       chatBg: ch.bg, chatFg: ch.fg,
       providersBg: v.bg, providersFg: v.fg,
       mcpBroken: broken === "mcp",

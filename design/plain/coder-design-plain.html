@@ -48,6 +48,7 @@ a:hover{color:#57b4ff}
     <a href="#s6" style="padding:5px 10px;border-radius:7px;background:#12151f;border:1px solid #262b3a;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#aab3cc">06 · Історія й налагодження</a>
     <a href="#s7" style="padding:5px 10px;border-radius:7px;background:#12151f;border:1px solid #262b3a;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#aab3cc">07 · Проєкти</a>
     <a href="#s8" style="padding:5px 10px;border-radius:7px;background:#12151f;border:1px solid #262b3a;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#aab3cc">08 · Правила вигляду</a>
+    <a href="#s9" style="padding:5px 10px;border-radius:7px;background:#12151f;border:1px solid #262b3a;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#aab3cc">09 · Розклад</a>
   </div>
   <div style="max-width:1000px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#4a5164;line-height:1.9">
     <div style="color:#6b7490">Нумерація</div>
@@ -12722,7 +12723,7 @@ Call log:
       <div style="display:flex;align-items:baseline;gap:12px">
         <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:#38a3ff;background:#12151f;border:1px solid #262b3a;border-radius:6px;padding:3px 8px">44d</span>
         <span style="font-size:15px;font-weight:600">Видалення незв'язаного агента</span>
-        <span style="font-size:13px;color:#838ba6">Питають про кожного агента; різниця живе тільки в рядку під питанням — гасити тут нічого. Кадр показує пік стуку: клікнули повз, коробка на 1.02 і одразу назад.</span>
+        <span style="font-size:13px;color:#838ba6">Питають про кожного агента; різниця живе тільки в рядку під питанням — гасити тут нічого. Коли в агента є розклади, рядок кінчається реченням про них (<a href="#51a">51a</a>). Кадр показує пік стуку: клікнули повз, коробка на 1.02 і одразу назад.</span>
       </div>
       <div style="width:1366px;height:960px;flex-shrink:0;background:#262b3a;background-image:radial-gradient(circle, rgba(255,255,255,0.14) 1px, transparent 1px);background-size:8px 8px;background-position:3px 3px;padding:35px;display:flex;box-sizing:border-box">
         <div style="flex:1;display:flex;overflow:hidden;border-radius:12px;background:#0d0f16">
@@ -12754,6 +12755,7 @@ Call log:
               <div style="padding-top:10px;color:#6b7490">Другий рядок — одна форма на всі коробки</div>
               <div><span style="color:#838ba6">«Заберемо ‹річ›. ‹Що піде або лишиться разом›.»</span> — перший рядок питає, другий називає ношу</div>
               <div>Агент: «…сферу EDITOR і її зв'язки» (<a href="#10a">10a</a>) · «…сферу DOCS. Вона ні з ким не зв'язана»</div>
+              <div>Розклади агента — окремим реченням у кінці, лише коли вони є: «…Два її розклади лишаться без агента» · один — «…Один її розклад лишиться без агента» (<a href="#51a">51a</a>)</div>
               <div>Модель: «…claude-sonnet-4.5 і 2 агенти на ній» · без ноші — «…саме оголошення» (<a href="#3f">3f</a>)</div>
               <div>Промпт: «…промпт «Правки коду». Три агенти на ньому лишаться на голій моделі» (<a href="#19a">19a</a>)</div>
               <div>Команда: «…run_test. Агенти, яким її видали, лишаться без неї» · Запуск: «…запуск СЬОГОДНІ 14:12 з кроками й викликами» (23f — полотно 2)</div>
@@ -13232,6 +13234,256 @@ Call log:
             </div>
             <div style="width:6px;flex-shrink:0"></div>
             <dc-import name="Rail" active="agents" hint-size="44px,100%"></dc-import>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="s9" style="display:flex;align-items:baseline;gap:14px;padding-top:20px;border-top:1px solid #1c202c">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2.5px;color:#38a3ff">09</span>
+      <span style="font-size:20px;font-weight:600;letter-spacing:-0.01em">Розклад</span>
+      <span style="font-size:13px;color:#5c6478">завдання, яке застосунок сам ставить агентові кожні N хвилин</span>
+      <span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#3a4154">2 КАДРИ</span>
+    </div>
+
+    <div id="51a" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:baseline;gap:12px;max-width:1100px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:#38a3ff;background:#12151f;border:1px solid #262b3a;border-radius:6px;padding:3px 8px;flex-shrink:0">51a</span>
+        <span style="font-size:15px;font-weight:600;flex-shrink:0">Розклад — розділ рейки</span>
+        <span style="font-size:13px;line-height:1.6;color:#838ba6;text-wrap:pretty">Розклад ставить агентові одне завдання кожні N хвилин, поки застосунок відкритий. Розділ стоїть у рейці <b style="color:#dde1ee;font-weight:600">над рискою</b>, сьомим, після «Мовлення» (<a href="#38c">38c</a>); гліф — циферблат: агент, завдання й інтервал їдуть із текою проєкту. <b style="color:#dde1ee;font-weight:600">Чи розклад працює — рішення цієї машини</b>, і в теку воно не йде: колега, що стягнув проєкт, нічого не запускає, доки не ввімкне сам. Рядок — за рецептом рядка історії (<a href="#23a">23a</a>): крапка, тихе слово стану, ім'я агента в його кольорі; під ним завдання; нижче — інтервал і, коли увімкнено, «НАСТУПНИЙ ЧЕРЕЗ …». Від години інтервал і відлік кажуть години: «КОЖНІ 2 ГОД», «КОЖНІ 1 ГОД 30 ХВ»; відлік округлює вниз, під хвилину — «&lt; 1 ХВ». Шеврон на кожному рядку (<a href="#36h">36h</a>), натиск відкриває крок форми (<a href="#51b">51b</a>). Каталог — за правилом <a href="#40a">40a</a>.</span>
+      </div>
+      <div style="width:1300px;flex-shrink:0;background:#262b3a;background-image:radial-gradient(circle, rgba(255,255,255,0.14) 1px, transparent 1px);background-size:8px 8px;background-position:3px 3px;padding:35px;display:flex;gap:28px;align-items:flex-start;box-sizing:border-box;border-radius:4px">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#aab3cc">СПИСОК · СТАН НА ЦІЙ МАШИНІ</span>
+          <div style="display:flex;background:#0d0f16;border-radius:12px;overflow:hidden">
+            <div style="width:380px;background:#12151f;display:flex;flex-direction:column">
+              <div style="background:#191d29;padding:8px 10px;border-bottom:1px solid #262b3a;display:flex;align-items:center;gap:8px;flex-shrink:0">
+                <span style="color:#838ba6;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase">Розклад</span>
+                <span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#6b7490">6</span>
+              </div>
+              <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;flex-direction:column;gap:7px;background:#171b26;border:1px solid #2c4a3a;border-radius:10px;padding:11px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;flex-shrink:0"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#5c6478">ІДЕ</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#e8c46a">NIGHTLY</span><span style="flex:1"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#aab3cc">10:15 · 1 хв 40</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5c6478" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></div>
+                <span style="font-size:12.5px;line-height:1.5;color:#dde1ee;text-wrap:pretty">Прогони всі тести й коротко скажи, що впало</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#5c6478">КОЖНІ 15 ХВ</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:11px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;flex-shrink:0"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#5c6478">УВІМКНЕНО</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#6fd3d8">REVIEWER</span><span style="flex:1"></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5c6478" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></div>
+                <span style="font-size:12.5px;line-height:1.5;color:#dde1ee;text-wrap:pretty">Переглянь нові коміти в main і залиш зауваження</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#5c6478">КОЖНІ 1 ГОД 30 ХВ · НАСТУПНИЙ ЧЕРЕЗ 1 ГОД 12 ХВ</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:11px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;flex-shrink:0"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#5c6478">УВІМКНЕНО</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#b18aff">SUMMARY</span><span style="flex:1"></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5c6478" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></div>
+                <span style="font-size:12.5px;line-height:1.5;color:#dde1ee;text-wrap:pretty">Підсумуй, що змінилось у гілці за пів години</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#5c6478">КОЖНІ 30 ХВ · НАСТУПНИЙ ЧЕРЕЗ &lt; 1 ХВ</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:11px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#4a5268;flex-shrink:0"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#5c6478">ВИМКНЕНО</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#e8c46a">NIGHTLY</span><span style="flex:1"></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5c6478" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></div>
+                <span style="font-size:12.5px;line-height:1.5;color:#dde1ee;text-wrap:pretty">Онови залежності й прогони збірку</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#5c6478">КОЖНІ 2 ГОД</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:11px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;border:1px solid #5c6478;box-sizing:border-box;flex-shrink:0"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#5c6478">НЕ ЗАПОВНЕНО · АГЕНТ</span><span style="flex:1"></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5c6478" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></div>
+                <span style="font-size:12.5px;line-height:1.5;color:#dde1ee;text-wrap:pretty">Збери зміни за день у нотатку до релізу</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#5c6478">КОЖНІ 1 ГОД</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;background:#1f1a20;border:1px solid #4a2530;border-radius:10px;padding:11px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#f0a5ac;flex-shrink:0"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#a9808a">НЕМА АГЕНТА</span><span style="flex:1"></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5c6478" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></div>
+                <span style="font-size:12.5px;line-height:1.5;color:#dde1ee;text-wrap:pretty">Перевір лінтером зміни за останню годину</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#a9808a">КОЖНІ 1 ГОД</span>
+              </div>
+              </div>
+              <div style="padding:14px;border-top:1px solid #1c202c;flex-shrink:0">
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 0;border-radius:9px;border:1px solid #262b3a;color:#38a3ff;font-size:12.5px;font-weight:600">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#38a3ff" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+                  Новий розклад
+                </div>
+              </div>
+            </div>
+            <dc-import name="Rail" active="schedule" hint-size="44px,100%"></dc-import>
+          </div>
+          <div style="width:424px;display:flex;flex-direction:column;gap:9px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ГЛІФ — ЦИФЕРБЛАТ, СЬОМИЙ НАД РИСКОЮ: ТЕ, ЩО В ТЕЦІ; ВМИКАЧ — ЄДИНЕ МАШИННЕ В РОЗДІЛІ (51b)</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#aab3cc">ПОРОЖНІЙ РОЗДІЛ</span>
+          <div style="width:340px;background:#12151f;border:1px solid #262b3a;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;height:300px">
+            <div style="background:#191d29;padding:8px 10px;border-bottom:1px solid #262b3a;display:flex;align-items:center;gap:8px;flex-shrink:0">
+              <span style="color:#838ba6;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase">Розклад</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:22px;text-align:center">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#3a4258" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l2.5 2"></path></svg>
+              <span style="font-size:12.5px;line-height:1.6;color:#6b7490;text-wrap:pretty">Розкладів ще немає. Агенти працюють, лише коли їх питають.</span>
+              <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:9px;border:1px solid #38a3ff;background:#38a3ff;color:#e6ecf7;font-size:12.5px;font-weight:600">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0d0f16" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+                Новий розклад
+              </div>
+            </div>
+          </div>
+          <div style="width:340px;display:flex;flex-direction:column;gap:9px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ТРИ ЧАСТИНИ 40a: ШАПКА З ЛІЧИЛЬНИКОМ, СПИСОК, ПІДВАЛ З ОДНІЄЮ ДІЄЮ · ПОРОЖНІЙ — ДІЯ В ЦЕНТРІ, ПІДВАЛУ НЕМА</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ГЛІФ РОЗДІЛУ В ЦЕНТРІ — ТОЙ САМИЙ ЦИФЕРБЛАТ, 30 PX, #3a4258, ЯК ШАРИ В ПОРОЖНІХ «МОДЕЛЯХ»</span>
+          </div>
+        </div>
+        <div style="width:380px;display:flex;flex-direction:column;gap:9px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#aab3cc">ЩО КАЖЕ РЯДОК</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">П'ЯТЬ СТАНІВ: ІДЕ · УВІМКНЕНО · ВИМКНЕНО · НЕ ЗАПОВНЕНО · НЕМА АГЕНТА — СЛОВО СТОЇТЬ ЗАВЖДИ, ЯК У 23j</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ІДЕ — КРАПКА З ОРЕОЛОМ І ЗЕЛЕНА РАМКА, ГОДИНА Й ТРИВАЛІСТЬ ПРАВОРУЧ: ТЕ САМЕ ПИСАННЯ, ЩО В ЖИВОМУ РЯДКУ ІСТОРІЇ (23j)</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">УВІМКНЕНО Й ВИМКНЕНО — КРАПКА СФЕРИ: ЗЕЛЕНА З ОРЕОЛОМ І СІРА #4a5268, ЯК «УВІМКНЕНО» АГЕНТА</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">«НАСТУПНИЙ ЧЕРЕЗ …» — ЛИШЕ В УВІМКНЕНОГО; У ВИМКНЕНОГО НИЖНІЙ РЯДОК КАЖЕ САМ ІНТЕРВАЛ</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ІНТЕРВАЛ І ВІДЛІК: ДО ГОДИНИ — ХВИЛИНИ, ВІД 60 ХВ — ГОДИНИ: «КОЖНІ 2 ГОД», НЕЦІЛЕ — «КОЖНІ 1 ГОД 30 ХВ» · ВІДЛІК ОКРУГЛЮЄ ВНИЗ, ПІД ХВИЛИНУ — «&lt; 1 ХВ»</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">НЕ ЗАПОВНЕНО — З НАЗВОЮ ПОЛЯ (4e), ПОРОЖНЯ КРАПКА: СПРОБИ НЕ БУДЕ, ПОКИ ПОЛЕ ПОРОЖНЄ</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">НЕМА АГЕНТА — ОБІРВАНИЙ ЗВ'ЯЗОК (41a), ЧЕРВОНА РОДИНА РЯДКА 36a · ІМЕНІ НЕМА: ФАЙЛ АГЕНТА ЗНИК РАЗОМ ІЗ НИМ</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ВМИКАЧ ТУТ МОЖЕ СТОЯТИ ВВІМКНЕНИМ — РЯДОК ОДНАКО КАЖЕ СЛОВО ПРОБЛЕМИ, А НЕ «УВІМКНЕНО», І ВІДЛІКУ НЕ МАЄ</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#aab3cc;padding-top:10px">ЧОГО ТУТ НЕМАЄ</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ЧЕРГИ НЕМАЄ: ЩЕ ЙДЕ ПОПЕРЕДНІЙ ЗАПУСК ЦЬОГО РОЗКЛАДУ — ТАКТ ПРОПУСКАЄТЬСЯ, І РЯДОК ПРО ЦЕ НЕ КАЖЕ</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ЗАКРИТИЙ ЗАСТОСУНОК НЕ ДОГАНЯЄ: ПРОПУЩЕНЕ, ПОКИ ВІКНА НЕ БУЛО, НЕ ЗАПУСКАЄТЬСЯ ПІСЛЯ ВІДКРИТТЯ</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ВИМИКАЧА В РЯДКУ НЕМАЄ — ВІН У КРОЦІ ФОРМИ (51b); РЯДОК ЛИШЕ КАЖЕ СТАН</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ОДИН АГЕНТ — КІЛЬКА РОЗКЛАДІВ: NIGHTLY СТОЇТЬ ДВІЧІ, РІЗНЯТЬСЯ ЗАВДАННЯ Й ІНТЕРВАЛ</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="51b" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:baseline;gap:12px;max-width:1100px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:#38a3ff;background:#12151f;border:1px solid #262b3a;border-radius:6px;padding:3px 8px;flex-shrink:0">51b</span>
+        <span style="font-size:15px;font-weight:600;flex-shrink:0">Форма розкладу</span>
+        <span style="font-size:13px;line-height:1.6;color:#838ba6;text-wrap:pretty">Форма — <b style="color:#dde1ee;font-weight:600">окремий крок вкладки</b> з головою «‹ РОЗКЛАД · NIGHTLY», як сторінка сервера (<a href="#36j">36j</a>); «‹» і Escape вертають у список. Два розклади одного агента мають однакову голову — розрізняє їх завдання, що стоїть першим полем під нею. <b style="color:#dde1ee;font-weight:600">Агента</b> обирають тим самим списком, що в шапці чату (<a href="#23d">23d</a>). <b style="color:#dde1ee;font-weight:600">Інтервал</b> — ціле число хвилин, щонайменше одна; поле з одиницею праворуч, як стелі моделі (<a href="#49a">49a</a>). <b style="color:#dde1ee;font-weight:600">Вмикач</b> — картка «Увімкнено» агента (<a href="#21a">21a</a>) зі словами «ЦЯ МАШИНА · У ТЕКУ ПРОЄКТУ НЕ ЙДЕ» над нею, як голос у <a href="#38c">38c</a>: його стан у базі цієї машини, не в теці. Новий розклад створюється вимкненим; вмикач діє одразу, без «Зберегти». Порожнє поле каже «НЕ ЗАПОВНЕНО» (4e); агент, якого видалили, — обірваний зв'язок, реченням <a href="#41a">41a</a>; вмикач і тоді вмикається, але рядок списку каже слово проблеми (<a href="#51a">51a</a>). Видаляють із підвалу кроку, коробкою за формою <a href="#44d">44d</a>.</span>
+      </div>
+      <div style="width:1340px;flex-shrink:0;background:#262b3a;background-image:radial-gradient(circle, rgba(255,255,255,0.14) 1px, transparent 1px);background-size:8px 8px;background-position:3px 3px;padding:35px;display:flex;gap:28px;align-items:flex-start;box-sizing:border-box;border-radius:4px">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#aab3cc">НОВИЙ РОЗКЛАД · КРОК ВКЛАДКИ</span>
+          <div style="width:380px;display:flex;flex-direction:column;background:#12151f;border-radius:10px;overflow:hidden">
+            <div style="background:#12151f;padding:11px 14px;border-bottom:1px solid #262b3a;flex-shrink:0;display:flex;align-items:center;gap:8px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#838ba6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m14 6-6 6 6 6"></path></svg>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:#838ba6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Розклад · новий</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;padding:13px 14px">
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.15px;color:#6b7490">ЗАВДАННЯ</span>
+                <div style="background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px;font-size:12.5px;line-height:1.5;color:#dde1ee;min-height:56px;box-sizing:border-box">Прогони всі тести й коротко скажи, що впало</div>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.15px;color:#6b7490">АГЕНТ</span>
+                <div style="background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#e8c46a"></span><span style="flex:1;font-size:12.5px;color:#dde1ee">NIGHTLY</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5c6478" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></div>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.15px;color:#6b7490">ІНТЕРВАЛ</span>
+                <div style="background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:9px"><span style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0px;color:#e6e9f2">15</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#4a5164">ХВИЛИН</span></div>
+              </label>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                  <span style="display:flex;align-items:center"><span style="flex:1"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#4a5164">ЦЯ МАШИНА · У ТЕКУ ПРОЄКТУ НЕ ЙДЕ</span></span>
+                  <div style="display:flex;align-items:center;justify-content:space-between;background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px">
+                    <span style="font-size:12.5px;color:#dde1ee">Увімкнено</span>
+                    <span style="width:36px;height:20px;border-radius:10px;background:#3a4258;position:relative;flex-shrink:0">
+                      <span style="position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#06150c"></span>
+                    </span>
+                  </div>
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;padding:16px;border-top:1px solid #1c202c;flex-shrink:0">
+              <div style="flex:1;text-align:center;padding:10px 0;border-radius:9px;border:1px solid #262b3a;color:#aab3cc;font-size:13px;font-weight:600">Скасувати</div>
+              <div style="flex:1;text-align:center;padding:10px 0;border-radius:9px;border:1px solid #38a3ff;background:#38a3ff;color:#e6ecf7;font-size:13px;font-weight:600">Створити</div>
+            </div>
+          </div>
+          <div style="width:380px;display:flex;flex-direction:column;gap:9px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ГОЛОВА КРОКУ — ЯК У 36j: «‹», МОНО 11, КАПС · «‹» І ESCAPE ВЕРТАЮТЬ У СПИСОК</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ЗАВДАННЯ — ПЕРШИМ ПІД ГОЛОВОЮ: ТЕКСТ ПИТАННЯ, ЯКЕ ПІДЕ АГЕНТОВІ НА КОЖНОМУ ТАКТІ</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">АГЕНТ — СПИСОК 23d: КРАПКА КОЛЬОРУ Й ІМ'Я, ВИМКНЕНІ ОКРЕМОЮ ГРУПОЮ ВНИЗУ</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">НОВИЙ СТВОРЮЄТЬСЯ ВИМКНЕНИМ · ІНТЕРВАЛ — ЦІЛІ ХВИЛИНИ, НАЙМЕНШЕ 1</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#aab3cc">ПРАВКА · ПРАЦЮЄ НА ЦІЙ МАШИНІ</span>
+          <div style="width:380px;display:flex;flex-direction:column;background:#12151f;border-radius:10px;overflow:hidden">
+            <div style="background:#12151f;padding:11px 14px;border-bottom:1px solid #262b3a;flex-shrink:0;display:flex;align-items:center;gap:8px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#838ba6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m14 6-6 6 6 6"></path></svg>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:#838ba6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Розклад · NIGHTLY</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;padding:13px 14px">
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.15px;color:#6b7490">ЗАВДАННЯ</span>
+                <div style="background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px;font-size:12.5px;line-height:1.5;color:#dde1ee;min-height:56px;box-sizing:border-box">Прогони всі тести й коротко скажи, що впало</div>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.15px;color:#6b7490">АГЕНТ</span>
+                <div style="background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#e8c46a"></span><span style="flex:1;font-size:12.5px;color:#dde1ee">NIGHTLY</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5c6478" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></div>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.15px;color:#6b7490">ІНТЕРВАЛ</span>
+                <div style="background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:9px"><span style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0px;color:#e6e9f2">15</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#4a5164">ХВИЛИН</span></div>
+              </label>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                  <span style="display:flex;align-items:center"><span style="flex:1"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#4a5164">ЦЯ МАШИНА · У ТЕКУ ПРОЄКТУ НЕ ЙДЕ</span></span>
+                  <div style="display:flex;align-items:center;justify-content:space-between;background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px">
+                    <span style="font-size:12.5px;color:#dde1ee">Увімкнено</span>
+                    <span style="width:36px;height:20px;border-radius:10px;background:#3ddc84;position:relative;flex-shrink:0">
+                      <span style="position:absolute;top:2px;left:18px;width:16px;height:16px;border-radius:50%;background:#06150c"></span>
+                    </span>
+                  </div>
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;padding:16px;border-top:1px solid #1c202c;flex-shrink:0">
+              <div style="flex:1;text-align:center;padding:10px 0;border-radius:9px;border:1px solid #2e2530;color:#a9808a;font-size:13px;font-weight:600">Видалити</div>
+              <div style="flex:1;text-align:center;padding:10px 0;border-radius:9px;border:1px solid #38a3ff;background:#38a3ff;color:#e6ecf7;font-size:13px;font-weight:600">Зберегти</div>
+            </div>
+          </div>
+          <div style="width:380px;display:flex;flex-direction:column;gap:9px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ДВА РОЗКЛАДИ NIGHTLY — ДВІ ОДНАКОВІ ГОЛОВИ; РІЗНИТЬ ЇХ ЗАВДАННЯ ПІД НЕЮ</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ВМИКАЧ ДІЄ ОДРАЗУ, БЕЗ «ЗБЕРЕГТИ», ЯК «ВИМКНУТИ» ПРОВАЙДЕРА (38b): ВІН НЕ В ФАЙЛІ, ЗБЕРІГАТИ НІЧОГО</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ПІДВАЛ — ЯК У ПАНЕЛІ АГЕНТА: «ВИДАЛИТИ» Й «ЗБЕРЕГТИ» ПОРУЧ</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#aab3cc">НЕМА АГЕНТА · НЕ ЗАПОВНЕНО · НУЛЬ · ВИДАЛЕННЯ</span>
+          <div style="width:380px;display:flex;flex-direction:column;background:#12151f;border-radius:10px;overflow:hidden">
+            <div style="background:#12151f;padding:11px 14px;border-bottom:1px solid #262b3a;flex-shrink:0;display:flex;align-items:center;gap:8px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#838ba6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m14 6-6 6 6 6"></path></svg>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:#838ba6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Розклад</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;padding:13px 14px">
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.15px;color:#6b7490">ЗАВДАННЯ</span>
+                <div style="background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px;min-height:56px;box-sizing:border-box"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:#4a5164">НЕ ЗАПОВНЕНО</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.15px;color:#6b7490">АГЕНТ</span>
+                <div style="background:#1f1a20;border:1px solid #4a2530;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px"><span style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:#a9808a">агента немає</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5c6478" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="m6 9 6 6 6-6"></path></svg></div>
+                <span style="font-size:11px;line-height:1.5;color:#a9808a">Агента більше немає у проєкті. Посилання лишилось — розклад стоїть на тому, чого немає.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.15px;color:#6b7490">ІНТЕРВАЛ</span>
+                <div style="background:#1f1a20;border:1px solid #4a2530;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:9px"><span style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0px;color:#f0a5ac">0</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#a9808a">ХВИЛИН</span></div>
+              <span style="font-size:11px;line-height:1.5;color:#f0a5ac;text-wrap:pretty">Найменше 1.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                  <span style="display:flex;align-items:center"><span style="flex:1"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#4a5164">ЦЯ МАШИНА · У ТЕКУ ПРОЄКТУ НЕ ЙДЕ</span></span>
+                  <div style="display:flex;align-items:center;justify-content:space-between;background:#171b26;border:1px solid #262b3a;border-radius:10px;padding:8px 10px">
+                    <span style="font-size:12.5px;color:#dde1ee">Увімкнено</span>
+                    <span style="width:36px;height:20px;border-radius:10px;background:#3ddc84;position:relative;flex-shrink:0">
+                      <span style="position:absolute;top:2px;left:18px;width:16px;height:16px;border-radius:50%;background:#06150c"></span>
+                    </span>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div style="width:380px;box-sizing:border-box;background:#12151f;border:1px solid #4a2530;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 26px 60px rgba(0,0,0,0.6)">
+            <div style="display:flex;align-items:center;gap:9px">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f0a5ac" stroke-width="1.8" stroke-linecap="round"><path d="M12 8v5"></path><path d="M12 16.5h.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+              <span style="font-size:13.5px;font-weight:600;color:#f0a5ac">Видалити розклад NIGHTLY?</span>
+            </div>
+            <span style="font-size:12.5px;line-height:1.6;color:#aab3cc;text-wrap:pretty">Заберемо розклад NIGHTLY. Запуски, які він уже поставив, лишаються в історії.</span>
+            <div style="display:flex;gap:10px;padding-top:2px">
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:9px;border:1px solid #262b3a;color:#aab3cc;font-size:12.5px;font-weight:600">Скасувати</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:9px;border:1px solid #4a2530;background:#2a1c20;color:#f0a5ac;font-size:12.5px;font-weight:600">Так, видалити</div>
+            </div>
+          </div>
+          <div style="width:380px;display:flex;flex-direction:column;gap:9px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ВМИКАЧ УВІМКНЕНО Й ТУТ: ВІН ВМИКАЄТЬСЯ ЗАВЖДИ, А РЯДОК СПИСКУ КАЖЕ «НЕМА АГЕНТА» Й ВІДЛІКУ НЕ МАЄ (51a)</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ГОЛОВА БЕЗ ІМЕНІ: АГЕНТА, ЯКИЙ ЇЇ НАЗИВАВ, У ПРОЄКТІ НЕМАЄ</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">ВПИСАНИЙ НУЛЬ ЧЕРВОНИТЬ ПОЛЕ ПІД ЧАС НАБОРУ, ЯК СТЕЛЯ В 49a</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#838ba6;line-height:1.7">КОРОБКА 44d СЛОВО В СЛОВО: ПЕРШИЙ РЯДОК ПИТАЄ, ДРУГИЙ НАЗИВАЄ НОШУ · ЗАПУСКИ ЖИВУТЬ СВОЇ 30 ДНІВ (26a)</span>
           </div>
         </div>
       </div>
