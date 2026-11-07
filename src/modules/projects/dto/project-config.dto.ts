@@ -5,6 +5,7 @@ import { ProjectLinkDto } from "./project-link.dto";
 import { ProjectMcpServerDto } from "./project-mcp-server.dto";
 import { ProjectModelDto } from "./project-model.dto";
 import { ProjectPromptDto } from "./project-prompt.dto";
+import { ProjectScheduleDto } from "./project-schedule.dto";
 import { ProjectSpeechDto } from "./project-speech.dto";
 
 /** The whole project file, parsed and raised to the current version. */
@@ -61,6 +62,13 @@ export class ProjectConfigDto {
   })
   @ArrayUnique((link: ProjectLinkDto) => link.id)
   declare links: ProjectLinkDto[];
+
+  @IsArray()
+  @ValidateNested({
+    each: true,
+  })
+  @ArrayUnique((schedule: ProjectScheduleDto) => schedule.id)
+  declare schedules: ProjectScheduleDto[];
 
   @ValidateNested()
   declare speech: ProjectSpeechDto;

@@ -15,6 +15,7 @@ import {
   ProjectMcpServerDto,
   ProjectModelDto,
   ProjectPromptDto,
+  ProjectScheduleDto,
   ProjectSpeechDto,
 } from "../dto";
 import type { ToolGrantDto } from "../dto";
@@ -30,6 +31,7 @@ import {
   MODEL_ANSWER_CEILING_LEAST,
   MODEL_CONTEXT_CEILING_LEAST,
   PROJECT_CONFIG_VERSION,
+  SCHEDULE_EVERY_MINUTES_LEAST,
 } from "../constants";
 import {
   LINKS_MAKE_RING,
@@ -66,7 +68,7 @@ export class ProjectConfigSerializer {
     return source;
   }
 
-  /** One part file (model, command, server or agent) as a plain record, without its id. */
+  /** One part file (model, command, server, agent or schedule) as a plain record, without its id. */
   partSource(text: string): Record<string, unknown> {
     const parsed: unknown = parse(text);
 
@@ -118,6 +120,7 @@ export class ProjectConfigSerializer {
     config.servers = this.toList(source.servers, (item) => this.toMcpServer(item));
     config.agents = this.toList(source.agents, (item) => this.toAgent(item));
     config.links = this.toList(source.links, (item) => this.toLink(item));
+    config.schedules = this.toList(source.schedules, (item) => this.toSchedule(item));
     config.speech = this.toSpeech(source.speech);
 
     return config;
@@ -255,6 +258,18 @@ export class ProjectConfigSerializer {
     server.env = Array.isArray(source.env) ? source.env.map((name) => String(name)) : [];
 
     return server;
+  }
+
+  /** One schedule; whatever the file never carried reads as unwritten. */
+  private toSchedule(source: Record<string, unknown>): ProjectScheduleDto {
+    const schedule = new ProjectScheduleDto();
+
+    schedule.id = <string>source.id;
+    schedule.agentId = <string | null>(source.agentId ?? null);
+    schedule.task = <string | null>(source.task ?? null);
+    schedule.everyMinutes = written(source.everyMinutes, SCHEDULE_EVERY_MINUTES_LEAST);
+
+    return schedule;
   }
 
   /** Reads one grant by its `source` kind; an unknown kind throws. */

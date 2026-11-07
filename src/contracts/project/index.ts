@@ -54,3 +54,5 @@ export * from "./would-make-cycle";
 export * from "./model-kind.type";
 export * from "./model-kinds.constant";
 export * from "./project-speech.interface";
+export * from "./project-schedule.interface";
+export * from "./schedule-numbers.constant";

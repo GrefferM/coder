@@ -4,6 +4,7 @@ import type { ProjectCommand } from "./project-command.interface";
 import type { ProjectMcpServer } from "./mcp-server.interface";
 import type { ProjectModel } from "./project-model.interface";
 import type { ProjectPrompt } from "./project-prompt.interface";
+import type { ProjectSchedule } from "./project-schedule.interface";
 import type { ProjectSpeech } from "./project-speech.interface";
 
 /** An open project as `window.electronApi` delivers it: everything its config file holds. */
@@ -16,5 +17,6 @@ export interface ProjectConfig {
   servers: ProjectMcpServer[];
   agents: Agent[];
   links: Link[];
+  schedules: ProjectSchedule[];
   speech: ProjectSpeech;
 }

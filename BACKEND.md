@@ -13,11 +13,13 @@ re-reads.
 - **In the folder:** everything in it is the project, nothing hidden, split down one line — **every
   tie stands in `project.yaml`, and everything a thing is about itself stands in a file of its own**,
   named by its own id: `agents/<id>.yaml`, `models/<id>.yaml`, `commands/<id>.yaml`,
-  `servers/<id>.yaml`, and a prompt's body as plain text in `prompts/<id>.md`. The project file
+  `servers/<id>.yaml`, `schedules/<id>.yaml`, and a prompt's body as plain text in `prompts/<id>.md`. The project file
   holds the links, the model the project hears speech with (`speech.listenModelId`, its id), and, for
   an agent, its model, its prompt and its granted functions; the agent's
   own file holds its name, short description, colour, place, whether it is switched on, its maximum
-  of calls and its temperature. A model's provider is a tie, so it stands in the project file; the
+  of calls and its temperature. A schedule's agent is a tie, so it stands in the project file; the
+  schedule's own file holds the task it puts and its interval in whole minutes, one at the least,
+  and nothing of whether it runs — that is each machine's own. A model's provider is a tie, so it stands in the project file; the
   model's own file holds its name, its kind (`text`, or `listen` for one that recognises speech, which
   holds no numbers; a file that names none is `text`), its prices and its two ceilings — what may be sent to it, and
   what it may say back. An MCP server has no ties, so its whole self stands in its own file: its
@@ -26,8 +28,8 @@ re-reads.
   over are asked of it each time it is reached — and a token is never written down: it belongs to
   the machine's keychain, and the file names only the way in. The project file alone gives the whole
   graph; two people adding an agent touch two different files.
-- **A part file that is gone is neither refused over nor invented.** A model or a command whose own
-  file is gone is left out of its catalogue and the project opens; everything the lost file never
+- **A part file that is gone is neither refused over nor invented.** A model, a command or a schedule
+  whose own file is gone is left out of its catalogue and the project opens; everything the lost file never
   held — the model an agent runs on, the provider a model is served by, the functions granted, the
   lines — is untouched, so what pointed at the lost thing still points at it and says so. An agent
   is the exception, since lines are drawn to its sphere: a skeleton stands in for it, and the one

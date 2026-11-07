@@ -4,6 +4,7 @@ export const PROJECT_PART_DIRECTORIES = {
   commands: "commands",
   servers: "servers",
   agents: "agents",
+  schedules: "schedules",
 } as const;
 
 export const PART_FILE_EXTENSION = ".yaml";

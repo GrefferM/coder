@@ -36,6 +36,7 @@ const MODEL_ID = "11111111-1111-4111-8111-111111111111";
 const AGENT_ID = "22222222-2222-4222-8222-222222222222";
 const COMMAND_ID = "66666666-6666-4666-8666-666666666666";
 const SERVER_ID = "99999999-9999-4999-8999-999999999999";
+const SCHEDULE_ID = "77777777-7777-4777-8777-777777777777";
 
 /** A project with one of everything. */
 function fullConfig(): Record<string, unknown> {
@@ -89,6 +90,14 @@ function fullConfig(): Record<string, unknown> {
       },
     ],
     links: [],
+    schedules: [
+      {
+        id: SCHEDULE_ID,
+        agentId: AGENT_ID,
+        task: "Перевір, чи зелений main.",
+        everyMinutes: 30,
+      },
+    ],
   };
 }
 
@@ -412,6 +421,58 @@ describe("ProjectFileService", () => {
     const config = await projectFileService.read(projectDirectory);
 
     assert.deepEqual(config.servers, []);
+  });
+
+  it("writes a schedule into its own file, its task and interval, and its agent in the project file", async () => {
+    const serializer = new ProjectConfigSerializer();
+
+    await projectFileService.write(projectDirectory, await serializer.toValidConfig(fullConfig()));
+
+    const index = await readFile(path.join(projectDirectory, "project.yaml"), "utf8");
+    const schedule = await readFile(path.join(projectDirectory, "schedules", `${SCHEDULE_ID}.yaml`), "utf8");
+
+    assert.match(index, new RegExp(`file: schedules/${SCHEDULE_ID}.yaml`));
+    assert.match(index, new RegExp(`agentId: ${AGENT_ID}`));
+    assert.doesNotMatch(index, /main/);
+    assert.match(schedule, /task: Перевір, чи зелений main\./);
+    assert.match(schedule, /everyMinutes: 30/);
+    assert.doesNotMatch(schedule, /agentId/);
+  });
+
+  it("reads a schedule whose file names no interval as one not written yet, rather than refusing the project", async () => {
+    const serializer = new ProjectConfigSerializer();
+
+    await projectFileService.write(projectDirectory, await serializer.toValidConfig(fullConfig()));
+    await writeFile(path.join(projectDirectory, "schedules", `${SCHEDULE_ID}.yaml`), "task: Перевір main.\n", "utf8");
+
+    const [schedule] = (await projectFileService.read(projectDirectory)).schedules;
+
+    assert.equal(schedule.task, "Перевір main.");
+    assert.equal(schedule.everyMinutes, null);
+  });
+
+  it("leaves a schedule whose own file is gone out, so nothing is asked on a task nobody wrote", async () => {
+    const serializer = new ProjectConfigSerializer();
+
+    await projectFileService.write(projectDirectory, await serializer.toValidConfig(fullConfig()));
+    await rm(path.join(projectDirectory, "schedules", `${SCHEDULE_ID}.yaml`));
+
+    const config = await projectFileService.read(projectDirectory);
+
+    assert.deepEqual(config.schedules, []);
+  });
+
+  it("takes the file of a deleted schedule away with it", async () => {
+    const serializer = new ProjectConfigSerializer();
+    const config = await serializer.toValidConfig(fullConfig());
+
+    await projectFileService.write(projectDirectory, config);
+
+    config.schedules = [];
+
+    await projectFileService.write(projectDirectory, config);
+
+    assert.deepEqual(await readdir(path.join(projectDirectory, "schedules")), []);
   });
 
   it("reads a split project back whole, exactly as it was written", async () => {

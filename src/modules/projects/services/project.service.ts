@@ -276,6 +276,7 @@ export class ProjectService {
     config.commands = [];
     config.agents = [];
     config.links = [];
+    config.schedules = [];
 
     return config;
   }

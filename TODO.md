@@ -25,6 +25,12 @@ the same commit; the change that closes it removes the line.
 - The command line cannot give consent: `npm run agent` ends a turn `noConsent`, and the person opens
   the window to agree.
 
+## Schedules
+
+- A schedule is read from the project folder and written back, but nothing runs it yet: no clock
+  puts its task, no machine can switch it on, and the window shows none — it stands only in a file
+  written by hand.
+
 ## Limits
 
 - An agent cannot ask the person a question while it runs: there is no built-in tool for it, so a

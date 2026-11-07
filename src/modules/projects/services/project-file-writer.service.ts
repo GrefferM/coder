@@ -1,6 +1,6 @@
 import path from "node:path";
 import { PART_FILE_EXTENSION, PART_FILE_PATTERN, PROJECT_PART_DIRECTORIES } from "../constants";
-import type { ProjectAgentDto, ProjectConfigDto, ProjectModelDto } from "../dto";
+import type { ProjectAgentDto, ProjectConfigDto, ProjectModelDto, ProjectScheduleDto } from "../dto";
 import { ProjectConfigSerializer } from "./project-config-serializer.service";
 import { ProjectFileReader } from "./project-file-reader.service";
 import { ProjectFolder } from "./project-folder.service";
@@ -59,6 +59,11 @@ export class ProjectFileWriter {
       PROJECT_PART_DIRECTORIES.agents,
       config.agents.map((agent) => [agent.id, this.describedAgent(agent)]),
     );
+    await this.writeParts(
+      projectDirectory,
+      PROJECT_PART_DIRECTORIES.schedules,
+      config.schedules.map((schedule) => [schedule.id, this.describedSchedule(schedule)]),
+    );
 
     await this.folder.writeAtomically(
       this.folder.filePath(projectDirectory),
@@ -98,6 +103,14 @@ export class ProjectFileWriter {
     };
   }
 
+  /** A schedule's own fields; its agent tie stays in the project file. */
+  private describedSchedule(schedule: ProjectScheduleDto): Record<string, unknown> {
+    return {
+      task: schedule.task,
+      everyMinutes: schedule.everyMinutes,
+    };
+  }
+
   /** Writes each part of one kind to its own file; a file already holding that text is skipped. */
   private async writeParts(
     projectDirectory: string,
@@ -112,7 +125,7 @@ export class ProjectFileWriter {
     }
   }
 
-  /** The project file: version, name, one reference per part, and every tie (agent ties, links). */
+  /** The project file: version, name, one reference per part, and every tie (agent ties, links, schedules' agents). */
   private indexOf(config: ProjectConfigDto): Record<string, unknown> {
     return {
       version: config.version,
@@ -135,6 +148,10 @@ export class ProjectFileWriter {
         tools: agent.tools,
       })),
       links: config.links,
+      schedules: config.schedules.map((schedule) => ({
+        ...this.referenceTo(PROJECT_PART_DIRECTORIES.schedules, schedule.id),
+        agentId: schedule.agentId,
+      })),
       speech: {
         listenModelId: config.speech.listenModelId,
       },
@@ -155,6 +172,7 @@ export class ProjectFileWriter {
       [PROJECT_PART_DIRECTORIES.commands, config.commands],
       [PROJECT_PART_DIRECTORIES.servers, config.servers],
       [PROJECT_PART_DIRECTORIES.agents, config.agents],
+      [PROJECT_PART_DIRECTORIES.schedules, config.schedules],
     ];
 
     for (const [directory, parts] of standing) {

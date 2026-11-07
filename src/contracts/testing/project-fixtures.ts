@@ -34,7 +34,7 @@ export function aLink(patch: Partial<Link> = {}): Link {
 
 export function aConfig(patch: Partial<ProjectConfig> = {}): ProjectConfig {
   return {
-    version: 2,
+    version: 3,
     name: "coder",
     models: [],
     prompts: [],
@@ -42,6 +42,7 @@ export function aConfig(patch: Partial<ProjectConfig> = {}): ProjectConfig {
     servers: [],
     agents: [],
     links: [],
+    schedules: [],
     speech: {
       listenModelId: null,
     },

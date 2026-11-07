@@ -22,6 +22,7 @@ export class ProjectFileReader {
       commands: await this.readParts(projectDirectory, source.commands),
       servers: await this.readParts(projectDirectory, source.servers),
       agents: await this.readParts(projectDirectory, source.agents, AGENT_SKELETON),
+      schedules: await this.readParts(projectDirectory, source.schedules),
     });
 
     // A prompt whose file is gone is dropped; an empty file is a written, empty prompt.

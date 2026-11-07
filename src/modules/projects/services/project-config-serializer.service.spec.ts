@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { before, describe, it } from "node:test";
 import { PROJECT_CONFIG_VERSION } from "../constants";
-import { LINKS_MAKE_RING, LINKS_REPEAT, PROJECT_FROM_NEWER_BUILD } from "../../../contracts";
+import { LINKS_MAKE_RING, LINKS_REPEAT, PROJECT_FILE_BROKEN, PROJECT_FROM_NEWER_BUILD } from "../../../contracts";
 import { ProjectConfigSerializer } from "./project-config-serializer.service";
 import type { CommandToolGrantDto, McpToolGrantDto, SystemToolGrantDto } from "../dto";
 
@@ -17,6 +17,7 @@ const PARAMETER_ID = "77777777-7777-4777-8777-777777777777";
 const GRANT_ID = "88888888-8888-4888-8888-888888888888";
 const SERVER_ID = "99999999-9999-4999-8999-999999999999";
 const OTHER_SERVER_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const SCHEDULE_ID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 
 /** A local server is a run line; a remote one an address and a sign-in. */
 function serversYaml(...servers: string[]): string {
@@ -510,6 +511,34 @@ describe("ProjectConfigSerializer", () => {
     const config = await serializer.parse("version: 0\nname: from yesterday\n");
 
     assert.equal(config.version, PROJECT_CONFIG_VERSION);
+  });
+
+  it("reads a project written before schedules as one with none", async () => {
+    const config = await serializer.parse(VALID_YAML);
+
+    assert.deepEqual(config.schedules, []);
+  });
+
+  it("reads a schedule's missing agent, task and interval as not written yet", async () => {
+    const config = await serializer.parse(`${VALID_YAML}schedules:\n  - id: ${SCHEDULE_ID}\n`);
+    const [schedule] = config.schedules;
+
+    assert.equal(schedule.agentId, null);
+    assert.equal(schedule.task, null);
+    assert.equal(schedule.everyMinutes, null);
+  });
+
+  it("reads an interval under a minute as not written yet, leaving the file whole", async () => {
+    const config = await serializer.parse(`${VALID_YAML}schedules:\n  - id: ${SCHEDULE_ID}\n    everyMinutes: 0\n`);
+
+    assert.equal(config.schedules[0].everyMinutes, null);
+  });
+
+  it("refuses an interval that is not a whole number of minutes", async () => {
+    await assert.rejects(
+      () => serializer.parse(`${VALID_YAML}schedules:\n  - id: ${SCHEDULE_ID}\n    everyMinutes: 1.5\n`),
+      new RegExp(PROJECT_FILE_BROKEN),
+    );
   });
 
   it("reads a local server as the line that starts it, with no address and no way in", async () => {
