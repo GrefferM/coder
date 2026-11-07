@@ -1,4 +1,4 @@
-import { RUN_HISTORY_SEPARATOR } from "../../../../constants";
+import { RUN_BY_SCHEDULE_LABEL, RUN_HISTORY_SEPARATOR } from "../../../../constants";
 import { useInteraction } from "../../../../../../hooks";
 import { Mark, useHint } from "../../../../../../components";
 import { INTERACTION_TRANSITION } from "../../../../../../constants";
@@ -87,6 +87,7 @@ export function RunRowLine({ run, agents, now, onOpen, onForget }: RunRowLinePro
           {countsSteps ? `${stepsLabel(run.steps)}${RUN_HISTORY_SEPARATOR}` : ""}
           {run.money === null ? RUN_HISTORY_NO_MONEY_LABEL : moneyLabel(run.money)}
           {started === null ? "" : `${RUN_HISTORY_SEPARATOR}${started}`}
+          {run.startedByScheduleId === null ? "" : `${RUN_HISTORY_SEPARATOR}${RUN_BY_SCHEDULE_LABEL}`}
         </Mark>
         {said.hint}
       </button>

@@ -1,4 +1,13 @@
-import type { Agent, Link, ProjectCommand, ProjectMcpServer, ProjectModel, ProjectPrompt, ToolGrant } from "./";
+import type {
+  Agent,
+  Link,
+  ProjectCommand,
+  ProjectMcpServer,
+  ProjectModel,
+  ProjectPrompt,
+  ProjectSchedule,
+  ToolGrant,
+} from "./";
 
 /** Everything one deletion took or loosened: a model takes its agents and links; a command or prompt, its uses. */
 export interface TakenThings {
@@ -9,6 +18,7 @@ export interface TakenThings {
   servers: ProjectMcpServer[];
   agents: Agent[];
   links: Link[];
+  schedules: ProjectSchedule[];
   /** Staying agents that lost their prompt, with its id. */
   promptTakenFrom: { agentId: string; promptId: string }[];
   /** Staying agents that lost a granted function, of a command or a server. */

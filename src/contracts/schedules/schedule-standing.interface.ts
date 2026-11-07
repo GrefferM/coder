@@ -5,6 +5,6 @@ export interface ScheduleStanding {
   isOn: boolean;
   /** When the clock puts its task next; null while it does not run. */
   nextAt: number | null;
-  /** Whether the task it put last is still walking. */
-  isOut: boolean;
+  /** When the task still walking was put; null while none is. */
+  outSince: number | null;
 }

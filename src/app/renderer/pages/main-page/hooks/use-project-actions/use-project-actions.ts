@@ -4,6 +4,7 @@ import { useModelWrites } from "../../../../features/models";
 import { useCommandWrites } from "../../../../features/commands";
 import { useServerWrites } from "../../../../features/servers";
 import { usePromptWrites } from "../../../../features/prompts";
+import { useScheduleWrites } from "../../../../features/schedules";
 import { useSpeechWrites } from "../../../../features/speech";
 import { useProjectWrite } from "../../../../features/project";
 import type { Dispatch, SetStateAction } from "react";
@@ -23,6 +24,7 @@ export function useProjectActions(
   const servers = useServerWrites(project, write);
   const prompts = usePromptWrites(project, write);
   const speech = useSpeechWrites(project, write);
+  const schedules = useScheduleWrites(project, write);
 
   return {
     ...write,
@@ -33,5 +35,6 @@ export function useProjectActions(
     ...servers,
     ...prompts,
     ...speech,
+    ...schedules,
   };
 }

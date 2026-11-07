@@ -16,6 +16,7 @@ const offer: UndoOffer = {
     servers: [],
     agents: [],
     links: [],
+    schedules: [],
     promptTakenFrom: [],
     grantsTakenFrom: [],
   },

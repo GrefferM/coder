@@ -23,6 +23,7 @@ import {
   useSpeech,
   useVoiceAsk,
 } from "../../../../features/speech";
+import { SchedulesIcon, SchedulesPanel } from "../../../../features/schedules";
 import {
   AGENTS_PANEL_LABEL,
   AGENTS_SECTION_ID,
@@ -41,6 +42,8 @@ import {
   SERVERS_SECTION_ID,
   SPEECH_PANEL_LABEL,
   SPEECH_SECTION_ID,
+  SCHEDULES_PANEL_LABEL,
+  SCHEDULES_SECTION_ID,
 } from "../../constants";
 import type { SidePanelItem } from "../../../../components";
 import type { ReadAloud, SpeechNote } from "../../../../features/speech";
@@ -54,7 +57,19 @@ export function usePageParts(
   isNamingCopy: boolean,
   onDeleteAgent: (agentId: string) => void,
 ): PageParts {
-  const { project, agents, models, commands, servers: section, prompts, drafted, wayOut, actions } = subjects;
+  const {
+    project,
+    agents,
+    models,
+    commands,
+    servers: section,
+    prompts,
+    schedules,
+    clock,
+    drafted,
+    wayOut,
+    actions,
+  } = subjects;
   const machine = useProviders();
   /** Every declared server, looked up live; nothing is persisted. */
   const servers = useServers(project.directory, project.config.servers);
@@ -272,6 +287,24 @@ export function usePageParts(
           onChooseListenModel={(modelId) => void actions.chooseListenModel(modelId)}
           onOpenModels={() => rail.handleActiveIdChange(MODELS_SECTION_ID)}
           onListen={() => aloud.read(VOICE_SAMPLE_ID, VOICE_SAMPLE)}
+        />
+      ),
+    },
+    {
+      id: SCHEDULES_SECTION_ID,
+      realm: "project",
+      glyph: <SchedulesIcon />,
+      label: SCHEDULES_PANEL_LABEL,
+      count: project.config.schedules.length,
+      hasUnsaved: schedules.unsaved !== null,
+      content: (
+        <SchedulesPanel
+          schedules={project.config.schedules}
+          agents={project.config.agents}
+          clock={clock}
+          section={schedules}
+          onOpenForm={(scheduleId) => wayOut.guard(() => schedules.openForm(scheduleId))}
+          onCancelForm={() => wayOut.guard(() => schedules.openForm(null), "drop")}
         />
       ),
     },

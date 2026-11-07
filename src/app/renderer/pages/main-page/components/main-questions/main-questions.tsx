@@ -4,6 +4,7 @@ import { DeleteModelConfirm } from "../../../../features/models";
 import { DeleteCommandConfirm } from "../../../../features/commands";
 import { DeleteServerConfirm, ServerConsent } from "../../../../features/servers";
 import { DeletePromptConfirm, PromptEditor } from "../../../../features/prompts";
+import { DeleteScheduleConfirm } from "../../../../features/schedules";
 import { FileConflictConfirm, configDifference, DIFFERENCE_MOVED_SIGN } from "../../../../features/project";
 import { quietly } from "../../../../utils/writes";
 import type { MainQuestionsProps } from "./interfaces";
@@ -18,6 +19,7 @@ export function MainQuestions({
   commands,
   prompts,
   servers,
+  schedules,
   parts,
 }: MainQuestionsProps) {
   return (
@@ -46,6 +48,9 @@ export function MainQuestions({
         <DeleteAgentConfirm
           name={project.config.agents.find((agent) => agent.id === agents.doomedAgentId)?.name ?? ""}
           neighbourNames={doomedNeighbourNames(project.config.agents, project.config.links, agents.doomedAgentId)}
+          scheduleCount={
+            project.config.schedules.filter((schedule) => schedule.agentId === agents.doomedAgentId).length
+          }
           onConfirm={agents.confirmDelete}
           onDismiss={agents.dismissDelete}
         />
@@ -62,6 +67,13 @@ export function MainQuestions({
           runs={parts.stream.doomedRuns}
           onConfirm={() => void parts.stream.forgetAllRuns()}
           onDismiss={parts.stream.dismissForgetAll}
+        />
+      )}
+      {schedules.armedSchedule !== null && (
+        <DeleteScheduleConfirm
+          agentName={project.config.agents.find((agent) => agent.id === schedules.armedSchedule?.agentId)?.name ?? null}
+          onConfirm={schedules.confirmDelete}
+          onDismiss={schedules.dismissDelete}
         />
       )}
       {commands.armedCommand !== null && (

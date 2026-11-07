@@ -9,6 +9,7 @@ export function nothingTaken(): TakenThings {
     servers: [],
     agents: [],
     links: [],
+    schedules: [],
     promptTakenFrom: [],
     grantsTakenFrom: [],
   };
@@ -23,6 +24,7 @@ export function takenBetween(previous: ProjectConfig, without: ProjectConfig): T
     servers: new Set(without.servers.map((server) => server.id)),
     agents: new Set(without.agents.map((agent) => agent.id)),
     links: new Set(without.links.map((link) => link.id)),
+    schedules: new Set(without.schedules.map((schedule) => schedule.id)),
   };
   const now = new Map(without.agents.map((agent) => [agent.id, agent]));
 
@@ -33,6 +35,7 @@ export function takenBetween(previous: ProjectConfig, without: ProjectConfig): T
     servers: previous.servers.filter((server) => !standing.servers.has(server.id)),
     agents: previous.agents.filter((agent) => !standing.agents.has(agent.id)),
     links: previous.links.filter((link) => !standing.links.has(link.id)),
+    schedules: previous.schedules.filter((schedule) => !standing.schedules.has(schedule.id)),
     promptTakenFrom: previous.agents
       .filter((agent) => agent.promptId !== null && now.get(agent.id)?.promptId === null)
       .map((agent) => ({

@@ -17,6 +17,7 @@ function offer(index: number): UndoOffer {
       servers: [],
       agents: [],
       links: [],
+      schedules: [],
       promptTakenFrom: [],
       grantsTakenFrom: [],
     },

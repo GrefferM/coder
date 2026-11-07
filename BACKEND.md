@@ -253,7 +253,7 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   folder lets every timer go, and so does quitting. **`OpenSchedules`** is what the controller
   reaches: the project the window follows over `schedules:follow` — only the window, so `npm run
 agent` starts no clock — the switch over `schedules:switch`, and each schedule's standing over
-  `schedules:standings` (switched on, when next, whether a task is out). The task is put through the
+  `schedules:standings` (switched on, when next, since when a task is out). The task is put through the
   `ScheduledAsker` port, which `walks`' `ScheduledWalks` answers.
 
 - **`attachments`** — a file or a folder packed into text for a question. It is one service,

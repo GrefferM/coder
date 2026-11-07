@@ -14,6 +14,8 @@ import type {
 export class ScheduleClock {
   private followed: FollowedProject | null = null;
   private readonly ticking = new Map<string, TickingSchedule>();
+  /** When each schedule last put its task. */
+  private readonly askedAt = new Map<string, number>();
 
   constructor(private readonly asker: ScheduledAsker) {}
 
@@ -38,7 +40,7 @@ export class ScheduleClock {
       scheduleId: schedule.id,
       isOn: switchedOn.has(schedule.id),
       nextAt: this.ticking.get(schedule.id)?.nextAt ?? null,
-      isOut: this.asker.isOut(schedule.id),
+      outSince: this.asker.isOut(schedule.id) ? (this.askedAt.get(schedule.id) ?? null) : null,
     }));
   }
 
@@ -94,6 +96,7 @@ export class ScheduleClock {
       return;
     }
 
+    this.askedAt.set(scheduleId, Date.now());
     this.asker.ask({
       scheduleId,
       directory: this.followed.directory,

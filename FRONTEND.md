@@ -47,7 +47,8 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
   record, and a way back worked out against the config as it stands rather than replayed from a
   snapshot), the write's note and the standing offers — and each subject writes through its own hook
   over it (`useAgentWrites`, `useLinkWrites`, `useModelWrites`, `useCommandWrites`,
-  `usePromptWrites`, `useServerWrites`), which lives in that subject and knows its own form shapes.
+  `usePromptWrites`, `useServerWrites`, `useScheduleWrites`), which lives in that subject and knows its
+  own form shapes.
   A subject's page-held marks live in that subject's own `features/<subject>/hooks/`. The page's own
   `hooks/` holds the seven that are the page's and nobody's:
   - `useProjectActions` — the writer and the subjects' writes composed into the one object the page
@@ -77,7 +78,12 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     forgets that the server was raised, so a change of its line starts nothing; `useServerConsent`,
     the window of 36k: which server it stands over, by id, and «ЗАПУСТИТИ» asking `mcp:consented`
     before it raises, so the page hands it to the catalogue as `onRestart` and stands `ServerConsent`
-    among its questions; `useProviders`, every local provider that is not turned off asked on a
+    among its questions; `useSchedules`, the clock's side of the window: the open project handed over
+    `schedules:follow` whenever its config changes, whatever section stands, so the schedules run while
+    the project is open, and each schedule's standing read back after every write to the record and
+    on a fifteen-second beat the countdowns are read against — its `switchOn` is this machine's switch,
+    which writes nothing to the project; `useScheduleSection`, the section's open form and its draft,
+    the switch of a schedule not yet written held until it is, and the deletion question; `useProviders`, every local provider that is not turned off asked on a
     fifteen-second beat, told by the chat what each turn heard at that address, and turning a provider
     off or on at once, an off one's last answer let go — while `ProvidersPanel` keeps what was typed
     per provider in its own state, so a card folded by its chevron, by opening another provider or by
@@ -249,7 +255,8 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     into its insides, and rings between subjects are forbidden; `project` is the leaf every subject
     stands on and takes none of them, so a subject that writes the file does so through its own
     writer hook over `useProjectWrite` (`useAgentWrites`, `useLinkWrites`, `useModelWrites`,
-    `useCommandWrites`, `usePromptWrites`, `useServerWrites`), and the page composes those six over
+    `useCommandWrites`, `usePromptWrites`, `useServerWrites`, `useSpeechWrites`, `useScheduleWrites`),
+    and the page composes those eight over
     the writer as `useProjectActions`, its own hook. `npm run graph:features` draws the subject
     graph and fails on a ring or on an edge out of `project`. An ESLint rule holds the door across
     the whole renderer, `pages/` included, over `logic/`, `words/`, `ui/`, `hooks/`, `api/` and

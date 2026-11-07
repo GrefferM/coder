@@ -15,8 +15,8 @@ import {
 import type { StepHeadProps } from "./interfaces";
 
 /**
- * The head of every step inside a panel: whose it is, what it is about, and the way back. The whole head is the back
- * button.
+ * The head of every step inside a panel: whose it is, what it is about where it has a name, and the way back. The whole
+ * head is the back button.
  */
 export function StepHead({ whose, name, backLabel, onBack }: StepHeadProps) {
   const back = useInteraction();
@@ -41,7 +41,7 @@ export function StepHead({ whose, name, backLabel, onBack }: StepHeadProps) {
     >
       <BackChevron />
       <Mark size={STEP_HEAD_FONT_SIZE_PX} spacing={STEP_HEAD_LETTER_SPACING_PX} className="text-truncate">
-        {`${whose}${STEP_HEAD_SEPARATOR}${name}`}
+        {name === "" ? whose : `${whose}${STEP_HEAD_SEPARATOR}${name}`}
       </Mark>
     </button>
   );

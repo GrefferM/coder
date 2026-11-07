@@ -11,10 +11,15 @@ export const PROMPTS_SECTION_ID = "prompts";
 
 export const PROMPTS_PANEL_LABEL = "Промпти";
 
-/** What the project recognises speech with, and this machine's voice; the last section above the rule. */
+/** What the project recognises speech with, and this machine's voice. */
 export const SPEECH_SECTION_ID = "speech";
 
 export const SPEECH_PANEL_LABEL = "Мовлення";
+
+/** The tasks put to agents at an interval; the seventh above the rule, after speech. */
+export const SCHEDULES_SECTION_ID = "schedules";
+
+export const SCHEDULES_PANEL_LABEL = "Розклад";
 
 /** The MCP servers, before the commands in the rail. */
 export const SERVERS_SECTION_ID = "servers";

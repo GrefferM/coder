@@ -236,6 +236,7 @@ function undoOffer(overrides: Partial<UndoOffer> = {}): UndoOffer {
       servers: [],
       agents: [],
       links: [],
+      schedules: [],
       promptTakenFrom: [],
       grantsTakenFrom: [],
     },

@@ -10,6 +10,7 @@ import { closeProject, ProjectSwitcher, useProjectFile } from "../../features/pr
 import { useCommandSection } from "../../features/commands";
 import { useServerSection } from "../../features/servers";
 import { usePromptSection } from "../../features/prompts";
+import { useScheduleSection, useSchedules } from "../../features/schedules";
 import { Canvas } from "../../features/canvas";
 import { useCallsOut } from "../../features/conversation";
 import { MainQuestions } from "./components";
@@ -30,8 +31,17 @@ export function MainPage({ project, setProject }: MainPageProps) {
   const commands = useCommandSection(project, actions);
   const servers = useServerSection(project, actions);
   const prompts = usePromptSection(project, actions);
+  // The schedules run while the project is open, whichever section stands.
+  const clock = useSchedules(project);
+  const schedules = useScheduleSection({
+    project,
+    writes: actions,
+    schedules: clock,
+  });
   // Only the open section can be holding unsaved work.
-  const wayOut = useWayOut(drafted.unsaved ?? models.unsaved ?? commands.unsaved ?? servers.unsaved ?? prompts.unsaved);
+  const wayOut = useWayOut(
+    drafted.unsaved ?? models.unsaved ?? commands.unsaved ?? servers.unsaved ?? prompts.unsaved ?? schedules.unsaved,
+  );
   const subjects: PageSubjects = {
     project,
     agents,
@@ -41,6 +51,8 @@ export function MainPage({ project, setProject }: MainPageProps) {
     commands,
     servers,
     prompts,
+    schedules,
+    clock,
     actions,
     wayOut,
   };
@@ -227,6 +239,7 @@ export function MainPage({ project, setProject }: MainPageProps) {
         commands={commands}
         prompts={prompts}
         servers={servers}
+        schedules={schedules}
         parts={parts}
       />
       <SidePanel

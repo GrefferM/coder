@@ -12,3 +12,21 @@ export const DELETED_AGENT_NOTE_LAST_JOIN = " і ";
 export const DELETED_AGENT_NOTE_SEPARATOR = ", ";
 export const DELETED_AGENT_NOTE_ONE_TAIL = "лишиться сам по собі.";
 export const DELETED_AGENT_NOTE_MANY_TAIL = "лишаться, кожен сам по собі.";
+
+/** The agent's schedules, in a sentence of their own at the end of the note (44d); up to ten said as a word. */
+export const DELETED_AGENT_SCHEDULE_COUNT_WORDS = [
+  "Один",
+  "Два",
+  "Три",
+  "Чотири",
+  "П'ять",
+  "Шість",
+  "Сім",
+  "Вісім",
+  "Дев'ять",
+  "Десять",
+];
+export const DELETED_AGENT_SCHEDULE_FORMS = ["розклад", "розклади", "розкладів"];
+export const DELETED_AGENT_SCHEDULE_VERB_FORMS = ["лишиться", "лишаться", "лишаться"];
+export const DELETED_AGENT_SCHEDULE_HER = "її";
+export const DELETED_AGENT_SCHEDULE_TAIL = "без агента.";

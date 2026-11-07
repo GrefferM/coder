@@ -10,6 +10,7 @@ import {
   RUN_HISTORY_OPEN_HINT,
   RUN_HISTORY_STARTED_PREFIX,
 } from "../../constants";
+import { RUN_BY_SCHEDULE_LABEL } from "../../../../constants";
 import { stepsLabel } from "../../../../words";
 import { dayLabel } from "../../../../../../utils/dates";
 import { moneyLabel } from "../../../../../../utils/numbers";
@@ -92,6 +93,30 @@ describe("RunRowLine", () => {
 
     expect(screen.getByText("Знайди md-файли")).toBeInTheDocument();
     expect(screen.getByText(`${stepsLabel(3)}${RUN_HISTORY_SEPARATOR}${moneyLabel(0.0031)}`)).toBeInTheDocument();
+  });
+
+  it("ends the lower line with the quiet mark of a run a schedule put, and says nothing of one a person asked", () => {
+    const { rerender } = render(
+      <RunRowLine
+        run={row({
+          startedByScheduleId: "schedule-1",
+        })}
+        agents={AGENTS}
+        now={NOW}
+        onOpen={() => {}}
+        onForget={() => {}}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        `${stepsLabel(3)}${RUN_HISTORY_SEPARATOR}${moneyLabel(0.0031)}${RUN_HISTORY_SEPARATOR}${RUN_BY_SCHEDULE_LABEL}`,
+      ),
+    ).toBeInTheDocument();
+
+    rerender(<RunRowLine run={row()} agents={AGENTS} now={NOW} onOpen={() => {}} onForget={() => {}} />);
+
+    expect(screen.queryByText(new RegExp(RUN_BY_SCHEDULE_LABEL))).toBeNull();
   });
 
   it("counts no steps where there was but one, a single step being the walk itself", () => {

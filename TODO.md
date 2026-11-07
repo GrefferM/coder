@@ -25,13 +25,6 @@ the same commit; the change that closes it removes the line.
 - The command line cannot give consent: `npm run agent` ends a turn `noConsent`, and the person opens
   the window to agree.
 
-## Schedules
-
-- The window has no section for schedules: it neither follows the open project over
-  `schedules:follow` nor switches a schedule on, so the backend's clock holds no timer, and a
-  schedule stands only in a file written by hand. Nor does a history row mark the run a schedule
-  began, though the record keeps it.
-
 ## Limits
 
 - An agent cannot ask the person a question while it runs: there is no built-in tool for it, so a

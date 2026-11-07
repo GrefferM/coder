@@ -11,6 +11,13 @@ describe("StepHead", () => {
     expect(screen.getByText(`Шукач${STEP_HEAD_SEPARATOR}open_pr`)).toBeInTheDocument();
   });
 
+  it("says whose the step is alone where the thing has no name to say", () => {
+    render(<StepHead whose="Розклад" name="" backLabel="Назад" onBack={() => {}} />);
+
+    expect(screen.getByText("Розклад")).toBeInTheDocument();
+    expect(screen.queryByText(new RegExp(STEP_HEAD_SEPARATOR))).toBeNull();
+  });
+
   it("is itself the way back", async () => {
     // The whole head is one button; chevron and name both go back.
     const onBack = vi.fn();

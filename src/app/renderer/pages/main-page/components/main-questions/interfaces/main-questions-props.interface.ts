@@ -4,6 +4,7 @@ import type { CommandSection } from "../../../../../features/commands";
 import type { ModelSection } from "../../../../../features/models";
 import type { PromptSection } from "../../../../../features/prompts";
 import type { ServerSection } from "../../../../../features/servers";
+import type { ScheduleSection } from "../../../../../features/schedules";
 import type { ProjectFileState } from "../../../../../features/project";
 import type { WayOut } from "../../../../../hooks/use-way-out/interfaces";
 import type { PageParts } from "../../../hooks/use-page-parts/interfaces";
@@ -18,5 +19,6 @@ export interface MainQuestionsProps {
   commands: CommandSection;
   prompts: PromptSection;
   servers: ServerSection;
+  schedules: ScheduleSection;
   parts: PageParts;
 }

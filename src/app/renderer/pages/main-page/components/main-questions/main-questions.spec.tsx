@@ -92,6 +92,11 @@ function props(patch: Record<string, unknown> = {}): MainQuestionsProps {
       confirmDelete: vi.fn(),
       dismissDelete: vi.fn(),
     },
+    schedules: {
+      armedSchedule: null,
+      confirmDelete: vi.fn(),
+      dismissDelete: vi.fn(),
+    },
     prompts: {
       armedPrompt: null,
       armedPromptAgents: [],

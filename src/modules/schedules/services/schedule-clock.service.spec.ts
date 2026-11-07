@@ -203,7 +203,7 @@ describe("ScheduleClock", () => {
     assert.deepEqual(asker.asked, []);
   });
 
-  it("says how each schedule stands: switched on, when it puts its task next, and whether one is out", () => {
+  it("says how each schedule stands: switched on, and when it puts its task next", () => {
     clock.follow({
       directory: DIRECTORY,
       config: configWith(
@@ -214,22 +214,38 @@ describe("ScheduleClock", () => {
       ),
       switchedOn: new Set(["schedule-1"]),
     });
-    asker.out.add("schedule-2");
 
     assert.deepEqual(clock.standings(), [
       {
         scheduleId: "schedule-1",
         isOn: true,
         nextAt: 10 * MINUTE,
-        isOut: false,
+        outSince: null,
       },
       {
         scheduleId: "schedule-2",
         isOn: false,
         nextAt: null,
-        isOut: true,
+        outSince: null,
       },
     ]);
+  });
+
+  it("says since when the task it put is out, for as long as it walks", () => {
+    clock.follow({
+      directory: DIRECTORY,
+      config: configWith(aSchedule()),
+      switchedOn: new Set(["schedule-1"]),
+    });
+
+    mock.timers.tick(10 * MINUTE);
+    asker.out.add("schedule-1");
+
+    assert.equal(clock.standings()[0].outSince, 10 * MINUTE);
+
+    asker.out.delete("schedule-1");
+
+    assert.equal(clock.standings()[0].outSince, null);
   });
 
   it("stands nothing before any project is followed", () => {

@@ -4,6 +4,7 @@ import type { CommandSection } from "../../../features/commands";
 import type { ServerSection } from "../../../features/servers";
 import type { ModelSection } from "../../../features/models";
 import type { PromptSection } from "../../../features/prompts";
+import type { ScheduleSection, SchedulesState } from "../../../features/schedules";
 import type { ProjectActions } from "../hooks/use-project-actions/interfaces";
 import type { WayOut } from "../../../hooks/use-way-out/interfaces";
 
@@ -18,6 +19,9 @@ export interface PageSubjects {
   commands: CommandSection;
   servers: ServerSection;
   prompts: PromptSection;
+  schedules: ScheduleSection;
+  /** How the schedules stand on this machine, and its switch. */
+  clock: SchedulesState;
   /** Every write to the project file, one per subject. */
   actions: ProjectActions;
   /** The question an unsaved draft asks before leaving. */

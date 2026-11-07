@@ -288,6 +288,7 @@ describe("useProjectWrite · a deletion and its way back", () => {
         servers: [],
         agents: [TELLER],
         links: [],
+        schedules: [],
         promptTakenFrom: [],
         grantsTakenFrom: [],
       }),

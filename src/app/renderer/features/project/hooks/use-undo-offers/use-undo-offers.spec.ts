@@ -12,6 +12,7 @@ const NOTHING_TAKEN: TakenThings = {
   servers: [],
   agents: [],
   links: [],
+  schedules: [],
   promptTakenFrom: [],
   grantsTakenFrom: [],
 };

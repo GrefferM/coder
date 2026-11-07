@@ -332,8 +332,8 @@ soon as there is an agent, or as soon as one is being created.
 ## Panels
 
 The rail along the window edge holds the app's sections: Агенти (the canvas), Моделі, MCP, Команди,
-Промпти, and — below a rule, marked as belonging to this machine — Чат with its history inside it
-and Провайдери. «Інструменти» is not a section's name — with the tools spread across two sections it
+Промпти, Мовлення, Розклад, and — below a rule, marked as belonging to this machine — Чат with its
+history inside it and Провайдери. «Інструменти» is not a section's name — with the tools spread across two sections it
 names nothing: MCP takes a plug and the commands a terminal with an arrow.
 
 Each rail button names itself under the pointer, in the app's own box rather than the browser's.
@@ -704,9 +704,9 @@ colour into the name field.
 ## Two scopes
 
 A project is a folder, and its config file travels with the repository. **Project scope** — agents,
-links, positions, prompts, models with prices, declared commands, MCP registrations — is committed and
-reaches whoever opens the folder. **Machine scope** — provider keys and addresses, secret values, run
-history — stays here.
+links, positions, prompts, models with prices, declared commands, MCP registrations, schedules — is
+committed and reaches whoever opens the folder. **Machine scope** — provider keys and addresses, secret
+values, run history, whether a schedule runs — stays here.
 
 Every panel must make its own scope obvious: if the boundary isn't visible, someone puts a token
 where it will be committed. **The rail draws that boundary as a rule** (frame 38a): above it stand
@@ -1508,6 +1508,40 @@ same line drawn twice, and two things standing under one id. The canvas refuses 
 they are drawn — every sphere a line must not land on stands dimmed and takes no click — and the file
 refuses all three, both when it is read and when it is written. Nothing else is warned about: dead
 ends, islands and missing exits are all normal, and there is no "finish" marker.
+
+## Schedules
+
+A schedule puts one task to one agent every N minutes while the project stands open (frame 51a). Its
+section is the last above the rule, after «Мовлення», with a clock face for its glyph: the agent, the
+task and the interval travel with the folder, **whether it runs is this machine's** — a colleague who
+pulls the project starts nothing until they switch it on themselves.
+
+A row reads like a history row: a dot, a quiet state word, the agent's name in its colour; the task
+under it; then the interval and, while it counts, «НАСТУПНИЙ ЧЕРЕЗ …». The words are five — ІДЕ (a
+glowing dot, a green border, the hour it went and how long it has walked on the right), УВІМКНЕНО,
+ВИМКНЕНО, «НЕ ЗАПОВНЕНО · <поле>» with a hollow dot, and НЕМА АГЕНТА on the red row of a broken tie.
+**A trouble outranks the switch**: a schedule switched on with a field missing or its agent gone says
+the trouble and counts nothing. From sixty minutes on an interval and a countdown say hours — «КОЖНІ
+2 ГОД», «КОЖНІ 1 ГОД 30 ХВ»; the countdown rounds down, and under a minute says «< 1 ХВ».
+
+A press on a row opens its form as a step of the tab (51b), headed «‹ РОЗКЛАД · <АГЕНТ>», «‹ РОЗКЛАД ·
+НОВИЙ» for a new one and «‹ РОЗКЛАД» alone where the agent is gone; «‹» and Escape go back. The task
+stands first, since it is what tells two schedules of one agent apart, then the agent from the chat's
+list — switched-off agents together at the bottom — and the interval in whole minutes, one at the
+least: a typed zero reddens the field with «Найменше 1.», as a ceiling does. **The switch acts at the
+press**, without «Зберегти», under «ЦЯ МАШИНА · У ТЕКУ ПРОЄКТУ НЕ ЙДЕ»; a new schedule begins
+switched off, and one switched on before it is created is switched on once it is. The foot is the
+agent panel's: «Видалити» and «Зберегти», «Скасувати» in place of «Видалити» while the draft moved,
+«Скасувати» and «Створити» for a new one. Deleting asks 44d's box, «Видалити розклад NIGHTLY?», and
+says the runs it already put stay in the history; ⌘Z brings the schedule back. Deleting an agent says
+in the box's last sentence how many of its schedules are left with no agent (44d), and they stay,
+saying НЕМА АГЕНТА, until the agent is brought back or they are deleted.
+
+Each tick is a run of its own with a fresh memory, and its history row ends with a quiet «ЗА
+РОЗКЛАДОМ» (23y), written the way «ПОЧАТО …» is; a person may write on in it like any stream. A tick
+due while the schedule's last task still walks is let pass and leaves no row; nothing missed while
+the app was closed is caught up, and the first task goes a whole interval after the project opens or
+the schedule is switched on.
 
 ## History and debug
 

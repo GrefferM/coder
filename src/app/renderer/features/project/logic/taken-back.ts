@@ -68,5 +68,9 @@ export function withTakenBack(config: ProjectConfig, taken: TakenThings): Projec
         (link) => !config.links.some((one) => one.id === link.id) && agentIds.has(link.from) && agentIds.has(link.to),
       ),
     ],
+    schedules: [
+      ...config.schedules,
+      ...taken.schedules.filter((schedule) => !config.schedules.some((one) => one.id === schedule.id)),
+    ],
   };
 }
