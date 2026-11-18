@@ -45,7 +45,8 @@ export function createDataSource(databaseDirectory: string): DataSource {
     type: "better-sqlite3",
     database: path.join(databaseDirectory, DATA_SOURCE_DATABASE_FILE_NAME),
     entities: MODULES_ENTITIES,
-    migrations: [path.join(__dirname, "migrations", "*.ts")],
+    // `.ts` where ts-node runs the sources, `.js` in a build.
+    migrations: [path.join(__dirname, "migrations", "*.{ts,js}")],
     synchronize: false,
   });
 }

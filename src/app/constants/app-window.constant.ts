@@ -16,3 +16,6 @@ export const PRELOAD_SCRIPT_PATH = path.join(__dirname, "..", "preload.js");
 
 /** The Vite dev server's URL, set by `npm run dev:app` once it's listening. */
 export const RENDERER_DEV_SERVER_URL = process.env.RENDERER_DEV_SERVER_URL;
+
+/** The built renderer, which `npm run build:mac` lays beside the compiled main process. */
+export const RENDERER_INDEX_PATH = path.join(__dirname, "..", "..", "renderer", "index.html");

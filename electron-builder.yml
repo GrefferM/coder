@@ -1,0 +1,21 @@
+# How `npm run build:mac` packages the app: the compiled main process and the built renderer from dist/, the
+# production dependencies beside them, and better-sqlite3 rebuilt for this Electron.
+appId: com.grefferm.coder
+productName: Coder
+directories:
+  output: release
+files:
+  - dist/**
+  - "!dist/**/*.map"
+  - package.json
+extraMetadata:
+  main: dist/app/main.js
+mac:
+  target:
+    - target: dmg
+      arch: arm64
+  icon: src/app/assets/icon.png
+  category: public.app-category.developer-tools
+  # Signed ad hoc: enough to run on this machine, not to hand to another; the hardened runtime only matters to notarisation.
+  identity: "-"
+  hardenedRuntime: false

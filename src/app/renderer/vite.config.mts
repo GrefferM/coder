@@ -18,7 +18,7 @@ export default defineConfig({
   base: "./",
   plugins: [react()],
   build: {
-    outDir: path.join(import.meta.dirname, "dist"),
+    outDir: path.join(import.meta.dirname, "..", "..", "..", "dist", "renderer"),
     emptyOutDir: true,
   },
   css: {

@@ -10,8 +10,17 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
   `createBackend`, which wires every module; the window builds it, and so does `agent-main.ts`
   (through `agent-bootstrap.js`, `npm run agent`) — the same backend with no window, its command
   line read by `agent-cli/`.
-- `npm run dev:app` starts the renderer's Vite dev server and launches Electron pointed at it — the
-  only way to run the app, since there is no production build. `npm run dev:app:watch` wraps the
+- `npm run dev:app` starts the renderer's Vite dev server and launches Electron pointed at it, the
+  way the app is run while it is worked on. `npm run build:mac` makes the app to install:
+  `scripts/build-app.js` compiles the main process with `tsc` through `tsconfig.build.json` — not
+  esbuild, since TypeORM and class-validator read the decorators' metadata — into `dist/`, copies
+  `preload.js` and the icon beside it, and builds the renderer into `dist/renderer`; electron-builder
+  (`electron-builder.yml`) then packs it with the production dependencies and `better-sqlite3`
+  rebuilt for this Electron into `release/Coder-<version>-arm64.dmg`, signed ad hoc — it runs on the
+  machine that built it, and nobody else's macOS will open it. With no dev server's URL set, the
+  window opens the built `index.html`; the database's migrations are found as `.ts` under ts-node
+  and as `.js` in a build. The packaged app is named Coder, as the window is, so it opens the same
+  database and the same keychain item as `npm run dev:app`. `npm run dev:app:watch` wraps the
   same script in `nodemon`, restarting on any change the main process loads — `src/app` outside
   `renderer/`, `src/modules`, `src/contracts`, `src/utils`, specs excepted; a renderer change needs
   no restart, Vite hot-reloads it.

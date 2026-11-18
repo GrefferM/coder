@@ -36,8 +36,8 @@ change to its schema is a migration of its own that keeps the rows already there
 - `src/modules` — backend modules, one directory per responsibility. See `BACKEND.md` for which
   ones there are.
 - `src/utils` — helpers shared across more than one part of the codebase.
-- `scripts` — what `package.json` calls, and nothing else: the dev run, the migration CLI, the
-  subject graph. A developer's own tooling lives in `.tools/`, which is gitignored.
+- `scripts` — what `package.json` calls, and nothing else: the dev run, the build, the migration
+  CLI, the subject graph. A developer's own tooling lives in `.tools/`, which is gitignored.
 - `design` — the frames, and nothing else is a source for anything visual.
 - `tests` — e2e tests. `BACKEND.md` holds what belongs there and what is colocated.
 
@@ -137,8 +137,8 @@ lands far from where it was made.
 - `npm run typecheck` is three `tsc` projects in one script: the root `tsconfig.json`, which targets
   `src` but leaves the renderer out; the renderer's own `tsconfig.json` beside its sources; and
   `tests/`'s, whose `rootDir` spans both `tests/` and `src/`.
-- The rest of `package.json` stands outside those three: `dev:app`, `dev:app:watch` and `agent` in
-  `FRONTEND.md`, the three `migration:*` scripts and `rebuild:electron` in `BACKEND.md`, and
+- The rest of `package.json` stands outside those three: `dev:app`, `dev:app:watch`, `agent` and
+  `build:mac` in `FRONTEND.md`, the three `migration:*` scripts and `rebuild:electron` in `BACKEND.md`, and
   `test:front` and `test:back` above. One is run by hand:
   `graph:features` draws which subject of the renderer imports which and fails on a ring or on
   `project` importing a subject (`FRONTEND.md`); `npm run lint` runs it after ESLint, so the layers

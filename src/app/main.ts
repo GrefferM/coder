@@ -19,6 +19,7 @@ import {
   APP_NAME,
   PRELOAD_SCRIPT_PATH,
   RENDERER_DEV_SERVER_URL,
+  RENDERER_INDEX_PATH,
   STARTUP_FAILURE_TITLE,
   WINDOW_BACKGROUND_COLOR,
   WINDOW_HEIGHT,
@@ -56,12 +57,8 @@ async function initializeIpc(): Promise<void> {
   registerIpcChannels(new SystemShell(), SHELL_IPC_CHANNELS);
 }
 
-/** Opens the app's one window, pointed at the Vite dev server. */
+/** Opens the app's one window, on the Vite dev server under `npm run dev:app` and on the built renderer otherwise. */
 async function createWindow(): Promise<void> {
-  if (!RENDERER_DEV_SERVER_URL) {
-    throw new Error("RENDERER_DEV_SERVER_URL is not set — run this app through `npm run dev:app`.");
-  }
-
   const window = new BrowserWindow({
     width: WINDOW_WIDTH,
     height: WINDOW_HEIGHT,
@@ -80,7 +77,13 @@ async function createWindow(): Promise<void> {
     void backend?.watch.look();
   });
 
-  await window.loadURL(RENDERER_DEV_SERVER_URL);
+  if (RENDERER_DEV_SERVER_URL !== undefined) {
+    await window.loadURL(RENDERER_DEV_SERVER_URL);
+
+    return;
+  }
+
+  await window.loadFile(RENDERER_INDEX_PATH);
 }
 
 /** Sets the Dock icon on macOS; a packaged build takes it from the bundle. */

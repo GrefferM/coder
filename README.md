@@ -55,8 +55,8 @@ MCP TypeScript SDK.
 - `src/utils` — what belongs to neither.
 - `tests` — the end-to-end suite, run by `test:back`; every other test stands beside the file it is
   about.
-- `scripts` — what `package.json` calls: the dev run, the native rebuild, the migration CLI, the
-  feature graph.
+- `scripts` — what `package.json` calls: the dev run, the build, the native rebuild, the migration
+  CLI, the feature graph.
 - `.github/workflows/ci.yml` — CI: the three checks and both suites on Node 22 and 24.
 - `design` — the agreed design, frame by frame.
 
@@ -86,6 +86,11 @@ fetches Electron's headers and compiles it again. Then `npm run dev:app` — the
 the renderer served by Vite; `npm run dev:app:watch` restarts it when the main process changes.
 `npm run typecheck` covers all three tsconfigs, and `npm run test:back` and `npm run test:front` are
 the two suites.
+
+`npm run build:mac` makes `release/Coder-<version>-arm64.dmg` for Apple Silicon. It is signed ad
+hoc, not by an Apple developer, so it is for the machine that built it: the first launch is opened
+from the context menu («Відкрити»), or the quarantine is taken off with
+`xattr -cr /Applications/Coder.app`. It opens the same projects, history and keys as `dev:app`.
 
 `npm run agent -- <project> <agent> "question"` asks one agent of a project without the window: the
 project by its name among the recent ones or by its folder, the agent by name or id. The walk goes

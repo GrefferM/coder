@@ -65,7 +65,7 @@ export default tseslint.config(
   {
     // `design/` is the design reference and its vendored React; `_to_delete/` waits to be deleted by hand;
     // `.tools/` is this machine's alone.
-    ignores: ["dist/**", "node_modules/**", "design/**", "_to_delete/**", ".tools/**"],
+    ignores: ["dist/**", "release/**", "node_modules/**", "design/**", "_to_delete/**", ".tools/**"],
   },
   {
     languageOptions: {
