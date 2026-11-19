@@ -13,4 +13,6 @@ export interface WidgetStep {
   /** No line goes on from its agent: an end of the walk, the one read aloud. */
   isEnd: boolean;
   isFailure: boolean;
+  /** Said in the live conversation, not read back from the record; only a live end is read aloud by itself. */
+  isLive: boolean;
 }

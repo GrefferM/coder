@@ -37,5 +37,7 @@ function stepOf(said: ChatMessage, index: number, config: ProjectConfig): Widget
     isEnd: !config.links.some((link) => link.from === said.agentId),
     // A turn with no words of its own is not an answer to read aloud.
     isFailure: said.isFailure || said.text === "",
+    // The record names each answer's step; the live conversation does not.
+    isLive: said.stepId === null,
   };
 }

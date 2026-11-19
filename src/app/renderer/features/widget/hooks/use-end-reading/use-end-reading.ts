@@ -4,7 +4,8 @@ import type { EndReadingHands, WidgetStep } from "../../interfaces";
 /**
  * Reads each end of a walk aloud as it arrives, one after another in the order they ended (52h). Only an end that came
  * while its sphere stood chosen is read: what ended before the widget opened, or before the sphere was chosen, is
- * history, however late its walks reach the widget. While the speaker is crossed, an end that comes is let pass unread.
+ * history, however late its walks reach the widget, and so is an end read back from the record, as a run opened from the
+ * history shows its answers. While the speaker is crossed, an end that comes is let pass unread, and none is waiting.
  */
 export function useEndReading({ exchanges, aloud, sphereId, isSilent }: EndReadingHands): void {
   /** Every end already read or waiting, by the answer's id. */
@@ -25,9 +26,13 @@ export function useEndReading({ exchanges, aloud, sphereId, isSilent }: EndReadi
     waiting.current = [];
   }
 
+  if (isSilent) {
+    waiting.current = [];
+  }
+
   exchanges
     .flatMap((exchange) => exchange.steps)
-    .filter((step) => step.isEnd && !step.isFailure && !queued.current.has(step.id))
+    .filter((step) => step.isEnd && step.isLive && !step.isFailure && !queued.current.has(step.id))
     .filter((step) => new Date(step.endedAt).getTime() >= since.current.at)
     .forEach((step) => {
       queued.current.add(step.id);

@@ -283,11 +283,12 @@ export function WidgetPage() {
         onToggleHistory={() => setIsHistoryOpen(!isHistoryOpen)}
         isSilent={widget.isSilent}
         onToggleSilent={() => {
+          // Silence is set first, so the reading stopped leaves no end waiting to be read in its place.
+          void widget.silence(!widget.isSilent);
+
           if (!widget.isSilent) {
             aloud.stop();
           }
-
-          void widget.silence(!widget.isSilent);
         }}
         onOpenMain={() => void openMainWindow()}
       />

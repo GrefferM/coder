@@ -125,4 +125,27 @@ describe("widgetExchanges", () => {
 
     expect(exchange?.steps.map((step) => step.text)).toEqual(["Зупинено"]);
   });
+
+  it("tells an answer read back from the record from one said live", () => {
+    const messages = [
+      said({
+        id: "asked-1",
+        from: "person",
+      }),
+      said({
+        id: "step-1",
+        stepId: "step-1",
+      }),
+      said({
+        id: "answer-2",
+      }),
+    ];
+
+    const [exchange] = widgetExchanges(messages, [], aConfig(), "teacher");
+
+    expect(exchange?.steps.map((step) => [step.id, step.isLive])).toEqual([
+      ["step-1", false],
+      ["answer-2", true],
+    ]);
+  });
 });

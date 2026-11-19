@@ -1551,7 +1551,8 @@ open project carries a cross, «Прибрати зі списку», which take
 and leaves its folder. The list closes at a press anywhere outside it. Under the head stands a row: «ІСТОРІЯ» on the left, then «НОВА РОЗМОВА» once
 the sphere has a conversation and nothing is out (52k), and on the
 right «Відкрити Coder повністю» and a speaker of two states: lit, the ends of the walks are read
-aloud; crossed, they are not, and a press turning it off stops a reading under way. The machine
+aloud; crossed, they are not, and a press turning it off stops a reading under way and drops every end
+waiting behind it. The machine
 keeps the state. Every answer carries the chat's own speaker at the end of its head, which reads it
 or stops it. A question asked closes the history, and the history open is read again as the
 conversation changes.
@@ -1589,7 +1590,8 @@ aim, and one conversation: a question asked in the widget stands in the chat, an
 the walks begun at its sphere wherever they were asked; «НОВА РОЗМОВА» empties both. «ІСТОРІЯ» lays
 the sphere's past runs in the output's place, newest first, each its question and «day · hour»;
 a press opens one — the output shows it as the record kept it, and the next question goes on in
-it, as a run opened in the chat does. Its ends are history and are not read aloud. As in the chat's
+it, as a run opened in the chat does. What it shows from the record is history and is not read
+aloud, an answer of this very session included; only an end that comes live is. As in the chat's
 history, an ended run carries a cross, «Видалити розмову», and «× Видалити N» over the list deletes
 every ended run of the sphere; each asks first in the chat's own dialog, narrowed to the widget, and
 a run deleted while open leaves a fresh conversation. Frame 52k still
