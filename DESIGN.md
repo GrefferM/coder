@@ -1539,7 +1539,8 @@ screen, and a press anywhere else puts it away, as a menu bar's panel goes; it h
 buttons and is not dragged. A secondary press on the sphere opens its menu, which holds only
 «Закрити Coder» with a red dot beside it. «Відкрити Coder повністю» brings the main window and puts
 the widget away; the main window closed brings the widget up again. **The key of ~**, pressed in any app,
-brings the widget up and presses its microphone; pressed again, it ends the question. While Coder runs, that key types nothing in other apps. Its top edge stays and its height follows its state: 760 once the sphere has a conversation, and
+brings the widget up and begins a question; pressed while a question is being said, it ends it
+and the question goes; while one is being heard it does nothing. While Coder runs, that key types nothing in other apps. Its top edge stays and its height follows its state: 760 once the sphere has a conversation, and
 otherwise as tall as what stands in it — with no project the sphere, the button, and the list under
 it 12px down once open; at rest the head, the sphere, the carousel and the field, 20px under its
 buttons. With no project it holds an empty grey sphere and one act (52b), «Відкрити

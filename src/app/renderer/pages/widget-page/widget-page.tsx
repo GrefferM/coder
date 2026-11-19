@@ -132,12 +132,21 @@ export function WidgetPage() {
 
   useEndReading(exchanges, aloud, chosenAgentId);
 
-  // The listening shortcut, pressed in any app, presses the microphone here.
-  const pressMicrophone = useRef(voice.press);
+  // The listening shortcut, pressed in any app: a question begins, the one being said ends and goes, and one being
+  // heard is left to its words.
+  const listening = useRef(voice);
 
-  pressMicrophone.current = voice.press;
+  listening.current = voice;
 
-  useEffect(() => window.electronApi.subscribe(WIDGET_LISTEN_CHANNEL, () => pressMicrophone.current()), []);
+  useEffect(
+    () =>
+      window.electronApi.subscribe(WIDGET_LISTEN_CHANNEL, () => {
+        if (listening.current.standing !== "hearing") {
+          listening.current.press();
+        }
+      }),
+    [],
+  );
 
   useEffect(() => {
     void listProviders().then(setProviders);

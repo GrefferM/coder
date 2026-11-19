@@ -70,9 +70,15 @@ export class AppStage {
     await this.createWidget();
   }
 
-  /** The shortcut pressed: the widget comes up under the menu bar's Coder, and its microphone is pressed. */
+  /**
+   * The shortcut pressed: the widget comes up under the menu bar's Coder where it is away, and is told the key was
+   * pressed — a question begins, or the one being said ends.
+   */
   private async listen(): Promise<void> {
-    await this.popUp();
+    if (this.windows.widget()?.isVisible() !== true) {
+      await this.popUp();
+    }
+
     this.windows.toWidget(WIDGET_LISTEN_CHANNEL, null);
   }
 
