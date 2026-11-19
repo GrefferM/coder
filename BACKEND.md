@@ -110,7 +110,7 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   with `providerOff`. It is the one module a screen asks about providers, so a key is written
   through the provider it belongs to and `secrets` has no channel of its own.
 - **`speech`** — hearing a recording, and what of speech is this machine's: the OS voice an answer
-  is read with, by name, and whether macOS hears here and in which language (`isMacHearing`,
+  is read with, by name, and the one its Ukrainian sentences are read with, its reading speed, and whether macOS hears here and in which language (`isMacHearing`,
   `macLocale`), in the clear in `speech.json` beside `providers.json` (a file missing or not of its
   shape reads as nothing chosen). macOS hears through **Coder Hearing** (`MacHearing`), an app of
   its own built from `src/app/mac-hearing/` into `build/CoderHearing.app` and laid among the built

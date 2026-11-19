@@ -8,6 +8,10 @@ export class SaveSpeechDto {
   declare voiceName: string | null;
 
   @IsOptional()
+  @IsString()
+  declare ukrainianVoiceName: string | null;
+
+  @IsOptional()
   @IsNumber()
   @Min(VOICE_RATE_LEAST)
   @Max(VOICE_RATE_MOST)

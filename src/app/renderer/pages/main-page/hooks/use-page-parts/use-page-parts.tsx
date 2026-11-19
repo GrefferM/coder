@@ -138,6 +138,7 @@ export function usePageParts(
   /** One voice for the window: an answer in the chat and the sample in «Мовлення» share it. */
   const reading = useReadAloud({
     voiceName: speech.settings.voiceName,
+    ukrainianVoiceName: speech.settings.ukrainianVoiceName,
     voiceRate: speech.settings.voiceRate,
     onNote: saySpeech,
     onOpenSpeech: openSpeech,

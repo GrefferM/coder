@@ -31,6 +31,9 @@ export const HEARING_LOST_NOTE =
 export const VOICE_CARD_TITLE = "Голос";
 export const VOICE_MACHINE_NOTE = "Ця машина · у project.yaml не йде";
 export const VOICE_FIELD_LABEL = "ГОЛОС";
+export const UKRAINIAN_VOICE_FIELD_LABEL = "ГОЛОС ДЛЯ УКРАЇНСЬКОЇ";
+/** The Ukrainian voice's field while none is chosen: the voice above reads the Ukrainian too. */
+export const UKRAINIAN_VOICE_SAME_WORDS = "Той самий голос";
 export const VOICE_LISTEN_LABEL = "ПОСЛУХАТИ";
 export const VOICE_RATE_LABEL = "ШВИДКІСТЬ";
 /** How many places a rate is written with: «1.2». */

@@ -9,11 +9,16 @@ const LESYA = <SpeechSynthesisVoice>(<unknown>{
   lang: "uk-UA",
 });
 
+const SAMANTHA = <SpeechSynthesisVoice>(<unknown>{
+  name: "Samantha",
+  lang: "en-US",
+});
+
 /** The OS's synthesis with one voice, keeping what it was asked to read. */
 function synthesisWithLesya() {
   const spoken: SpeechSynthesisUtterance[] = [];
 
-  vi.spyOn(window.speechSynthesis, "getVoices").mockReturnValue([LESYA]);
+  vi.spyOn(window.speechSynthesis, "getVoices").mockReturnValue([LESYA, SAMANTHA]);
   vi.spyOn(window.speechSynthesis, "speak").mockImplementation((utterance) => {
     spoken.push(utterance);
   });
@@ -29,6 +34,7 @@ function synthesisWithLesya() {
 function hands(patch: Partial<ReadAloudHands> = {}): ReadAloudHands {
   return {
     voiceName: "Lesya",
+    ukrainianVoiceName: null,
     voiceRate: null,
     onNote: vi.fn(),
     onOpenSpeech: vi.fn(),
@@ -67,6 +73,34 @@ describe("useReadAloud", () => {
     act(() => result.current.read("answer-2", "Hello again."));
 
     expect(spoken.map((utterance) => utterance.rate)).toEqual([1.3, 1]);
+  });
+
+  it("reads Ukrainian sentences with the Ukrainian voice and the rest with the voice chosen, in order", () => {
+    const { spoken } = synthesisWithLesya();
+    const { result } = renderHook(() =>
+      useReadAloud(
+        hands({
+          voiceName: "Samantha",
+          ukrainianVoiceName: "Lesya",
+        }),
+      ),
+    );
+
+    act(() => result.current.read("answer-1", "I went to the shop. Помилка в часі дієслів."));
+
+    expect(spoken.map((utterance) => [utterance.voice?.name, utterance.text.trim()])).toEqual([
+      ["Samantha", "I went to the shop."],
+      ["Lesya", "Помилка в часі дієслів."],
+    ]);
+    expect(result.current.readingId).toBe("answer-1");
+
+    act(() => spoken[0].onend?.(<SpeechSynthesisEvent>(<unknown>{})));
+
+    expect(result.current.readingId).toBe("answer-1");
+
+    act(() => spoken[1].onend?.(<SpeechSynthesisEvent>(<unknown>{})));
+
+    expect(result.current.readingId).toBeNull();
   });
 
   it("lets go of the mark when the reading ends by itself", () => {

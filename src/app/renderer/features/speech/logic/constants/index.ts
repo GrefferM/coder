@@ -2,3 +2,4 @@ export * from "./spoken-text.constant";
 export * from "./sound-wave.constant";
 export * from "./wav.constant";
 export * from "./pause.constant";
+export * from "./language-span.constant";

@@ -15,3 +15,4 @@ export * from "./sound-player.interface";
 export * from "./sound-player-hands.interface";
 export * from "./wav-sound.interface";
 export * from "./mac-hearing-state.interface";
+export * from "./language-span.interface";

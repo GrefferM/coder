@@ -3,6 +3,7 @@ import type { SpeechSettings } from "../../../../../contracts";
 /** Nothing chosen: what a machine that never wrote its speech holds. */
 export const NOTHING_CHOSEN: SpeechSettings = {
   voiceName: null,
+  ukrainianVoiceName: null,
   voiceRate: null,
   isMacHearing: false,
   macLocale: null,

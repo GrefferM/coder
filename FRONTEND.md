@@ -129,7 +129,8 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     carrying its act; `useSoundPlayer`, the window's one recording (4l), playing a `SoundTrack` from
     the sound at hand or read from the record by its id, following how far it played frame by frame
     and seeking where its wave is pressed — `questionTracks` gives each question on screen its tracks,
-    the opened run's from the record and this screen's from `heardBy`; `useReadAloud`, the window's one voice (4k), which
+    the opened run's from the record and this screen's from `heardBy`; `useReadAloud`, the window's one voice (4k), which reads an answer in runs of one language (`languageSpans`), a run of Ukrainian sentences by the
+    Ukrainian voice where one is chosen, and
     reads an answer by the message's own id with `spokenParts` leaving the code out and following the word the voice reaches (`spokenWord`) for the card to light, and which the
     sample in «Мовлення» shares — the page composes them, stands `SpeechSection` on the rail after
     the prompts, hands `voice`, `aloud` and the player to the chat — a recording beginning silences

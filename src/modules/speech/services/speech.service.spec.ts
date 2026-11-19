@@ -111,6 +111,7 @@ describe("SpeechService", () => {
 
     assert.deepEqual(await speechService.settings(), {
       voiceName: null,
+      ukrainianVoiceName: null,
       voiceRate: null,
       isMacHearing: false,
       macLocale: null,
@@ -130,6 +131,7 @@ describe("SpeechService", () => {
 
     assert.deepEqual(await speechService.settings(), {
       voiceName: null,
+      ukrainianVoiceName: null,
       voiceRate: null,
       isMacHearing: false,
       macLocale: null,
@@ -141,6 +143,7 @@ describe("SpeechService", () => {
 
     await speechService.save({
       voiceName: "Lesya",
+      ukrainianVoiceName: null,
       voiceRate: null,
       isMacHearing: false,
       macLocale: null,
@@ -148,6 +151,7 @@ describe("SpeechService", () => {
 
     assert.deepEqual(await speechService.settings(), {
       voiceName: "Lesya",
+      ukrainianVoiceName: null,
       voiceRate: null,
       isMacHearing: false,
       macLocale: null,
@@ -159,6 +163,7 @@ describe("SpeechService", () => {
 
     await speechService.save({
       voiceName: null,
+      ukrainianVoiceName: null,
       voiceRate: null,
       isMacHearing: true,
       macLocale: "en-GB",
@@ -166,6 +171,7 @@ describe("SpeechService", () => {
 
     assert.deepEqual(await speechService.settings(), {
       voiceName: null,
+      ukrainianVoiceName: null,
       voiceRate: null,
       isMacHearing: true,
       macLocale: "en-GB",

@@ -119,6 +119,7 @@ export function WidgetPage() {
   });
   const aloud = useReadAloud({
     voiceName: speech.settings.voiceName,
+    ukrainianVoiceName: speech.settings.ukrainianVoiceName,
     voiceRate: speech.settings.voiceRate,
     onNote: say,
     onOpenSpeech: () => void openMainWindow(),

@@ -20,6 +20,7 @@ export class SpeechService {
 
     return {
       voiceName: this.textOf(held, "voiceName"),
+      ukrainianVoiceName: this.textOf(held, "ukrainianVoiceName"),
       voiceRate: this.numberOf(held, "voiceRate"),
       isMacHearing: this.flagOf(held, "isMacHearing"),
       macLocale: this.textOf(held, "macLocale"),
@@ -32,6 +33,7 @@ export class SpeechService {
     const temporaryPath = `${filePath}.tmp`;
     const written: SpeechSettings = {
       voiceName: settings.voiceName,
+      ukrainianVoiceName: settings.ukrainianVoiceName,
       voiceRate: settings.voiceRate,
       isMacHearing: settings.isMacHearing,
       macLocale: settings.macLocale,

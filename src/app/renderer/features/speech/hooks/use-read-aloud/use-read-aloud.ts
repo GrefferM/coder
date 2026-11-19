@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { spokenParts, spokenWord } from "../../logic";
+import { languageSpans, spokenParts, spokenWord } from "../../logic";
 import { SPEECH_SECTION_ACT, VOICE_NOT_SET_NOTE, VOICE_RATE_OWN } from "../../constants";
 import type { ReadAloud, ReadAloudHands, SpokenWord } from "../../interfaces";
 
@@ -25,11 +25,13 @@ export function useReadAloud(hands: ReadAloudHands): ReadAloud {
   }, []);
 
   const read = useCallback((id: string, text: string) => {
-    const { voiceName, voiceRate, onNote, onOpenSpeech } = held.current;
-    const voice = window.speechSynthesis.getVoices().find((one) => one.name === voiceName) ?? null;
+    const { voiceName, ukrainianVoiceName, voiceRate, onNote, onOpenSpeech } = held.current;
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find((one) => one.name === voiceName) ?? null;
+    const ukrainianVoice = voices.find((one) => one.name === ukrainianVoiceName) ?? voice;
 
     // No voice chosen, or the one chosen is gone from this machine: the line says where it is chosen.
-    if (voice === null) {
+    if (voice === null || ukrainianVoice === null) {
       onNote({
         words: VOICE_NOT_SET_NOTE,
         act: {
@@ -42,7 +44,7 @@ export function useReadAloud(hands: ReadAloudHands): ReadAloud {
     }
 
     const parts = spokenParts(text);
-    const utterance = new SpeechSynthesisUtterance(parts.spoken);
+    const spans = languageSpans(parts.spoken);
     /** Whether this reading is still the one standing; one stopped for another neither clears nor lights anything. */
     let isStanding = true;
     const done = () => {
@@ -54,18 +56,25 @@ export function useReadAloud(hands: ReadAloudHands): ReadAloud {
       setReadingId(null);
       setSpoken(null);
     };
+    // Each run of one language is read by its own voice, one after another; the reading ends with the last of them.
+    const utterances = spans.map((span, index) => {
+      const spoken = new SpeechSynthesisUtterance(parts.spoken.slice(span.start, span.end));
+      const reader = span.isUkrainian ? ukrainianVoice : voice;
 
-    utterance.voice = voice;
-    utterance.lang = voice.lang;
-    utterance.rate = voiceRate ?? VOICE_RATE_OWN;
-    utterance.onend = done;
-    utterance.onerror = done;
-    // The voice says which character it reached; the word there is lit in the card.
-    utterance.onboundary = (event) => {
-      if (isStanding && event.name === "word") {
-        setSpoken(spokenWord(parts, event.charIndex));
-      }
-    };
+      spoken.voice = reader;
+      spoken.lang = reader.lang;
+      spoken.rate = voiceRate ?? VOICE_RATE_OWN;
+      spoken.onerror = done;
+      spoken.onend = index === spans.length - 1 ? done : null;
+      // The voice says which character of its run it reached; the word there is lit in the card.
+      spoken.onboundary = (event) => {
+        if (isStanding && event.name === "word") {
+          setSpoken(spokenWord(parts, span.start + event.charIndex));
+        }
+      };
+
+      return spoken;
+    });
 
     window.speechSynthesis.cancel();
     stopPrevious.current();
@@ -74,7 +83,7 @@ export function useReadAloud(hands: ReadAloudHands): ReadAloud {
     };
     setReadingId(id);
     setSpoken(null);
-    window.speechSynthesis.speak(utterance);
+    utterances.forEach((utterance) => window.speechSynthesis.speak(utterance));
   }, []);
 
   return {

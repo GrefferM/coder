@@ -2,6 +2,8 @@
 export interface SpeechSettings {
   /** The OS voice an answer is read with, by its name. */
   voiceName: string | null;
+  /** The OS voice its Ukrainian sentences are read with instead; `null` reads them with `voiceName`. */
+  ukrainianVoiceName: string | null;
   /** How fast the voice reads, 1 its own pace; `null` reads at its own pace. */
   voiceRate: number | null;
   /** macOS hears on this machine, in every project, in place of the project's recognition model. */

@@ -1,10 +1,14 @@
 import { ListenModelPicker, MacLocalePicker, SpeechCard, VoicePicker } from "./components";
 import { useMacHearing } from "../../hooks";
 import { FieldSlot, Stepper } from "../../../../components";
+import { NOT_FILLED_LABEL } from "../../../../constants";
 import { VOICE_RATE_LEAST, VOICE_RATE_MOST, VOICE_RATE_STEP } from "../../../../../../contracts";
 import {
   HEARING_CARD_TITLE,
+  UKRAINIAN_VOICE_FIELD_LABEL,
+  UKRAINIAN_VOICE_SAME_WORDS,
   VOICE_CARD_TITLE,
+  VOICE_FIELD_LABEL,
   VOICE_MACHINE_NOTE,
   VOICE_RATE_LABEL,
   VOICE_RATE_OWN,
@@ -76,14 +80,28 @@ export function SpeechSection({
       </SpeechCard>
       <SpeechCard title={VOICE_CARD_TITLE} note={VOICE_MACHINE_NOTE}>
         <VoicePicker
+          label={VOICE_FIELD_LABEL}
           voices={voices}
           voiceName={settings.voiceName}
+          emptyWords={NOT_FILLED_LABEL}
           onChange={(voiceName) =>
             void save({
               voiceName,
             })
           }
           onListen={onListen}
+        />
+        <VoicePicker
+          label={UKRAINIAN_VOICE_FIELD_LABEL}
+          voices={voices}
+          voiceName={settings.ukrainianVoiceName}
+          emptyWords={UKRAINIAN_VOICE_SAME_WORDS}
+          onChange={(ukrainianVoiceName) =>
+            void save({
+              ukrainianVoiceName,
+            })
+          }
+          onListen={null}
         />
         <FieldSlot label={VOICE_RATE_LABEL}>
           <Stepper

@@ -9,23 +9,23 @@ import {
   PICKER_ROW_PADDING,
   PICKER_VALUE_COLOR,
 } from "../../../../../../components/picker-shell/constants";
-import { NOT_FILLED_LABEL } from "../../../../../../constants";
 import { voiceLabel } from "../../../../words";
-import { VOICE_FIELD_LABEL, VOICE_LISTEN_LABEL } from "../../../../constants";
+import { VOICE_LISTEN_LABEL } from "../../../../constants";
 import { VOICE_LISTEN_TONE } from "./constants";
 import type { VoicePickerProps } from "./interfaces";
 
 /** Which of the OS's voices reads an answer; chosen at once, and heard by «ПОСЛУХАТИ» once one is chosen. */
-export function VoicePicker({ voices, voiceName, onChange, onListen }: VoicePickerProps) {
+export function VoicePicker({ label, voices, voiceName, emptyWords, onChange, onListen }: VoicePickerProps) {
   const chosen = voices.find((voice) => voice.name === voiceName) ?? null;
   /** A chosen voice gone from this machine is still named, so the person sees what was chosen. */
-  const shown = chosen === null ? (voiceName ?? NOT_FILLED_LABEL) : voiceLabel(chosen);
+  const shown = chosen === null ? (voiceName ?? emptyWords) : voiceLabel(chosen);
 
   return (
     <FieldSlot
-      label={VOICE_FIELD_LABEL}
+      label={label}
       action={
-        voiceName !== null && (
+        voiceName !== null &&
+        onListen !== null && (
           <TextButton tone={VOICE_LISTEN_TONE} onPress={onListen}>
             {VOICE_LISTEN_LABEL}
           </TextButton>
