@@ -11,6 +11,7 @@ import { CommandsIcon, CommandsPanel } from "../../../../features/commands";
 import { PromptsIcon, PromptsPanel } from "../../../../features/prompts";
 import { ProvidersIcon, ProvidersPanel, useProviders } from "../../../../features/providers";
 import { ServersIcon, useServerConsent, useServers } from "../../../../features/servers";
+import { useSharedSphere } from "../../../../features/widget";
 import {
   SpeechIcon,
   SpeechSection,
@@ -22,6 +23,7 @@ import {
   useSoundPlayer,
   useSpeech,
   useVoiceAsk,
+  MAC_USER_AGENT_MARK,
 } from "../../../../features/speech";
 import { SchedulesIcon, SchedulesPanel } from "../../../../features/schedules";
 import {
@@ -110,6 +112,12 @@ export function usePageParts(
     chat.aimedAgentId === agents.selectedAgentId && drafted.draft !== null
       ? drafted.draft
       : (project.config.agents.find((agent) => agent.id === chat.aimedAgentId) ?? null);
+  // The widget's chosen sphere is the chat's aim, both ways.
+  useSharedSphere({
+    directory: project.directory,
+    aimedAgentId: chat.aimedAgentId,
+    aim: chat.aim,
+  });
   const stream = useShownStream(project.directory, project.config.agents, chat, agents.select);
   /** The pass whose projection stands over the canvas. */
   const pass = useOpenedPass(project.config.agents, project.config.models, chat.written);
@@ -285,6 +293,7 @@ export function usePageParts(
           listenModelId={project.config.speech.listenModelId}
           providers={machine.providers}
           speech={speech}
+          isMac={window.navigator.userAgent.includes(MAC_USER_AGENT_MARK)}
           onChooseListenModel={(modelId) => void actions.chooseListenModel(modelId)}
           onOpenModels={() => rail.handleActiveIdChange(MODELS_SECTION_ID)}
           onListen={() => aloud.read(VOICE_SAMPLE_ID, VOICE_SAMPLE)}

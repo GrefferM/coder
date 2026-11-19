@@ -117,7 +117,10 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   app's resources, so the system asks its own permission alike under `dev:app` and in the build: each
   call launches it once through `open` and reads the one line of JSON it leaves in a temporary
   folder — the permission, the languages, or the words of a WAV recording, on the device where macOS
-  hears that language there and through Apple otherwise. A recording macOS is not allowed to hear is
+  hears that language there and through Apple otherwise. A call that does not end in its time (15 s
+  to look, 60 s to hear, 5 min to wait for the person's answer to the system's window), or ends
+  leaving no answer, is refused `SPEECH_HEARING_FAILED` «Coder Hearing не відповів». A recording
+  macOS is not allowed to hear is
   refused `SPEECH_MAC_DENIED`. Otherwise which model hears is the project's (38c): the
   window sends each recording with that model's provider and name (macOS's with `MAC_HEARING_ID`
   and its locale in their place), and only OpenAI, OpenRouter and
@@ -251,13 +254,14 @@ The modules are flat, one responsibility each, and none of them nests inside ano
 
 - **`widget`** — how this machine keeps the desktop widget, in the clear in `widget.json` beside the
   database: whether it is shown, its project's folder, where it was put, and the sphere each
-  project's walks begin at, by agent id. None of it goes into a project. The main process reads the
-  same service to place the widget's window. The widget's project is read through `projects`' `peek`
-  — remembered among the recent ones and never watched, so the window's watch of its own project is
-  untouched. **`WidgetWalks`** in `walks` holds the widget's conversations, one per sphere, kept
-  between questions and let go when the widget's project changes; each is a `WalkRunner` of its
-  own whose listener, `WidgetEars`, pushes the sphere's snapshot to the widget and what was written
-  to the main window.
+  project's walks begin at, by agent id. None of it goes into a project. The window and the main
+  process each send only what they change, and the changes land one after another, so the place the
+  main process writes as the window moves outlives a sphere the window chose. The widget reads its
+  project through `projects`' `peek`, never watched, so the window's watch of its own project is
+  untouched; it is remembered among the recent ones only when the widget opens it. After every
+  change the service tells its listeners the settings as they stand, and the main process pushes
+  them to both windows, which hold one project and one chosen sphere. The widget asks in the
+  person's own conversation, the `WalkHub` the chat shows, whose walks go to both windows.
 - **`schedules`** — when a schedule's task is put. **`ScheduleClock`** holds one timer for each
   schedule that can run — switched on in its file, its agent standing, its task and interval written
   (`runnableSchedules` in `logic/`) — and puts the task once a whole interval has passed since it

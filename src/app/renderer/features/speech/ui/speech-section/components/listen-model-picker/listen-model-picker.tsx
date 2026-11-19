@@ -51,6 +51,7 @@ export function ListenModelPicker({
   models,
   providers,
   modelId,
+  isMac,
   isMacChosen,
   mac,
   onChange,
@@ -154,46 +155,50 @@ export function ListenModelPicker({
           fieldColor={fieldColor()}
           items={models}
           matches={(model, query) => model.title.toLowerCase().includes(query)}
-          lead={{
-            choose: (close) => {
-              onChooseMac();
-              close();
-            },
-            row: (close) => (
-              <button
-                type="button"
-                role="option"
-                aria-selected={isMacChosen}
-                onClick={() => {
-                  onChooseMac();
-                  close();
-                }}
-                className="d-flex flex-column text-start w-100"
-                style={{
-                  padding: PICKER_ROW_PADDING,
-                  gap: PICKER_ROW_TEXT_GAP_PX,
-                  border: "none",
-                  borderBottom: `1px solid ${MAC_ROW_DIVIDER_COLOR}`,
-                  borderRadius: PICKER_ROW_BORDER_RADIUS_PX,
-                  background: isMacChosen ? PICKER_ROW_CHOSEN_BACKGROUND_COLOR : "transparent",
-                  cursor: "pointer",
-                }}
-              >
-                <span
-                  className="font-monospace head-truncate"
-                  style={{
-                    fontSize: PICKER_NAME_FONT_SIZE_PX,
-                    color: PICKER_NAME_COLOR,
-                  }}
-                >
-                  {MAC_HEARING_TITLE}
-                </span>
-                <Mark color={PICKER_ROW_NOTE_COLOR} spacing={PICKER_ROW_NOTE_LETTER_SPACING_PX}>
-                  {MAC_HEARING_ROW_NOTE}
-                </Mark>
-              </button>
-            ),
-          }}
+          lead={
+            isMac
+              ? {
+                  choose: (close) => {
+                    onChooseMac();
+                    close();
+                  },
+                  row: (close) => (
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={isMacChosen}
+                      onClick={() => {
+                        onChooseMac();
+                        close();
+                      }}
+                      className="d-flex flex-column text-start w-100"
+                      style={{
+                        padding: PICKER_ROW_PADDING,
+                        gap: PICKER_ROW_TEXT_GAP_PX,
+                        border: "none",
+                        borderBottom: `1px solid ${MAC_ROW_DIVIDER_COLOR}`,
+                        borderRadius: PICKER_ROW_BORDER_RADIUS_PX,
+                        background: isMacChosen ? PICKER_ROW_CHOSEN_BACKGROUND_COLOR : "transparent",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <span
+                        className="font-monospace head-truncate"
+                        style={{
+                          fontSize: PICKER_NAME_FONT_SIZE_PX,
+                          color: PICKER_NAME_COLOR,
+                        }}
+                      >
+                        {MAC_HEARING_TITLE}
+                      </span>
+                      <Mark color={PICKER_ROW_NOTE_COLOR} spacing={PICKER_ROW_NOTE_LETTER_SPACING_PX}>
+                        {MAC_HEARING_ROW_NOTE}
+                      </Mark>
+                    </button>
+                  ),
+                }
+              : undefined
+          }
           choose={(model, close) => {
             onChange(model.id);
             close();

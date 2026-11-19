@@ -6,4 +6,3 @@ export * from "./window-voice.service";
 export * from "./window-walk-voice.service";
 export * from "./quiet-voice.service";
 export * from "./app-stage.service";
-export * from "./window-widget-voice.service";

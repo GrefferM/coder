@@ -28,7 +28,6 @@ async function run(): Promise<number> {
       project: quiet,
       agent: quiet,
       walk: quiet,
-      widget: quiet,
     },
     hearingAppPath: app.isPackaged ? path.join(process.resourcesPath, HEARING_APP_NAME) : DEV_HEARING_APP_PATH,
   });

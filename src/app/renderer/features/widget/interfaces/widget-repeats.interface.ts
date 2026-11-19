@@ -6,8 +6,8 @@ export interface WidgetRepeats {
   repeats: number;
   repeating: RepeatProgress | null;
   setRepeats: (count: number) => void;
-  /** Puts the question, and again each time its walk ends, as many times as the count; false where it did not go. */
-  send: (text: string, attached: PackedAttachment[]) => Promise<boolean>;
+  /** Puts the question to a sphere, and again each time its walk ends, as many times as the count; false where it did not go. */
+  send: (agentId: string, text: string, attached: PackedAttachment[]) => Promise<boolean>;
   /** «ЗУПИНИТИ»: no repeat goes after the walk out. */
   drop: () => void;
 }

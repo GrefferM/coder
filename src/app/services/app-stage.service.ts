@@ -1,11 +1,13 @@
-import { app, BrowserWindow, Menu } from "electron";
+import { app, BrowserWindow, Menu, Tray } from "electron";
 import {
   APP_ICON_PATH,
-  LAUNCH_AT_LOGIN_LABEL,
+  QUIT_ICON_PATH,
+  QUIT_LABEL,
+  TRAY_ICON_PATH,
+  TRAY_TOOLTIP,
   PRELOAD_SCRIPT_PATH,
   RENDERER_DEV_SERVER_URL,
   RENDERER_INDEX_PATH,
-  SHOW_WIDGET_LABEL,
   WIDGET_HASH,
   WIDGET_HEIGHT,
   WIDGET_WIDTH,
@@ -15,45 +17,54 @@ import {
 } from "../constants";
 import { Validate } from "../../utils/dto-validation";
 import { ResizeWidgetDto } from "../../modules/widget";
+import { WIDGET_SETTINGS_CHANGED_CHANNEL } from "../../contracts";
 import type { WidgetSettingsService } from "../../modules/widget";
 import type { AppWindows } from "./app-windows.service";
 import type { StageParts } from "./interfaces";
 
 /**
- * What stands on the screen: the main window and the desktop widget (52a). Coder lives while either is open; with
- * the main window closed the Dock icon goes, and a launch at login opens the widget alone.
+ * What stands on the screen: the desktop widget (52a) or the main window, in turn, and Coder in the menu bar. Coder
+ * lives until it is closed from the menu bar or the app menu; with the main window closed the Dock icon goes.
  */
 export class AppStage {
   private readonly windows: AppWindows;
   private readonly widgetSettings: WidgetSettingsService;
   private readonly onMainFocus: () => void;
+  /** Coder in the menu bar; with the main window closed there is no Dock icon and no app menu to reach. */
+  private tray: Tray | null = null;
 
   constructor({ windows, widgetSettings, onMainFocus }: StageParts) {
     this.windows = windows;
     this.widgetSettings = widgetSettings;
     this.onMainFocus = onMainFocus;
+    // Both windows hold the same project and sphere: a change from either is told to both.
+    this.widgetSettings.listen((settings) => {
+      this.windows.toMain(WIDGET_SETTINGS_CHANGED_CHANNEL, settings);
+      this.windows.toWidget(WIDGET_SETTINGS_CHANGED_CHANNEL, settings);
+    });
   }
 
-  /** The widget where this machine shows it, and the main window unless Coder was started at login. */
+  /**
+   * Coder starts with the widget alone, set to start with the system in the built app; the main window comes from the
+   * widget, and the two take turns: the main window up hides the widget, the main window closed brings it back.
+   */
   async start(): Promise<void> {
-    const { isShown } = await this.widgetSettings.settings();
-
-    this.applyMenu(isShown);
-
-    if (isShown) {
-      await this.openWidget();
+    if (app.isPackaged) {
+      app.setLoginItemSettings({
+        openAtLogin: true,
+      });
     }
 
-    if (!app.getLoginItemSettings().wasOpenedAtLogin || !isShown) {
-      await this.openMain();
-    }
+    this.applyMenu();
+    await this.openWidget();
   }
 
-  /** Brings the main window up, opening it where it is closed. */
+  /** Brings the main window up, opening it where it is closed, and puts the widget away meanwhile. */
   async openMain(): Promise<void> {
     const held = this.windows.main();
 
     app.dock?.show();
+    this.windows.widget()?.hide();
 
     if (held !== null) {
       held.show();
@@ -63,15 +74,6 @@ export class AppStage {
     }
 
     await this.createMain();
-  }
-
-  /** Takes the widget off the desktop; with no main window left, Coder quits. */
-  async hide(): Promise<void> {
-    await this.widgetSettings.change({
-      isShown: false,
-    });
-    this.applyMenu(false);
-    this.windows.widget()?.close();
   }
 
   /** The widget's window at the height its state asks, its top edge and width where they stand. */
@@ -88,13 +90,18 @@ export class AppStage {
     window.setSize(width, Math.round(height), true);
   }
 
-  /** Puts the widget on the desktop. */
-  async show(): Promise<void> {
-    await this.widgetSettings.change({
-      isShown: true,
-    });
-    this.applyMenu(true);
+  /** The menu bar's Coder pressed: the widget, the main window going where it stands. */
+  private async showWidget(): Promise<void> {
+    const main = this.windows.main();
+
+    if (main !== null) {
+      main.close();
+
+      return;
+    }
+
     await this.openWidget();
+    this.windows.widget()?.focus();
   }
 
   private async openWidget(): Promise<void> {
@@ -158,13 +165,11 @@ export class AppStage {
     await this.load(window, WIDGET_HASH);
   }
 
-  /** The main window gone: the Dock icon goes with it while the widget stays. */
+  /** The main window gone: the widget comes back, and the Dock icon goes with the main window. */
   private mainClosed(): void {
     this.windows.holdMain(null);
-
-    if (this.windows.widget() !== null) {
-      app.dock?.hide();
-    }
+    app.dock?.hide();
+    void this.openWidget();
   }
 
   private async rememberPlace(window: BrowserWindow): Promise<void> {
@@ -191,32 +196,36 @@ export class AppStage {
     });
   }
 
-  /** The app menu with the widget's two items (52a); the rest is the system's own. */
-  private applyMenu(isWidgetShown: boolean): void {
+  /** The app menu, and the menu bar's Coder: a press shows the widget, its menu holds the way out. */
+  private applyMenu(): void {
+    this.applyAppMenu();
+    this.applyTray();
+  }
+
+  private applyTray(): void {
+    const tray = new Tray(TRAY_ICON_PATH);
+    const menu = Menu.buildFromTemplate([
+      {
+        label: QUIT_LABEL,
+        icon: QUIT_ICON_PATH,
+        click: () => app.quit(),
+      },
+    ]);
+
+    tray.setToolTip(TRAY_TOOLTIP);
+    tray.on("click", () => void this.showWidget());
+    tray.on("right-click", () => tray.popUpContextMenu(menu));
+    this.tray = tray;
+  }
+
+  /** The app menu, the system's own. */
+  private applyAppMenu(): void {
     const menu = Menu.buildFromTemplate([
       {
         role: "appMenu",
         submenu: [
           {
             role: "about",
-          },
-          {
-            type: "separator",
-          },
-          {
-            label: SHOW_WIDGET_LABEL,
-            type: "checkbox",
-            checked: isWidgetShown,
-            click: (item) => void (item.checked ? this.show() : this.hide()),
-          },
-          {
-            label: LAUNCH_AT_LOGIN_LABEL,
-            type: "checkbox",
-            checked: app.getLoginItemSettings().openAtLogin,
-            click: (item) =>
-              app.setLoginItemSettings({
-                openAtLogin: item.checked,
-              }),
           },
           {
             type: "separator",

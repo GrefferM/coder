@@ -5,6 +5,7 @@ import {
   ForgetProjectDto,
   ProjectConfigDto,
   OpenProjectDto,
+  PeekProjectDto,
   RememberProjectViewDto,
   SaveProjectDto,
 } from "../dto";
@@ -84,17 +85,23 @@ export class ProjectService {
     return read;
   }
 
-  /** Reads a project for the desktop widget and remembers it among the recent ones, watching nothing. */
-  async peek(payload: OpenProjectDto): Promise<ProjectConfigDto> {
-    const { directory } = payload;
-
+  /** Reads a project as its folder holds it, watching nothing and remembering nothing. */
+  async read(directory: string): Promise<ProjectConfigDto> {
     if (!(await this.projectFileStore.exists(directory))) {
       throw new Refusal(PROJECT_NOT_FOUND);
     }
 
-    const config = await this.projectFileStore.read(directory);
+    return this.projectFileStore.read(directory);
+  }
 
-    await this.remember(directory, config.name);
+  /** Reads a project for the desktop widget without watching it; one the widget opens is remembered as recent. */
+  async peek(payload: PeekProjectDto): Promise<ProjectConfigDto> {
+    const { directory, isOpened } = payload;
+    const config = await this.read(directory);
+
+    if (isOpened) {
+      await this.remember(directory, config.name);
+    }
 
     return config;
   }

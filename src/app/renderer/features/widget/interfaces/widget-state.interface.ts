@@ -1,7 +1,10 @@
 import type { PackedAttachment, WalkSnapshot } from "../../../../../contracts";
 import type { ProjectConfig } from "../../../interfaces";
 
-/** The widget as it stands: its project, its chosen sphere, every sphere's walks, and what it can be asked to do. */
+/**
+ * The widget as it stands: the project and sphere it shares with the main window, the one conversation both show,
+ * and what it can be asked to do.
+ */
 export interface WidgetState {
   /** `undefined` until the machine's settings are read. */
   directory: string | null | undefined;
@@ -11,13 +14,13 @@ export interface WidgetState {
   trouble: string | null;
   /** The sphere walks begin at, by its agent's id; `null` while none is chosen. */
   chosenAgentId: string | null;
-  /** Each sphere's walks, by its agent's id. */
-  walks: Record<string, WalkSnapshot>;
+  /** The project's one conversation, the chat's; `null` until it is open. */
+  walks: WalkSnapshot | null;
   open: (directory: string) => Promise<void>;
   close: () => Promise<void>;
   choose: (agentId: string) => Promise<void>;
-  /** Puts the words and files to the chosen sphere; false where they did not go. */
-  ask: (text: string, attached: PackedAttachment[]) => Promise<boolean>;
+  /** Puts the words and files to a sphere, by its agent's id; false where they did not go. */
+  ask: (agentId: string, text: string, attached: PackedAttachment[]) => Promise<boolean>;
   stop: () => void;
   fresh: () => void;
 }

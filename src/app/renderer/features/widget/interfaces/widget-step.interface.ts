@@ -6,6 +6,8 @@ export interface WidgetStep {
   text: string;
   /** When the turn began, or when it was said where the turn never carried its start. */
   at: string;
+  /** When the answer came. */
+  endedAt: string;
   /** Its place among the walk's answers, from 1: «КРОК N». */
   number: number;
   /** No line goes on from its agent: an end of the walk, the one read aloud. */

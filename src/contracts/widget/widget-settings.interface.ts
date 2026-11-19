@@ -1,7 +1,5 @@
 /** The desktop widget as this machine keeps it; never in a project. */
 export interface WidgetSettings {
-  /** The widget stands on the desktop. */
-  isShown: boolean;
   /** The widget's project, by its folder; `null` while none is open in it. */
   directory: string | null;
   /** Where the widget was put, its top-left corner on the screen; `null` until it is moved. */

@@ -7,3 +7,5 @@ export * from "./mac-listener.interface";
 export * from "./mac-recording.interface";
 export * from "./speech-module.interface";
 export * from "./speech-reach.interface";
+export * from "./mac-call.interface";
+export * from "./speech-module-parts.interface";

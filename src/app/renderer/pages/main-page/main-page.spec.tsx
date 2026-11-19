@@ -102,6 +102,11 @@ import { PROVIDER_PICKER_PLACEHOLDER } from "../../features/models/ui/models-pan
 import type { OpenProject, ProjectConfig, ProviderState } from "../../interfaces";
 import { aCommand, aConfig, aLink, aModel, aPrompt, anAgent, standInBridge } from "../../testing";
 
+// The sphere shared with the widget is its own subject's, proved beside it.
+vi.mock("../../features/widget", () => ({
+  useSharedSphere: () => undefined,
+}));
+
 const CONFIG: ProjectConfig = aConfig({
   name: "Coder",
   models: [

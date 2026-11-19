@@ -49,6 +49,7 @@ function props(patch: Partial<SpeechSectionProps> = {}): SpeechSectionProps {
     models: [SONNET, WHISPER],
     listenModelId: null,
     providers: [OPENROUTER],
+    isMac: true,
     speech: {
       settings: NOTHING_CHOSEN,
       voices: [

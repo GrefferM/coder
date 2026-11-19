@@ -21,3 +21,4 @@ export * from "./forget-deletion.dto";
 export * from "./remember-project-view.dto";
 export * from "./project-speech.dto";
 export * from "./project-schedule.dto";
+export * from "./peek-project.dto";

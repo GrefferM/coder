@@ -9,6 +9,12 @@ export interface OfProject {
   directory: string;
 }
 
+/** A project read for the desktop widget; `isOpened` where the widget opens it now, so it is remembered as recent. */
+export interface PeekProject {
+  directory: string;
+  isOpened: boolean;
+}
+
 /** Every channel naming one row names it by id only. */
 export interface OfOne {
   id: string;

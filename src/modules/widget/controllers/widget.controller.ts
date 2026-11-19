@@ -12,6 +12,6 @@ export class WidgetController {
 
   @Validate()
   async save(payload: SaveWidgetDto): Promise<void> {
-    return this.settingsService.save(payload);
+    return this.settingsService.change(payload);
   }
 }

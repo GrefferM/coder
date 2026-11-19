@@ -20,4 +20,6 @@ export * from "./widget-note-state.interface";
 export * from "./widget-repeats.interface";
 export * from "./repeat-cycle.interface";
 export * from "./widget-repeats-hands.interface";
-export * from "./stop-reading-props.interface";
+export * from "./widget-tools-props.interface";
+export * from "./shared-project-hands.interface";
+export * from "./shared-sphere-hands.interface";

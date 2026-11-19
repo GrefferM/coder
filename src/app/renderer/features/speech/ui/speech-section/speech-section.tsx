@@ -22,6 +22,7 @@ export function SpeechSection({
   listenModelId,
   providers,
   speech,
+  isMac,
   onChooseListenModel,
   onOpenModels,
   onListen,
@@ -44,6 +45,7 @@ export function SpeechSection({
           models={models.filter((model) => model.kind === "listen")}
           providers={providers}
           modelId={listenModelId}
+          isMac={isMac}
           isMacChosen={settings.isMacHearing}
           mac={mac}
           onChange={(modelId) => {

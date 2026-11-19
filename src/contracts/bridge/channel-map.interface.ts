@@ -27,12 +27,7 @@ import type {
   WIDGET_SETTINGS_CHANNEL,
   SAVE_WIDGET_CHANNEL,
   OPEN_MAIN_WINDOW_CHANNEL,
-  HIDE_WIDGET_CHANNEL,
   RESIZE_WIDGET_CHANNEL,
-  WIDGET_WALKS_CHANNEL,
-  PUT_WIDGET_WALK_CHANNEL,
-  STOP_WIDGET_WALK_CHANNEL,
-  FRESH_WIDGET_WALK_CHANNEL,
   PACK_ATTACHMENTS_CHANNEL,
   PICK_ATTACHMENT_CHANNEL,
   PROJECT_VIEW_CHANNEL,
@@ -78,7 +73,7 @@ import type { SaveTextAsk } from "../shell";
 import type { HeardSound, MacPermission, SpeechSettings } from "../speech";
 import type { PutWalkAnswer, WalkSnapshot } from "../walks";
 import type { ScheduleStanding } from "../schedules";
-import type { OfWidgetSphere, WidgetAsk, WidgetHeight, WidgetSettings, WidgetWalk } from "../widget";
+import type { WidgetHeight, WidgetSettings } from "../widget";
 import type {
   AskProvider,
   SearchRuns,
@@ -90,6 +85,7 @@ import type {
   SaveMcpToken,
   OfOne,
   OfProject,
+  PeekProject,
   RememberDeletion,
   RememberProjectView,
   SaveProject,
@@ -108,7 +104,7 @@ import type {
 export interface ChannelMap {
   [CREATE_PROJECT_CHANNEL]: { payload: CreateProject; answer: ProjectOnDisk };
   [OPEN_PROJECT_CHANNEL]: { payload: OfProject; answer: ProjectOnDisk };
-  [PEEK_PROJECT_CHANNEL]: { payload: OfProject; answer: ProjectConfig };
+  [PEEK_PROJECT_CHANNEL]: { payload: PeekProject; answer: ProjectConfig };
   [OPEN_OR_CREATE_PROJECT_CHANNEL]: { payload: OfProject; answer: ProjectOnDisk };
   [LOOK_PROJECT_CHANNEL]: { payload: OfProject; answer: FolderContents };
   /** The print of what the save left in the folder. */
@@ -192,14 +188,9 @@ export interface ChannelMap {
   [OPEN_SPEECH_SETTINGS_CHANNEL]: { payload: void; answer: void };
 
   [WIDGET_SETTINGS_CHANNEL]: { payload: void; answer: WidgetSettings };
-  [SAVE_WIDGET_CHANNEL]: { payload: WidgetSettings; answer: void };
+  [SAVE_WIDGET_CHANNEL]: { payload: Partial<WidgetSettings>; answer: void };
   [OPEN_MAIN_WINDOW_CHANNEL]: { payload: void; answer: void };
-  [HIDE_WIDGET_CHANNEL]: { payload: void; answer: void };
   [RESIZE_WIDGET_CHANNEL]: { payload: WidgetHeight; answer: void };
-  [WIDGET_WALKS_CHANNEL]: { payload: { directory: string }; answer: WidgetWalk[] };
-  [PUT_WIDGET_WALK_CHANNEL]: { payload: WidgetAsk; answer: PutWalkAnswer | null };
-  [STOP_WIDGET_WALK_CHANNEL]: { payload: OfWidgetSphere; answer: void };
-  [FRESH_WIDGET_WALK_CHANNEL]: { payload: OfWidgetSphere; answer: void };
 }
 
 /** Every channel; a name outside this is not one. */

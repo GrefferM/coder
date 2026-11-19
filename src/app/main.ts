@@ -13,7 +13,6 @@ import {
   WALKS_IPC_CHANNELS,
   WIDGET_IPC_CHANNELS,
   WIDGET_SHELL_IPC_CHANNELS,
-  WIDGET_WALK_IPC_CHANNELS,
 } from "./ipc";
 import {
   AppStage,
@@ -23,7 +22,6 @@ import {
   WindowProjectVoice,
   WindowVoice,
   WindowWalkVoice,
-  WindowWidgetVoice,
 } from "./services";
 import { createBackend } from "./backend";
 import type { Backend } from "./backend";
@@ -46,7 +44,6 @@ async function initializeIpc(): Promise<AppStage> {
       project: new WindowProjectVoice(windows),
       agent: new WindowVoice(windows),
       walk: new WindowWalkVoice(windows),
-      widget: new WindowWidgetVoice(windows),
     },
     hearingAppPath: app.isPackaged ? path.join(process.resourcesPath, HEARING_APP_NAME) : DEV_HEARING_APP_PATH,
   });
@@ -72,7 +69,6 @@ async function initializeIpc(): Promise<AppStage> {
   registerIpcChannels(wired.walkController, WALKS_IPC_CHANNELS);
   registerIpcChannels(wired.scheduleController, SCHEDULES_IPC_CHANNELS);
   registerIpcChannels(wired.widgetController, WIDGET_IPC_CHANNELS);
-  registerIpcChannels(wired.widgetWalkController, WIDGET_WALK_IPC_CHANNELS);
   registerIpcChannels(stage, WIDGET_SHELL_IPC_CHANNELS);
   registerIpcChannels(new SystemShell(), SHELL_IPC_CHANNELS);
 

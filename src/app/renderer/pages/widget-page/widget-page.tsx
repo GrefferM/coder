@@ -5,20 +5,18 @@ import { hearingChoice, useReadAloud, useSpeech, useVoiceAsk } from "../../featu
 import { packAttachments, packCeiling, pickAttachment, refusedPickNote } from "../../features/conversation";
 import {
   CLOSE_PROJECT_LABEL,
-  HIDE_WIDGET_LABEL,
   NoAgents,
   OPEN_MAIN_LABEL,
   OpenProject,
   SphereCarousel,
   SphereStage,
-  StopReading,
+  WidgetTools,
   WIDGET_WALK_HEIGHT_PX,
   WidgetField,
   WidgetFrame,
   WidgetHead,
   WidgetNote,
   WidgetOutput,
-  hideWidget,
   openMainWindow,
   resizeWidget,
   useEndReading,
@@ -28,6 +26,7 @@ import {
   widgetExchanges,
 } from "../../features/widget";
 import { agentStands, isWalking } from "../../../../contracts";
+import { thrownWords } from "../../utils/errors";
 import type { PickedAttachment, ProjectEntry, ProviderState } from "../../interfaces";
 
 /**
@@ -45,20 +44,39 @@ export function WidgetPage() {
   /** What a state with no height of its own measures, as the frame tells it. */
   const [measured, setMeasured] = useState(0);
   const { directory, config, chosenAgentId } = widget;
-  const snapshot = chosenAgentId === null ? null : (widget.walks[chosenAgentId] ?? null);
+  /** The project's one conversation, the chat's: a walk out anywhere in it holds the field, as in the chat. */
+  const snapshot = widget.walks;
   const isOut = snapshot !== null && isWalking(snapshot);
-  const exchanges = snapshot === null || config === null ? [] : widgetExchanges(snapshot, config);
+  const exchanges =
+    snapshot === null || config === null
+      ? []
+      : chosenAgentId === null
+        ? []
+        : widgetExchanges(snapshot, config, chosenAgentId);
   const chosen = config?.agents.find((agent) => agent.id === chosenAgentId) ?? null;
   /** The files and folders picked for the next question, under the field. */
   const [attachments, setAttachments] = useState<PickedAttachment[]>([]);
   /** How much the chosen agent's model takes; nothing to count against where there is none. */
   const ceiling = chosen === null || config === null ? 0 : packCeiling(agentStands(chosen, config, providers));
   const repeating = useWidgetRepeats({
-    isOut,
-    put: widget.ask,
+    isOutOf: () => isOut,
+    // A question the backend refused, or a folder gone, is said on the widget's line, and the repeats end.
+    put: (agentId, text, attached) =>
+      widget.ask(agentId, text, attached).catch((failure: unknown) => {
+        say({
+          words: thrownWords(failure),
+          act: null,
+        });
+
+        return false;
+      }),
   });
   /** Packs the picked files under the model's ceiling and puts the question with them, as many times as «x1» says. */
   const send = async (text: string) => {
+    if (chosenAgentId === null) {
+      return false;
+    }
+
     const packed =
       attachments.length === 0
         ? []
@@ -66,7 +84,7 @@ export function WidgetPage() {
             attachments.map((one) => one.path),
             ceiling,
           );
-    const went = await repeating.send(text, packed);
+    const went = await repeating.send(chosenAgentId, text, packed);
 
     if (went) {
       setAttachments([]);
@@ -109,7 +127,7 @@ export function WidgetPage() {
   const hasTalk = config !== null && config.agents.length > 0 && exchanges.length > 0;
   const height = hasTalk ? WIDGET_WALK_HEIGHT_PX : measured;
 
-  useEndReading(exchanges, aloud);
+  useEndReading(exchanges, aloud, chosenAgentId);
 
   useEffect(() => {
     void listProviders().then(setProviders);
@@ -183,13 +201,13 @@ export function WidgetPage() {
             label: OPEN_MAIN_LABEL,
             onPress: () => void openMainWindow(),
           },
-          {
-            label: HIDE_WIDGET_LABEL,
-            onPress: () => void hideWidget(),
-          },
         ]}
       />
-      <StopReading isReading={aloud.readingId !== null} onStop={aloud.stop} />
+      <WidgetTools
+        isReading={aloud.readingId !== null}
+        onStopReading={aloud.stop}
+        onOpenMain={() => void openMainWindow()}
+      />
       {config.agents.length === 0 ? (
         <NoAgents onOpenMain={() => void openMainWindow()} />
       ) : (

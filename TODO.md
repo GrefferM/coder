@@ -19,8 +19,6 @@ the same commit; the change that closes it removes the line.
   hearing takes the whole recording at its end, so the words come with «РОЗПІЗНАЄМО…» and go at once.
 - The widget's output draws no run graph (52e–52i): the carousel stays where the graph of the walk
   stands, and the steps are lines without it.
-- A run begun from the widget carries no «З ВІДЖЕТА» in «Чат → Історія» (52k); it reads like any
-  other run.
 
 ## Outside the consent to start a server (36k)
 

@@ -1,19 +1,17 @@
-import { IsBoolean, IsObject, IsOptional, IsString } from "class-validator";
+import { IsObject, IsOptional, IsString } from "class-validator";
 import type { WidgetPlace } from "../interfaces";
 
-/** How this machine keeps the desktop widget. */
+/** A change to how this machine keeps the desktop widget: only what changed is given. */
 export class SaveWidgetDto {
-  @IsBoolean()
-  declare isShown: boolean;
-
   @IsOptional()
   @IsString()
-  declare directory: string | null;
+  declare directory?: string | null;
 
   @IsOptional()
   @IsObject()
-  declare place: WidgetPlace | null;
+  declare place?: WidgetPlace | null;
 
+  @IsOptional()
   @IsObject()
-  declare chosen: Record<string, string>;
+  declare chosen?: Record<string, string>;
 }

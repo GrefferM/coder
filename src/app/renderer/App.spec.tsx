@@ -19,6 +19,11 @@ vi.mock("./hooks", () => ({
   useChoiceArrows: () => undefined,
 }));
 
+// The project shared with the widget is its own subject's, proved beside it.
+vi.mock("./features/widget", () => ({
+  useSharedProject: () => undefined,
+}));
+
 vi.mock("./pages", () => ({
   StartPage: ({ onProjectOpened }: { onProjectOpened: (project: OpenProject) => void }) => {
     held.open = onProjectOpened;

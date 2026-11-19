@@ -1168,7 +1168,7 @@ the chosen one; the model form's provider picker says it after the provider's ro
 **Speech is a section of its own on the rail** (frame 38c), the last above the rule, its glyph a
 sound wave: what the project recognises speech with travels with the folder. «Розпізнавання» is a
 model of the catalogue whose kind is «Розпізнавання» (49d), chosen from a list that holds only those
-— never typed — or **macOS itself** (38d), the list's first row «macOS · на цій машині» with
+— never typed — or **macOS itself** (38d), on a Mac only, the list's first row «macOS · на цій машині» with
 «БЕЗКОШТОВНО · БЕЗ МЕРЕЖІ · КЛЮЧА НЕ ТРЕБА» under it. A model is written to `project.yaml` by its id the moment it is chosen; the field names the
 model's provider at its far end. With no such model in the catalogue the field says «НЕ ЗАПОВНЕНО»
 and «ДО МОДЕЛЕЙ» under it opens the models; a chosen model since deleted is an ordinary broken tie,
@@ -1525,22 +1525,28 @@ ends, islands and missing exits are all normal, and there is no "finish" marker.
 
 ## The desktop widget
 
-**The widget is a small borderless window of Coder** (52a), 380 wide, lying among the other windows
-where it was put; it lives while Coder runs, the main window closed or not, and is dragged by its
-empty head. Its top edge stays and its height follows its state: 760 once the sphere has a conversation, and
+**Coder starts as the widget alone**, and in the built app it starts with the system. The widget
+and the main window take turns: «Відкрити Coder повністю» under the widget's head brings the main
+window and puts the widget away; the main window closed brings the widget back. **Coder stands in
+the menu bar** as a wireframe sphere drawn in the bar's own colour: a press shows the widget, and
+its menu, at a secondary press, holds only «Закрити Coder» with a red dot beside it. **The widget is
+a small borderless window of Coder** (52a), 380 wide, lying among the other windows where it was
+put, and dragged by its empty head. Its top edge stays and its height follows its state: 760 once the sphere has a conversation, and
 otherwise as tall as what stands in it — with no project the sphere, the button, and the list under
 it 12px down once open; at rest the head, the sphere, the carousel and the field, 20px under its
 buttons. With no project it holds an empty grey sphere and one act (52b), «Відкрити
 проєкт», which unfolds the recent projects and «Відкрити папку». A project open, its head is the
 project's chip — its name and folder, opening the same list with the current one ticked, then
-«Закрити проєкт», «Відкрити вікно Coder» and «Прибрати віджет» quiet under a rule — and «НОВА
+«Закрити проєкт» and «Відкрити Coder повністю» quiet under a rule — and «НОВА
 РОЗМОВА» at its side once the sphere has a conversation and nothing is out (52k). Under the head on the
-right stands a speaker, lit while an end of a walk is read aloud; a press silences that reading.
+right stand «Відкрити Coder повністю» and a speaker, lit while an end of a walk is read aloud; a
+press silences that reading.
 
 **The chosen agent stands as one big sphere** in the middle, at the Sphere's own 160px, its name in
 Mono 11 and «→ N» under it — how many agents work after it along the lines. Under it every agent of
 the project sits in a carousel of 32px spheres scrolling sideways, the chosen one whole and the
-rest dim; a press makes one the big sphere, and the machine remembers the choice for the project.
+rest dim; a press makes one the big sphere and aims the chat at it, and the machine remembers the
+choice for the project.
 A switched-off agent is a grey frame that cannot be chosen. A project with no agents says so and
 leads to the main window (52c). The carousel stays while a walk is out, where 52e draws the run
 graph.
@@ -1557,11 +1563,20 @@ rests with «Ходьба йде — зачекайте або зупиніть�
 conversation, newest at the bottom: the «ВИ» card, a step between as one line with «КРОК N ·
 година», a turn out as a working card with its clock, and an end of the walk whole on its card.
 **Each end is read aloud** the moment it comes, in the machine's voice, one after another in the
-order they ended (52f, 52h); ends already standing when the widget opened are not read. What stops
+order they ended (52f, 52h); an end that came before the widget opened, or before its sphere was
+chosen, is history and is not read. A repeated question goes back to the sphere it began at,
+whichever is chosen meanwhile, and one that does not go says why on the line and ends the repeats.
+The widget reads this machine's speech again whenever it comes back, so a voice or hearing chosen
+in the main window reaches it. What stops
 a question or a reading stands as a line over the field (52j), one without an act going after 12 s.
-Each sphere keeps its conversation between questions (52k). The project chosen here is this
-machine's and the main window may hold another. «Відкрити папку» opens a folder that already is a
-project; an empty one is not made one here.
+**The widget and the main window are one.** They hold one project — opened or closed in either, the
+other follows, and the main window opens at the widget's project — one sphere, which is the chat's
+aim, and one conversation: a question asked in the widget stands in the chat, and the widget shows
+the walks begun at its sphere wherever they were asked; «НОВА РОЗМОВА» empties both. Frame 52k still
+draws a conversation of each sphere's own and a history row marked «З ВІДЖЕТА»; the widget shares the
+chat's conversation instead, so its runs are the chat's. A walk out
+anywhere in the conversation rests the widget's field, as it does the chat's. «Відкрити папку»
+opens a folder that already is a project; an empty one is not made one here.
 
 ## Schedules
 

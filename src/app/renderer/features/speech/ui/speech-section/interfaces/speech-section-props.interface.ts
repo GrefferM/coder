@@ -9,6 +9,8 @@ export interface SpeechSectionProps {
   providers: ProviderState[];
   /** This machine's voice. */
   speech: SpeechState;
+  /** The machine is a Mac, where macOS itself can hear; elsewhere its row is not offered. */
+  isMac: boolean;
   onChooseListenModel: (modelId: string) => void;
   /** «ДО МОДЕЛЕЙ»: where a recognition model is made. */
   onOpenModels: () => void;

@@ -4,6 +4,3 @@ export * from "./let-go-walks.dto";
 export * from "./open-walks.dto";
 export * from "./put-walk.dto";
 export * from "./say-walk-again.dto";
-export * from "./put-widget-walk.dto";
-export * from "./of-widget-sphere.dto";
-export * from "./widget-walks.dto";

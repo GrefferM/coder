@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { MainPage, StartPage } from "./pages";
 import { useChoiceArrows, useFieldTab, useScrollMark } from "./hooks";
+import { useSharedProject } from "./features/widget";
 import type { OpenProject } from "./interfaces";
 
 export function App() {
   const [project, setProject] = useState<OpenProject | null>(null);
 
   useScrollMark();
+  // The widget holds the same project: opened or closed here, it follows, and the other way round.
+  useSharedProject({
+    project,
+    onOpened: setProject,
+  });
   // Tab is the fields' key app-wide, start screen included.
   useFieldTab();
   // A row of choices is one tab stop; arrows choose inside it.

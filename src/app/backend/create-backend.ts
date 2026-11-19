@@ -33,7 +33,11 @@ export async function createBackend({ userDataPath, cipher, voices, hearingAppPa
     secretService,
     userDataPath,
   );
-  const { controller: speechController } = createSpeechModule(providerService, userDataPath, hearingAppPath);
+  const { controller: speechController } = createSpeechModule({
+    reach: providerService,
+    userDataDirectory: userDataPath,
+    hearingAppPath,
+  });
   const { controller: runController, keeper, reader: runReader, writer: runWriter } = createRunModule(dataSource);
   const { runner: commandRunner } = createCommandsModule();
   // A local server is a process this backend started, so this backend stops it.
@@ -41,7 +45,6 @@ export async function createBackend({ userDataPath, cipher, voices, hearingAppPa
   const { service: llmService } = createLlmModule(providerService, voices.agent, commandRunner, client, runReader);
   const {
     controller: walkController,
-    widgetController: widgetWalkController,
     hub,
     scheduled,
   } = createWalksModule({
@@ -50,7 +53,6 @@ export async function createBackend({ userDataPath, cipher, voices, hearingAppPa
     providers: providerService,
     servers: client,
     voice: voices.walk,
-    widget: voices.widget,
   });
   const { controller: scheduleController, clock } = createSchedulesModule(scheduled);
   const { controller: widgetController, settings: widgetSettings } = createWidgetModule(userDataPath);
@@ -65,7 +67,6 @@ export async function createBackend({ userDataPath, cipher, voices, hearingAppPa
     walkController,
     scheduleController,
     widgetController,
-    widgetWalkController,
     widgetSettings,
     watch,
     finder,

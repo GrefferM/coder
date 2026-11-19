@@ -1,17 +1,22 @@
 import { execFile } from "node:child_process";
+import { existsSync } from "node:fs";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import {
+  MAC_ALLOW_WAIT_MS,
   MAC_ANSWER_FILE_NAME,
   MAC_CALL_DIRECTORY_PREFIX,
+  MAC_HEAR_WAIT_MS,
+  MAC_LOOK_WAIT_MS,
   MAC_OPEN_ARGUMENTS,
   MAC_RECORDING_FILE_NAME,
+  MAC_SILENT_WORDS,
 } from "../constants";
 import { SPEECH_HEARING_FAILED, SPEECH_MAC_DENIED } from "../interfaces";
 import { Refusal } from "../../../utils/refusals";
-import type { MacAnswer, MacListener, MacPermission, MacRecording } from "../interfaces";
+import type { MacAnswer, MacCall, MacListener, MacPermission, MacRecording } from "../interfaces";
 
 const run = promisify(execFile);
 
@@ -23,24 +28,41 @@ export class MacHearing implements MacListener {
   constructor(private readonly appPath: string) {}
 
   async permission(): Promise<MacPermission> {
-    return this.permissionOf(await this.ask(["status"]));
+    return this.permissionOf(
+      await this.ask({
+        command: "status",
+        waitMs: MAC_LOOK_WAIT_MS,
+      }),
+    );
   }
 
   async allow(): Promise<MacPermission> {
-    return this.permissionOf(await this.ask(["allow"]));
+    return this.permissionOf(
+      await this.ask({
+        command: "allow",
+        waitMs: MAC_ALLOW_WAIT_MS,
+      }),
+    );
   }
 
   async locales(): Promise<string[]> {
-    const answer = await this.ask(["locales"]);
+    const answer = await this.ask({
+      command: "locales",
+      waitMs: MAC_LOOK_WAIT_MS,
+    });
 
     return answer.locales ?? [];
   }
 
   /** The words said; a refused permission and a failure of macOS's own are refusals. */
   async hear({ audio, locale }: MacRecording): Promise<string> {
-    const answer = await this.ask(["hear"], {
-      audio,
-      locale,
+    const answer = await this.ask({
+      command: "hear",
+      waitMs: MAC_HEAR_WAIT_MS,
+      recording: {
+        audio,
+        locale,
+      },
     });
 
     if (answer.refused !== undefined) {
@@ -54,15 +76,24 @@ export class MacHearing implements MacListener {
     return (answer.text ?? "").trim();
   }
 
-  /** Launches Coder Hearing on one command in a folder of its own, reads its answer, and clears the folder. */
-  private async ask(command: string[], recording?: MacRecording): Promise<MacAnswer> {
+  /**
+   * Launches Coder Hearing on one command in a folder of its own, reads its answer, and clears the folder. One that
+   * does not end in its time, or ends leaving no answer, is a refusal saying so.
+   */
+  private async ask({ command, waitMs, recording }: MacCall): Promise<MacAnswer> {
     const directory = await mkdtemp(path.join(os.tmpdir(), MAC_CALL_DIRECTORY_PREFIX));
     const answerPath = path.join(directory, MAC_ANSWER_FILE_NAME);
 
     try {
       const heard = await this.recordingArguments(directory, recording);
+      const launched = await this.launched(
+        [...MAC_OPEN_ARGUMENTS, this.appPath, "--args", command, answerPath, ...heard],
+        waitMs,
+      );
 
-      await run("open", [...MAC_OPEN_ARGUMENTS, this.appPath, "--args", ...command, answerPath, ...heard]);
+      if (!launched || !existsSync(answerPath)) {
+        throw new Refusal(SPEECH_HEARING_FAILED, MAC_SILENT_WORDS);
+      }
 
       return <MacAnswer>JSON.parse(await readFile(answerPath, "utf8"));
     } finally {
@@ -71,6 +102,16 @@ export class MacHearing implements MacListener {
         force: true,
       });
     }
+  }
+
+  /** Whether `open` ended within its time; one held past it is stopped. */
+  private async launched(args: string[], waitMs: number): Promise<boolean> {
+    return run("open", args, {
+      timeout: waitMs,
+    }).then(
+      () => true,
+      () => false,
+    );
   }
 
   /** The recording laid in the call's folder, and the two arguments that name it and its language. */

@@ -14,7 +14,7 @@ function machineVoices(): MachineVoice[] {
 }
 
 /**
- * What this machine speaks and hears with, read once, and the voices its OS has, told again whenever they change. A
+ * What this machine speaks and hears with, read at first and whenever the window comes back, and the voices its OS has, told again whenever they change. A
  * change that could not be written is said on the line, and the settings are read again from what the machine holds.
  */
 export function useSpeech(onNote: (note: SpeechNote) => void): SpeechState {
@@ -27,18 +27,24 @@ export function useSpeech(onNote: (note: SpeechNote) => void): SpeechState {
 
   told.current = onNote;
 
+  // Read again whenever the window comes back: the other window may have changed what this machine speaks with.
   useEffect(() => {
     let isLive = true;
+    const read = () => {
+      void readSpeech().then((settings) => {
+        if (isLive) {
+          held.current = settings;
+          setSettings(settings);
+        }
+      });
+    };
 
-    void readSpeech().then((read) => {
-      if (isLive) {
-        held.current = read;
-        setSettings(read);
-      }
-    });
+    read();
+    window.addEventListener("focus", read);
 
     return () => {
       isLive = false;
+      window.removeEventListener("focus", read);
     };
   }, []);
 

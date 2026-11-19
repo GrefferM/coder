@@ -4,6 +4,7 @@ import {
   CreateProjectDto,
   ForgetProjectDto,
   OpenProjectDto,
+  PeekProjectDto,
   ProjectConfigDto,
   RememberProjectViewDto,
   SaveProjectDto,
@@ -24,7 +25,7 @@ export class ProjectController {
   }
 
   @Validate()
-  async peek(payload: OpenProjectDto): Promise<ProjectConfigDto> {
+  async peek(payload: PeekProjectDto): Promise<ProjectConfigDto> {
     return this.projectService.peek(payload);
   }
 

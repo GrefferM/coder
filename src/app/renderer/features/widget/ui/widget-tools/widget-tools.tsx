@@ -1,4 +1,5 @@
 import {
+  OPEN_MAIN_LABEL,
   STOP_READING_LABEL,
   WIDGET_ACCENT_COLOR,
   WIDGET_FRESH_COLOR,
@@ -6,10 +7,13 @@ import {
   WIDGET_SPEAKER_ROW_PADDING,
   WIDGET_SPEAKER_SIZE_PX,
 } from "../../constants";
-import type { StopReadingProps } from "../../interfaces";
+import type { WidgetToolsProps } from "../../interfaces";
 
-/** The speaker under the head: lit while an end of a walk is read aloud, and a press silences it. */
-export function StopReading({ isReading, onStop }: StopReadingProps) {
+/**
+ * The row under the head: the way to the whole of Coder, which puts the widget away while it stands, and the speaker,
+ * lit while an end of a walk is read aloud, whose press silences that reading.
+ */
+export function WidgetTools({ isReading, onStopReading, onOpenMain }: WidgetToolsProps) {
   return (
     <div
       className="d-flex justify-content-end flex-shrink-0"
@@ -19,9 +23,38 @@ export function StopReading({ isReading, onStop }: StopReadingProps) {
     >
       <button
         type="button"
+        aria-label={OPEN_MAIN_LABEL}
+        title={OPEN_MAIN_LABEL}
+        onClick={onOpenMain}
+        className="d-flex align-items-center justify-content-center widget-no-drag"
+        style={{
+          width: WIDGET_SPEAKER_BOX_PX,
+          height: WIDGET_SPEAKER_BOX_PX,
+          padding: 0,
+          border: "none",
+          background: "transparent",
+          cursor: "pointer",
+        }}
+      >
+        <svg
+          width={WIDGET_SPEAKER_SIZE_PX}
+          height={WIDGET_SPEAKER_SIZE_PX}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={WIDGET_FRESH_COLOR}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+        </svg>
+      </button>
+      <button
+        type="button"
         aria-label={STOP_READING_LABEL}
+        title={STOP_READING_LABEL}
         disabled={!isReading}
-        onClick={onStop}
+        onClick={onStopReading}
         className="d-flex align-items-center justify-content-center widget-no-drag"
         style={{
           width: WIDGET_SPEAKER_BOX_PX,

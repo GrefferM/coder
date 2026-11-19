@@ -3,24 +3,35 @@ import type { ReadAloud } from "../../../speech";
 import type { WidgetExchange, WidgetStep } from "../../interfaces";
 
 /**
- * Reads each end of a walk aloud as it arrives, one after another in the order they ended (52h); ends already
- * standing when the widget opened are history and are not read.
+ * Reads each end of a walk aloud as it arrives, one after another in the order they ended (52h). Only an end that came
+ * while its sphere stood chosen is read: what ended before the widget opened, or before the sphere was chosen, is
+ * history, however late its walks reach the widget.
  */
-export function useEndReading(exchanges: WidgetExchange[], aloud: ReadAloud): void {
-  /** Every end the widget has seen, read or not, by the answer's id. */
-  const seen = useRef<Set<string> | null>(null);
+export function useEndReading(exchanges: WidgetExchange[], aloud: ReadAloud, sphereId: string | null): void {
+  /** Every end already read or waiting, by the answer's id. */
+  const queued = useRef(new Set<string>());
   /** Ends waiting for the voice, oldest first. */
   const waiting = useRef<WidgetStep[]>([]);
-  const ends = exchanges.flatMap((exchange) => exchange.steps.filter((step) => step.isEnd && !step.isFailure));
+  /** Since when the chosen sphere has stood chosen; an end before it is history. */
+  const since = useRef({
+    sphereId,
+    at: Date.now(),
+  });
 
-  if (seen.current === null) {
-    seen.current = new Set(ends.map((step) => step.id));
+  if (since.current.sphereId !== sphereId) {
+    since.current = {
+      sphereId,
+      at: Date.now(),
+    };
+    waiting.current = [];
   }
 
-  ends
-    .filter((step) => !seen.current?.has(step.id))
+  exchanges
+    .flatMap((exchange) => exchange.steps)
+    .filter((step) => step.isEnd && !step.isFailure && !queued.current.has(step.id))
+    .filter((step) => new Date(step.endedAt).getTime() >= since.current.at)
     .forEach((step) => {
-      seen.current?.add(step.id);
+      queued.current.add(step.id);
       waiting.current.push(step);
     });
 

@@ -31,3 +31,6 @@ export const CLIP_BARS = 46;
 
 /** How often the OS is asked for its voices while it has handed none over. */
 export const VOICES_ASK_EVERY_MS = 500;
+
+/** What a Mac's window says of itself, where macOS itself can hear (38d). */
+export const MAC_USER_AGENT_MARK = "Macintosh";

@@ -7,6 +7,8 @@ export interface ListenModelPickerProps {
   providers: ProviderState[];
   /** The chosen one by id; `null` while none is, and an id no such model answers is a broken tie. */
   modelId: string | null;
+  /** The machine is a Mac: macOS's row is offered. */
+  isMac: boolean;
   /** This machine hears with macOS, over whatever the project chose. */
   isMacChosen: boolean;
   mac: MacHearingState;

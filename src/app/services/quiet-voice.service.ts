@@ -1,10 +1,10 @@
 import type { AgentChunk } from "../../contracts";
 import type { AgentVoice } from "../../modules/llm";
 import type { ProjectVoice } from "../../modules/projects";
-import type { WalkVoice, WidgetVoice } from "../../modules/walks";
+import type { WalkVoice } from "../../modules/walks";
 
 /** The voice of a backend with no window to speak to: nothing is said. */
-export class QuietVoice implements ProjectVoice, AgentVoice, WalkVoice, WidgetVoice {
+export class QuietVoice implements ProjectVoice, AgentVoice, WalkVoice {
   changed(): void {
     // Neither a changed project file nor the walks' snapshots have anyone to reach.
   }

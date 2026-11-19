@@ -1,28 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  freshWidgetWalk,
-  peekProject,
-  putWidgetWalk,
-  readWidget,
-  saveWidget,
-  stopWidgetWalk,
-  widgetWalks,
-} from "../../api";
-import { WIDGET_WALK_CHANGED_CHANNEL } from "../../../../../../contracts";
+import { changeWidget, peekProject, readWidget } from "../../api";
+import { freshWalks, openWalks, putWalk, stopWalks } from "../../../conversation";
+import { WALKS_CHANGED_CHANNEL, WIDGET_SETTINGS_CHANGED_CHANNEL } from "../../../../../../contracts";
 import { thrownWords } from "../../../../utils/errors";
 import type { PackedAttachment, WalkSnapshot, WidgetSettings } from "../../../../../../contracts";
 import type { ProjectConfig } from "../../../../interfaces";
 import type { WidgetState } from "../../interfaces";
 
 /**
- * The desktop widget (52a, 52b): this machine's settings for it, its project read without being watched, the sphere
- * chosen in it, and every sphere's walks, told again by push.
+ * The desktop widget (52a, 52b), one with the main window: the project and the sphere are this machine's settings,
+ * told to both windows whenever either changes them, and the conversation is the project's one, the chat's, told to
+ * both by push. The project is read without being watched, and again whenever the widget comes back.
  */
 export function useWidget(): WidgetState {
   const [settings, setSettings] = useState<WidgetSettings | null>(null);
   const [config, setConfig] = useState<ProjectConfig | null>(null);
   const [trouble, setTrouble] = useState<string | null>(null);
-  const [walks, setWalks] = useState<Record<string, WalkSnapshot>>({});
+  const [walks, setWalks] = useState<WalkSnapshot | null>(null);
   /** The settings after the last change, so a change is laid over them and never over an older copy. */
   const held = useRef<WidgetSettings | null>(null);
   const directory = settings === null ? undefined : settings.directory;
@@ -39,31 +33,38 @@ export function useWidget(): WidgetState {
 
     held.current = next;
     setSettings(next);
-    await saveWidget(next);
+    await changeWidget(patch);
   }, []);
 
   useEffect(() => {
-    void readWidget().then((read) => {
-      held.current = read;
-      setSettings(read);
-    });
+    const take = (told: WidgetSettings) => {
+      held.current = told;
+      setSettings(told);
+    };
+
+    void readWidget().then(take);
+
+    return window.electronApi.subscribe(WIDGET_SETTINGS_CHANGED_CHANNEL, take);
   }, []);
 
-  // The project is read again whenever the widget comes back, since it is not watched.
+  // The project is read, and its conversation opened with it, now and whenever the widget comes back.
   useEffect(() => {
     if (directory === undefined || directory === null) {
       setConfig(null);
-      setWalks({});
+      setWalks(null);
 
       return;
     }
 
     let isLive = true;
     const read = () => {
-      peekProject(directory)
-        .then((read) => {
+      peekProject(directory, false)
+        .then(async (read) => {
+          const opened = await openWalks(directory, read);
+
           if (isLive) {
             setConfig(read);
+            setWalks(opened);
             setTrouble(null);
           }
         })
@@ -75,11 +76,6 @@ export function useWidget(): WidgetState {
     };
 
     read();
-    void widgetWalks(directory).then((told) => {
-      if (isLive) {
-        setWalks(Object.fromEntries(told.map((walk) => [walk.agentId, walk.snapshot])));
-      }
-    });
     window.addEventListener("focus", read);
 
     return () => {
@@ -88,16 +84,7 @@ export function useWidget(): WidgetState {
     };
   }, [directory]);
 
-  useEffect(
-    () =>
-      window.electronApi.subscribe(WIDGET_WALK_CHANGED_CHANNEL, (walk) =>
-        setWalks((was) => ({
-          ...was,
-          [walk.agentId]: walk.snapshot,
-        })),
-      ),
-    [],
-  );
+  useEffect(() => window.electronApi.subscribe(WALKS_CHANGED_CHANNEL, setWalks), []);
 
   const chosenId = directory === undefined || directory === null ? null : (settings?.chosen[directory] ?? null);
   /** A chosen agent since deleted is no choice at all; nothing else is taken in its place. */
@@ -106,6 +93,16 @@ export function useWidget(): WidgetState {
   const open = useCallback(
     async (next: string) => {
       setTrouble(null);
+
+      // Opened here, the project joins the recent ones; a folder that is no project stops here and says why.
+      try {
+        await peekProject(next, true);
+      } catch (failure) {
+        setTrouble(thrownWords(failure));
+
+        return;
+      }
+
       await change({
         directory: next,
       });
@@ -135,41 +132,24 @@ export function useWidget(): WidgetState {
     [change],
   );
 
-  const ask = useCallback(
-    async (text: string, attached: PackedAttachment[]) => {
-      if (directory === undefined || directory === null || chosenAgentId === null) {
-        return false;
-      }
+  const ask = useCallback(async (agentId: string, text: string, attached: PackedAttachment[]) => {
+    const answer = await putWalk({
+      agentId,
+      text,
+      attached,
+      recordings: [],
+    });
 
-      // Read afresh, so the walk goes along the lines as the folder holds them now.
-      const read = await peekProject(directory);
-
-      setConfig(read);
-
-      const answer = await putWidgetWalk({
-        directory,
-        config: read,
-        agentId: chosenAgentId,
-        text,
-        attached,
-      });
-
-      return answer !== null;
-    },
-    [directory, chosenAgentId],
-  );
+    return answer !== null;
+  }, []);
 
   const stop = useCallback(() => {
-    if (chosenAgentId !== null) {
-      void stopWidgetWalk(chosenAgentId);
-    }
-  }, [chosenAgentId]);
+    void stopWalks();
+  }, []);
 
   const fresh = useCallback(() => {
-    if (chosenAgentId !== null) {
-      void freshWidgetWalk(chosenAgentId);
-    }
-  }, [chosenAgentId]);
+    void freshWalks();
+  }, []);
 
   return {
     directory,
