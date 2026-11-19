@@ -5,6 +5,7 @@ import { NOT_FILLED_LABEL } from "../../../../constants";
 import { VOICE_RATE_LEAST, VOICE_RATE_MOST, VOICE_RATE_STEP } from "../../../../../../contracts";
 import {
   HEARING_CARD_TITLE,
+  ENGLISH_VOICE_SAMPLE,
   UKRAINIAN_VOICE_FIELD_LABEL,
   UKRAINIAN_VOICE_SAME_WORDS,
   VOICE_CARD_TITLE,
@@ -13,6 +14,7 @@ import {
   VOICE_RATE_LABEL,
   VOICE_RATE_OWN,
   VOICE_RATE_PLACES,
+  VOICE_SAMPLE,
 } from "../../constants";
 import { SPEECH_SECTION_GAP_PX, SPEECH_SECTION_PADDING } from "./constants";
 import type { SpeechSectionProps } from "./interfaces";
@@ -89,7 +91,7 @@ export function SpeechSection({
               voiceName,
             })
           }
-          onListen={onListen}
+          onListen={() => onListen(ENGLISH_VOICE_SAMPLE)}
         />
         <VoicePicker
           label={UKRAINIAN_VOICE_FIELD_LABEL}
@@ -101,7 +103,7 @@ export function SpeechSection({
               ukrainianVoiceName,
             })
           }
-          onListen={null}
+          onListen={() => onListen(VOICE_SAMPLE)}
         />
         <FieldSlot label={VOICE_RATE_LABEL}>
           <Stepper

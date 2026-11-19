@@ -30,7 +30,7 @@ export const HEARING_LOST_NOTE =
   "Модель, обрану для розпізнавання, з каталогу видалено. Посилання лишилось — оберіть іншу.";
 export const VOICE_CARD_TITLE = "Голос";
 export const VOICE_MACHINE_NOTE = "Ця машина · у project.yaml не йде";
-export const VOICE_FIELD_LABEL = "ГОЛОС";
+export const VOICE_FIELD_LABEL = "ГОЛОС ДЛЯ АНГЛІЙСЬКОЇ";
 export const UKRAINIAN_VOICE_FIELD_LABEL = "ГОЛОС ДЛЯ УКРАЇНСЬКОЇ";
 /** The Ukrainian voice's field while none is chosen: the voice above reads the Ukrainian too. */
 export const UKRAINIAN_VOICE_SAME_WORDS = "Той самий голос";
@@ -39,6 +39,8 @@ export const VOICE_RATE_LABEL = "ШВИДКІСТЬ";
 /** How many places a rate is written with: «1.2». */
 export const VOICE_RATE_PLACES = 1;
 export const VOICE_SAMPLE = "Так звучатимуть відповіді агентів.";
+/** The English voice's sample, so it is heard in its own language. */
+export const ENGLISH_VOICE_SAMPLE = "This is how the agents' answers will sound.";
 /** The id the sample is read under, so the one voice knows it from any answer. */
 export const VOICE_SAMPLE_ID = "voice-sample";
 export const VOICE_NAME_SEPARATOR = " · ";

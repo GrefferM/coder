@@ -15,7 +15,6 @@ import { useSharedSphere } from "../../../../features/widget";
 import {
   SpeechIcon,
   SpeechSection,
-  VOICE_SAMPLE,
   VOICE_SAMPLE_ID,
   hearingChoice,
   heardIntoDraft,
@@ -297,7 +296,7 @@ export function usePageParts(
           isMac={window.navigator.userAgent.includes(MAC_USER_AGENT_MARK)}
           onChooseListenModel={(modelId) => void actions.chooseListenModel(modelId)}
           onOpenModels={() => rail.handleActiveIdChange(MODELS_SECTION_ID)}
-          onListen={() => aloud.read(VOICE_SAMPLE_ID, VOICE_SAMPLE)}
+          onListen={(sample) => aloud.read(VOICE_SAMPLE_ID, sample)}
         />
       ),
     },

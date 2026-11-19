@@ -1175,11 +1175,12 @@ and «ДО МОДЕЛЕЙ» under it opens the models; a chosen model since dele
 «моделі немає». The list carries no foot sentence, the same as the agent's model picker in the app.
 «Голос» is one of the OS's own voices and the one thing of this machine's in the section: its card
 says «Ця машина · у project.yaml не йде», it is written the moment it is chosen, and «ПОСЛУХАТИ»
-stands at its label's edge once one is. Under the voice «ГОЛОС ДЛЯ УКРАЇНСЬКОЇ» may
-name another voice for the answer's Ukrainian sentences — «Той самий голос» while none is — so
+stands at its label's edge once one is. The voice's field reads «ГОЛОС ДЛЯ АНГЛІЙСЬКОЇ», and its
+«ПОСЛУХАТИ» says an English sentence. Under it «ГОЛОС ДЛЯ УКРАЇНСЬКОЇ» may name another voice for the answer's Ukrainian sentences — «Той самий голос» while none is — so
 Samantha reads the English and Lesya the Ukrainian: the answer is read sentence by sentence, a
 sentence with at least as many Ukrainian letters as Latin going to the Ukrainian voice, so an
-English phrase inside a Ukrainian sentence does not change the voice. Under them «ШВИДКІСТЬ» sets how fast it reads, from 0.5 to 2
+English phrase inside a Ukrainian sentence does not change the voice; its own «ПОСЛУХАТИ» says the
+Ukrainian sample once a voice is chosen. Under them «ШВИДКІСТЬ» sets how fast it reads, from 0.5 to 2
 a tenth at a step, 1.0 its own pace; it is this machine's too, and the chat and the widget read at it. A change of the voice the machine does not take is said on
 the line over the canvas, «Мовлення не збережено: …», and the card stands again on what the machine
 holds. The language of recognition is not chosen for a model; the model hears it. **macOS is this
@@ -1188,7 +1189,8 @@ machine's choice**, not the project's: choosing it writes nothing to `project.ya
 PROJECT.YAML ЛИШАЄТЬСЯ ‹модель›»), and it hears in every project until a model is chosen again.
 Under it «МОВА» chooses the one language macOS hears in, from every language macOS lists on this
 machine, «Англійська · en-US»; none chosen says «НЕ ЗАПОВНЕНО» and the microphone «Розпізнавання не
-налаштоване». Choosing macOS has macOS ask its permission once in its own window, «ЧЕКАЄМО ДОЗВОЛУ
+налаштоване». Choosing macOS has macOS ask its permission once in its own window — and so does the
+first recording where it was never asked, as after a build signed anew — «ЧЕКАЄМО ДОЗВОЛУ
 macOS» standing under the field meanwhile (38e); a refusal turns the field to «macOS · немає
 дозволу» in the broken colour with «macOS не дала дозволу на розпізнавання мовлення. Без нього
 мікрофон не почує.» and «ПАРАМЕТРИ СИСТЕМИ», read again whenever the window comes back, and the

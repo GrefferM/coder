@@ -54,8 +54,16 @@ export class MacHearing implements MacListener {
     return answer.locales ?? [];
   }
 
-  /** The words said; a refused permission and a failure of macOS's own are refusals. */
+  /**
+   * The words said, macOS asking its permission first where it never has; a refused permission and a failure of
+   * macOS's own are refusals.
+   */
   async hear({ audio, locale }: MacRecording): Promise<string> {
+    // Never asked yet, as after a build signed anew: macOS asks the person now, once, and the recording waits for it.
+    if ((await this.permission()) === "undetermined") {
+      await this.allow();
+    }
+
     const answer = await this.ask({
       command: "hear",
       waitMs: MAC_HEAR_WAIT_MS,
@@ -78,7 +86,7 @@ export class MacHearing implements MacListener {
 
   /**
    * Launches Coder Hearing on one command in a folder of its own, reads its answer, and clears the folder. One that
-   * does not end in its time, or ends leaving no answer, is a refusal saying so.
+   * leaves no answer, in its time or at all, is a refusal saying so.
    */
   private async ask({ command, waitMs, recording }: MacCall): Promise<MacAnswer> {
     const directory = await mkdtemp(path.join(os.tmpdir(), MAC_CALL_DIRECTORY_PREFIX));
@@ -86,12 +94,10 @@ export class MacHearing implements MacListener {
 
     try {
       const heard = await this.recordingArguments(directory, recording);
-      const launched = await this.launched(
-        [...MAC_OPEN_ARGUMENTS, this.appPath, "--args", command, answerPath, ...heard],
-        waitMs,
-      );
 
-      if (!launched || !existsSync(answerPath)) {
+      await this.launch([...MAC_OPEN_ARGUMENTS, this.appPath, "--args", command, answerPath, ...heard], waitMs);
+
+      if (!existsSync(answerPath)) {
         throw new Refusal(SPEECH_HEARING_FAILED, MAC_SILENT_WORDS);
       }
 
@@ -104,13 +110,16 @@ export class MacHearing implements MacListener {
     }
   }
 
-  /** Whether `open` ended within its time; one held past it is stopped. */
-  private async launched(args: string[], waitMs: number): Promise<boolean> {
-    return run("open", args, {
+  /**
+   * Runs `open` and waits for it, stopping it past its time. Its own exit says nothing: an app that answers before
+   * `open` begins to wait makes it fail with the answer already written, so the answer file alone says how it went.
+   */
+  private async launch(args: string[], waitMs: number): Promise<void> {
+    await run("open", args, {
       timeout: waitMs,
     }).then(
-      () => true,
-      () => false,
+      () => undefined,
+      () => undefined,
     );
   }
 

@@ -14,6 +14,6 @@ export interface SpeechSectionProps {
   onChooseListenModel: (modelId: string) => void;
   /** «ДО МОДЕЛЕЙ»: where a recognition model is made. */
   onOpenModels: () => void;
-  /** «ПОСЛУХАТИ»: says a short sentence with the chosen voice. */
-  onListen: () => void;
+  /** «ПОСЛУХАТИ»: says this short sentence, which the voice of its language reads. */
+  onListen: (sample: string) => void;
 }

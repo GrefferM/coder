@@ -10,6 +10,7 @@ import {
   MAC_HEARING_DENIED_NOTE,
   MAC_HEARING_TITLE,
   NOTHING_CHOSEN,
+  ENGLISH_VOICE_SAMPLE,
   VOICE_LISTEN_LABEL,
   VOICE_MACHINE_NOTE,
 } from "../../constants";
@@ -139,7 +140,7 @@ describe("SpeechSection", () => {
 
     await userEvent.click(screen.getByText(VOICE_LISTEN_LABEL));
 
-    expect(shown.onListen).toHaveBeenCalledTimes(1);
+    expect(shown.onListen).toHaveBeenCalledWith(ENGLISH_VOICE_SAMPLE);
   });
 
   it("offers macOS above the catalogue, writes it as this machine's and has macOS ask its permission", async () => {

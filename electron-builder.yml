@@ -24,3 +24,7 @@ mac:
   # run on this machine, not to hand to another; the hardened runtime only matters to notarisation.
   identity: "-"
   hardenedRuntime: false
+  # Coder Hearing lies inside Coder, so macOS asks Coder's own purposes for the speech and the microphone it uses.
+  extendInfo:
+    NSSpeechRecognitionUsageDescription: Щоб розпізнавати сказане на цій машині, без мережі.
+    NSMicrophoneUsageDescription: Щоб чути питання, яке ви кажете агентам.

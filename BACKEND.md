@@ -121,7 +121,8 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   to look, 60 s to hear, 5 min to wait for the person's answer to the system's window), or ends
   leaving no answer, is refused `SPEECH_HEARING_FAILED` «Coder Hearing не відповів». A recording
   macOS is not allowed to hear is
-  refused `SPEECH_MAC_DENIED`. Otherwise which model hears is the project's (38c): the
+  refused `SPEECH_MAC_DENIED`; where macOS was never asked, as after a build signed anew, a recording
+  has it ask the person first, once. Otherwise which model hears is the project's (38c): the
   window sends each recording with that model's provider and name (macOS's with `MAC_HEARING_ID`
   and its locale in their place), and only OpenAI, OpenRouter and
   RunPod OpenAI hear (`SPEECH_LISTEN_PROVIDER_IDS` in `contracts/speech`), all at the OpenAI
