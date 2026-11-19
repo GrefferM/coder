@@ -36,6 +36,7 @@ import {
 import { ForgetRunConfirm, ForgetRunsConfirm } from "../../features/record";
 import { WIDGET_LISTEN_CHANNEL, agentStands, chatStream, isWalking } from "../../../../contracts";
 import { thrownWords } from "../../utils/errors";
+import { useWindowKeydown } from "../../hooks";
 import type { PickedAttachment, ProjectEntry, ProviderState } from "../../interfaces";
 import type { RunRow } from "../../../../contracts";
 
@@ -159,6 +160,32 @@ export function WidgetPage() {
     );
   };
   const height = hasTalk ? WIDGET_WALK_HEIGHT_PX : measured;
+
+  /** Stops the walk out and the repeats waiting behind it. */
+  const stopWalk = () => {
+    repeating.drop();
+    widget.stop();
+  };
+
+  // Escape stops what goes on: a take being said is dropped unheard, a walk out is stopped, a reading is silenced. A
+  // dialog open takes Escape for itself.
+  useWindowKeydown(doomedRun === null && !isForgettingAll, (event) => {
+    if (event.key !== "Escape") {
+      return;
+    }
+
+    if (voice.standing === "recording") {
+      voice.cancel();
+
+      return;
+    }
+
+    if (isOut) {
+      stopWalk();
+    }
+
+    aloud.stop();
+  });
 
   useEndReading({
     exchanges,
@@ -366,10 +393,7 @@ export function WidgetPage() {
             onDetach={(path) => setAttachments((was) => was.filter((one) => one.path !== path))}
             onRepeats={repeating.setRepeats}
             onSend={send}
-            onStop={() => {
-              repeating.drop();
-              widget.stop();
-            }}
+            onStop={stopWalk}
           />
         </>
       )}

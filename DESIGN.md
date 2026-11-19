@@ -1573,7 +1573,9 @@ it in; words grow in the field only after «РОЗПІЗНАЄМО…». A typed
 arrow, Shift+Enter a new line. The row under the field is the chat's: «+ ПРИКРІПИТИ» on the left,
 the picked files as chips over it, packed under the chosen agent's ceiling as the question goes,
 and «x1», the microphone and the arrow on the right; with «x1» above one the question goes again
-each time its walk ends, the count reading «2/5», and «ЗУПИНИТИ» ends the repeats with the walk. While the walk is out the sphere's halo goes round it and the field
+each time its walk ends, the count reading «2/5», and «ЗУПИНИТИ» ends the repeats with the walk. **Escape** in the widget stops what goes on: a take being said is
+dropped unheard, else a walk out is stopped with its repeats and a reading is silenced; a dialog
+open takes Escape for itself. While the walk is out the sphere's halo goes round it and the field
 rests with «Ходьба йде — зачекайте або зупиніть» and «ЗУПИНИТИ». The output is the sphere's
 conversation, newest at the bottom: the «ВИ» card, a step between as one line with «КРОК N ·
 година», a turn out as a working card with its clock, and an end of the walk whole on its card.
