@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { readSpeech, saveSpeech } from "../../api";
 import { thrownWords } from "../../../../utils/errors";
-import { NOTHING_CHOSEN, SPEECH_SAVE_FAILED_PREFIX } from "../../constants";
+import { NOTHING_CHOSEN, SPEECH_SAVE_FAILED_PREFIX, VOICES_ASK_EVERY_MS } from "../../constants";
 import type { SpeechSettings } from "../../../../../../contracts";
 import type { MachineVoice, SpeechNote, SpeechState } from "../../interfaces";
 
@@ -42,13 +42,25 @@ export function useSpeech(onNote: (note: SpeechNote) => void): SpeechState {
     };
   }, []);
 
-  // The OS hands its voices over late, and again whenever one is put in or taken out.
+  // The OS hands its voices over late, and again whenever one is put in or taken out. Its first word can come before
+  // anyone listens, so the voices are asked for again until some stand.
   useEffect(() => {
     const tell = () => setVoices(machineVoices());
+    const asking = window.setInterval(() => {
+      const told = machineVoices();
+
+      if (told.length > 0) {
+        window.clearInterval(asking);
+        setVoices(told);
+      }
+    }, VOICES_ASK_EVERY_MS);
 
     window.speechSynthesis.addEventListener("voiceschanged", tell);
 
-    return () => window.speechSynthesis.removeEventListener("voiceschanged", tell);
+    return () => {
+      window.clearInterval(asking);
+      window.speechSynthesis.removeEventListener("voiceschanged", tell);
+    };
   }, []);
 
   const save = useCallback(async (change: Partial<SpeechSettings>) => {

@@ -3,12 +3,16 @@ import type { SpeechSettings } from "../../../../../contracts";
 /** Nothing chosen: what a machine that never wrote its speech holds. */
 export const NOTHING_CHOSEN: SpeechSettings = {
   voiceName: null,
+  voiceRate: null,
   isMacHearing: false,
   macLocale: null,
 };
 
 /** The recording's type where the recorder names none. */
 export const RECORDING_MIME_TYPE = "audio/webm";
+
+/** A voice's own pace. */
+export const VOICE_RATE_OWN = 1;
 
 /** The type of a recording laid again for macOS. */
 export const WAV_MIME_TYPE = "audio/wav";
@@ -24,3 +28,6 @@ export const LIVE_BARS = 120;
 
 /** How many bars a kept recording's wave is drawn with (4j, 4l). */
 export const CLIP_BARS = 46;
+
+/** How often the OS is asked for its voices while it has handed none over. */
+export const VOICES_ASK_EVERY_MS = 500;

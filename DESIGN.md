@@ -1175,7 +1175,8 @@ and «ДО МОДЕЛЕЙ» under it opens the models; a chosen model since dele
 «моделі немає». The list carries no foot sentence, the same as the agent's model picker in the app.
 «Голос» is one of the OS's own voices and the one thing of this machine's in the section: its card
 says «Ця машина · у project.yaml не йде», it is written the moment it is chosen, and «ПОСЛУХАТИ»
-stands at its label's edge once one is. A change of the voice the machine does not take is said on
+stands at its label's edge once one is. Under the voice «ШВИДКІСТЬ» sets how fast it reads, from 0.5 to 2
+a tenth at a step, 1.0 its own pace; it is this machine's too, and the chat and the widget read at it. A change of the voice the machine does not take is said on
 the line over the canvas, «Мовлення не збережено: …», and the card stands again on what the machine
 holds. The language of recognition is not chosen for a model; the model hears it. **macOS is this
 machine's choice**, not the project's: choosing it writes nothing to `project.yaml`, the card says

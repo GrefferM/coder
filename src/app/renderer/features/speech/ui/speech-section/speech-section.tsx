@@ -1,6 +1,15 @@
 import { ListenModelPicker, MacLocalePicker, SpeechCard, VoicePicker } from "./components";
 import { useMacHearing } from "../../hooks";
-import { HEARING_CARD_TITLE, VOICE_CARD_TITLE, VOICE_MACHINE_NOTE } from "../../constants";
+import { FieldSlot, Stepper } from "../../../../components";
+import { VOICE_RATE_LEAST, VOICE_RATE_MOST, VOICE_RATE_STEP } from "../../../../../../contracts";
+import {
+  HEARING_CARD_TITLE,
+  VOICE_CARD_TITLE,
+  VOICE_MACHINE_NOTE,
+  VOICE_RATE_LABEL,
+  VOICE_RATE_OWN,
+  VOICE_RATE_PLACES,
+} from "../../constants";
 import { SPEECH_SECTION_GAP_PX, SPEECH_SECTION_PADDING } from "./constants";
 import type { SpeechSectionProps } from "./interfaces";
 
@@ -74,6 +83,21 @@ export function SpeechSection({
           }
           onListen={onListen}
         />
+        <FieldSlot label={VOICE_RATE_LABEL}>
+          <Stepper
+            label={VOICE_RATE_LABEL}
+            value={settings.voiceRate ?? VOICE_RATE_OWN}
+            step={VOICE_RATE_STEP}
+            least={VOICE_RATE_LEAST}
+            most={VOICE_RATE_MOST}
+            places={VOICE_RATE_PLACES}
+            onChange={(voiceRate) =>
+              void save({
+                voiceRate,
+              })
+            }
+          />
+        </FieldSlot>
       </SpeechCard>
     </div>
   );

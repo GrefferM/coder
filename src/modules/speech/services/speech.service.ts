@@ -20,6 +20,7 @@ export class SpeechService {
 
     return {
       voiceName: this.textOf(held, "voiceName"),
+      voiceRate: this.numberOf(held, "voiceRate"),
       isMacHearing: this.flagOf(held, "isMacHearing"),
       macLocale: this.textOf(held, "macLocale"),
     };
@@ -31,6 +32,7 @@ export class SpeechService {
     const temporaryPath = `${filePath}.tmp`;
     const written: SpeechSettings = {
       voiceName: settings.voiceName,
+      voiceRate: settings.voiceRate,
       isMacHearing: settings.isMacHearing,
       macLocale: settings.macLocale,
     };
@@ -155,6 +157,16 @@ export class SpeechService {
     } catch {
       return null;
     }
+  }
+
+  private numberOf(held: unknown, field: keyof SpeechSettings): number | null {
+    if (typeof held !== "object" || held === null) {
+      return null;
+    }
+
+    const value = (<Record<string, unknown>>held)[field];
+
+    return typeof value === "number" ? value : null;
   }
 
   private flagOf(held: unknown, field: keyof SpeechSettings): boolean {

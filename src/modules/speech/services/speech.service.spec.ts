@@ -111,6 +111,7 @@ describe("SpeechService", () => {
 
     assert.deepEqual(await speechService.settings(), {
       voiceName: null,
+      voiceRate: null,
       isMacHearing: false,
       macLocale: null,
     });
@@ -129,6 +130,7 @@ describe("SpeechService", () => {
 
     assert.deepEqual(await speechService.settings(), {
       voiceName: null,
+      voiceRate: null,
       isMacHearing: false,
       macLocale: null,
     });
@@ -139,12 +141,14 @@ describe("SpeechService", () => {
 
     await speechService.save({
       voiceName: "Lesya",
+      voiceRate: null,
       isMacHearing: false,
       macLocale: null,
     });
 
     assert.deepEqual(await speechService.settings(), {
       voiceName: "Lesya",
+      voiceRate: null,
       isMacHearing: false,
       macLocale: null,
     });
@@ -155,12 +159,14 @@ describe("SpeechService", () => {
 
     await speechService.save({
       voiceName: null,
+      voiceRate: null,
       isMacHearing: true,
       macLocale: "en-GB",
     });
 
     assert.deepEqual(await speechService.settings(), {
       voiceName: null,
+      voiceRate: null,
       isMacHearing: true,
       macLocale: "en-GB",
     });

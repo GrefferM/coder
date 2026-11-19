@@ -32,6 +32,9 @@ export const VOICE_CARD_TITLE = "Голос";
 export const VOICE_MACHINE_NOTE = "Ця машина · у project.yaml не йде";
 export const VOICE_FIELD_LABEL = "ГОЛОС";
 export const VOICE_LISTEN_LABEL = "ПОСЛУХАТИ";
+export const VOICE_RATE_LABEL = "ШВИДКІСТЬ";
+/** How many places a rate is written with: «1.2». */
+export const VOICE_RATE_PLACES = 1;
 export const VOICE_SAMPLE = "Так звучатимуть відповіді агентів.";
 /** The id the sample is read under, so the one voice knows it from any answer. */
 export const VOICE_SAMPLE_ID = "voice-sample";

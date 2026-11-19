@@ -29,6 +29,7 @@ function synthesisWithLesya() {
 function hands(patch: Partial<ReadAloudHands> = {}): ReadAloudHands {
   return {
     voiceName: "Lesya",
+    voiceRate: null,
     onNote: vi.fn(),
     onOpenSpeech: vi.fn(),
     ...patch,
@@ -51,6 +52,21 @@ describe("useReadAloud", () => {
     expect(result.current.readingId).toBe("message-1");
     expect(utterance.voice).toBe(LESYA);
     expect(utterance.text).toBe("Додав кеш.\n.");
+  });
+
+  it("reads at the pace chosen, and at the voice's own where none is", () => {
+    const { spoken } = synthesisWithLesya();
+    const { result, rerender } = renderHook((held: ReadAloudHands) => useReadAloud(held), {
+      initialProps: hands({
+        voiceRate: 1.3,
+      }),
+    });
+
+    act(() => result.current.read("answer-1", "Hello there."));
+    rerender(hands());
+    act(() => result.current.read("answer-2", "Hello again."));
+
+    expect(spoken.map((utterance) => utterance.rate)).toEqual([1.3, 1]);
   });
 
   it("lets go of the mark when the reading ends by itself", () => {

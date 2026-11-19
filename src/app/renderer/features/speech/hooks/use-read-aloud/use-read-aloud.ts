@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { spokenParts, spokenWord } from "../../logic";
-import { SPEECH_SECTION_ACT, VOICE_NOT_SET_NOTE } from "../../constants";
+import { SPEECH_SECTION_ACT, VOICE_NOT_SET_NOTE, VOICE_RATE_OWN } from "../../constants";
 import type { ReadAloud, ReadAloudHands, SpokenWord } from "../../interfaces";
 
 /** One voice for the whole window: a new reading stops the old one, and nothing is left reading when it goes. */
@@ -25,7 +25,7 @@ export function useReadAloud(hands: ReadAloudHands): ReadAloud {
   }, []);
 
   const read = useCallback((id: string, text: string) => {
-    const { voiceName, onNote, onOpenSpeech } = held.current;
+    const { voiceName, voiceRate, onNote, onOpenSpeech } = held.current;
     const voice = window.speechSynthesis.getVoices().find((one) => one.name === voiceName) ?? null;
 
     // No voice chosen, or the one chosen is gone from this machine: the line says where it is chosen.
@@ -57,6 +57,7 @@ export function useReadAloud(hands: ReadAloudHands): ReadAloud {
 
     utterance.voice = voice;
     utterance.lang = voice.lang;
+    utterance.rate = voiceRate ?? VOICE_RATE_OWN;
     utterance.onend = done;
     utterance.onerror = done;
     // The voice says which character it reached; the word there is lit in the card.
