@@ -1556,7 +1556,7 @@ its name and folder, opening the same list with the current one ticked, then «�
 cross, «Прибрати зі списку», which takes the project off this machine's list and leaves its folder.
 The list closes at a press anywhere outside it.
 
-**Under the head stands a row.** On the left «ІСТОРІЯ», then «НОВА РОЗМОВА» once the sphere has a
+**Under the head stands a row** (52a). On the left «ІСТОРІЯ», then «НОВА РОЗМОВА» once the sphere has a
 conversation and nothing is out (52k). On the right «Відкрити Coder повністю» and a speaker of two
 states, which the machine keeps: lit, the ends of the walks are read aloud; crossed, they are not,
 and a press turning it off stops a reading under way and drops every end waiting behind it.
@@ -1582,9 +1582,10 @@ finished conversation, so another sphere can be chosen at once.
 
 **A question is said or typed.** The microphone records, and the big sphere's halo follows the
 loudness (52d, scale 0.94…1.06, brightness 0.34…1). The take ends only at a second press, of the
-microphone or of the listening key — never by itself at a pause, though 52d draws it ending so —
-and what is heard is sent at once, with no field to mend it in; words grow in the field only after
-«РОЗПІЗНАЄМО…». A typed question goes by Enter or the arrow, Shift+Enter a new line. The row under
+microphone or of the listening key — never by itself at a pause. **The take is heard whole, once it
+is ended**: nothing is heard while it is said, and the field stays as it stood; at the second press
+«РОЗПІЗНАЄМО…» stands in the wave's place, and what is heard is sent at once, with no field to mend
+it in. A typed question goes by Enter or the arrow, Shift+Enter a new line. The row under
 the field is the chat's: «+ ПРИКРІПИТИ» on the left, the picked files as chips over it, packed
 under the chosen agent's ceiling as the question goes, then the language's code where macOS hears
 and a second language is chosen — a press swaps the two — «x1», the microphone and the arrow. With
@@ -1594,7 +1595,7 @@ go says why on the line and ends the repeats. While the walk is out the sphere's
 and the field rests with «Ходьба йде — зачекайте або зупиніть» and «ЗУПИНИТИ», which ends the
 repeats with the walk.
 
-**Two keys.** The key of ~, pressed in any app, brings the widget up and begins a question; pressed
+**Two keys** (52a, 52d). The key of ~, pressed in any app, brings the widget up and begins a question; pressed
 while a question is being said, it ends it and the question goes; while one is being heard it does
 nothing. While Coder runs, that key types nothing in other apps. Escape, in the widget, stops what
 goes on: a take being said is dropped unheard, otherwise a walk out is stopped with its repeats and
@@ -1602,7 +1603,8 @@ a reading is silenced; a dialog open takes Escape for itself.
 
 **The output is the sphere's conversation**, newest at the bottom: the «ВИ» card, a step between as
 one line with «КРОК N · година», a turn out as a working card with its clock, and an end of the
-walk whole on its card; a turn stopped before it said anything shows «Зупинено». Every answer
+walk whole on its card; a step that fell stands in `#f0a5ac` in the words it fell with, and a turn
+stopped before it said anything shows «Зупинено» (52i). Every answer
 carries the chat's own speaker at the end of its head, which reads it or stops it. **Each end is
 read aloud** by itself while the speaker is lit, the moment it comes, in the machine's voice, one
 after another in the order they ended (52f, 52h). An end that came before the widget opened, or
@@ -1615,11 +1617,10 @@ field (52j), one without an act going after 12 s.
 other follows, and the main window opens at the widget's project — one sphere, which is the chat's
 aim, and one conversation: a question asked in the widget stands in the chat, and the widget shows
 the walks begun at its sphere wherever they were asked; «НОВА РОЗМОВА» empties both. A walk out
-anywhere in the conversation rests the widget's field, as it does the chat's. Frame 52k still draws
-a conversation of each sphere's own and a history row marked «З ВІДЖЕТА»; the widget shares the
-chat's conversation instead, so its runs are the chat's.
+anywhere in the conversation rests the widget's field, as it does the chat's. Its runs are the
+chat's own: no row of the history is marked as the widget's (52k).
 
-**«ІСТОРІЯ» lays the sphere's past runs in the output's place**, newest first, each its question
+**«ІСТОРІЯ» lays the sphere's past runs in the output's place** (52k), newest first, each its question
 and «day · hour». A sphere with none has no history to open, and a history whose last run is
 deleted folds away, the widget standing as at rest. A press on a run opens it: the output shows it
 as the record kept it, and the next question goes on in it, as a run opened in the chat does; a
@@ -1627,9 +1628,7 @@ question asked closes the list, and the list standing open is read again at ever
 record. As in the chat's history, an ended run carries a cross, «Видалити розмову», and «× Видалити
 N» over the list deletes every ended run of the sphere; each asks first in the chat's own dialog,
 narrowed to the widget, and a run deleted while open leaves a fresh conversation; «видалити всі»
-says the runs are the chosen agent's, not the whole project's. No frame draws
-the history, the crosses or the speaker's two states: they stand in the tokens of 52a and 30c until
-the canvas is redrawn.
+says the runs are the chosen agent's, not the whole project's (52k).
 
 ## Schedules
 

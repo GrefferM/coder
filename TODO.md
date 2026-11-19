@@ -15,8 +15,6 @@ the same commit; the change that closes it removes the line.
 - An agent whose model is a recognition model, written so by hand in `project.yaml`, is not stopped
   at its start: the picker never offers one, but nothing in `agentReadiness` refuses it, and its
   turn goes to the provider's chat as if the model could talk.
-- While a question is said into the widget, its words do not grow in the field (52d): macOS's
-  hearing takes the whole recording at its end, so the words come with «РОЗПІЗНАЄМО…» and go at once.
 
 ## Outside the consent to start a server (36k)
 
