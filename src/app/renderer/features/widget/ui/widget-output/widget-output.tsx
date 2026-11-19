@@ -23,7 +23,7 @@ import type { WidgetOutputProps } from "../../interfaces";
  * as one line each, the turns out as working cards, and an end of the walk whole on its card. Empty, it says nothing.
  */
 export function WidgetOutput({ exchanges, agents }: WidgetOutputProps) {
-  const { box } = useStayAtBottom<HTMLDivElement>(exchanges[0]?.walkId ?? null);
+  const { box } = useStayAtBottom<HTMLDivElement>(exchanges[0]?.questionId ?? null);
   const agentOf = (agentId: string): Agent | null => agents.find((agent) => agent.id === agentId) ?? null;
 
   return (
@@ -40,38 +40,36 @@ export function WidgetOutput({ exchanges, agents }: WidgetOutputProps) {
       {/* The first block is pushed down, so a short conversation stands at the bottom. */}
       <span className="mt-auto" />
       {exchanges.map((exchange) => (
-        <Fragment key={exchange.walkId}>
-          {exchange.question !== null && (
-            <div
-              className="d-flex flex-column"
+        <Fragment key={exchange.questionId}>
+          <div
+            className="d-flex flex-column"
+            style={{
+              gap: WIDGET_BLOCK_GAP_PX,
+            }}
+          >
+            <span
+              className="d-flex align-items-center"
               style={{
-                gap: WIDGET_BLOCK_GAP_PX,
+                gap: WIDGET_PERSON_HEAD_GAP_PX,
               }}
             >
               <span
-                className="d-flex align-items-center"
                 style={{
-                  gap: WIDGET_PERSON_HEAD_GAP_PX,
+                  width: WIDGET_PERSON_DOT_PX,
+                  height: WIDGET_PERSON_DOT_PX,
+                  borderRadius: "50%",
+                  background: WIDGET_PERSON_COLOR,
                 }}
-              >
-                <span
-                  style={{
-                    width: WIDGET_PERSON_DOT_PX,
-                    height: WIDGET_PERSON_DOT_PX,
-                    borderRadius: "50%",
-                    background: WIDGET_PERSON_COLOR,
-                  }}
-                />
-                <Mark color={WIDGET_PERSON_COLOR} className="flex-fill">
-                  {PERSON_LABEL}
-                </Mark>
-                <Mark color={WIDGET_TIME_COLOR} spacing={0}>
-                  {timeLabel(new Date(exchange.question.at))}
-                </Mark>
-              </span>
-              <TextCard text={exchange.question.text} color={WIDGET_PERSON_COLOR} />
-            </div>
-          )}
+              />
+              <Mark color={WIDGET_PERSON_COLOR} className="flex-fill">
+                {PERSON_LABEL}
+              </Mark>
+              <Mark color={WIDGET_TIME_COLOR} spacing={0}>
+                {timeLabel(new Date(exchange.question.at))}
+              </Mark>
+            </span>
+            <TextCard text={exchange.question.text} color={WIDGET_PERSON_COLOR} />
+          </div>
           {exchange.steps.map((step) => (
             <StepBlock key={step.id} step={step} agent={agentOf(step.agentId)} />
           ))}

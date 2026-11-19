@@ -23,3 +23,4 @@ export * from "./widget-repeats-hands.interface";
 export * from "./widget-tools-props.interface";
 export * from "./shared-project-hands.interface";
 export * from "./shared-sphere-hands.interface";
+export * from "./run-list-props.interface";

@@ -1,11 +1,11 @@
 import type { ChatMessage, TurnOut } from "../../../../../contracts";
 import type { WidgetStep } from "./widget-step.interface";
 
-/** One question from the widget and its walk: the answers so far, the turns still out, and whether it ended. */
+/** One question to the widget's sphere and its walk: the answers so far and the turns still out. */
 export interface WidgetExchange {
-  walkId: string;
-  question: ChatMessage | null;
+  /** The question's own id. */
+  questionId: string;
+  question: ChatMessage;
   steps: WidgetStep[];
   working: TurnOut[];
-  isStopped: boolean;
 }

@@ -1546,8 +1546,10 @@ it 12px down once open; at rest the head, the sphere, the carousel and the field
 buttons. With no project it holds an empty grey sphere and one act (52b), «Відкрити
 проєкт», which unfolds the recent projects and «Відкрити папку». A project open, its head is the
 project's chip — its name and folder, opening the same list with the current one ticked, then
-«Закрити проєкт» and «Відкрити Coder повністю» quiet under a rule. Under the head stands a row:
-«НОВА РОЗМОВА» on the left once the sphere has a conversation and nothing is out (52k), and on the
+«Закрити проєкт» and «Відкрити Coder повністю» quiet under a rule. Every row of the list but the
+open project carries a cross, «Прибрати зі списку», which takes the project off this machine's list
+and leaves its folder. The list closes at a press anywhere outside it. Under the head stands a row: «ІСТОРІЯ» on the left, then «НОВА РОЗМОВА» once
+the sphere has a conversation and nothing is out (52k), and on the
 right «Відкрити Coder повністю» and a speaker, lit while an end of a walk is read aloud; a press
 silences that reading.
 
@@ -1581,7 +1583,13 @@ a question or a reading stands as a line over the field (52j), one without an ac
 **The widget and the main window are one.** They hold one project — opened or closed in either, the
 other follows, and the main window opens at the widget's project — one sphere, which is the chat's
 aim, and one conversation: a question asked in the widget stands in the chat, and the widget shows
-the walks begun at its sphere wherever they were asked; «НОВА РОЗМОВА» empties both. Frame 52k still
+the walks begun at its sphere wherever they were asked; «НОВА РОЗМОВА» empties both. «ІСТОРІЯ» lays
+the sphere's past runs in the output's place, newest first, each its question and «day · hour»;
+a press opens one — the output shows it as the record kept it, and the next question goes on in
+it, as a run opened in the chat does. Its ends are history and are not read aloud. As in the chat's
+history, an ended run carries a cross, «Видалити розмову», and «× Видалити N» over the list deletes
+every ended run of the sphere; each asks first in the chat's own dialog, narrowed to the widget, and
+a run deleted while open leaves a fresh conversation. Frame 52k still
 draws a conversation of each sphere's own and a history row marked «З ВІДЖЕТА»; the widget shares the
 chat's conversation instead, so its runs are the chat's. A walk out
 anywhere in the conversation rests the widget's field, as it does the chat's. «Відкрити папку»

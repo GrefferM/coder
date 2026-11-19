@@ -1,13 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { chooseProjectDirectory, listRecentProjects } from "../../features/project";
+import { chooseProjectDirectory, forgetProject, listRecentProjects } from "../../features/project";
 import { listProviders } from "../../features/providers";
 import { hearingChoice, useReadAloud, useSpeech, useVoiceAsk } from "../../features/speech";
-import { packAttachments, packCeiling, pickAttachment, refusedPickNote } from "../../features/conversation";
+import {
+  openedStream,
+  packAttachments,
+  packCeiling,
+  pickAttachment,
+  refusedPickNote,
+} from "../../features/conversation";
 import {
   CLOSE_PROJECT_LABEL,
   NoAgents,
   OPEN_MAIN_LABEL,
   OpenProject,
+  RunList,
   SphereCarousel,
   SphereStage,
   WidgetTools,
@@ -26,9 +33,11 @@ import {
   languageCode,
   widgetExchanges,
 } from "../../features/widget";
-import { WIDGET_LISTEN_CHANNEL, agentStands, isWalking } from "../../../../contracts";
+import { ForgetRunConfirm, ForgetRunsConfirm } from "../../features/record";
+import { WIDGET_LISTEN_CHANNEL, agentStands, chatStream, isWalking } from "../../../../contracts";
 import { thrownWords } from "../../utils/errors";
 import type { PickedAttachment, ProjectEntry, ProviderState } from "../../interfaces";
+import type { RunRow } from "../../../../contracts";
 
 /**
  * The desktop widget (52a–52k): with no project, an empty sphere and «Відкрити проєкт»; with one, the chosen agent as
@@ -42,18 +51,23 @@ export function WidgetPage() {
   const [recent, setRecent] = useState<ProjectEntry[]>([]);
   const [providers, setProviders] = useState<ProviderState[]>([]);
   const [isListOpen, setIsListOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  /** The run a cross asked to delete, awaiting the answer. */
+  const [doomedRun, setDoomedRun] = useState<RunRow | null>(null);
+  const [isForgettingAll, setIsForgettingAll] = useState(false);
   /** What a state with no height of its own measures, as the frame tells it. */
   const [measured, setMeasured] = useState(0);
   const { directory, config, chosenAgentId } = widget;
   /** The project's one conversation, the chat's: a walk out anywhere in it holds the field, as in the chat. */
   const snapshot = widget.walks;
   const isOut = snapshot !== null && isWalking(snapshot);
+  const live = snapshot === null ? [] : chatStream(snapshot);
+  /** The conversation on screen: the live one, or a run opened from the history with the live words under it. */
+  const messages = widget.opened === null ? live : openedStream(widget.opened, live);
   const exchanges =
-    snapshot === null || config === null
+    snapshot === null || config === null || chosenAgentId === null
       ? []
-      : chosenAgentId === null
-        ? []
-        : widgetExchanges(snapshot, config, chosenAgentId);
+      : widgetExchanges(messages, Object.values(snapshot.out), config, chosenAgentId);
   const chosen = config?.agents.find((agent) => agent.id === chosenAgentId) ?? null;
   /** The files and folders picked for the next question, under the field. */
   const [attachments, setAttachments] = useState<PickedAttachment[]>([]);
@@ -126,8 +140,22 @@ export function WidgetPage() {
     onNote: say,
     onOpenSpeech: () => void openMainWindow(),
   });
-  /** A sphere with a conversation asks the full height; every other state is as tall as what stands in it. */
-  const hasTalk = config !== null && config.agents.length > 0 && exchanges.length > 0;
+  /** A sphere with a conversation, or the history open, asks the full height; every other state is as tall as it is. */
+  const hasTalk = config !== null && config.agents.length > 0 && (exchanges.length > 0 || isHistoryOpen);
+  /** The history lists the chosen sphere's runs only. */
+  const sphereRuns = widget.runs.filter((run) => run.startedByAgentId === chosenAgentId);
+  const endedSphereRuns = sphereRuns.filter((run) => run.endedAt !== null);
+  /** Deletes runs once answered; a refusal is said on the widget's line. */
+  const forgetRuns = (runIds: string[]) => {
+    setDoomedRun(null);
+    setIsForgettingAll(false);
+    void widget.forgetRuns(runIds).catch((failure: unknown) =>
+      say({
+        words: thrownWords(failure),
+        act: null,
+      }),
+    );
+  };
   const height = hasTalk ? WIDGET_WALK_HEIGHT_PX : measured;
 
   useEndReading(exchanges, aloud, chosenAgentId);
@@ -160,6 +188,13 @@ export function WidgetPage() {
   }, [height]);
 
   const loadRecent = useCallback(() => void listRecentProjects().then(setRecent), []);
+  const forget = useCallback(
+    async (gone: string) => {
+      await forgetProject(gone);
+      loadRecent();
+    },
+    [loadRecent],
+  );
   const open = useCallback(
     async (next: string) => {
       setIsListOpen(false);
@@ -195,6 +230,7 @@ export function WidgetPage() {
           }}
           onOpen={(picked) => void open(picked)}
           onOpenFolder={() => void openFolder()}
+          onForget={(gone) => void forget(gone)}
         />
       </WidgetFrame>
     );
@@ -209,6 +245,7 @@ export function WidgetPage() {
         onOpenList={loadRecent}
         onOpen={(picked) => void open(picked)}
         onOpenFolder={() => void openFolder()}
+        onForget={(gone) => void forget(gone)}
         quietActs={[
           {
             label: CLOSE_PROJECT_LABEL,
@@ -222,7 +259,18 @@ export function WidgetPage() {
       />
       <WidgetTools
         canBeginAgain={!isOut && exchanges.length > 0}
-        onBeginAgain={widget.fresh}
+        onBeginAgain={() => {
+          setIsHistoryOpen(false);
+          widget.fresh();
+        }}
+        isHistoryOpen={isHistoryOpen}
+        onToggleHistory={() => {
+          if (!isHistoryOpen) {
+            widget.listRuns();
+          }
+
+          setIsHistoryOpen(!isHistoryOpen);
+        }}
         isReading={aloud.readingId !== null}
         onStopReading={aloud.stop}
         onOpenMain={() => void openMainWindow()}
@@ -242,7 +290,20 @@ export function WidgetPage() {
             chosenAgentId={chosenAgentId}
             onChoose={(agentId) => void widget.choose(agentId)}
           />
-          {exchanges.length > 0 && <WidgetOutput exchanges={exchanges} agents={config.agents} />}
+          {isHistoryOpen ? (
+            <RunList
+              runs={sphereRuns}
+              openedRunId={widget.opened?.id ?? null}
+              onOpen={(runId) => {
+                setIsHistoryOpen(false);
+                void widget.openRun(runId);
+              }}
+              onForget={setDoomedRun}
+              onForgetAll={() => setIsForgettingAll(true)}
+            />
+          ) : (
+            exchanges.length > 0 && <WidgetOutput exchanges={exchanges} agents={config.agents} />
+          )}
           {note !== null && <WidgetNote note={note} />}
           <WidgetField
             agentName={chosen?.name ?? null}
@@ -274,6 +335,20 @@ export function WidgetPage() {
             }}
           />
         </>
+      )}
+      {doomedRun !== null && (
+        <ForgetRunConfirm
+          run={doomedRun}
+          onConfirm={() => forgetRuns([doomedRun.id])}
+          onDismiss={() => setDoomedRun(null)}
+        />
+      )}
+      {isForgettingAll && (
+        <ForgetRunsConfirm
+          runs={endedSphereRuns}
+          onConfirm={() => forgetRuns(endedSphereRuns.map((run) => run.id))}
+          onDismiss={() => setIsForgettingAll(false)}
+        />
       )}
     </WidgetFrame>
   );

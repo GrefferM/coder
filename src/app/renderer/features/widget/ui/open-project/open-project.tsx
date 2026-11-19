@@ -1,6 +1,7 @@
 import { FolderGlyph } from "../folder-glyph";
 import { ProjectList } from "../project-list";
 import { WidgetSphere } from "../widget-sphere";
+import { useListDismiss } from "../../hooks";
 import {
   OPEN_PROJECT_LABEL,
   RECENT_LABEL,
@@ -22,7 +23,17 @@ import {
 import type { OpenProjectProps } from "../../interfaces";
 
 /** The widget with no project (52b): an empty sphere waiting, and «Відкрити проєкт», which unfolds the recent projects. */
-export function OpenProject({ recent, trouble, isListOpen, onToggleList, onOpen, onOpenFolder }: OpenProjectProps) {
+export function OpenProject({
+  recent,
+  trouble,
+  isListOpen,
+  onToggleList,
+  onOpen,
+  onOpenFolder,
+  onForget,
+}: OpenProjectProps) {
+  const box = useListDismiss(isListOpen, onToggleList);
+
   return (
     <div
       className="d-flex flex-column align-items-center"
@@ -32,7 +43,7 @@ export function OpenProject({ recent, trouble, isListOpen, onToggleList, onOpen,
       }}
     >
       <WidgetSphere color={WIDGET_ACCENT_COLOR} isActive={false} isChosen={false} sizePx={WIDGET_STAGE_SPHERE_PX} />
-      <div className="position-relative w-100">
+      <div ref={box} className="position-relative w-100">
         <button
           type="button"
           aria-expanded={isListOpen}
@@ -79,6 +90,7 @@ export function OpenProject({ recent, trouble, isListOpen, onToggleList, onOpen,
               directory={null}
               onOpen={onOpen}
               onOpenFolder={onOpenFolder}
+              onForget={onForget}
               quietActs={[]}
             />
           </div>

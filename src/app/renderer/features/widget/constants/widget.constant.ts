@@ -170,3 +170,14 @@ export const WIDGET_SPEAKER_ROW_PADDING = "6px 12px 0";
 export const WIDGET_LANGUAGE_PADDING = "0 10px";
 export const WIDGET_LANGUAGE_FONT_SIZE_PX = 11;
 export const WIDGET_LANGUAGE_LETTER_SPACING_PX = 1;
+
+/** The words of the row under the head. */
+export const WIDGET_TOOLS_WORDS_GAP_PX = 14;
+
+/** The history in the output's place: a run as a row, its question and when it was last asked. */
+export const WIDGET_RUNS_PADDING = "6px 12px";
+export const WIDGET_RUN_PADDING = "9px 10px";
+export const WIDGET_RUN_GAP_PX = 3;
+export const WIDGET_RUN_RADIUS_PX = 8;
+export const WIDGET_RUN_LIT_COLOR = "#1b1f2c";
+export const WIDGET_FORGET_SIZE_PX = 12;

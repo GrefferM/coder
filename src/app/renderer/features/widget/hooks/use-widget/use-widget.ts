@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { changeWidget, peekProject, readWidget } from "../../api";
-import { freshWalks, openWalks, putWalk, stopWalks } from "../../../conversation";
+import { freshWalks, goOnInWalks, letGoWalks, openWalks, putWalk, stopWalks } from "../../../conversation";
+import { forgetRun, listRuns, useOpenedRun } from "../../../record";
 import { WALKS_CHANGED_CHANNEL, WIDGET_SETTINGS_CHANGED_CHANNEL } from "../../../../../../contracts";
 import { thrownWords } from "../../../../utils/errors";
-import type { PackedAttachment, WalkSnapshot, WidgetSettings } from "../../../../../../contracts";
+import type { PackedAttachment, RunRow, WalkSnapshot, WidgetSettings } from "../../../../../../contracts";
 import type { ProjectConfig } from "../../../../interfaces";
 import type { WidgetState } from "../../interfaces";
 
@@ -17,6 +18,12 @@ export function useWidget(): WidgetState {
   const [config, setConfig] = useState<ProjectConfig | null>(null);
   const [trouble, setTrouble] = useState<string | null>(null);
   const [walks, setWalks] = useState<WalkSnapshot | null>(null);
+  /** The run opened from the history, by its id; `null` while the live conversation stands. */
+  const [openedRunId, setOpenedRunId] = useState<string | null>(null);
+  /** Counts the conversation's changes, so the opened run is read again with each. */
+  const [written, setWritten] = useState(0);
+  const opened = useOpenedRun(openedRunId, written);
+  const [runs, setRuns] = useState<RunRow[]>([]);
   /** The settings after the last change, so a change is laid over them and never over an older copy. */
   const held = useRef<WidgetSettings | null>(null);
   const directory = settings === null ? undefined : settings.directory;
@@ -49,6 +56,9 @@ export function useWidget(): WidgetState {
 
   // The project is read, and its conversation opened with it, now and whenever the widget comes back.
   useEffect(() => {
+    setOpenedRunId(null);
+    setRuns([]);
+
     if (directory === undefined || directory === null) {
       setConfig(null);
       setWalks(null);
@@ -84,7 +94,14 @@ export function useWidget(): WidgetState {
     };
   }, [directory]);
 
-  useEffect(() => window.electronApi.subscribe(WALKS_CHANGED_CHANNEL, setWalks), []);
+  useEffect(
+    () =>
+      window.electronApi.subscribe(WALKS_CHANGED_CHANNEL, (told) => {
+        setWalks(told);
+        setWritten((was) => was + 1);
+      }),
+    [],
+  );
 
   const chosenId = directory === undefined || directory === null ? null : (settings?.chosen[directory] ?? null);
   /** A chosen agent since deleted is no choice at all; nothing else is taken in its place. */
@@ -148,7 +165,43 @@ export function useWidget(): WidgetState {
   }, []);
 
   const fresh = useCallback(() => {
+    setOpenedRunId(null);
     void freshWalks();
+  }, []);
+
+  const loadRuns = useCallback(() => {
+    if (directory === undefined || directory === null) {
+      return;
+    }
+
+    void listRuns(directory).then(setRuns);
+  }, [directory]);
+
+  const forgetRuns = useCallback(
+    async (runIds: string[]) => {
+      const gone: string[] = [];
+
+      for (const runId of runIds) {
+        // A run the record declines, as one still walking, stays on the list.
+        if (await forgetRun(runId)) {
+          gone.push(runId);
+          await letGoWalks(runId);
+        }
+      }
+
+      setRuns((standing) => standing.filter((run) => !gone.includes(run.id)));
+
+      if (openedRunId !== null && gone.includes(openedRunId)) {
+        setOpenedRunId(null);
+        await freshWalks();
+      }
+    },
+    [openedRunId],
+  );
+
+  const openRun = useCallback(async (runId: string) => {
+    await goOnInWalks(runId);
+    setOpenedRunId(runId);
   }, []);
 
   return {
@@ -157,6 +210,11 @@ export function useWidget(): WidgetState {
     trouble,
     chosenAgentId,
     walks,
+    opened: opened.run,
+    runs,
+    listRuns: loadRuns,
+    openRun,
+    forgetRuns,
     open,
     close,
     choose,

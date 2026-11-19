@@ -1,6 +1,7 @@
 import { Mark } from "../../../../components";
 import {
   FRESH_LABEL,
+  HISTORY_LABEL,
   OPEN_MAIN_LABEL,
   STOP_READING_LABEL,
   WIDGET_ACCENT_COLOR,
@@ -8,15 +9,24 @@ import {
   WIDGET_SPEAKER_BOX_PX,
   WIDGET_SPEAKER_ROW_PADDING,
   WIDGET_SPEAKER_SIZE_PX,
+  WIDGET_TOOLS_WORDS_GAP_PX,
 } from "../../constants";
 import type { WidgetToolsProps } from "../../interfaces";
 
 /**
- * The row under the head: «НОВА РОЗМОВА» on the left once the sphere has a conversation, then the way to the whole of
+ * The row under the head: «ІСТОРІЯ», and «НОВА РОЗМОВА» once the sphere has a conversation, on the left, then the way to the whole of
  * Coder, which puts the widget away while it stands, and the speaker,
  * lit while an end of a walk is read aloud, whose press silences that reading.
  */
-export function WidgetTools({ canBeginAgain, onBeginAgain, isReading, onStopReading, onOpenMain }: WidgetToolsProps) {
+export function WidgetTools({
+  canBeginAgain,
+  onBeginAgain,
+  isHistoryOpen,
+  onToggleHistory,
+  isReading,
+  onStopReading,
+  onOpenMain,
+}: WidgetToolsProps) {
   return (
     <div
       className="d-flex align-items-center flex-shrink-0"
@@ -24,12 +34,29 @@ export function WidgetTools({ canBeginAgain, onBeginAgain, isReading, onStopRead
         padding: WIDGET_SPEAKER_ROW_PADDING,
       }}
     >
-      <span className="flex-fill">
+      <span
+        className="d-flex align-items-center flex-fill"
+        style={{
+          gap: WIDGET_TOOLS_WORDS_GAP_PX,
+        }}
+      >
+        <button
+          type="button"
+          aria-pressed={isHistoryOpen}
+          onClick={onToggleHistory}
+          style={{
+            border: "none",
+            background: "transparent",
+            padding: 0,
+            cursor: "pointer",
+          }}
+        >
+          <Mark color={isHistoryOpen ? WIDGET_ACCENT_COLOR : WIDGET_FRESH_COLOR}>{HISTORY_LABEL}</Mark>
+        </button>
         {canBeginAgain && (
           <button
             type="button"
             onClick={onBeginAgain}
-
             style={{
               border: "none",
               background: "transparent",

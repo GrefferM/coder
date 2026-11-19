@@ -8,5 +8,6 @@ export interface WidgetHeadProps {
   onOpenList: () => void;
   onOpen: (directory: string) => void;
   onOpenFolder: () => void;
+  onForget: (directory: string) => void;
   quietActs: WidgetAct[];
 }

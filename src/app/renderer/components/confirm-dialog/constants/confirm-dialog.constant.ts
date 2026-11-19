@@ -1,6 +1,8 @@
 import { CONTROL_AT_REST_COLOR, FALLEN_COLOR, PANEL_GROUND_COLOR } from "../../../constants";
 /** The dialog box, centered over the working area. */
 export const CONFIRM_DIALOG_WIDTH_PX = 400;
+/** A window narrower than the box, as the widget's, keeps a margin on each side. */
+export const CONFIRM_DIALOG_MAX_WIDTH = "calc(100% - 24px)";
 export const CONFIRM_DIALOG_BACKGROUND_COLOR = PANEL_GROUND_COLOR;
 export const CONFIRM_DIALOG_BORDER_RADIUS_PX = 10;
 export const CONFIRM_DIALOG_PADDING_PX = 16;

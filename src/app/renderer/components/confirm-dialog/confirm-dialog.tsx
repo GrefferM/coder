@@ -23,6 +23,7 @@ import {
   CONFIRM_DIALOG_GAP_PX,
   CONFIRM_DIALOG_HEADER_GAP_PX,
   CONFIRM_DIALOG_ICON_SIZE_PX,
+  CONFIRM_DIALOG_MAX_WIDTH,
   CONFIRM_DIALOG_NO_LABEL,
   CONFIRM_DIALOG_PADDING_PX,
   CONFIRM_DIALOG_QUESTION_FONT_SIZE_PX,
@@ -102,6 +103,7 @@ export function ConfirmDialog({
         className="d-flex flex-column"
         style={{
           width: CONFIRM_DIALOG_WIDTH_PX,
+          maxWidth: CONFIRM_DIALOG_MAX_WIDTH,
           gap: CONFIRM_DIALOG_GAP_PX,
           padding: CONFIRM_DIALOG_PADDING_PX,
           borderRadius: CONFIRM_DIALOG_BORDER_RADIUS_PX,

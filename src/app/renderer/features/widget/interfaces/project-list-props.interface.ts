@@ -8,6 +8,8 @@ export interface ProjectListProps {
   directory: string | null;
   onOpen: (directory: string) => void;
   onOpenFolder: () => void;
+  /** Takes a project off this machine's list, its folder left alone; the widget's own project has no such act. */
+  onForget: (directory: string) => void;
   /** The quiet acts under a rule (52a); none where the list stands under «Відкрити проєкт». */
   quietActs: WidgetAct[];
 }

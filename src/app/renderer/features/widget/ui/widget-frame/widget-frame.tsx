@@ -26,7 +26,7 @@ export function WidgetFrame({ children, onMeasure }: WidgetFrameProps) {
   return (
     <div
       ref={box}
-      className={`d-flex flex-column flex-fill overflow-hidden${onMeasure === undefined ? " vh-100" : " align-self-start"}`}
+      className={`d-flex flex-column flex-fill overflow-hidden position-relative${onMeasure === undefined ? " vh-100" : " align-self-start"}`}
       style={{
         background: WIDGET_GROUND_COLOR,
         border: `1px solid ${WIDGET_BORDER_COLOR}`,

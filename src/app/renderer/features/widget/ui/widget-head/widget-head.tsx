@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Mark } from "../../../../components";
+import { useListDismiss } from "../../hooks";
 import { FolderGlyph } from "../folder-glyph";
 import { ProjectList } from "../project-list";
 import {
@@ -32,8 +33,18 @@ import type { WidgetHeadProps } from "../../interfaces";
  * The widget's head (52a, 52k): the project's chip, which opens the list of projects and the quiet acts, and «НОВА
  * РОЗМОВА» at its side. The empty rest of the head is where the window is dragged by.
  */
-export function WidgetHead({ name, directory, recent, onOpenList, onOpen, onOpenFolder, quietActs }: WidgetHeadProps) {
+export function WidgetHead({
+  name,
+  directory,
+  recent,
+  onOpenList,
+  onOpen,
+  onOpenFolder,
+  onForget,
+  quietActs,
+}: WidgetHeadProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const box = useListDismiss(isOpen, () => setIsOpen(false));
   /** Every act of the list closes it first. */
   const closing = (act: () => void) => () => {
     setIsOpen(false);
@@ -42,6 +53,7 @@ export function WidgetHead({ name, directory, recent, onOpenList, onOpen, onOpen
 
   return (
     <div
+      ref={box}
       className="d-flex align-items-center flex-shrink-0 position-relative"
       style={{
         padding: WIDGET_HEAD_PADDING,
@@ -136,6 +148,7 @@ export function WidgetHead({ name, directory, recent, onOpenList, onOpen, onOpen
             directory={directory}
             onOpen={(chosen) => closing(() => onOpen(chosen))()}
             onOpenFolder={closing(onOpenFolder)}
+            onForget={onForget}
             quietActs={quietActs.map((act) => ({
               label: act.label,
               onPress: closing(act.onPress),
