@@ -312,7 +312,12 @@ export function WidgetPage() {
         <ForgetRunConfirm run={history.doomedRun} onConfirm={history.confirm} onDismiss={history.dismiss} />
       )}
       {history.isForgettingAll && (
-        <ForgetRunsConfirm runs={history.endedRuns} onConfirm={history.confirm} onDismiss={history.dismiss} />
+        <ForgetRunsConfirm
+          runs={history.endedRuns}
+          agentName={chosen?.name}
+          onConfirm={history.confirm}
+          onDismiss={history.dismiss}
+        />
       )}
     </WidgetFrame>
   );

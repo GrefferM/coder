@@ -4,6 +4,10 @@ export const FORGET_RUNS_QUESTION_SUFFIX = " назавжди?";
 export const FORGET_RUNS_YES_PREFIX = "ВИДАЛИТИ ";
 export const FORGET_RUNS_NOTE = "Підуть усі запуски цього проєкту з кроками й викликами";
 export const FORGET_RUNS_NOTE_SUFFIX = ". Історії інших проєктів на цій машині це не торкається.";
+/** The same note where the runs are one agent's alone, its name between the two halves. */
+export const FORGET_AGENT_RUNS_NOTE_PREFIX = "Підуть усі запуски агента ";
+export const FORGET_AGENT_RUNS_NOTE = " з кроками й викликами";
+export const FORGET_AGENT_RUNS_NOTE_SUFFIX = ". Запусків інших агентів це не торкається.";
 
 /** «40 запусків» in the question, «40 ЗАПУСКІВ» on the line that raises it. */
 export const FORGET_RUNS_ONE = " запуск";

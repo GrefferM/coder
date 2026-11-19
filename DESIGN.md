@@ -1626,7 +1626,8 @@ as the record kept it, and the next question goes on in it, as a run opened in t
 question asked closes the list, and the list standing open is read again at every write to the
 record. As in the chat's history, an ended run carries a cross, «Видалити розмову», and «× Видалити
 N» over the list deletes every ended run of the sphere; each asks first in the chat's own dialog,
-narrowed to the widget, and a run deleted while open leaves a fresh conversation. No frame draws
+narrowed to the widget, and a run deleted while open leaves a fresh conversation; «видалити всі»
+says the runs are the chosen agent's, not the whole project's. No frame draws
 the history, the crosses or the speaker's two states: they stand in the tokens of 52a and 30c until
 the canvas is redrawn.
 

@@ -3,6 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { ForgetRunsConfirm } from "./forget-runs-confirm";
 import {
+  FORGET_AGENT_RUNS_NOTE,
+  FORGET_AGENT_RUNS_NOTE_PREFIX,
+  FORGET_AGENT_RUNS_NOTE_SUFFIX,
   FORGET_RUNS_NOTE,
   FORGET_RUNS_NOTE_SUFFIX,
   FORGET_RUNS_QUESTION_PREFIX,
@@ -69,6 +72,25 @@ describe("ForgetRunsConfirm", () => {
     const span = `${RUNS_SPAN_PREFIX}${daySpoken(newest, now)}${RUNS_SPAN_MIDDLE}${daySpoken(oldest, now)}`;
 
     expect(screen.getByText(`${FORGET_RUNS_NOTE}${span}${FORGET_RUNS_NOTE_SUFFIX}`)).toBeInTheDocument();
+  });
+
+  it("says the runs are one agent's where the list shows an agent's alone", () => {
+    const day = new Date(2026, 8, 6, 10, 0);
+
+    render(
+      <ForgetRunsConfirm
+        runs={[run("run-1", day), run("run-2", day)]}
+        agentName="TRIAGE"
+        onConfirm={() => {}}
+        onDismiss={() => {}}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        `${FORGET_AGENT_RUNS_NOTE_PREFIX}TRIAGE${FORGET_AGENT_RUNS_NOTE}${FORGET_AGENT_RUNS_NOTE_SUFFIX}`,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("drops the span where every run is of one day, there being nothing to span", () => {
