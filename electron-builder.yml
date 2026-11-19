@@ -20,6 +20,7 @@ mac:
       arch: arm64
   icon: src/app/assets/icon.png
   category: public.app-category.developer-tools
-  # Signed ad hoc: enough to run on this machine, not to hand to another; the hardened runtime only matters to notarisation.
+  # Signed ad hoc here; `scripts/pack-mac.js` names this machine's own identity where it holds one. Either is enough to
+  # run on this machine, not to hand to another; the hardened runtime only matters to notarisation.
   identity: "-"
   hardenedRuntime: false

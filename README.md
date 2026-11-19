@@ -91,7 +91,10 @@ the renderer served by Vite; `npm run dev:app:watch` restarts it when the main p
 the two suites.
 
 `npm run build:mac` makes `release/Coder-<version>-arm64.dmg` for Apple Silicon. It is signed ad
-hoc, not by an Apple developer, so it is for the machine that built it: the first launch is opened
+hoc, not by an Apple developer, so it is for the machine that built it — or by «Coder Local
+Signing», a self-signed code-signing certificate the machine may hold in its own keychain and trust
+for code signing, which keeps the app the same to macOS from build to build, so the keychain and the
+speech permission are not asked again; the certificate never enters the repository: the first launch is opened
 from the context menu («Відкрити»), or the quarantine is taken off with
 `xattr -cr /Applications/Coder.app`. It opens the same projects, history and keys as `dev:app`.
 

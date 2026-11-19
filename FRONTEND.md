@@ -16,8 +16,10 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
   esbuild, since TypeORM and class-validator read the decorators' metadata — into `dist/`, copies
   `preload.js` and the icon beside it, and builds the renderer into `dist/renderer`; electron-builder
   (`electron-builder.yml`) then packs it with the production dependencies and `better-sqlite3`
-  rebuilt for this Electron into `release/Coder-<version>-arm64.dmg`, signed ad hoc — it runs on the
-  machine that built it, and nobody else's macOS will open it. With no dev server's URL set, the
+  rebuilt for this Electron into `release/Coder-<version>-arm64.dmg` (`scripts/pack-mac.js`), signed
+  by «Coder Local Signing» where this machine's keychain holds that identity and ad hoc otherwise
+  (`scripts/signing-identity.js`; Coder Hearing is signed the same way) — it runs on the machine that
+  built it, and nobody else's macOS will open it. With no dev server's URL set, the
   window opens the built `index.html`; the database's migrations are found as `.ts` under ts-node
   and as `.js` in a build. The packaged app is named Coder, as the window is, so it opens the same
   database and the same keychain item as `npm run dev:app`. `npm run dev:app:watch` wraps the

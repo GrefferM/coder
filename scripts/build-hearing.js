@@ -1,8 +1,10 @@
-// Builds Coder Hearing, macOS's speech recognition for the app, into build/CoderHearing.app and signs it ad hoc.
+// Builds Coder Hearing, macOS's speech recognition for the app, into build/CoderHearing.app and signs it with this
+// machine's own identity where it holds one, ad hoc otherwise.
 // `dev:app` and `build:mac` call it; off macOS it does nothing.
 const path = require("node:path");
 const fs = require("node:fs");
 const { execFileSync } = require("node:child_process");
+const { signingIdentity } = require("./signing-identity");
 
 const ROOT = path.join(__dirname, "..");
 const SOURCE = path.join(ROOT, "src", "app", "mac-hearing");
@@ -27,7 +29,7 @@ function buildHearing() {
   execFileSync("swiftc", ["-O", path.join(SOURCE, "main.swift"), "-o", EXECUTABLE], {
     stdio: "inherit",
   });
-  execFileSync("codesign", ["--sign", "-", "--force", BUNDLE], {
+  execFileSync("codesign", ["--sign", signingIdentity(), "--force", BUNDLE], {
     stdio: "inherit",
   });
 }
