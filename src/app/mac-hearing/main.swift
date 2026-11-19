@@ -8,8 +8,10 @@
 import Foundation
 import Speech
 
-final class Hearing {
+final class Hearing: NSObject, SFSpeechRecognitionTaskDelegate {
   private let out: String
+  /** Each stretch of speech between pauses, as macOS finishes it; a long recording comes in several. */
+  private var heard: [String] = []
 
   init(out: String) {
     self.out = out
@@ -31,8 +33,9 @@ final class Hearing {
     say(["locales": ids.sorted()])
   }
 
-  /** The recognizer at work, held here until its task has answered. */
+  /** The recognizer and its task at work, held here until the task has finished. */
   private var listening: SFSpeechRecognizer? = nil
+  private var task: SFSpeechRecognitionTask? = nil
 
   func hear(recording: String, locale: String) {
     guard SFSpeechRecognizer.authorizationStatus() == .authorized else {
@@ -51,18 +54,28 @@ final class Hearing {
     request.requiresOnDeviceRecognition = recognizer.supportsOnDeviceRecognition
     listening = recognizer
 
-    recognizer.recognitionTask(with: request) { result, failure in
-      if let failure = failure {
-        self.heardNothingOr(failure)
-        return
-      }
+    task = recognizer.recognitionTask(with: request, delegate: self)
+  }
 
-      guard let result = result, result.isFinal else {
-        return
-      }
+  func speechRecognitionTask(_ task: SFSpeechRecognitionTask, didFinishRecognition result: SFSpeechRecognitionResult) {
+    heard.append(result.bestTranscription.formattedString)
+  }
 
-      self.say(["text": result.bestTranscription.formattedString])
+  /** The whole recording heard: every stretch, in order, as one text. */
+  func speechRecognitionTask(_ task: SFSpeechRecognitionTask, didFinishSuccessfully successfully: Bool) {
+    let text = heard.filter { !$0.isEmpty }.joined(separator: " ")
+
+    if successfully || !text.isEmpty {
+      say(["text": text])
+      return
     }
+
+    guard let failure = task.error else {
+      say(["text": ""])
+      return
+    }
+
+    heardNothingOr(failure)
   }
 
   /** Silence ends the task with an error of its own, which is an empty hearing rather than a failure. */

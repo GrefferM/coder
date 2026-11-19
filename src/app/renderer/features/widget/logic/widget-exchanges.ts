@@ -29,11 +29,13 @@ function stepOf(said: ChatMessage, index: number, config: ProjectConfig): Widget
   return {
     id: said.id,
     agentId: said.agentId,
-    text: said.text,
+    // A turn stopped or fallen with no words shows the app's word for it, as the chat does.
+    text: said.text === "" ? (said.note ?? "") : said.text,
     at: said.began ?? said.at,
     endedAt: said.at,
     number: index + 1,
     isEnd: !config.links.some((link) => link.from === said.agentId),
-    isFailure: said.isFailure,
+    // A turn with no words of its own is not an answer to read aloud.
+    isFailure: said.isFailure || said.text === "",
   };
 }

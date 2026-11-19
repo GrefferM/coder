@@ -116,7 +116,7 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   its own built from `src/app/mac-hearing/` into `build/CoderHearing.app` and laid among the built
   app's resources, so the system asks its own permission alike under `dev:app` and in the build: each
   call launches it once through `open` and reads the one line of JSON it leaves in a temporary
-  folder — the permission, the languages, or the words of a WAV recording, on the device where macOS
+  folder — the permission, the languages, or the words of a WAV recording, every stretch between its pauses joined in order, on the device where macOS
   hears that language there and through Apple otherwise. A call that does not end in its time (15 s
   to look, 60 s to hear, 5 min to wait for the person's answer to the system's window), or ends
   leaving no answer, is refused `SPEECH_HEARING_FAILED` «Coder Hearing не відповів». A recording

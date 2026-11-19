@@ -107,4 +107,22 @@ describe("widgetExchanges", () => {
       ["answered", 2, true],
     ]);
   });
+
+  it("shows the app's word for a turn stopped before it said anything", () => {
+    const messages = [
+      said({
+        id: "asked-1",
+        from: "person",
+      }),
+      said({
+        id: "stopped",
+        text: "",
+        note: "Зупинено",
+      }),
+    ];
+
+    const [exchange] = widgetExchanges(messages, [], aConfig(), "teacher");
+
+    expect(exchange?.steps.map((step) => step.text)).toEqual(["Зупинено"]);
+  });
 });
