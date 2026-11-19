@@ -15,6 +15,7 @@ import type { OpenProject } from "../../../../interfaces";
 const SETTINGS: WidgetSettings = {
   directory: "/work/english",
   chosen: {},
+  isSilent: false,
 };
 
 /** A machine whose widget names `SETTINGS`' project, keeping the listener it is subscribed with. */

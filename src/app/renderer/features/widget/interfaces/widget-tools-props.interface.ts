@@ -5,8 +5,8 @@ export interface WidgetToolsProps {
   /** The history stands in the output's place. */
   isHistoryOpen: boolean;
   onToggleHistory: () => void;
-  /** An end of a walk is being read aloud now. */
-  isReading: boolean;
-  onStopReading: () => void;
+  /** The ends of the walks are left unread; the speaker shows it crossed. */
+  isSilent: boolean;
+  onToggleSilent: () => void;
   onOpenMain: () => void;
 }

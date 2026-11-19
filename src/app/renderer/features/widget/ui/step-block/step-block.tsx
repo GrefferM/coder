@@ -1,6 +1,7 @@
 import { Mark } from "../../../../components";
 import { timeLabel } from "../../../../utils/dates";
 import { TextCard } from "../text-card";
+import { AloudButton } from "../../../speech";
 import {
   STEP_LABEL,
   STEP_SEPARATOR,
@@ -17,8 +18,8 @@ import {
 } from "../../constants";
 import type { StepBlockProps } from "../../interfaces";
 
-/** One answer: an end of the walk whole on its card, a step between as one line. */
-export function StepBlock({ step, agent }: StepBlockProps) {
+/** One answer: an end of the walk whole on its card, a step between as one line, a speaker at its head's end. */
+export function StepBlock({ step, agent, aloud }: StepBlockProps) {
   const color = step.isFailure ? WIDGET_FAILURE_COLOR : step.isEnd ? WIDGET_PERSON_COLOR : WIDGET_STEP_TEXT_COLOR;
 
   return (
@@ -40,6 +41,7 @@ export function StepBlock({ step, agent }: StepBlockProps) {
         <Mark color={WIDGET_STEP_NOTE_COLOR} spacing={WIDGET_STEP_NOTE_LETTER_SPACING_PX}>
           {`${STEP_LABEL}${step.number}${STEP_SEPARATOR}${timeLabel(new Date(step.at))}`}
         </Mark>
+        {aloud !== null && <AloudButton aloud={aloud} />}
       </span>
       {step.isEnd ? (
         <TextCard text={step.text} color={color} />

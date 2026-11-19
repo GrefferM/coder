@@ -16,6 +16,7 @@ describe("WidgetSettingsService", () => {
     assert.deepEqual(await service.settings(), {
       directory: null,
       chosen: {},
+      isSilent: false,
     });
   });
 
@@ -36,7 +37,18 @@ describe("WidgetSettingsService", () => {
       chosen: {
         "/work/english": "agent-1",
       },
+      isSilent: false,
     });
+  });
+
+  it("keeps the widget silent once its speaker is turned off", async () => {
+    const service = await aService();
+
+    await service.change({
+      isSilent: true,
+    });
+
+    assert.equal((await service.settings()).isSilent, true);
   });
 
   it("keeps both of two changes made at once", async () => {

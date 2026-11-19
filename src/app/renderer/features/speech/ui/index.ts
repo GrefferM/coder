@@ -4,3 +4,4 @@ export * from "./sound-clip";
 export * from "./sound-wave";
 export * from "./mic-button";
 export * from "./voice-row";
+export * from "./aloud-button";

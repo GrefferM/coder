@@ -1,4 +1,4 @@
-import { INTERACTION_ACCENT_COLOR, QUIET_MARK_COLOR } from "../../../../../../../../../constants";
+import { INTERACTION_ACCENT_COLOR, QUIET_MARK_COLOR } from "../../../../../constants";
 
 /** The speaker at the far end of an answer's head (4k): quiet as the head, the accent lit and while it reads. */
 export const ALOUD_ICON_SIZE_PX = 11;

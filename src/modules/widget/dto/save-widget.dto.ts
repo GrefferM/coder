@@ -1,4 +1,4 @@
-import { IsObject, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsObject, IsOptional, IsString } from "class-validator";
 
 /** A change to how this machine keeps the desktop widget: only what changed is given. */
 export class SaveWidgetDto {
@@ -9,4 +9,8 @@ export class SaveWidgetDto {
   @IsOptional()
   @IsObject()
   declare chosen?: Record<string, string>;
+
+  @IsOptional()
+  @IsBoolean()
+  declare isSilent?: boolean;
 }

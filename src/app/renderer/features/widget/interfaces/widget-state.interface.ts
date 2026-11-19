@@ -12,6 +12,10 @@ export interface WidgetState {
   config: ProjectConfig | null;
   /** Why the widget's project could not be read; `null` where nothing went wrong. */
   trouble: string | null;
+  /** Whether the ends of the walks are left unread. */
+  isSilent: boolean;
+  /** Turns the reading of the ends off or back on, on this machine. */
+  silence: (isSilent: boolean) => Promise<void>;
   /** The sphere walks begin at, by its agent's id; `null` while none is chosen. */
   chosenAgentId: string | null;
   /** The project's one conversation, the chat's; `null` until it is open. */

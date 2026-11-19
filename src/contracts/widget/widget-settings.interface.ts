@@ -4,4 +4,6 @@ export interface WidgetSettings {
   directory: string | null;
   /** The sphere each project's walks begin at, by agent id, keyed by the project's folder. */
   chosen: Record<string, string>;
+  /** Whether the ends of the walks are left unread; the widget's speaker turns it. */
+  isSilent: boolean;
 }

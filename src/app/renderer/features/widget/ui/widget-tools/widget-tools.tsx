@@ -3,7 +3,8 @@ import {
   FRESH_LABEL,
   HISTORY_LABEL,
   OPEN_MAIN_LABEL,
-  STOP_READING_LABEL,
+  SOUND_OFF_LABEL,
+  SOUND_ON_LABEL,
   WIDGET_ACCENT_COLOR,
   WIDGET_FRESH_COLOR,
   WIDGET_SPEAKER_BOX_PX,
@@ -15,16 +16,16 @@ import type { WidgetToolsProps } from "../../interfaces";
 
 /**
  * The row under the head: «ІСТОРІЯ», and «НОВА РОЗМОВА» once the sphere has a conversation, on the left, then the way to the whole of
- * Coder, which puts the widget away while it stands, and the speaker,
- * lit while an end of a walk is read aloud, whose press silences that reading.
+ * Coder, which puts the widget away while it stands, and the speaker: lit while the ends of the walks are read aloud,
+ * crossed while they are not, a press turning one into the other.
  */
 export function WidgetTools({
   canBeginAgain,
   onBeginAgain,
   isHistoryOpen,
   onToggleHistory,
-  isReading,
-  onStopReading,
+  isSilent,
+  onToggleSilent,
   onOpenMain,
 }: WidgetToolsProps) {
   return (
@@ -98,10 +99,10 @@ export function WidgetTools({
       </button>
       <button
         type="button"
-        aria-label={STOP_READING_LABEL}
-        title={STOP_READING_LABEL}
-        disabled={!isReading}
-        onClick={onStopReading}
+        aria-label={isSilent ? SOUND_ON_LABEL : SOUND_OFF_LABEL}
+        title={isSilent ? SOUND_ON_LABEL : SOUND_OFF_LABEL}
+        aria-pressed={isSilent}
+        onClick={onToggleSilent}
         className="d-flex align-items-center justify-content-center"
         style={{
           width: WIDGET_SPEAKER_BOX_PX,
@@ -109,7 +110,7 @@ export function WidgetTools({
           padding: 0,
           border: "none",
           background: "transparent",
-          cursor: isReading ? "pointer" : "default",
+          cursor: "pointer",
         }}
       >
         <svg
@@ -117,14 +118,20 @@ export function WidgetTools({
           height={WIDGET_SPEAKER_SIZE_PX}
           viewBox="0 0 24 24"
           fill="none"
-          stroke={isReading ? WIDGET_ACCENT_COLOR : WIDGET_FRESH_COLOR}
+          stroke={isSilent ? WIDGET_FRESH_COLOR : WIDGET_ACCENT_COLOR}
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
           <path d="M11 5 6 9H2v6h4l5 4V5Z" />
-          <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-          <path d="M19 5a10 10 0 0 1 0 14" />
+          {isSilent ? (
+            <path d="m16 9 6 6M22 9l-6 6" />
+          ) : (
+            <>
+              <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+              <path d="M19 5a10 10 0 0 1 0 14" />
+            </>
+          )}
         </svg>
       </button>
     </div>

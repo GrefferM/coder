@@ -199,6 +199,15 @@ export function useWidget(): WidgetState {
     [openedRunId],
   );
 
+  const silence = useCallback(
+    async (isSilent: boolean) => {
+      await change({
+        isSilent,
+      });
+    },
+    [change],
+  );
+
   const openRun = useCallback(async (runId: string) => {
     await goOnInWalks(runId);
     setOpenedRunId(runId);
@@ -209,6 +218,8 @@ export function useWidget(): WidgetState {
     config,
     trouble,
     chosenAgentId,
+    isSilent: settings?.isSilent === true,
+    silence,
     walks,
     opened: opened.run,
     runs,

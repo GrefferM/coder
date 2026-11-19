@@ -1550,8 +1550,11 @@ project's chip — its name and folder, opening the same list with the current o
 open project carries a cross, «Прибрати зі списку», which takes the project off this machine's list
 and leaves its folder. The list closes at a press anywhere outside it. Under the head stands a row: «ІСТОРІЯ» on the left, then «НОВА РОЗМОВА» once
 the sphere has a conversation and nothing is out (52k), and on the
-right «Відкрити Coder повністю» and a speaker, lit while an end of a walk is read aloud; a press
-silences that reading.
+right «Відкрити Coder повністю» and a speaker of two states: lit, the ends of the walks are read
+aloud; crossed, they are not, and a press turning it off stops a reading under way. The machine
+keeps the state. Every answer carries the chat's own speaker at the end of its head, which reads it
+or stops it. A question asked closes the history, and the history open is read again as the
+conversation changes.
 
 **The chosen agent stands as one big sphere** in the middle, at the Sphere's own 160px, its name in
 Mono 11 and «→ N» under it — how many agents work after it along the lines. Under it every agent of
@@ -1573,7 +1576,7 @@ each time its walk ends, the count reading «2/5», and «ЗУПИНИТИ» end
 rests with «Ходьба йде — зачекайте або зупиніть» and «ЗУПИНИТИ». The output is the sphere's
 conversation, newest at the bottom: the «ВИ» card, a step between as one line with «КРОК N ·
 година», a turn out as a working card with its clock, and an end of the walk whole on its card.
-**Each end is read aloud** the moment it comes, in the machine's voice, one after another in the
+**Each end is read aloud**, while the speaker is lit, the moment it comes, in the machine's voice, one after another in the
 order they ended (52f, 52h); an end that came before the widget opened, or before its sphere was
 chosen, is history and is not read. A repeated question goes back to the sphere it began at,
 whichever is chosen meanwhile, and one that does not go says why on the line and ends the repeats.

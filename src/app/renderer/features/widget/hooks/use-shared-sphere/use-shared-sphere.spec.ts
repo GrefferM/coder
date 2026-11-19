@@ -14,6 +14,7 @@ const SETTINGS: WidgetSettings = {
   chosen: {
     "/work/english": "agent-a",
   },
+  isSilent: false,
 };
 
 /** A machine holding the settings, keeping the listener it is subscribed with. */

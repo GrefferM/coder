@@ -1,8 +1,8 @@
-import { Mark } from "../../../../../../../../components";
-import { useInteraction } from "../../../../../../../../hooks";
-import { INTERACTION_TRANSITION } from "../../../../../../../../constants";
-import { focusRing } from "../../../../../../../../utils/focus";
-import { READ_ALOUD_LABEL, READ_STOP_LABEL, READING_LABEL } from "../../../../../../../speech";
+import { Mark } from "../../../../components";
+import { useInteraction } from "../../../../hooks";
+import { INTERACTION_TRANSITION } from "../../../../constants";
+import { focusRing } from "../../../../utils/focus";
+import { READ_ALOUD_LABEL, READ_STOP_LABEL, READING_LABEL } from "../../constants";
 import { ALOUD_GAP_PX, ALOUD_ICON_SIZE_PX, ALOUD_LIT_COLOR, ALOUD_READING_COLOR, ALOUD_REST_COLOR } from "./constants";
 import type { AloudButtonProps } from "./interfaces";
 

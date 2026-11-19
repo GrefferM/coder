@@ -1,5 +1,5 @@
 import type { ChatCost, ChatStep } from "../../../../../interfaces";
-import type { CardAloud } from "./card-aloud.interface";
+import type { CardAloud } from "../../../../../../speech";
 
 /** `cost` is `null` both while streaming and when the provider reported nothing; `isCounting` tells them apart. */
 export interface AnswerCardProps {

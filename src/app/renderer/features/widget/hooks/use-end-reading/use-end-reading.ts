@@ -1,13 +1,12 @@
 import { useEffect, useRef } from "react";
-import type { ReadAloud } from "../../../speech";
-import type { WidgetExchange, WidgetStep } from "../../interfaces";
+import type { EndReadingHands, WidgetStep } from "../../interfaces";
 
 /**
  * Reads each end of a walk aloud as it arrives, one after another in the order they ended (52h). Only an end that came
  * while its sphere stood chosen is read: what ended before the widget opened, or before the sphere was chosen, is
- * history, however late its walks reach the widget.
+ * history, however late its walks reach the widget. While the speaker is crossed, an end that comes is let pass unread.
  */
-export function useEndReading(exchanges: WidgetExchange[], aloud: ReadAloud, sphereId: string | null): void {
+export function useEndReading({ exchanges, aloud, sphereId, isSilent }: EndReadingHands): void {
   /** Every end already read or waiting, by the answer's id. */
   const queued = useRef(new Set<string>());
   /** Ends waiting for the voice, oldest first. */
@@ -32,7 +31,10 @@ export function useEndReading(exchanges: WidgetExchange[], aloud: ReadAloud, sph
     .filter((step) => new Date(step.endedAt).getTime() >= since.current.at)
     .forEach((step) => {
       queued.current.add(step.id);
-      waiting.current.push(step);
+
+      if (!isSilent) {
+        waiting.current.push(step);
+      }
     });
 
   useEffect(() => {

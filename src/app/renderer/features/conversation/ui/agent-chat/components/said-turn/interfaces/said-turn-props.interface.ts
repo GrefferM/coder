@@ -1,7 +1,7 @@
 import type { OpenCalls } from "../../../../../hooks";
 import type { NamedAgent, WorkingAgent } from "../../../../../../../interfaces";
 import type { ChatMessage, ChatStep } from "../../../../../interfaces";
-import type { CardAloud } from "../../answer-card";
+import type { CardAloud } from "../../../../../../speech";
 import type { SoundPlayer, SoundTrack } from "../../../../../../speech";
 
 export interface SaidTurnProps {

@@ -255,9 +255,9 @@ The modules are flat, one responsibility each, and none of them nests inside ano
 
 - **`widget`** — how this machine keeps the desktop widget, in the clear in `widget.json` beside the
   database: its project's folder and the sphere each
-  project's walks begin at, by agent id. None of it goes into a project. The window and the main
-  process each send only what they change, and the changes land one after another, so the place the
-  main process writes as the window moves outlives a sphere the window chose. The widget reads its
+  project's walks begin at, by agent id, and whether its speaker is crossed. None of it goes into a
+  project. Each change sends only what it changes, and the changes land one after another, so two
+  made at once both stand. The widget reads its
   project through `projects`' `peek`, never watched, so the window's watch of its own project is
   untouched; it is remembered among the recent ones only when the widget opens it. After every
   change the service tells its listeners the settings as they stand, and the main process pushes

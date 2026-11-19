@@ -26,6 +26,7 @@ export class WidgetSettingsService {
     return {
       directory: typeof held.directory === "string" ? held.directory : null,
       chosen: this.chosenOf(held.chosen),
+      isSilent: held.isSilent === true,
     };
   }
 
@@ -36,6 +37,7 @@ export class WidgetSettingsService {
     const written: WidgetSettings = {
       directory: settings.directory,
       chosen: settings.chosen,
+      isSilent: settings.isSilent,
     };
 
     await mkdir(path.dirname(filePath), {

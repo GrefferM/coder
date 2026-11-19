@@ -33,7 +33,8 @@ import {
   ANSWER_CARD_STEP_LETTER_SPACING_PX,
   ANSWER_CARD_STEP_PREFIX,
 } from "./constants";
-import { AloudButton, ReadingBar, SpokenWords } from "./components";
+import { AloudButton } from "../../../../../speech";
+import { ReadingBar, SpokenWords } from "./components";
 import type { AnswerCardProps } from "./interfaces";
 
 /** An agent answer, streaming or complete; cost is known only after the stream ends. */

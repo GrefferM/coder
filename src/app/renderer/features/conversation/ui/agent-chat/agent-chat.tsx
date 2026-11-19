@@ -17,7 +17,7 @@ import { NOT_STARTED_ENDS } from "../../constants";
 import type { NotStartedReason } from "../../../../interfaces";
 import type { AgentChatProps } from "./interfaces";
 import type { ChatMessage, ChatStep } from "../../interfaces";
-import type { CardAloud } from "./components";
+import type { CardAloud } from "../../../speech";
 /** Chat column: the person and every agent in one card recipe, in stream order; a day header where the day changes. */
 export function AgentChat({ aimed, said, field, band, acts }: AgentChatProps) {
   const { messages, agents, working, openCalls } = said;

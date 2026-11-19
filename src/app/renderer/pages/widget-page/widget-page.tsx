@@ -99,6 +99,9 @@ export function WidgetPage() {
             attachments.map((one) => one.path),
             ceiling,
           );
+    // A question asked shows its conversation, not the history over it.
+    setIsHistoryOpen(false);
+
     const went = await repeating.send(chosenAgentId, text, packed);
 
     if (went) {
@@ -158,7 +161,12 @@ export function WidgetPage() {
   };
   const height = hasTalk ? WIDGET_WALK_HEIGHT_PX : measured;
 
-  useEndReading(exchanges, aloud, chosenAgentId);
+  useEndReading({
+    exchanges,
+    aloud,
+    sphereId: chosenAgentId,
+    isSilent: widget.isSilent,
+  });
 
   // The listening shortcut, pressed in any app: a question begins, the one being said ends and goes, and one being
   // heard is left to its words.
@@ -175,6 +183,15 @@ export function WidgetPage() {
       }),
     [],
   );
+
+  // The history open is read again with every change of the conversation, so a run just asked stands in it.
+  const { listRuns } = widget;
+
+  useEffect(() => {
+    if (isHistoryOpen) {
+      listRuns();
+    }
+  }, [isHistoryOpen, snapshot, listRuns]);
 
   useEffect(() => {
     void listProviders().then(setProviders);
@@ -264,15 +281,15 @@ export function WidgetPage() {
           widget.fresh();
         }}
         isHistoryOpen={isHistoryOpen}
-        onToggleHistory={() => {
-          if (!isHistoryOpen) {
-            widget.listRuns();
+        onToggleHistory={() => setIsHistoryOpen(!isHistoryOpen)}
+        isSilent={widget.isSilent}
+        onToggleSilent={() => {
+          if (!widget.isSilent) {
+            aloud.stop();
           }
 
-          setIsHistoryOpen(!isHistoryOpen);
+          void widget.silence(!widget.isSilent);
         }}
-        isReading={aloud.readingId !== null}
-        onStopReading={aloud.stop}
         onOpenMain={() => void openMainWindow()}
       />
       {config.agents.length === 0 ? (
@@ -302,7 +319,7 @@ export function WidgetPage() {
               onForgetAll={() => setIsForgettingAll(true)}
             />
           ) : (
-            exchanges.length > 0 && <WidgetOutput exchanges={exchanges} agents={config.agents} />
+            exchanges.length > 0 && <WidgetOutput exchanges={exchanges} agents={config.agents} aloud={aloud} />
           )}
           {note !== null && <WidgetNote note={note} />}
           <WidgetField
