@@ -12,3 +12,6 @@ export const RESIZE_WIDGET_CHANNEL = "widget:resize";
 
 /** Pushed from main to both windows: how this machine keeps the widget, after any change from either. */
 export const WIDGET_SETTINGS_CHANGED_CHANNEL = "widget:settings-changed";
+
+/** Pushed from main to the widget: the listening shortcut was pressed, and its microphone is to be pressed. */
+export const WIDGET_LISTEN_CHANNEL = "widget:listen";

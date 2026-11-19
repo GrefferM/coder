@@ -1533,13 +1533,14 @@ ends, islands and missing exits are all normal, and there is no "finish" marker.
 
 ## The desktop widget
 
-**Coder starts as the widget alone**, and in the built app it starts with the system. The widget
-and the main window take turns: «Відкрити Coder повністю» under the widget's head brings the main
-window and puts the widget away; the main window closed brings the widget back. **Coder stands in
-the menu bar** as a wireframe sphere drawn in the bar's own colour: a press shows the widget, and
-its menu, at a secondary press, holds only «Закрити Coder» with a red dot beside it. **The widget is
-a small borderless window of Coder** (52a), 380 wide, lying among the other windows where it was
-put, and dragged by its empty head. Its top edge stays and its height follows its state: 760 once the sphere has a conversation, and
+**Coder lives in the menu bar**, as a wireframe sphere drawn in the bar's own colour, and in the
+built app it starts with the system. **The widget is that sphere's panel** (52a), 380 wide: a press
+on the sphere brings it up just under the menu bar, centred under the sphere and kept within the
+screen, and a press anywhere else puts it away, as a menu bar's panel goes; it has no window
+buttons and is not dragged. A secondary press on the sphere opens its menu, which holds only
+«Закрити Coder» with a red dot beside it. «Відкрити Coder повністю» brings the main window and puts
+the widget away; the main window closed brings the widget up again. **The key of ~**, pressed in any app,
+brings the widget up and presses its microphone; pressed again, it ends the question. While Coder runs, that key types nothing in other apps. Its top edge stays and its height follows its state: 760 once the sphere has a conversation, and
 otherwise as tall as what stands in it — with no project the sphere, the button, and the list under
 it 12px down once open; at rest the head, the sphere, the carousel and the field, 20px under its
 buttons. With no project it holds an empty grey sphere and one act (52b), «Відкрити

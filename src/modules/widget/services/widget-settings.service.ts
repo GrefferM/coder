@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { WIDGET_FILE_NAME } from "../constants";
-import type { WidgetPlace, WidgetSettings } from "../interfaces";
+import type { WidgetSettings } from "../interfaces";
 
 /** How this machine keeps the desktop widget, in the clear beside the database. */
 export class WidgetSettingsService {
@@ -25,7 +25,6 @@ export class WidgetSettingsService {
 
     return {
       directory: typeof held.directory === "string" ? held.directory : null,
-      place: this.placeOf(held.place),
       chosen: this.chosenOf(held.chosen),
     };
   }
@@ -36,7 +35,6 @@ export class WidgetSettingsService {
     const temporaryPath = `${filePath}.tmp`;
     const written: WidgetSettings = {
       directory: settings.directory,
-      place: settings.place,
       chosen: settings.chosen,
     };
 
@@ -63,23 +61,6 @@ export class WidgetSettingsService {
     const settings = await this.settings();
 
     this.listeners.forEach((listener) => listener(settings));
-  }
-
-  private placeOf(held: unknown): WidgetPlace | null {
-    if (typeof held !== "object" || held === null) {
-      return null;
-    }
-
-    const { x, y } = <Record<string, unknown>>held;
-
-    if (typeof x !== "number" || typeof y !== "number") {
-      return null;
-    }
-
-    return {
-      x,
-      y,
-    };
   }
 
   private chosenOf(held: unknown): Record<string, string> {

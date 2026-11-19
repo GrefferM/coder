@@ -1,6 +1,7 @@
-import { app, BrowserWindow, Menu, Tray } from "electron";
+import { app, BrowserWindow, globalShortcut, Menu, screen, Tray } from "electron";
 import {
   APP_ICON_PATH,
+  LISTEN_SHORTCUT,
   QUIT_ICON_PATH,
   QUIT_LABEL,
   TRAY_ICON_PATH,
@@ -10,6 +11,7 @@ import {
   RENDERER_INDEX_PATH,
   WIDGET_HASH,
   WIDGET_HEIGHT,
+  WIDGET_EDGE_PX,
   WIDGET_WIDTH,
   WINDOW_BACKGROUND_COLOR,
   WINDOW_HEIGHT,
@@ -17,14 +19,15 @@ import {
 } from "../constants";
 import { Validate } from "../../utils/dto-validation";
 import { ResizeWidgetDto } from "../../modules/widget";
-import { WIDGET_SETTINGS_CHANGED_CHANNEL } from "../../contracts";
+import { WIDGET_LISTEN_CHANNEL, WIDGET_SETTINGS_CHANGED_CHANNEL } from "../../contracts";
 import type { WidgetSettingsService } from "../../modules/widget";
 import type { AppWindows } from "./app-windows.service";
 import type { StageParts } from "./interfaces";
 
 /**
- * What stands on the screen: the desktop widget (52a) or the main window, in turn, and Coder in the menu bar. Coder
- * lives until it is closed from the menu bar or the app menu; with the main window closed the Dock icon goes.
+ * What stands on the screen: Coder in the menu bar, the widget (52a) as its panel, coming up under it and going at a
+ * press elsewhere, and the main window, which puts the widget away while it stands. Coder lives until it is closed from
+ * the menu bar or the app menu; with the main window closed the Dock icon goes.
  */
 export class AppStage {
   private readonly windows: AppWindows;
@@ -32,6 +35,8 @@ export class AppStage {
   private readonly onMainFocus: () => void;
   /** Coder in the menu bar; with the main window closed there is no Dock icon and no app menu to reach. */
   private tray: Tray | null = null;
+  /** Coder is closing: the widget's window may close too, rather than being put away. */
+  private isQuitting = false;
 
   constructor({ windows, widgetSettings, onMainFocus }: StageParts) {
     this.windows = windows;
@@ -45,8 +50,8 @@ export class AppStage {
   }
 
   /**
-   * Coder starts with the widget alone, set to start with the system in the built app; the main window comes from the
-   * widget, and the two take turns: the main window up hides the widget, the main window closed brings it back.
+   * Coder starts in the menu bar, its widget made and waiting, set to start with the system in the built app; the
+   * widget comes up at a press on the menu bar's Coder or at the shortcut, and the main window from the widget.
    */
   async start(): Promise<void> {
     if (app.isPackaged) {
@@ -56,7 +61,19 @@ export class AppStage {
     }
 
     this.applyMenu();
-    await this.openWidget();
+    app.on("before-quit", () => {
+      this.isQuitting = true;
+    });
+    app.on("will-quit", () => globalShortcut.unregisterAll());
+    // From any app, the shortcut brings the widget up and has its microphone begin or end a question.
+    globalShortcut.register(LISTEN_SHORTCUT, () => void this.listen());
+    await this.createWidget();
+  }
+
+  /** The shortcut pressed: the widget comes up under the menu bar's Coder, and its microphone is pressed. */
+  private async listen(): Promise<void> {
+    await this.popUp();
+    this.windows.toWidget(WIDGET_LISTEN_CHANNEL, null);
   }
 
   /** Brings the main window up, opening it where it is closed, and puts the widget away meanwhile. */
@@ -90,30 +107,41 @@ export class AppStage {
     window.setSize(width, Math.round(height), true);
   }
 
-  /** The menu bar's Coder pressed: the widget, the main window going where it stands. */
-  private async showWidget(): Promise<void> {
-    const main = this.windows.main();
-
-    if (main !== null) {
-      main.close();
+  /** The menu bar's Coder pressed: the widget comes up under it, or goes where it stands. */
+  private async toggleWidget(): Promise<void> {
+    if (this.windows.widget()?.isVisible() === true) {
+      this.windows.widget()?.hide();
 
       return;
     }
 
-    await this.openWidget();
-    this.windows.widget()?.focus();
+    await this.popUp();
   }
 
-  private async openWidget(): Promise<void> {
-    const held = this.windows.widget();
+  /** The widget under the menu bar's Coder, kept within the screen, and in front, as a menu bar's panel stands. */
+  private async popUp(): Promise<void> {
+    if (this.windows.widget() === null) {
+      await this.createWidget();
+    }
 
-    if (held !== null) {
-      held.show();
+    const window = this.windows.widget();
 
+    if (window === null || this.tray === null) {
       return;
     }
 
-    await this.createWidget();
+    const under = this.tray.getBounds();
+    const { workArea } = screen.getDisplayMatching(under);
+    const [width] = window.getSize();
+    const centred = Math.round(under.x + under.width / 2 - width / 2);
+    const x = Math.min(
+      Math.max(centred, workArea.x + WIDGET_EDGE_PX),
+      workArea.x + workArea.width - width - WIDGET_EDGE_PX,
+    );
+
+    window.setPosition(x, workArea.y + WIDGET_EDGE_PX);
+    window.show();
+    window.focus();
   }
 
   private async createMain(): Promise<void> {
@@ -138,17 +166,20 @@ export class AppStage {
     await this.load(window, "");
   }
 
+  /** The widget's window, made hidden; a press elsewhere puts it away, as it does a menu bar's panel. */
   private async createWidget(): Promise<void> {
-    const { place } = await this.widgetSettings.settings();
     const window = new BrowserWindow({
       width: WIDGET_WIDTH,
       height: WIDGET_HEIGHT,
-      ...place,
+      show: false,
       frame: false,
       resizable: false,
+      movable: false,
       maximizable: false,
+      minimizable: false,
       fullscreenable: false,
       skipTaskbar: true,
+      alwaysOnTop: true,
       // See-through, so the widget's rounded card with its shadow is the whole of what is seen.
       transparent: true,
       webPreferences: {
@@ -159,28 +190,24 @@ export class AppStage {
     });
 
     this.windows.holdWidget(window);
-    window.on("moved", () => void this.rememberPlace(window));
+    window.on("blur", () => window.hide());
     window.on("closed", () => this.windows.holdWidget(null));
+    // ⌘W puts it away rather than closing it; only quitting closes it.
+    window.on("close", (event) => {
+      if (!this.isQuitting) {
+        event.preventDefault();
+        window.hide();
+      }
+    });
 
     await this.load(window, WIDGET_HASH);
   }
 
-  /** The main window gone: the widget comes back, and the Dock icon goes with the main window. */
+  /** The main window gone: the Dock icon goes with it, and the widget comes up under the menu bar's Coder. */
   private mainClosed(): void {
     this.windows.holdMain(null);
     app.dock?.hide();
-    void this.openWidget();
-  }
-
-  private async rememberPlace(window: BrowserWindow): Promise<void> {
-    const [x, y] = window.getPosition();
-
-    await this.widgetSettings.change({
-      place: {
-        x,
-        y,
-      },
-    });
+    void this.popUp();
   }
 
   /** On the Vite dev server under `npm run dev:app` and on the built renderer otherwise. */
@@ -213,7 +240,7 @@ export class AppStage {
     ]);
 
     tray.setToolTip(TRAY_TOOLTIP);
-    tray.on("click", () => void this.showWidget());
+    tray.on("click", () => void this.toggleWidget());
     tray.on("right-click", () => tray.popUpContextMenu(menu));
     this.tray = tray;
   }

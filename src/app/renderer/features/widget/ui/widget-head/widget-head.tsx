@@ -42,7 +42,7 @@ export function WidgetHead({ name, directory, recent, onOpenList, onOpen, onOpen
 
   return (
     <div
-      className="d-flex align-items-center flex-shrink-0 position-relative widget-drag"
+      className="d-flex align-items-center flex-shrink-0 position-relative"
       style={{
         padding: WIDGET_HEAD_PADDING,
         gap: WIDGET_HEAD_GAP_PX,
@@ -59,7 +59,7 @@ export function WidgetHead({ name, directory, recent, onOpenList, onOpen, onOpen
 
           setIsOpen(!isOpen);
         }}
-        className="d-flex align-items-center flex-fill text-start widget-no-drag"
+        className="d-flex align-items-center flex-fill text-start"
         style={{
           minWidth: 0,
           padding: WIDGET_CHIP_PADDING,
@@ -121,7 +121,7 @@ export function WidgetHead({ name, directory, recent, onOpenList, onOpen, onOpen
       </button>
       {isOpen && (
         <div
-          className="position-absolute widget-no-drag"
+          className="position-absolute"
           style={{
             top: "100%",
             left: WIDGET_MENU_INSET_PX,

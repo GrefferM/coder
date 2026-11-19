@@ -25,14 +25,14 @@ import type { OpenProjectProps } from "../../interfaces";
 export function OpenProject({ recent, trouble, isListOpen, onToggleList, onOpen, onOpenFolder }: OpenProjectProps) {
   return (
     <div
-      className="d-flex flex-column align-items-center widget-drag"
+      className="d-flex flex-column align-items-center"
       style={{
         padding: WIDGET_OPEN_PADDING_PX,
         gap: WIDGET_OPEN_GAP_PX,
       }}
     >
       <WidgetSphere color={WIDGET_ACCENT_COLOR} isActive={false} isChosen={false} sizePx={WIDGET_STAGE_SPHERE_PX} />
-      <div className="position-relative w-100 widget-no-drag">
+      <div className="position-relative w-100">
         <button
           type="button"
           aria-expanded={isListOpen}
@@ -68,7 +68,7 @@ export function OpenProject({ recent, trouble, isListOpen, onToggleList, onOpen,
         )}
         {isListOpen && (
           <div
-            className="w-100 widget-no-drag"
+            className="w-100"
             style={{
               marginTop: WIDGET_MENU_GAP_PX,
             }}

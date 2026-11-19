@@ -15,19 +15,15 @@ describe("WidgetSettingsService", () => {
 
     assert.deepEqual(await service.settings(), {
       directory: null,
-      place: null,
       chosen: {},
     });
   });
 
-  it("lays each change over what stands, so a place written by the window outlives a sphere chosen after", async () => {
+  it("lays each change over what stands, so a project opened outlives a sphere chosen after", async () => {
     const service = await aService();
 
     await service.change({
-      place: {
-        x: 40,
-        y: 60,
-      },
+      directory: "/work/english",
     });
     await service.change({
       chosen: {
@@ -36,11 +32,7 @@ describe("WidgetSettingsService", () => {
     });
 
     assert.deepEqual(await service.settings(), {
-      directory: null,
-      place: {
-        x: 40,
-        y: 60,
-      },
+      directory: "/work/english",
       chosen: {
         "/work/english": "agent-1",
       },
@@ -55,9 +47,8 @@ describe("WidgetSettingsService", () => {
         directory: "/work/english",
       }),
       service.change({
-        place: {
-          x: 1,
-          y: 2,
+        chosen: {
+          "/work/english": "agent-1",
         },
       }),
     ]);
@@ -65,9 +56,8 @@ describe("WidgetSettingsService", () => {
     const settings = await service.settings();
 
     assert.equal(settings.directory, "/work/english");
-    assert.deepEqual(settings.place, {
-      x: 1,
-      y: 2,
+    assert.deepEqual(settings.chosen, {
+      "/work/english": "agent-1",
     });
   });
 });

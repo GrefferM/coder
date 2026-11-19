@@ -29,7 +29,7 @@ export function WidgetTools({ canBeginAgain, onBeginAgain, isReading, onStopRead
           <button
             type="button"
             onClick={onBeginAgain}
-            className="widget-no-drag"
+
             style={{
               border: "none",
               background: "transparent",
@@ -46,7 +46,7 @@ export function WidgetTools({ canBeginAgain, onBeginAgain, isReading, onStopRead
         aria-label={OPEN_MAIN_LABEL}
         title={OPEN_MAIN_LABEL}
         onClick={onOpenMain}
-        className="d-flex align-items-center justify-content-center widget-no-drag"
+        className="d-flex align-items-center justify-content-center"
         style={{
           width: WIDGET_SPEAKER_BOX_PX,
           height: WIDGET_SPEAKER_BOX_PX,
@@ -75,7 +75,7 @@ export function WidgetTools({ canBeginAgain, onBeginAgain, isReading, onStopRead
         title={STOP_READING_LABEL}
         disabled={!isReading}
         onClick={onStopReading}
-        className="d-flex align-items-center justify-content-center widget-no-drag"
+        className="d-flex align-items-center justify-content-center"
         style={{
           width: WIDGET_SPEAKER_BOX_PX,
           height: WIDGET_SPEAKER_BOX_PX,

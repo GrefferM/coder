@@ -11,7 +11,6 @@ import type { WidgetSettings } from "../../../../../../contracts";
 
 const SETTINGS: WidgetSettings = {
   directory: "/work/english",
-  place: null,
   chosen: {
     "/work/english": "agent-a",
   },

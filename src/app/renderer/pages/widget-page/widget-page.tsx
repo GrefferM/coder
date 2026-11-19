@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { chooseProjectDirectory, listRecentProjects } from "../../features/project";
 import { listProviders } from "../../features/providers";
 import { hearingChoice, useReadAloud, useSpeech, useVoiceAsk } from "../../features/speech";
@@ -26,7 +26,7 @@ import {
   languageCode,
   widgetExchanges,
 } from "../../features/widget";
-import { agentStands, isWalking } from "../../../../contracts";
+import { WIDGET_LISTEN_CHANNEL, agentStands, isWalking } from "../../../../contracts";
 import { thrownWords } from "../../utils/errors";
 import type { PickedAttachment, ProjectEntry, ProviderState } from "../../interfaces";
 
@@ -130,6 +130,13 @@ export function WidgetPage() {
   const height = hasTalk ? WIDGET_WALK_HEIGHT_PX : measured;
 
   useEndReading(exchanges, aloud, chosenAgentId);
+
+  // The listening shortcut, pressed in any app, presses the microphone here.
+  const pressMicrophone = useRef(voice.press);
+
+  pressMicrophone.current = voice.press;
+
+  useEffect(() => window.electronApi.subscribe(WIDGET_LISTEN_CHANNEL, () => pressMicrophone.current()), []);
 
   useEffect(() => {
     void listProviders().then(setProviders);

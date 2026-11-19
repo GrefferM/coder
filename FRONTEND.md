@@ -28,12 +28,14 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
   no restart, Vite hot-reloads it.
 - Two windows stand on the screen, held by `AppWindows` by what they are, and every push names the
   one it goes to: a changed project file to the main window, the conversation's walks and a change
-  to the widget's settings to both, an answer's pieces to both. `AppStage` puts them up in turn:
-  Coder starts with the widget alone — in the built app set to start with the system — the widget's
-  «Відкрити Coder повністю» brings the main window and puts the widget away, and the main window
-  closed brings the widget back and takes the Dock icon with it. Coder in the menu bar shows the
-  widget at a press, closing the main window where it stands, and its menu holds only «Закрити
-  Coder», a red dot beside it, since a system menu draws its words in its own colour. The widget is the same renderer loaded
+  to the widget's settings to both, an answer's pieces to both. `AppStage` puts them up: Coder starts in
+  the menu bar, in the built app set to start with the system, with the widget made and hidden; a
+  press on the menu bar's Coder brings the widget up as its panel, under it and in front, and a
+  blur puts it away; the key of ~, a global shortcut (`` ` ``), brings it up and pushes `widget:listen` to press its
+  microphone. «Відкрити Coder повністю» brings the main window and puts the widget away, and the
+  main window closed takes the Dock icon with it and brings the widget up. The menu bar's menu, at
+  a secondary press, holds only «Закрити Coder», a red dot beside it, since a system menu draws its
+  words in its own colour. The widget is the same renderer loaded
   under `#widget`, which `main.tsx` mounts as `WidgetPage` instead of `App`; `features/widget` holds
   its calls, `useWidget` (its settings as either window last changed them, its project read again
   whenever the widget comes back, the chosen sphere, and the project's one conversation, the chat's),

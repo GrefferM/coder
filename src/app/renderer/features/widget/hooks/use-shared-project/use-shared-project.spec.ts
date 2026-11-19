@@ -14,7 +14,6 @@ import type { OpenProject } from "../../../../interfaces";
 
 const SETTINGS: WidgetSettings = {
   directory: "/work/english",
-  place: null,
   chosen: {},
 };
 

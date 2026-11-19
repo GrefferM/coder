@@ -254,7 +254,7 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   same way, through `createBackend` in `src/app/backend`; only who is spoken to differs.
 
 - **`widget`** — how this machine keeps the desktop widget, in the clear in `widget.json` beside the
-  database: whether it is shown, its project's folder, where it was put, and the sphere each
+  database: its project's folder and the sphere each
   project's walks begin at, by agent id. None of it goes into a project. The window and the main
   process each send only what they change, and the changes land one after another, so the place the
   main process writes as the window moves outlives a sphere the window chose. The widget reads its

@@ -313,7 +313,7 @@ textarea::placeholder {
 }
 
 // The widget's window is see-through and its frame is the widget's own rounded card (52a): no padding,
-// no dotted ground, no drag over the whole of it.
+// no dotted ground, nothing to drag it by.
 body.widget-body {
   padding: 0;
   background: transparent;
@@ -324,16 +324,6 @@ body.widget-body {
     background: transparent;
   }
 }
-
-// The widget's borderless window is dragged by its empty head (52a); what is pressed in it is not.
-.widget-drag {
-  -webkit-app-region: drag;
-}
-
-.widget-no-drag {
-  -webkit-app-region: no-drag;
-}
-
 // The big sphere's halo while a walk is out or an end is read (52e): its light goes round the sphere, 12 % off its
 // middle, once in 3.8 s.
 @keyframes widget-shimmer {
