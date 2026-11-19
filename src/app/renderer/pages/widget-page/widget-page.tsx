@@ -133,7 +133,6 @@ export function WidgetPage() {
     onHeard: (words) => void send(words),
     onNote: say,
     onOpenSpeech: () => void openMainWindow(),
-    endsOnPause: true,
   });
   const aloud = useReadAloud({
     voiceName: speech.settings.voiceName,

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { hearSpeech, openMicrophoneSettings, openSpeechSettings, wavRecording } from "../../api";
-import { isPauseAfterSpeech, recordingType, refusalParts, soundLevel, wavePeaks } from "../../logic";
+import { recordingType, refusalParts, soundLevel, wavePeaks } from "../../logic";
 import { hearingFailedWords } from "../../words";
 import { errorMessage, providerWords } from "../../../../utils/errors";
 import { MAC_HEARING_ID, SPEECH_HEARING_FAILED, SPEECH_MAC_DENIED, SPEECH_NOT_SET } from "../../../../../../contracts";
@@ -191,15 +191,6 @@ export function useVoiceAsk(hands: VoiceAskHands): VoiceAsk {
       meter.getByteTimeDomainData(samples);
       heardLevels.current.push(soundLevel(samples));
       setLevels(heardLevels.current.slice(-LIVE_BARS));
-
-      // Once stopped, the recorder takes no second stop while its last chunk is still coming.
-      if (
-        held.current.endsOnPause === true &&
-        made.state === "recording" &&
-        isPauseAfterSpeech(heardLevels.current, LEVEL_EVERY_MS)
-      ) {
-        made.stop();
-      }
     }, LEVEL_EVERY_MS);
 
     made.ondataavailable = (event) => chunks.push(event.data);

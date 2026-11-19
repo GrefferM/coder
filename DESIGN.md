@@ -1566,8 +1566,8 @@ leads to the main window (52c). The carousel stays while a walk is out, where 52
 graph.
 
 **A question is said or typed.** The microphone records; the big sphere's halo follows the
-loudness (52d, scale 0.94…1.06, brightness 0.34…1), the take ends by itself once 1.5 s have gone
-quiet after speech or at a second press, and what is heard is sent at once, with no field to mend
+loudness (52d, scale 0.94…1.06, brightness 0.34…1), the take ends only at a second press, of the
+microphone or of the key of ~ — never by itself at a pause, though 52d draws it ending so — and what is heard is sent at once, with no field to mend
 it in; words grow in the field only after «РОЗПІЗНАЄМО…». A typed question goes by Enter or the
 arrow, Shift+Enter a new line. The row under the field is the chat's: «+ ПРИКРІПИТИ» on the left,
 the picked files as chips over it, packed under the chosen agent's ceiling as the question goes,
