@@ -169,12 +169,16 @@ export function useWidget(): WidgetState {
     void freshWalks();
   }, []);
 
-  const loadRuns = useCallback(() => {
+  const loadRuns = useCallback(async () => {
     if (directory === undefined || directory === null) {
-      return;
+      return [];
     }
 
-    void listRuns(directory).then(setRuns);
+    const rows = await listRuns(directory);
+
+    setRuns(rows);
+
+    return rows;
   }, [directory]);
 
   const forgetRuns = useCallback(

@@ -25,7 +25,7 @@ export interface WidgetState {
   /** The project's runs, newest first, as last listed. */
   runs: RunRow[];
   /** Lists the project's runs again. */
-  listRuns: () => void;
+  listRuns: () => Promise<RunRow[]>;
   /** Opens a run from the history: the output shows it, and the next question goes on in it. */
   openRun: (runId: string) => Promise<void>;
   /** Deletes these runs from the record with their conversations; the opened one gone, the conversation opens fresh. */

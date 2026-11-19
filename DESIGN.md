@@ -1588,7 +1588,8 @@ a question or a reading stands as a line over the field (52j), one without an ac
 other follows, and the main window opens at the widget's project — one sphere, which is the chat's
 aim, and one conversation: a question asked in the widget stands in the chat, and the widget shows
 the walks begun at its sphere wherever they were asked; «НОВА РОЗМОВА» empties both. «ІСТОРІЯ» lays
-the sphere's past runs in the output's place, newest first, each its question and «day · hour»;
+the sphere's past runs in the output's place, newest first — a sphere with none has no history to
+open, and a history whose last run is deleted folds away, the widget standing as at rest — each its question and «day · hour»;
 a press opens one — the output shows it as the record kept it, and the next question goes on in
 it, as a run opened in the chat does. What it shows from the record is history and is not read
 aloud, an answer of this very session included; only an end that comes live is. As in the chat's

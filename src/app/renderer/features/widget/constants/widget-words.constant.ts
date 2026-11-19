@@ -24,7 +24,6 @@ export const SOUND_OFF_LABEL = "Вимкнути озвучення";
 export const SOUND_ON_LABEL = "Увімкнути озвучення";
 export const SWITCH_LANGUAGE_LABEL = "Змінити мову розпізнавання";
 export const HISTORY_LABEL = "Історія";
-export const NO_RUNS_NOTE = "Розмов із цим агентом ще не було.";
 export const FORGET_PROJECT_LABEL = "Прибрати зі списку";
 export const FORGET_RUN_LABEL = "Видалити розмову";
 export const FORGET_RUNS_PREFIX = "× Видалити ";

@@ -3,12 +3,10 @@ import { dayLabel, timeLabel } from "../../../../utils/dates";
 import {
   FORGET_RUN_LABEL,
   FORGET_RUNS_PREFIX,
-  NO_RUNS_NOTE,
   WIDGET_CHIP_CHEVRON_BOX_PX,
   WIDGET_FORGET_SIZE_PX,
   WIDGET_LIST_QUIET_COLOR,
   WIDGET_CHIP_NAME_COLOR,
-  WIDGET_EMPTY_TEXT_COLOR,
   WIDGET_RUN_GAP_PX,
   WIDGET_RUN_LIT_COLOR,
   WIDGET_RUN_PADDING,
@@ -49,16 +47,6 @@ export function RunList({ runs, openedRunId, onOpen, onForget, onForgetAll }: Ru
         >
           <Mark color={WIDGET_STEP_NOTE_COLOR}>{`${FORGET_RUNS_PREFIX}${ended.length}`}</Mark>
         </button>
-      )}
-      {runs.length === 0 && (
-        <span
-          style={{
-            color: WIDGET_EMPTY_TEXT_COLOR,
-            fontSize: WIDGET_TEXT_FONT_SIZE_PX,
-          }}
-        >
-          {NO_RUNS_NOTE}
-        </span>
       )}
       {runs.map((run) => (
         <div key={run.id} className="d-flex align-items-start">

@@ -188,9 +188,16 @@ export function WidgetPage() {
 
   useEffect(() => {
     if (isHistoryOpen) {
-      listRuns();
+      void listRuns();
     }
   }, [isHistoryOpen, snapshot, listRuns]);
+
+  // A history left with no run of the sphere, as after deleting them all, folds away: the widget stands as at rest.
+  useEffect(() => {
+    if (isHistoryOpen && sphereRuns.length === 0) {
+      setIsHistoryOpen(false);
+    }
+  }, [isHistoryOpen, sphereRuns.length]);
 
   useEffect(() => {
     void listProviders().then(setProviders);
@@ -280,7 +287,20 @@ export function WidgetPage() {
           widget.fresh();
         }}
         isHistoryOpen={isHistoryOpen}
-        onToggleHistory={() => setIsHistoryOpen(!isHistoryOpen)}
+        onToggleHistory={() => {
+          if (isHistoryOpen) {
+            setIsHistoryOpen(false);
+
+            return;
+          }
+
+          // A sphere with no runs has no history to show, and the widget stays as it is.
+          void widget.listRuns().then((rows) => {
+            if (rows.some((run) => run.startedByAgentId === chosenAgentId)) {
+              setIsHistoryOpen(true);
+            }
+          });
+        }}
         isSilent={widget.isSilent}
         onToggleSilent={() => {
           // Silence is set first, so the reading stopped leaves no end waiting to be read in its place.
