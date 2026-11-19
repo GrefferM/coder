@@ -17,6 +17,12 @@ export class SaveSpeechDto {
   @Max(VOICE_RATE_MOST)
   declare voiceRate: number | null;
 
+  @IsOptional()
+  @IsNumber()
+  @Min(VOICE_RATE_LEAST)
+  @Max(VOICE_RATE_MOST)
+  declare ukrainianVoiceRate: number | null;
+
   @IsBoolean()
   declare isMacHearing: boolean;
 

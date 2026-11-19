@@ -5,6 +5,7 @@ export const NOTHING_CHOSEN: SpeechSettings = {
   voiceName: null,
   ukrainianVoiceName: null,
   voiceRate: null,
+  ukrainianVoiceRate: null,
   isMacHearing: false,
   macLocale: null,
   macSecondLocale: null,

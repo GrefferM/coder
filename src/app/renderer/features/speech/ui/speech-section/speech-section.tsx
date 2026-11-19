@@ -1,8 +1,6 @@
-import { ListenModelPicker, MacLocalePicker, SpeechCard, VoicePicker } from "./components";
+import { ListenModelPicker, MacLocalePicker, SpeechCard, VoicePicker, VoiceRate } from "./components";
 import { useMacHearing } from "../../hooks";
-import { FieldSlot, Stepper } from "../../../../components";
 import { NOT_FILLED_LABEL } from "../../../../constants";
-import { VOICE_RATE_LEAST, VOICE_RATE_MOST, VOICE_RATE_STEP } from "../../../../../../contracts";
 import {
   HEARING_CARD_TITLE,
   ENGLISH_VOICE_SAMPLE,
@@ -14,9 +12,6 @@ import {
   VOICE_CARD_TITLE,
   VOICE_FIELD_LABEL,
   VOICE_MACHINE_NOTE,
-  VOICE_RATE_LABEL,
-  VOICE_RATE_OWN,
-  VOICE_RATE_PLACES,
   VOICE_SAMPLE,
 } from "../../constants";
 import { SPEECH_SECTION_GAP_PX, SPEECH_SECTION_PADDING } from "./constants";
@@ -111,6 +106,14 @@ export function SpeechSection({
           }
           onListen={() => onListen(ENGLISH_VOICE_SAMPLE)}
         />
+        <VoiceRate
+          rate={settings.voiceRate}
+          onChange={(voiceRate) =>
+            void save({
+              voiceRate,
+            })
+          }
+        />
         <VoicePicker
           label={UKRAINIAN_VOICE_FIELD_LABEL}
           voices={voices}
@@ -123,21 +126,14 @@ export function SpeechSection({
           }
           onListen={() => onListen(VOICE_SAMPLE)}
         />
-        <FieldSlot label={VOICE_RATE_LABEL}>
-          <Stepper
-            label={VOICE_RATE_LABEL}
-            value={settings.voiceRate ?? VOICE_RATE_OWN}
-            step={VOICE_RATE_STEP}
-            least={VOICE_RATE_LEAST}
-            most={VOICE_RATE_MOST}
-            places={VOICE_RATE_PLACES}
-            onChange={(voiceRate) =>
-              void save({
-                voiceRate,
-              })
-            }
-          />
-        </FieldSlot>
+        <VoiceRate
+          rate={settings.ukrainianVoiceRate}
+          onChange={(ukrainianVoiceRate) =>
+            void save({
+              ukrainianVoiceRate,
+            })
+          }
+        />
       </SpeechCard>
     </div>
   );

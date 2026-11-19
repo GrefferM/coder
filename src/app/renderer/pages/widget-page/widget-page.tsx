@@ -122,6 +122,7 @@ export function WidgetPage() {
     voiceName: speech.settings.voiceName,
     ukrainianVoiceName: speech.settings.ukrainianVoiceName,
     voiceRate: speech.settings.voiceRate,
+    ukrainianVoiceRate: speech.settings.ukrainianVoiceRate,
     onNote: say,
     onOpenSpeech: () => void openMainWindow(),
   });

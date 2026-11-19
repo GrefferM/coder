@@ -7,6 +7,8 @@ export interface ReadAloudHands {
   ukrainianVoiceName: string | null;
   /** How fast the voice reads; `null` reads at its own pace. */
   voiceRate: number | null;
+  /** How fast the Ukrainian voice reads; `null` reads at its own pace. */
+  ukrainianVoiceRate: number | null;
   onNote: (note: SpeechNote) => void;
   onOpenSpeech: () => void;
 }

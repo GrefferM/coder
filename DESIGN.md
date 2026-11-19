@@ -1180,8 +1180,7 @@ stands at its label's edge once one is. The voice's field reads «ГОЛОС Д�
 Samantha reads the English and Lesya the Ukrainian: the answer is read sentence by sentence, a
 sentence with at least as many Ukrainian letters as Latin going to the Ukrainian voice, so an
 English phrase inside a Ukrainian sentence does not change the voice; its own «ПОСЛУХАТИ» says the
-Ukrainian sample once a voice is chosen. Under them «ШВИДКІСТЬ» sets how fast it reads, from 0.5 to 2
-a tenth at a step, 1.0 its own pace; it is this machine's too, and the chat and the widget read at it. A change of the voice the machine does not take is said on
+Ukrainian sample once a voice is chosen. Under each voice «ШВИДКІСТЬ» sets how fast that voice reads, from 0.5 to 2 a tenth at a step, 1.0 its own pace; both are this machine's too, and the chat and the widget read at them. A change of the voice the machine does not take is said on
 the line over the canvas, «Мовлення не збережено: …», and the card stands again on what the machine
 holds. The language of recognition is not chosen for a model; the model hears it. **macOS is this
 machine's choice**, not the project's: choosing it writes nothing to `project.yaml`, the card says

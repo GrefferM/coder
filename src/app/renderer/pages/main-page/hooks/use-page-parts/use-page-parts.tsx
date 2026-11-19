@@ -139,6 +139,7 @@ export function usePageParts(
     voiceName: speech.settings.voiceName,
     ukrainianVoiceName: speech.settings.ukrainianVoiceName,
     voiceRate: speech.settings.voiceRate,
+    ukrainianVoiceRate: speech.settings.ukrainianVoiceRate,
     onNote: saySpeech,
     onOpenSpeech: openSpeech,
   });

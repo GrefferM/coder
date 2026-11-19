@@ -36,6 +36,7 @@ function hands(patch: Partial<ReadAloudHands> = {}): ReadAloudHands {
     voiceName: "Lesya",
     ukrainianVoiceName: null,
     voiceRate: null,
+    ukrainianVoiceRate: null,
     onNote: vi.fn(),
     onOpenSpeech: vi.fn(),
     ...patch,
@@ -101,6 +102,24 @@ describe("useReadAloud", () => {
     act(() => spoken[1].onend?.(<SpeechSynthesisEvent>(<unknown>{})));
 
     expect(result.current.readingId).toBeNull();
+  });
+
+  it("reads each language at its own voice's speed", () => {
+    const { spoken } = synthesisWithLesya();
+    const { result } = renderHook(() =>
+      useReadAloud(
+        hands({
+          voiceName: "Samantha",
+          ukrainianVoiceName: "Lesya",
+          voiceRate: 1.2,
+          ukrainianVoiceRate: 0.9,
+        }),
+      ),
+    );
+
+    act(() => result.current.read("answer-1", "I went to the shop. Помилка в часі дієслів."));
+
+    expect(spoken.map((utterance) => utterance.rate)).toEqual([1.2, 0.9]);
   });
 
   it("lets go of the mark when the reading ends by itself", () => {

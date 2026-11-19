@@ -25,7 +25,7 @@ export function useReadAloud(hands: ReadAloudHands): ReadAloud {
   }, []);
 
   const read = useCallback((id: string, text: string) => {
-    const { voiceName, ukrainianVoiceName, voiceRate, onNote, onOpenSpeech } = held.current;
+    const { voiceName, ukrainianVoiceName, voiceRate, ukrainianVoiceRate, onNote, onOpenSpeech } = held.current;
     const voices = window.speechSynthesis.getVoices();
     const voice = voices.find((one) => one.name === voiceName) ?? null;
     const ukrainianVoice = voices.find((one) => one.name === ukrainianVoiceName) ?? voice;
@@ -63,7 +63,7 @@ export function useReadAloud(hands: ReadAloudHands): ReadAloud {
 
       spoken.voice = reader;
       spoken.lang = reader.lang;
-      spoken.rate = voiceRate ?? VOICE_RATE_OWN;
+      spoken.rate = (span.isUkrainian ? ukrainianVoiceRate : voiceRate) ?? VOICE_RATE_OWN;
       spoken.onerror = done;
       spoken.onend = index === spans.length - 1 ? done : null;
       // The voice says which character of its run it reached; the word there is lit in the card.

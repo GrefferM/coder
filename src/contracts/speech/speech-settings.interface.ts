@@ -6,6 +6,8 @@ export interface SpeechSettings {
   ukrainianVoiceName: string | null;
   /** How fast the voice reads, 1 its own pace; `null` reads at its own pace. */
   voiceRate: number | null;
+  /** How fast the Ukrainian voice reads, as `voiceRate`. */
+  ukrainianVoiceRate: number | null;
   /** macOS hears on this machine, in every project, in place of the project's recognition model. */
   isMacHearing: boolean;
   /** The language macOS hears, as a locale (`en-US`). */
