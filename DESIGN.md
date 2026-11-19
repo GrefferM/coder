@@ -1168,36 +1168,39 @@ the chosen one; the model form's provider picker says it after the provider's ro
 **Speech is a section of its own on the rail** (frame 38c), the last above the rule, its glyph a
 sound wave: what the project recognises speech with travels with the folder. «Розпізнавання» is a
 model of the catalogue whose kind is «Розпізнавання» (49d), chosen from a list that holds only those
-— never typed — or **macOS itself** (38d), on a Mac only, the list's first row «macOS · на цій машині» with
-«БЕЗКОШТОВНО · БЕЗ МЕРЕЖІ · КЛЮЧА НЕ ТРЕБА» under it. A model is written to `project.yaml` by its id the moment it is chosen; the field names the
-model's provider at its far end. With no such model in the catalogue the field says «НЕ ЗАПОВНЕНО»
-and «ДО МОДЕЛЕЙ» under it opens the models; a chosen model since deleted is an ordinary broken tie,
-«моделі немає». The list carries no foot sentence, the same as the agent's model picker in the app.
-«Голос» is one of the OS's own voices and the one thing of this machine's in the section: its card
-says «Ця машина · у project.yaml не йде», it is written the moment it is chosen, and «ПОСЛУХАТИ»
-stands at its label's edge once one is. The voice's field reads «ГОЛОС ДЛЯ АНГЛІЙСЬКОЇ», and its
-«ПОСЛУХАТИ» says an English sentence. Under it «ГОЛОС ДЛЯ УКРАЇНСЬКОЇ» may name another voice for the answer's Ukrainian sentences — «Той самий голос» while none is — so
-Samantha reads the English and Lesya the Ukrainian: the answer is read sentence by sentence, a
-sentence with at least as many Ukrainian letters as Latin going to the Ukrainian voice, so an
-English phrase inside a Ukrainian sentence does not change the voice; its own «ПОСЛУХАТИ» says the
-Ukrainian sample once a voice is chosen. Under each voice «ШВИДКІСТЬ» sets how fast that voice reads, from 0.5 to 2 a tenth at a step, 1.0 its own pace; both are this machine's too, and the chat and the widget read at them. A change of the voice the machine does not take is said on
-the line over the canvas, «Мовлення не збережено: …», and the card stands again on what the machine
-holds. The language of recognition is not chosen for a model; the model hears it. **macOS is this
-machine's choice**, not the project's: choosing it writes nothing to `project.yaml`, the card says
-«Ця машина · у project.yaml не йде», the project's own model stays named under the field («У
-PROJECT.YAML ЛИШАЄТЬСЯ ‹модель›»), and it hears in every project until a model is chosen again.
-Under it «МОВА» chooses the language macOS hears in, and «ДРУГА МОВА», «Немає» while none is,
-the other one the widget switches to: with both chosen, the widget shows the language's code
-(«EN») beside «x1», and a press swaps the two, so a person can speak English, then Ukrainian; from every language macOS lists on this
-machine, «Англійська · en-US»; none chosen says «НЕ ЗАПОВНЕНО» and the microphone «Розпізнавання не
-налаштоване». Choosing macOS has macOS ask its permission once in its own window — and so does the
-first recording where it was never asked, as after a build signed anew — «ЧЕКАЄМО ДОЗВОЛУ
-macOS» standing under the field meanwhile (38e); a refusal turns the field to «macOS · немає
-дозволу» in the broken colour with «macOS не дала дозволу на розпізнавання мовлення. Без нього
-мікрофон не почує.» and «ПАРАМЕТРИ СИСТЕМИ», read again whenever the window comes back, and the
-microphone says «Немає доступу до розпізнавання мовлення» and «ПАРАМЕТРИ СИСТЕМИ». The language
-list carries no foot sentence. English is heard on this machine; a language macOS does not hold
-here, Ukrainian among them, goes to Apple.
+— never typed — or **macOS itself** (38d), on a Mac only, the list's first row «macOS · на цій
+машині» with «БЕЗКОШТОВНО · БЕЗ МЕРЕЖІ · КЛЮЧА НЕ ТРЕБА» under it. A model is written to
+`project.yaml` by its id the moment it is chosen; the field names the model's provider at its far
+end. With no such model in the catalogue the field says «НЕ ЗАПОВНЕНО» and «ДО МОДЕЛЕЙ» under it
+opens the models; a chosen model since deleted is an ordinary broken tie, «моделі немає». The list
+carries no foot sentence, the same as the agent's model picker in the app. «Голос» is one of the
+OS's own voices and the one thing of this machine's in the section: its card says «Ця машина · у
+project.yaml не йде», it is written the moment it is chosen, and «ПОСЛУХАТИ» stands at its label's
+edge once one is. The voice's field reads «ГОЛОС ДЛЯ АНГЛІЙСЬКОЇ», and its «ПОСЛУХАТИ» says an
+English sentence. Under it «ГОЛОС ДЛЯ УКРАЇНСЬКОЇ» may name another voice for the answer's Ukrainian
+sentences — «Той самий голос» while none is — so Samantha reads the English and Lesya the Ukrainian:
+the answer is read sentence by sentence, a sentence with at least as many Ukrainian letters as Latin
+going to the Ukrainian voice, so an English phrase inside a Ukrainian sentence does not change the
+voice; its own «ПОСЛУХАТИ» says the Ukrainian sample once a voice is chosen. Under each voice
+«ШВИДКІСТЬ» sets how fast that voice reads, from 0.5 to 2 a tenth at a step, 1.0 its own pace; both
+are this machine's too, and the chat and the widget read at them. A change of the voice the machine
+does not take is said on the line over the canvas, «Мовлення не збережено: …», and the card stands
+again on what the machine holds. The language of recognition is not chosen for a model; the model
+hears it. **macOS is this machine's choice**, not the project's: choosing it writes nothing to
+`project.yaml`, the card says «Ця машина · у project.yaml не йде», the project's own model stays
+named under the field («У PROJECT.YAML ЛИШАЄТЬСЯ ‹модель›»), and it hears in every project until a
+model is chosen again. Under it «МОВА» chooses the language macOS hears in, and «ДРУГА МОВА»,
+«Немає» while none is, the other one the widget switches to: with both chosen, the widget shows the
+language's code («EN») beside «x1», and a press swaps the two, so a person can speak English, then
+Ukrainian; from every language macOS lists on this machine, «Англійська · en-US»; none chosen says
+«НЕ ЗАПОВНЕНО» and the microphone «Розпізнавання не налаштоване». Choosing macOS has macOS ask its
+permission once in its own window — and so does the first recording where it was never asked, as
+after a build signed anew — «ЧЕКАЄМО ДОЗВОЛУ macOS» standing under the field meanwhile (38e); a
+refusal turns the field to «macOS · немає дозволу» in the broken colour with «macOS не дала дозволу
+на розпізнавання мовлення. Без нього мікрофон не почує.» and «ПАРАМЕТРИ СИСТЕМИ», read again
+whenever the window comes back, and the microphone says «Немає доступу до розпізнавання мовлення»
+and «ПАРАМЕТРИ СИСТЕМИ». The language list carries no foot sentence. English is heard on this
+machine; a language macOS does not hold here, Ukrainian among them, goes to Apple.
 
 **A model has a kind** (frame 49d): right after its name the form carries «ВИД», «Текстова» or
 «Розпізнавання». A text model is 49a's. A recognition model has a name and a provider and nothing
@@ -1538,70 +1541,83 @@ on the sphere brings it up just under the menu bar, centred under the sphere and
 screen, and a press anywhere else puts it away, as a menu bar's panel goes; it has no window
 buttons and is not dragged. A secondary press on the sphere opens its menu, which holds only
 «Закрити Coder» with a red dot beside it. «Відкрити Coder повністю» brings the main window and puts
-the widget away; the main window closed brings the widget up again. **The key of ~**, pressed in any app,
-brings the widget up and begins a question; pressed while a question is being said, it ends it
-and the question goes; while one is being heard it does nothing. While Coder runs, that key types nothing in other apps. Its top edge stays and its height follows its state: 760 once the sphere has a conversation, and
-otherwise as tall as what stands in it — with no project the sphere, the button, and the list under
-it 12px down once open; at rest the head, the sphere, the carousel and the field, 20px under its
-buttons. With no project it holds an empty grey sphere and one act (52b), «Відкрити
-проєкт», which unfolds the recent projects and «Відкрити папку». A project open, its head is the
-project's chip — its name and folder, opening the same list with the current one ticked, then
-«Закрити проєкт» and «Відкрити Coder повністю» quiet under a rule. Every row of the list but the
-open project carries a cross, «Прибрати зі списку», which takes the project off this machine's list
-and leaves its folder. The list closes at a press anywhere outside it. Under the head stands a row: «ІСТОРІЯ» on the left, then «НОВА РОЗМОВА» once
-the sphere has a conversation and nothing is out (52k), and on the
-right «Відкрити Coder повністю» and a speaker of two states: lit, the ends of the walks are read
-aloud; crossed, they are not, and a press turning it off stops a reading under way and drops every end
-waiting behind it. The machine
-keeps the state. Every answer carries the chat's own speaker at the end of its head, which reads it
-or stops it. A question asked closes the history, and the history open is read again as the
-conversation changes.
+the widget away; the main window closed brings the widget up again.
+
+**Its height follows its state**, its top edge staying: 760 once the sphere has a conversation or
+its history stands open, and otherwise as tall as what stands in it — with no project the sphere,
+the button, and the list under it 12px down once open; at rest the head, the sphere, the carousel
+and the field, 20px under its buttons.
+
+**With no project** it holds an empty grey sphere and one act (52b), «Відкрити проєкт», which
+unfolds the recent projects and «Відкрити папку». «Відкрити папку» opens a folder that already is a
+project; an empty one is not made one here. **A project open**, its head is the project's chip —
+its name and folder, opening the same list with the current one ticked, then «Закрити проєкт» and
+«Відкрити Coder повністю» quiet under a rule. Every row of the list but the open project carries a
+cross, «Прибрати зі списку», which takes the project off this machine's list and leaves its folder.
+The list closes at a press anywhere outside it.
+
+**Under the head stands a row.** On the left «ІСТОРІЯ», then «НОВА РОЗМОВА» once the sphere has a
+conversation and nothing is out (52k). On the right «Відкрити Coder повністю» and a speaker of two
+states, which the machine keeps: lit, the ends of the walks are read aloud; crossed, they are not,
+and a press turning it off stops a reading under way and drops every end waiting behind it.
 
 **The chosen agent stands as one big sphere** in the middle, at the Sphere's own 160px, its name in
 Mono 11 and «→ N» under it — how many agents work after it along the lines. Under it every agent of
 the project sits in a carousel of 32px spheres scrolling sideways, the chosen one whole and the
 rest dim; a press makes one the big sphere and aims the chat at it, and the machine remembers the
-choice for the project.
-A switched-off agent is a grey frame that cannot be chosen. A project with no agents says so and
-leads to the main window (52c). The carousel stays while a walk is out, where 52e draws the run
-graph.
+choice for the project. A switched-off agent is a grey frame that cannot be chosen. A project with
+no agents says so and leads to the main window (52c). The carousel stays while a walk is out, where
+52e draws the run graph.
 
-**A question is said or typed.** The microphone records; the big sphere's halo follows the
-loudness (52d, scale 0.94…1.06, brightness 0.34…1), the take ends only at a second press, of the
-microphone or of the key of ~ — never by itself at a pause, though 52d draws it ending so — and what is heard is sent at once, with no field to mend
-it in; words grow in the field only after «РОЗПІЗНАЄМО…». A typed question goes by Enter or the
-arrow, Shift+Enter a new line. The row under the field is the chat's: «+ ПРИКРІПИТИ» on the left,
-the picked files as chips over it, packed under the chosen agent's ceiling as the question goes,
-and «x1», the microphone and the arrow on the right; with «x1» above one the question goes again
-each time its walk ends, the count reading «2/5», and «ЗУПИНИТИ» ends the repeats with the walk. **Escape** in the widget stops what goes on: a take being said is
-dropped unheard, else a walk out is stopped with its repeats and a reading is silenced; a dialog
-open takes Escape for itself. While the walk is out the sphere's halo goes round it and the field
-rests with «Ходьба йде — зачекайте або зупиніть» and «ЗУПИНИТИ». The output is the sphere's
-conversation, newest at the bottom: the «ВИ» card, a step between as one line with «КРОК N ·
-година», a turn out as a working card with its clock, and an end of the walk whole on its card.
-**Each end is read aloud**, while the speaker is lit, the moment it comes, in the machine's voice, one after another in the
-order they ended (52f, 52h); an end that came before the widget opened, or before its sphere was
-chosen, is history and is not read. A repeated question goes back to the sphere it began at,
-whichever is chosen meanwhile, and one that does not go says why on the line and ends the repeats.
-The widget reads this machine's speech again whenever it comes back, so a voice or hearing chosen
-in the main window reaches it. What stops
-a question or a reading stands as a line over the field (52j), one without an act going after 12 s.
+**A question is said or typed.** The microphone records, and the big sphere's halo follows the
+loudness (52d, scale 0.94…1.06, brightness 0.34…1). The take ends only at a second press, of the
+microphone or of the listening key — never by itself at a pause, though 52d draws it ending so —
+and what is heard is sent at once, with no field to mend it in; words grow in the field only after
+«РОЗПІЗНАЄМО…». A typed question goes by Enter or the arrow, Shift+Enter a new line. The row under
+the field is the chat's: «+ ПРИКРІПИТИ» on the left, the picked files as chips over it, packed
+under the chosen agent's ceiling as the question goes, then the language's code where macOS hears
+and a second language is chosen — a press swaps the two — «x1», the microphone and the arrow. With
+«x1» above one the question goes again each time its walk ends, the count reading «2/5»; a repeated
+question goes back to the sphere it began at, whichever is chosen meanwhile, and one that does not
+go says why on the line and ends the repeats. While the walk is out the sphere's halo goes round it
+and the field rests with «Ходьба йде — зачекайте або зупиніть» and «ЗУПИНИТИ», which ends the
+repeats with the walk.
+
+**Two keys.** The key of ~, pressed in any app, brings the widget up and begins a question; pressed
+while a question is being said, it ends it and the question goes; while one is being heard it does
+nothing. While Coder runs, that key types nothing in other apps. Escape, in the widget, stops what
+goes on: a take being said is dropped unheard, otherwise a walk out is stopped with its repeats and
+a reading is silenced; a dialog open takes Escape for itself.
+
+**The output is the sphere's conversation**, newest at the bottom: the «ВИ» card, a step between as
+one line with «КРОК N · година», a turn out as a working card with its clock, and an end of the
+walk whole on its card; a turn stopped before it said anything shows «Зупинено». Every answer
+carries the chat's own speaker at the end of its head, which reads it or stops it. **Each end is
+read aloud** by itself while the speaker is lit, the moment it comes, in the machine's voice, one
+after another in the order they ended (52f, 52h). An end that came before the widget opened, or
+before its sphere was chosen, is history and is not read, and neither is anything shown from the
+record. The widget reads this machine's speech again whenever it comes back, so a voice or hearing
+chosen in the main window reaches it. What stops a question or a reading stands as a line over the
+field (52j), one without an act going after 12 s.
+
 **The widget and the main window are one.** They hold one project — opened or closed in either, the
 other follows, and the main window opens at the widget's project — one sphere, which is the chat's
 aim, and one conversation: a question asked in the widget stands in the chat, and the widget shows
-the walks begun at its sphere wherever they were asked; «НОВА РОЗМОВА» empties both. «ІСТОРІЯ» lays
-the sphere's past runs in the output's place, newest first — a sphere with none has no history to
-open, and a history whose last run is deleted folds away, the widget standing as at rest — each its question and «day · hour»;
-a press opens one — the output shows it as the record kept it, and the next question goes on in
-it, as a run opened in the chat does. What it shows from the record is history and is not read
-aloud, an answer of this very session included; only an end that comes live is. As in the chat's
-history, an ended run carries a cross, «Видалити розмову», and «× Видалити N» over the list deletes
-every ended run of the sphere; each asks first in the chat's own dialog, narrowed to the widget, and
-a run deleted while open leaves a fresh conversation. Frame 52k still
-draws a conversation of each sphere's own and a history row marked «З ВІДЖЕТА»; the widget shares the
-chat's conversation instead, so its runs are the chat's. A walk out
-anywhere in the conversation rests the widget's field, as it does the chat's. «Відкрити папку»
-opens a folder that already is a project; an empty one is not made one here.
+the walks begun at its sphere wherever they were asked; «НОВА РОЗМОВА» empties both. A walk out
+anywhere in the conversation rests the widget's field, as it does the chat's. Frame 52k still draws
+a conversation of each sphere's own and a history row marked «З ВІДЖЕТА»; the widget shares the
+chat's conversation instead, so its runs are the chat's.
+
+**«ІСТОРІЯ» lays the sphere's past runs in the output's place**, newest first, each its question
+and «day · hour». A sphere with none has no history to open, and a history whose last run is
+deleted folds away, the widget standing as at rest. A press on a run opens it: the output shows it
+as the record kept it, and the next question goes on in it, as a run opened in the chat does; a
+question asked closes the list, and the list standing open is read again at every write to the
+record. As in the chat's history, an ended run carries a cross, «Видалити розмову», and «× Видалити
+N» over the list deletes every ended run of the sphere; each asks first in the chat's own dialog,
+narrowed to the widget, and a run deleted while open leaves a fresh conversation. No frame draws
+the history, the crosses or the speaker's two states: they stand in the tokens of 52a and 30c until
+the canvas is redrawn.
 
 ## Schedules
 

@@ -124,7 +124,10 @@ export function usePageParts(
   // Opens the call a catalogue row refers to, in the chat.
   const showCall = useShowCall(stream, rail, chat.openCalls);
   const openSpeech = () => rail.handleActiveIdChange(SPEECH_SECTION_ID);
-  /** A question said into the field, heard by macOS or the project's recognition model; the words land after what is typed. */
+  /**
+   * A question said into the field, heard by macOS or the project's recognition model; the words land after what is
+   * typed.
+   */
   const voice = useVoiceAsk({
     hearing: hearingChoice(project.config, machine.providers, speech.settings),
     onHeard: (words, clip) => {

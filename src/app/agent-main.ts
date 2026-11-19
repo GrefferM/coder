@@ -17,7 +17,9 @@ app.setName(APP_NAME);
 // A command line needs no Dock icon.
 app.dock?.hide();
 
-/** One question from the command line, walked to its end; the conversation goes to the output, the exit code says how. */
+/**
+ * One question from the command line, walked to its end; the conversation goes to the output, the exit code says how.
+ */
 async function run(): Promise<number> {
   const asked = parseAgentArgs(process.argv.slice(2));
   const quiet = new QuietVoice();

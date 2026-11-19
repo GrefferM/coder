@@ -163,7 +163,10 @@ export interface ChannelMap {
   [OPEN_WALKS_CHANNEL]: { payload: OpenWalks; answer: WalkSnapshot };
   [CONFIGURE_WALKS_CHANNEL]: { payload: ConfigureWalks; answer: void };
   [WALKS_STATE_CHANNEL]: { payload: void; answer: WalkSnapshot | null };
-  /** The walk and the question it began, or null when the conversation took none: no such agent, no words, or a walk is out. */
+  /**
+   * The walk and the question it began, or null when the conversation took none: no such agent, no words, or a walk is
+   * out.
+   */
   [PUT_WALK_CHANNEL]: { payload: PutWalk; answer: PutWalkAnswer | null };
   [STOP_WALKS_CHANNEL]: { payload: void; answer: void };
   [SAY_WALK_AGAIN_CHANNEL]: { payload: SayWalkAgain; answer: void };

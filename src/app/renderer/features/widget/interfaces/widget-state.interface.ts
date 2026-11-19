@@ -1,4 +1,4 @@
-import type { PackedAttachment, RunRow, WalkSnapshot, WholeRun } from "../../../../../contracts";
+import type { PackedAttachment, WalkSnapshot } from "../../../../../contracts";
 import type { ProjectConfig } from "../../../interfaces";
 
 /**
@@ -20,16 +20,6 @@ export interface WidgetState {
   chosenAgentId: string | null;
   /** The project's one conversation, the chat's; `null` until it is open. */
   walks: WalkSnapshot | null;
-  /** A run opened from the history, which the conversation goes on in; `null` while none is. */
-  opened: WholeRun | null;
-  /** The project's runs, newest first, as last listed. */
-  runs: RunRow[];
-  /** Lists the project's runs again. */
-  listRuns: () => Promise<RunRow[]>;
-  /** Opens a run from the history: the output shows it, and the next question goes on in it. */
-  openRun: (runId: string) => Promise<void>;
-  /** Deletes these runs from the record with their conversations; the opened one gone, the conversation opens fresh. */
-  forgetRuns: (runIds: string[]) => Promise<void>;
   open: (directory: string) => Promise<void>;
   close: () => Promise<void>;
   choose: (agentId: string) => Promise<void>;

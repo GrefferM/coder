@@ -25,3 +25,8 @@ export * from "./shared-project-hands.interface";
 export * from "./shared-sphere-hands.interface";
 export * from "./run-list-props.interface";
 export * from "./end-reading-hands.interface";
+export * from "./widget-cross-props.interface";
+export * from "./widget-history-hands.interface";
+export * from "./widget-history.interface";
+export * from "./widget-projects.interface";
+export * from "./widget-keys-hands.interface";

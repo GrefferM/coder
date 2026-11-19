@@ -1,6 +1,6 @@
 import * as path from "node:path";
 
-/** The widget's window (52a): a borderless window on the desktop, its own size every launch. */
+/** The widget's window (52a): the panel of the menu bar's Coder, borderless; its height follows its state. */
 export const WIDGET_WIDTH = 380;
 export const WIDGET_HEIGHT = 720;
 

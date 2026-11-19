@@ -237,7 +237,9 @@ export class ProjectService {
     return reading === print;
   }
 
-  /** Follows the folder and reads it; the print is taken first, so a change in between makes a save refused, not lost. */
+  /**
+   * Follows the folder and reads it; the print is taken first, so a change in between makes a save refused, not lost.
+   */
   private async followed(directory: string): Promise<ProjectRead> {
     const print = await this.projectWatch.follow(directory);
 

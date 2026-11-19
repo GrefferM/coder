@@ -22,7 +22,9 @@ import {
 } from "../../constants";
 import type { OpenProjectProps } from "../../interfaces";
 
-/** The widget with no project (52b): an empty sphere waiting, and «Відкрити проєкт», which unfolds the recent projects. */
+/**
+ * The widget with no project (52b): an empty sphere waiting, and «Відкрити проєкт», which unfolds the recent projects.
+ */
 export function OpenProject({
   recent,
   trouble,

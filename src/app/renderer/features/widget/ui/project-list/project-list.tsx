@@ -4,9 +4,7 @@ import {
   AGENT_COUNT_SUFFIX,
   FORGET_PROJECT_LABEL,
   OPEN_FOLDER_LABEL,
-  WIDGET_CHIP_CHEVRON_BOX_PX,
   WIDGET_CHIP_ICON_SIZE_PX,
-  WIDGET_FORGET_SIZE_PX,
   WIDGET_CHIP_NAME_COLOR,
   WIDGET_LIST_ACT_GAP_PX,
   WIDGET_LIST_ACT_PADDING,
@@ -30,6 +28,7 @@ import {
   WIDGET_LIST_SHADOW,
   WIDGET_RULE_COLOR,
 } from "../../constants";
+import { WidgetCross } from "../widget-cross";
 import type { ProjectListProps } from "../../interfaces";
 
 /**
@@ -122,33 +121,7 @@ export function ProjectList({ label, recent, directory, onOpen, onOpenFolder, on
             )}
           </button>
           {entry.directory !== directory && (
-            <button
-              type="button"
-              aria-label={FORGET_PROJECT_LABEL}
-              title={FORGET_PROJECT_LABEL}
-              onClick={() => onForget(entry.directory)}
-              className="d-flex align-items-center justify-content-center flex-shrink-0"
-              style={{
-                width: WIDGET_CHIP_CHEVRON_BOX_PX,
-                height: WIDGET_CHIP_CHEVRON_BOX_PX,
-                padding: 0,
-                border: "none",
-                background: "transparent",
-                cursor: "pointer",
-              }}
-            >
-              <svg
-                width={WIDGET_FORGET_SIZE_PX}
-                height={WIDGET_FORGET_SIZE_PX}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke={WIDGET_LIST_QUIET_COLOR}
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M18 6 6 18M6 6l12 12" />
-              </svg>
-            </button>
+            <WidgetCross label={FORGET_PROJECT_LABEL} onPress={() => onForget(entry.directory)} />
           )}
         </div>
       ))}

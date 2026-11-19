@@ -3,18 +3,16 @@ import { dayLabel, timeLabel } from "../../../../utils/dates";
 import {
   FORGET_RUN_LABEL,
   FORGET_RUNS_PREFIX,
-  WIDGET_CHIP_CHEVRON_BOX_PX,
-  WIDGET_FORGET_SIZE_PX,
-  WIDGET_LIST_QUIET_COLOR,
   WIDGET_CHIP_NAME_COLOR,
   WIDGET_RUN_GAP_PX,
-  WIDGET_RUN_LIT_COLOR,
+  WIDGET_LIST_ROW_LIT_COLOR,
   WIDGET_RUN_PADDING,
-  WIDGET_RUN_RADIUS_PX,
+  WIDGET_LIST_ROW_RADIUS_PX,
   WIDGET_RUNS_PADDING,
   WIDGET_STEP_NOTE_COLOR,
   WIDGET_TEXT_FONT_SIZE_PX,
 } from "../../constants";
+import { WidgetCross } from "../widget-cross";
 import type { RunListProps } from "../../interfaces";
 
 /**
@@ -59,8 +57,8 @@ export function RunList({ runs, openedRunId, onOpen, onForget, onForgetAll }: Ru
               gap: WIDGET_RUN_GAP_PX,
               padding: WIDGET_RUN_PADDING,
               border: "none",
-              borderRadius: WIDGET_RUN_RADIUS_PX,
-              background: run.id === openedRunId ? WIDGET_RUN_LIT_COLOR : "transparent",
+              borderRadius: WIDGET_LIST_ROW_RADIUS_PX,
+              background: run.id === openedRunId ? WIDGET_LIST_ROW_LIT_COLOR : "transparent",
               cursor: "pointer",
             }}
           >
@@ -77,35 +75,7 @@ export function RunList({ runs, openedRunId, onOpen, onForget, onForgetAll }: Ru
               {`${dayLabel(new Date(run.askedAt), new Date())} · ${timeLabel(new Date(run.askedAt))}`}
             </Mark>
           </button>
-          {run.endedAt !== null && (
-            <button
-              type="button"
-              aria-label={FORGET_RUN_LABEL}
-              title={FORGET_RUN_LABEL}
-              onClick={() => onForget(run)}
-              className="d-flex align-items-center justify-content-center flex-shrink-0"
-              style={{
-                width: WIDGET_CHIP_CHEVRON_BOX_PX,
-                height: WIDGET_CHIP_CHEVRON_BOX_PX,
-                padding: 0,
-                border: "none",
-                background: "transparent",
-                cursor: "pointer",
-              }}
-            >
-              <svg
-                width={WIDGET_FORGET_SIZE_PX}
-                height={WIDGET_FORGET_SIZE_PX}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke={WIDGET_LIST_QUIET_COLOR}
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M18 6 6 18M6 6l12 12" />
-              </svg>
-            </button>
-          )}
+          {run.endedAt !== null && <WidgetCross label={FORGET_RUN_LABEL} onPress={() => onForget(run)} />}
         </div>
       ))}
     </div>

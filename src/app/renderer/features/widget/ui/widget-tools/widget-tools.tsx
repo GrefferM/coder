@@ -15,9 +15,9 @@ import {
 import type { WidgetToolsProps } from "../../interfaces";
 
 /**
- * The row under the head: «ІСТОРІЯ», and «НОВА РОЗМОВА» once the sphere has a conversation, on the left, then the way to the whole of
- * Coder, which puts the widget away while it stands, and the speaker: lit while the ends of the walks are read aloud,
- * crossed while they are not, a press turning one into the other.
+ * The row under the head: on the left «ІСТОРІЯ», and «НОВА РОЗМОВА» once the sphere has a conversation; on the right
+ * the way to the whole of Coder, which puts the widget away while it stands, and the speaker — lit while the ends of
+ * the walks are read aloud, crossed while they are not, a press turning one into the other.
  */
 export function WidgetTools({
   canBeginAgain,

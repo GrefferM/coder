@@ -20,7 +20,10 @@ import type {
   SaveTextAsk,
 } from "../../contracts";
 
-/** Electron's desktop calls: choosers, file-manager reveal, packing a question's files, and the microphone's and speech recognition's pages. */
+/**
+ * Electron's desktop calls: choosers, file-manager reveal, packing a question's files, and the microphone's and speech
+ * recognition's pages.
+ */
 export class SystemShell {
   constructor(private readonly packer = new AttachmentPacker()) {}
 

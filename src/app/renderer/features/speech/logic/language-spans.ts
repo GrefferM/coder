@@ -3,8 +3,8 @@ import type { LanguageSpan } from "../interfaces";
 
 /**
  * The spoken text cut into runs of one language, sentence by sentence: a sentence with at least as many Ukrainian
- * letters as Latin is Ukrainian, so an English phrase inside a Ukrainian sentence stays in it and the voice does not change for
- * one word. Runs of the same language are joined.
+ * letters as Latin is Ukrainian, so an English phrase inside a Ukrainian sentence stays in it and the voice does not
+ * change for one word. Runs of the same language are joined.
  */
 export function languageSpans(spoken: string): LanguageSpan[] {
   const spans: LanguageSpan[] = [];

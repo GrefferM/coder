@@ -14,8 +14,9 @@ function machineVoices(): MachineVoice[] {
 }
 
 /**
- * What this machine speaks and hears with, read at first and whenever the window comes back, and the voices its OS has, told again whenever they change. A
- * change that could not be written is said on the line, and the settings are read again from what the machine holds.
+ * What this machine speaks and hears with, read at first and whenever the window comes back, and the voices its OS has,
+ * told again whenever they change. A change that could not be written is said on the line, and the settings are read
+ * again from what the machine holds.
  */
 export function useSpeech(onNote: (note: SpeechNote) => void): SpeechState {
   const [settings, setSettings] = useState<SpeechSettings>(NOTHING_CHOSEN);

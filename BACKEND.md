@@ -110,28 +110,29 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   with `providerOff`. It is the one module a screen asks about providers, so a key is written
   through the provider it belongs to and `secrets` has no channel of its own.
 - **`speech`** — hearing a recording, and what of speech is this machine's: the OS voice an answer
-  is read with, by name, and the one its Ukrainian sentences are read with, its reading speed, and whether macOS hears here and in which language (`isMacHearing`,
-  `macLocale`), in the clear in `speech.json` beside `providers.json` (a file missing or not of its
-  shape reads as nothing chosen). macOS hears through **Coder Hearing** (`MacHearing`), an app of
-  its own built from `src/app/mac-hearing/` into `build/CoderHearing.app` and laid among the built
-  app's resources, so the system asks its own permission alike under `dev:app` and in the build: each
-  call launches it once through `open` and reads the one line of JSON it leaves in a temporary
-  folder — the permission, the languages, or the words of a WAV recording, every stretch between its pauses joined in order, on the device where macOS
-  hears that language there and through Apple otherwise. A call that does not end in its time (15 s
-  to look, 60 s to hear, 5 min to wait for the person's answer to the system's window), or ends
-  leaving no answer, is refused `SPEECH_HEARING_FAILED` «Coder Hearing не відповів». A recording
-  macOS is not allowed to hear is
-  refused `SPEECH_MAC_DENIED`; where macOS was never asked, as after a build signed anew, a recording
-  has it ask the person first, once. Otherwise which model hears is the project's (38c): the
-  window sends each recording with that model's provider and name (macOS's with `MAC_HEARING_ID`
-  and its locale in their place), and only OpenAI, OpenRouter and
-  RunPod OpenAI hear (`SPEECH_LISTEN_PROVIDER_IDS` in `contracts/speech`), all at the OpenAI
-  protocol's `/audio/transcriptions`. The key and RunPod's address are asked of `providers` through
-  the `SpeechReach` port, inside the main process. A recording whose provider holds no key, or no
-  address where it needs one, is refused `SPEECH_NOT_SET`; a provider's own refusal, or a network
-  that did not carry, is `SPEECH_HEARING_FAILED` with the provider's sentence after it. The sound is
-  kept nowhere. The voice reads in the window, through the OS's own synthesis, so nothing of reading
-  crosses the bridge.
+  is read with, by name, and the one its Ukrainian sentences are read with, each with a reading
+  speed of its own, and whether macOS hears here and in which language, with a second one the widget
+  may swap it for (`isMacHearing`, `macLocale`, `macSecondLocale`), in the clear in `speech.json`
+  beside `providers.json` (a file missing or not of its shape reads as nothing chosen). macOS hears
+  through **Coder Hearing** (`MacHearing`), an app of its own built from `src/app/mac-hearing/` into
+  `build/CoderHearing.app` and laid among the built app's resources, so the system asks its own
+  permission alike under `dev:app` and in the build: each call launches it once through `open` and
+  reads the one line of JSON it leaves in a temporary folder — the permission, the languages, or the
+  words of a WAV recording, every stretch between its pauses joined in order, on the device where
+  macOS hears that language there and through Apple otherwise. A call that does not end in its time
+  (15 s to look, 60 s to hear, 5 min to wait for the person's answer to the system's window), or
+  ends leaving no answer, is refused `SPEECH_HEARING_FAILED` «Coder Hearing не відповів». A
+  recording macOS is not allowed to hear is refused `SPEECH_MAC_DENIED`; where macOS was never
+  asked, as after a build signed anew, a recording has it ask the person first, once. Otherwise
+  which model hears is the project's (38c): the window sends each recording with that model's
+  provider and name (macOS's with `MAC_HEARING_ID` and its locale in their place), and only OpenAI,
+  OpenRouter and RunPod OpenAI hear (`SPEECH_LISTEN_PROVIDER_IDS` in `contracts/speech`), all at the
+  OpenAI protocol's `/audio/transcriptions`. The key and RunPod's address are asked of `providers`
+  through the `SpeechReach` port, inside the main process. A recording whose provider holds no key,
+  or no address where it needs one, is refused `SPEECH_NOT_SET`; a provider's own refusal, or a
+  network that did not carry, is `SPEECH_HEARING_FAILED` with the provider's sentence after it. The
+  sound is kept nowhere. The voice reads in the window, through the OS's own synthesis, so nothing
+  of reading crosses the bridge.
 - **`llm`** — the one module that imports LangChain. It takes messages, tools and a model, and gives
   back an answer or a list of tool calls; it also holds the one mechanical check between a model and
   a command (see Validation). A tool it is handed is of one of three kinds. A declared command is
@@ -254,10 +255,9 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   same way, through `createBackend` in `src/app/backend`; only who is spoken to differs.
 
 - **`widget`** — how this machine keeps the desktop widget, in the clear in `widget.json` beside the
-  database: its project's folder and the sphere each
-  project's walks begin at, by agent id, and whether its speaker is crossed. None of it goes into a
-  project. Each change sends only what it changes, and the changes land one after another, so two
-  made at once both stand. The widget reads its
+  database: its project's folder, the sphere each project's walks begin at, by agent id, and whether
+  its speaker is crossed. None of it goes into a project. Each change sends only what it changes,
+  and the changes land one after another, so two made at once both stand. The widget reads its
   project through `projects`' `peek`, never watched, so the window's watch of its own project is
   untouched; it is remembered among the recent ones only when the widget opens it. After every
   change the service tells its listeners the settings as they stand, and the main process pushes

@@ -15,7 +15,10 @@ export interface WidgetFieldProps {
   repeats: number;
   /** Repeats under way: the count reads «2/5». */
   repeating: RepeatProgress | null;
-  /** The language macOS hears now, as its short code («EN»), where a second one can be switched to; `null` hides the switch. */
+  /**
+   * The language macOS hears now, as its short code («EN»), where a second one can be switched to; `null` hides the
+   * switch.
+   */
   language: string | null;
   /** Switches macOS to the other language set in «Мовлення». */
   onSwitchLanguage: () => void;

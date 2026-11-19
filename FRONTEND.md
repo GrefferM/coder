@@ -28,20 +28,27 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
   no restart, Vite hot-reloads it.
 - Two windows stand on the screen, held by `AppWindows` by what they are, and every push names the
   one it goes to: a changed project file to the main window, the conversation's walks and a change
-  to the widget's settings to both, an answer's pieces to both. `AppStage` puts them up: Coder starts in
-  the menu bar, in the built app set to start with the system, with the widget made and hidden; a
-  press on the menu bar's Coder brings the widget up as its panel, under it and in front, and a
-  blur puts it away; the key of ~, a global shortcut (`` ` ``), brings it up and pushes `widget:listen` to press its
-  microphone. «Відкрити Coder повністю» brings the main window and puts the widget away, and the
-  main window closed takes the Dock icon with it and brings the widget up. The menu bar's menu, at
-  a secondary press, holds only «Закрити Coder», a red dot beside it, since a system menu draws its
-  words in its own colour. The widget is the same renderer loaded
-  under `#widget`, which `main.tsx` mounts as `WidgetPage` instead of `App`; `features/widget` holds
-  its calls, `useWidget` (its settings as either window last changed them, its project read again
-  whenever the widget comes back, the chosen sphere, and the project's one conversation, the chat's),
-  `widgetExchanges` (the walks begun at the chosen sphere) and its drawing. The two windows are one:
-  `useSharedProject` in `App` opens the project the widget names and names the one this window
-  opens or closes, and `useSharedSphere` makes the widget's sphere the chat's aim, both ways.
+  to the widget's settings to both, an answer's pieces to both. `AppStage` puts them up: Coder
+  starts in the menu bar, in the built app set to start with the system, with the widget made and
+  hidden; a press on the menu bar's Coder brings the widget up as its panel, under it and in front,
+  and a blur puts it away; the key of ~, a global shortcut (`` ` ``), brings it up and pushes
+  `widget:listen` to press its microphone. «Відкрити Coder повністю» brings the main window and puts
+  the widget away, and the main window closed takes the Dock icon with it and brings the widget up.
+  The menu bar's menu, at a secondary press, holds only «Закрити Coder», a red dot beside it, since
+  a system menu draws its words in its own colour. The widget is the same renderer loaded under
+  `#widget`, which `main.tsx` mounts as `WidgetPage` instead of `App`; `features/widget` holds its
+  calls, its drawing and one hook for each of its subjects, which `WidgetPage` only puts together:
+  `useWidget` (its settings as either window last changed them, its project read again whenever the
+  widget comes back, the chosen sphere, and the project's one conversation, the chat's),
+  `useWidgetHistory` (the sphere's past runs — listed, opened to go on in, deleted — read again at
+  every `walks:written`), `useWidgetProjects` (the recent projects under its lists), `useWidgetKeys`
+  (the listening shortcut and Escape), `useWidgetRepeats` («x1») and `useEndReading` (the ends read
+  aloud, the live ones alone). `widgetExchanges` lays a stream of messages — the live conversation,
+  or an opened run through the chat's `openedStream` — out as the questions asked of the chosen
+  sphere. The speaker over an answer is `speech`'s `AloudButton`, the chat's and the widget's alike.
+  The two windows are one: `useSharedProject` in `App` opens the project the widget names and names
+  the one this window opens or closes, and `useSharedSphere` makes the widget's sphere the chat's
+  aim, both ways.
 - The renderer never imports `src/modules`, or anything else Node-only, by value. Every call goes
   through `window.electronApi.invoke(channel, payload)` and `subscribe(channel, listener)`, the one
   generic bridge `src/app/preload.js` exposes via `contextBridge`, so adding a domain never touches

@@ -5,3 +5,6 @@ export * from "./use-widget-repeats";
 export * from "./use-shared-project";
 export * from "./use-shared-sphere";
 export * from "./use-list-dismiss";
+export * from "./use-widget-history";
+export * from "./use-widget-projects";
+export * from "./use-widget-keys";

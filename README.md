@@ -19,9 +19,9 @@ different cost and capability to each one, and granting each the tools it may ca
 - A question can be spoken: the microphone under the field records it, macOS itself (free, and on the
   device for English) or OpenAI, OpenRouter or RunPod OpenAI turns it into words, and they land in the field to be sent by hand. An answer is read aloud in one of the
   OS's own voices.
-- A desktop widget, a small window of Coder that stays while the main one is closed, puts a question
-  to any agent of its own project and shows the walk along the lines; Coder lives in the menu bar,
-  starts with the system, and the key of ~ brings the widget up listening.
+- A desktop widget, the panel of Coder's sphere in the menu bar, puts a question to any agent of the
+  project, said or typed, shows the walk along the lines and reads its end aloud; Coder starts with
+  the system, and the key of ~ brings the widget up listening from any app.
 - `npm run agent -- <project> <agent> "question"` runs one agent's walk without the window and exits
   0 when it stood whole, 1 when something fell, 2 when the question did not go.
 - A project is a folder on disk with its `project.yaml`, so an automation is committed and shared

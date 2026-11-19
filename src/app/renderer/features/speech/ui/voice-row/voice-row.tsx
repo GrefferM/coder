@@ -14,7 +14,10 @@ import {
 } from "./constants";
 import type { VoiceRowProps } from "./interfaces";
 
-/** The row's left while a question is said: the breathing dot, the running wave, «00:07» and «СКАСУВАТИ», then «РОЗПІЗНАЄМО…». */
+/**
+ * The row's left while a question is said: the breathing dot, the running wave, «00:07» and «СКАСУВАТИ», then
+ * «РОЗПІЗНАЄМО…».
+ */
 export function VoiceRow({ standing, startedAt, levels, onCancel }: VoiceRowProps) {
   const clock = useElapsed(startedAt);
 

@@ -178,6 +178,4 @@ export const WIDGET_TOOLS_WORDS_GAP_PX = 14;
 export const WIDGET_RUNS_PADDING = "6px 12px";
 export const WIDGET_RUN_PADDING = "9px 10px";
 export const WIDGET_RUN_GAP_PX = 3;
-export const WIDGET_RUN_RADIUS_PX = 8;
-export const WIDGET_RUN_LIT_COLOR = "#1b1f2c";
 export const WIDGET_FORGET_SIZE_PX = 12;

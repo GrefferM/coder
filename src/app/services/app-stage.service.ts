@@ -20,7 +20,6 @@ import {
 import { Validate } from "../../utils/dto-validation";
 import { ResizeWidgetDto } from "../../modules/widget";
 import { WIDGET_LISTEN_CHANNEL, WIDGET_SETTINGS_CHANGED_CHANNEL } from "../../contracts";
-import type { WidgetSettingsService } from "../../modules/widget";
 import type { AppWindows } from "./app-windows.service";
 import type { StageParts } from "./interfaces";
 
@@ -31,7 +30,6 @@ import type { StageParts } from "./interfaces";
  */
 export class AppStage {
   private readonly windows: AppWindows;
-  private readonly widgetSettings: WidgetSettingsService;
   private readonly onMainFocus: () => void;
   /** Coder in the menu bar; with the main window closed there is no Dock icon and no app menu to reach. */
   private tray: Tray | null = null;
@@ -40,10 +38,9 @@ export class AppStage {
 
   constructor({ windows, widgetSettings, onMainFocus }: StageParts) {
     this.windows = windows;
-    this.widgetSettings = widgetSettings;
     this.onMainFocus = onMainFocus;
     // Both windows hold the same project and sphere: a change from either is told to both.
-    this.widgetSettings.listen((settings) => {
+    widgetSettings.listen((settings) => {
       this.windows.toMain(WIDGET_SETTINGS_CHANGED_CHANNEL, settings);
       this.windows.toWidget(WIDGET_SETTINGS_CHANGED_CHANNEL, settings);
     });

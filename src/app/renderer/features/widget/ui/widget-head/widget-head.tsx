@@ -30,8 +30,8 @@ import {
 import type { WidgetHeadProps } from "../../interfaces";
 
 /**
- * The widget's head (52a, 52k): the project's chip, which opens the list of projects and the quiet acts, and «НОВА
- * РОЗМОВА» at its side. The empty rest of the head is where the window is dragged by.
+ * The widget's head (52a): the project's chip, which opens the list of projects and the quiet acts; a press outside
+ * the list closes it.
  */
 export function WidgetHead({
   name,
