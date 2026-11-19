@@ -1566,8 +1566,19 @@ Mono 11 and «→ N» under it — how many agents work after it along the lines
 the project sits in a carousel of 32px spheres scrolling sideways, the chosen one whole and the
 rest dim; a press makes one the big sphere and aims the chat at it, and the machine remembers the
 choice for the project. A switched-off agent is a grey frame that cannot be chosen. A project with
-no agents says so and leads to the main window (52c). The carousel stays while a walk is out, where
-52e draws the run graph.
+no agents says so and leads to the main window (52c).
+
+**While the sphere's walk is out, its way stands in the carousel's place** (52e, 52g): every
+switched-on agent the lines reach from the sphere, laid out as the projection lays a pass (24a) at
+the carousel's 32px sphere — a column to an agent, a lane 66px under the row for each branch that
+can be gone round, lines of right angles with 5px corners and one head at a join (24h). An agent
+that answered stands whole and the line into it rests in `#2b3145`; one at work is selected inside
+a ring of its colour (1px at 55 %, a 26px glow at 22 %), and the line into it carries the sender's
+colour over a 9px trail with dashes crawling along it (25a); one not reached yet stands at 35 %
+behind a dashed line; one that fell wears `#f0a5ac`. Up to three columns stand 130px apart from
+44px, more stand 76px apart from 22px, and a way wider than the widget scrolls sideways. The big
+sphere drops its «→ N» meanwhile. The walk over, the carousel is back: the way is not kept under a
+finished conversation, so another sphere can be chosen at once.
 
 **A question is said or typed.** The microphone records, and the big sphere's halo follows the
 loudness (52d, scale 0.94…1.06, brightness 0.34…1). The take ends only at a second press, of the

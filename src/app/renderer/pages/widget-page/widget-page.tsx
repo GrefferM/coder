@@ -14,6 +14,7 @@ import {
   OPEN_MAIN_LABEL,
   OpenProject,
   RunList,
+  RunStrip,
   SphereCarousel,
   SphereStage,
   WidgetTools,
@@ -36,7 +37,7 @@ import {
   widgetExchanges,
 } from "../../features/widget";
 import { ForgetRunConfirm, ForgetRunsConfirm } from "../../features/record";
-import { agentStands, chatStream, isWalking } from "../../../../contracts";
+import { agentStands, chatStream, isWalking, walkingKeys } from "../../../../contracts";
 import { thrownWords } from "../../utils/errors";
 import type { PickedAttachment, ProviderState } from "../../interfaces";
 
@@ -68,7 +69,15 @@ export function WidgetPage() {
   const exchanges =
     snapshot === null || config === null || chosenAgentId === null
       ? []
-      : widgetExchanges(messages, Object.values(snapshot.out), config, chosenAgentId);
+      : widgetExchanges({
+          messages,
+          out: Object.values(snapshot.out),
+          walking: walkingKeys(snapshot),
+          config,
+          agentId: chosenAgentId,
+        });
+  /** The sphere's question whose walk is out: its way stands in the carousel's place meanwhile. */
+  const walking = exchanges.find((exchange) => exchange.isOut);
   const chosen = config?.agents.find((agent) => agent.id === chosenAgentId) ?? null;
   /** The files and folders picked for the next question, under the field. */
   const [attachments, setAttachments] = useState<PickedAttachment[]>([]);
@@ -248,12 +257,17 @@ export function WidgetPage() {
             links={config.links}
             level={voice.standing === "recording" ? (voice.levels.at(-1) ?? 0) : null}
             isShimmering={isOut || aloud.readingId !== null}
+            hasOnward={walking === undefined}
           />
-          <SphereCarousel
-            agents={config.agents}
-            chosenAgentId={chosenAgentId}
-            onChoose={(agentId) => void widget.choose(agentId)}
-          />
+          {walking === undefined || chosenAgentId === null ? (
+            <SphereCarousel
+              agents={config.agents}
+              chosenAgentId={chosenAgentId}
+              onChoose={(agentId) => void widget.choose(agentId)}
+            />
+          ) : (
+            <RunStrip agents={config.agents} links={config.links} sphereId={chosenAgentId} exchange={walking} />
+          )}
           {history.isOpen ? (
             <RunList
               runs={history.runs}

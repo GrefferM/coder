@@ -8,4 +8,6 @@ export interface WidgetExchange {
   question: ChatMessage;
   steps: WidgetStep[];
   working: TurnOut[];
+  /** Its walk is still out. */
+  isOut: boolean;
 }

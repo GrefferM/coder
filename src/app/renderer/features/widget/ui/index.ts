@@ -9,3 +9,4 @@ export * from "./widget-frame";
 export * from "./widget-note";
 export * from "./widget-tools";
 export * from "./run-list";
+export * from "./run-strip";

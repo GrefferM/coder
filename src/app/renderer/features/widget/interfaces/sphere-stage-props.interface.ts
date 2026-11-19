@@ -8,4 +8,6 @@ export interface SphereStageProps {
   level: number | null;
   /** A walk is out or an end is read: the sphere shimmers (52e, 52f). */
   isShimmering: boolean;
+  /** «→ N» stands under the name; not while the walk's way is drawn under the sphere (52e). */
+  hasOnward: boolean;
 }

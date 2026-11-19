@@ -43,7 +43,10 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
   `useWidgetHistory` (the sphere's past runs — listed, opened to go on in, deleted — read again at
   every `walks:written`), `useWidgetProjects` (the recent projects under its lists), `useWidgetKeys`
   (the listening shortcut and Escape), `useWidgetRepeats` («x1») and `useEndReading` (the ends read
-  aloud, the live ones alone). `widgetExchanges` lays a stream of messages — the live conversation,
+  aloud, the live ones alone). `RunStrip` draws the walk's way in the carousel's place while it is
+  out: `walkRoute` turns the canvas lines reached from the sphere into the knots `projection`'s
+  `walkDrawing` lays out — the layout is the projection's own, given the widget's grid — and
+  `routeStanding` says how each agent stands in the walk. `widgetExchanges` lays a stream of messages — the live conversation,
   or an opened run through the chat's `openedStream` — out as the questions asked of the chosen
   sphere. The speaker over an answer is `speech`'s `AloudButton`, the chat's and the widget's alike.
   The two windows are one: `useSharedProject` in `App` opens the project the widget names and names

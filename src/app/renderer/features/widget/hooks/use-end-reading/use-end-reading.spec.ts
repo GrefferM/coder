@@ -36,6 +36,7 @@ function anExchange(steps: WidgetStep[]): WidgetExchange {
     },
     steps,
     working: [],
+    isOut: false,
   };
 }
 

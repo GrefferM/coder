@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { widgetExchanges } from "./widget-exchanges";
 import { aConfig, aLink } from "../../../testing";
 import type { ChatMessage } from "../../../../../contracts";
+import type { ProjectConfig } from "../../../interfaces";
+import type { ExchangesAsked } from "../interfaces";
 
 function said(patch: Partial<ChatMessage> = {}): ChatMessage {
   return <ChatMessage>{
@@ -28,6 +30,21 @@ function said(patch: Partial<ChatMessage> = {}): ChatMessage {
     asked: null,
     fedBy: [],
     ...patch,
+  };
+}
+
+function asked(
+  messages: ChatMessage[],
+  config: ProjectConfig,
+  agentId: string,
+  walking: string[] = [],
+): ExchangesAsked {
+  return {
+    messages,
+    out: [],
+    walking,
+    config,
+    agentId,
   };
 }
 
@@ -67,7 +84,7 @@ describe("widgetExchanges", () => {
       }),
     ];
 
-    const exchanges = widgetExchanges(messages, [], config, "teacher");
+    const exchanges = widgetExchanges(asked(messages, config, "teacher"));
 
     expect(exchanges.map((exchange) => exchange.questionId)).toEqual(["question-1"]);
     expect(exchanges[0]?.question.text).toBe("Hi");
@@ -100,7 +117,7 @@ describe("widgetExchanges", () => {
       }),
     ];
 
-    const [exchange] = widgetExchanges(messages, [], config, "corrector");
+    const [exchange] = widgetExchanges(asked(messages, config, "corrector"));
 
     expect(exchange?.steps.map((step) => [step.id, step.number, step.isEnd])).toEqual([
       ["corrected", 1, false],
@@ -121,7 +138,7 @@ describe("widgetExchanges", () => {
       }),
     ];
 
-    const [exchange] = widgetExchanges(messages, [], aConfig(), "teacher");
+    const [exchange] = widgetExchanges(asked(messages, aConfig(), "teacher"));
 
     expect(exchange?.steps.map((step) => step.text)).toEqual(["Зупинено"]);
   });
@@ -141,11 +158,30 @@ describe("widgetExchanges", () => {
       }),
     ];
 
-    const [exchange] = widgetExchanges(messages, [], aConfig(), "teacher");
+    const [exchange] = widgetExchanges(asked(messages, aConfig(), "teacher"));
 
     expect(exchange?.steps.map((step) => [step.id, step.isLive])).toEqual([
       ["step-1", false],
       ["answer-2", true],
     ]);
+  });
+
+  it("says a question's walk is out while its key stands among the walks out", () => {
+    const messages = [
+      said({
+        id: "asked-1",
+        from: "person",
+      }),
+      said({
+        id: "asked-2",
+        from: "person",
+        questionId: "question-2",
+        walkId: "walk-2",
+      }),
+    ];
+
+    const exchanges = widgetExchanges(asked(messages, aConfig(), "teacher", ["walk-2"]));
+
+    expect(exchanges.map((exchange) => exchange.isOut)).toEqual([false, true]);
   });
 });

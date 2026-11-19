@@ -179,3 +179,49 @@ export const WIDGET_RUNS_PADDING = "6px 12px";
 export const WIDGET_RUN_PADDING = "9px 10px";
 export const WIDGET_RUN_GAP_PX = 3;
 export const WIDGET_FORGET_SIZE_PX = 12;
+
+/**
+ * The run strip in the carousel's place while a walk is out (52e–52i): the projection's layout at the carousel's
+ * sphere, a column to an agent of the route and a lane under the row for each branch that can be gone round.
+ */
+export const WIDGET_STRIP_PADDING = "4px 16px 0";
+export const WIDGET_STRIP_WIDTH_PX = 348;
+export const WIDGET_STRIP_TOP_ROW_Y_PX = 22;
+export const WIDGET_STRIP_LANE_HEIGHT_PX = 66;
+/** Under the lowest sphere: its name and the air beneath it. */
+export const WIDGET_STRIP_FOOT_PX = 26;
+/** Up to three columns stand wide; more stand close. */
+export const WIDGET_STRIP_WIDE_COLUMNS = 3;
+export const WIDGET_STRIP_WIDE_FIRST_X_PX = 44;
+export const WIDGET_STRIP_WIDE_COLUMN_PX = 130;
+export const WIDGET_STRIP_CLOSE_FIRST_X_PX = 22;
+export const WIDGET_STRIP_CLOSE_COLUMN_PX = 76;
+export const WIDGET_STRIP_TAIL_AIR_SHARE = 0.28;
+export const WIDGET_STRIP_HEAD_AIR_SHARE = 0.38;
+export const WIDGET_STRIP_CORNER_PX = 5;
+export const WIDGET_STRIP_ARROW_PX = 7;
+export const WIDGET_STRIP_ARROW_WING_PX = 4.5;
+export const WIDGET_STRIP_LINE_WIDTH = 1.4;
+/** A line already walked. */
+export const WIDGET_STRIP_REST_COLOR = "#2b3145";
+/** A line the walk has not reached: dashed and dim. */
+export const WIDGET_STRIP_AHEAD_COLOR = "#3d333a";
+export const WIDGET_STRIP_AHEAD_ARROW_COLOR = "#6b5560";
+export const WIDGET_STRIP_AHEAD_DASH = "5 7";
+export const WIDGET_STRIP_AHEAD_OPACITY = 0.8;
+/** A line carrying work to a turn that is out: the sender's colour over its own trail, dashes crawling along it. */
+export const WIDGET_STRIP_TRAIL_WIDTH = 9;
+export const WIDGET_STRIP_TRAIL_PERCENT = 18;
+export const WIDGET_STRIP_FLOW_WIDTH = 2.4;
+export const WIDGET_STRIP_FLOW_DASH = "12 16";
+export const WIDGET_STRIP_FLOW_ANIMATION = "edge-flow 1.1s linear infinite";
+/** The ring round a sphere at work, and round one that fell. */
+export const WIDGET_STRIP_RING_AIR_PX = 3;
+export const WIDGET_STRIP_RING_BORDER_PERCENT = 55;
+export const WIDGET_STRIP_RING_GLOW_PX = 26;
+export const WIDGET_STRIP_RING_GLOW_PERCENT = 22;
+export const WIDGET_STRIP_FAILED_RING_WIDTH_PX = 1.5;
+export const WIDGET_STRIP_FAILED_GLOW_PERCENT = 30;
+/** An agent's name under its sphere. */
+export const WIDGET_STRIP_NAME_WIDTH_PX = 80;
+export const WIDGET_STRIP_NAME_TOP_PX = 6;

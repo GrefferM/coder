@@ -1,18 +1,13 @@
-import type { ChatMessage, TurnOut } from "../../../../../contracts";
+import type { ChatMessage } from "../../../../../contracts";
 import type { ProjectConfig } from "../../../interfaces";
-import type { WidgetExchange, WidgetStep } from "../interfaces";
+import type { ExchangesAsked, WidgetExchange, WidgetStep } from "../interfaces";
 
 /**
  * The questions asked of a sphere, as the widget's output lays them out in the stream's order: each with the answers of
  * its walk and the turns still out in it. The stream is the live conversation, or a run opened from the history laid
  * under it.
  */
-export function widgetExchanges(
-  messages: ChatMessage[],
-  out: TurnOut[],
-  config: ProjectConfig,
-  agentId: string,
-): WidgetExchange[] {
+export function widgetExchanges({ messages, out, walking, config, agentId }: ExchangesAsked): WidgetExchange[] {
   return messages
     .filter((message) => message.from === "person" && message.agentId === agentId)
     .map((question) => ({
@@ -22,6 +17,7 @@ export function widgetExchanges(
         .filter((message) => message.from === "agent" && message.questionId === question.questionId)
         .map((said, index) => stepOf(said, index, config)),
       working: out.filter((turn) => question.walkId !== null && turn.runKey === question.walkId),
+      isOut: question.walkId !== null && walking.includes(question.walkId),
     }));
 }
 

@@ -1,5 +1,4 @@
-import type { WalkPlace } from "../interfaces";
-import type { WholeStep } from "../../record";
+import type { WalkKnot, WalkPlace } from "../interfaces";
 
 /** A turn not yet given a lane. */
 const LANE_UNSET = -1;
@@ -9,7 +8,7 @@ const LANE_TOP = 0;
  * One pass laid flat, a turn to a column. The top row holds turns no line flies over; bypassable turns hang below in
  * their own lane and return up where the paths meet. Lanes are reused.
  */
-export function walkPlaces(walk: WholeStep[]): WalkPlace[] {
+export function walkPlaces<TStep extends WalkKnot>(walk: TStep[]): WalkPlace<TStep>[] {
   const held = [...walk].sort((one, other) => one.place - other.place);
   const turns = new Map(held.map((step, turn) => [step.id, turn]));
   const lines = held.flatMap((step, turn) =>

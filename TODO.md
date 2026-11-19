@@ -17,8 +17,6 @@ the same commit; the change that closes it removes the line.
   turn goes to the provider's chat as if the model could talk.
 - While a question is said into the widget, its words do not grow in the field (52d): macOS's
   hearing takes the whole recording at its end, so the words come with «РОЗПІЗНАЄМО…» and go at once.
-- The widget's output draws no run graph (52e–52i): the carousel stays where the graph of the walk
-  stands, and the steps are lines without it.
 
 ## Outside the consent to start a server (36k)
 

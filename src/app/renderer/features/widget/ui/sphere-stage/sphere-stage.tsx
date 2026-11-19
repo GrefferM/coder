@@ -29,7 +29,7 @@ import type { SphereStageProps } from "../../interfaces";
  * The chosen agent as one big sphere (52a), its name and «→ N» under it. Its halo follows the microphone's loudness
  * while it records (52d) and shimmers while a walk is out or an end is read (52e, 52f).
  */
-export function SphereStage({ agent, links, level, isShimmering }: SphereStageProps) {
+export function SphereStage({ agent, links, level, isShimmering, hasOnward }: SphereStageProps) {
   const color = agent?.color ?? WIDGET_ONWARD_COLOR;
   const isHaloShown = agent !== null && (level !== null || isShimmering);
   const loudness = level ?? 0;
@@ -90,7 +90,7 @@ export function SphereStage({ agent, links, level, isShimmering }: SphereStagePr
           >
             {agent.name}
           </span>
-          {onward > 0 && (
+          {hasOnward && onward > 0 && (
             <span
               style={{
                 color: WIDGET_ONWARD_COLOR,
