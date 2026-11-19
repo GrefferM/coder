@@ -1,4 +1,6 @@
+import { Mark } from "../../../../components";
 import {
+  FRESH_LABEL,
   OPEN_MAIN_LABEL,
   STOP_READING_LABEL,
   WIDGET_ACCENT_COLOR,
@@ -10,17 +12,35 @@ import {
 import type { WidgetToolsProps } from "../../interfaces";
 
 /**
- * The row under the head: the way to the whole of Coder, which puts the widget away while it stands, and the speaker,
+ * The row under the head: «НОВА РОЗМОВА» on the left once the sphere has a conversation, then the way to the whole of
+ * Coder, which puts the widget away while it stands, and the speaker,
  * lit while an end of a walk is read aloud, whose press silences that reading.
  */
-export function WidgetTools({ isReading, onStopReading, onOpenMain }: WidgetToolsProps) {
+export function WidgetTools({ canBeginAgain, onBeginAgain, isReading, onStopReading, onOpenMain }: WidgetToolsProps) {
   return (
     <div
-      className="d-flex justify-content-end flex-shrink-0"
+      className="d-flex align-items-center flex-shrink-0"
       style={{
         padding: WIDGET_SPEAKER_ROW_PADDING,
       }}
     >
+      <span className="flex-fill">
+        {canBeginAgain && (
+          <button
+            type="button"
+            onClick={onBeginAgain}
+            className="widget-no-drag"
+            style={{
+              border: "none",
+              background: "transparent",
+              padding: 0,
+              cursor: "pointer",
+            }}
+          >
+            <Mark color={WIDGET_FRESH_COLOR}>{FRESH_LABEL}</Mark>
+          </button>
+        )}
+      </span>
       <button
         type="button"
         aria-label={OPEN_MAIN_LABEL}

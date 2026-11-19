@@ -165,3 +165,8 @@ export const WIDGET_NOTE_FADE_MS = 12000;
 export const WIDGET_SPEAKER_SIZE_PX = 16;
 export const WIDGET_SPEAKER_BOX_PX = 28;
 export const WIDGET_SPEAKER_ROW_PADDING = "6px 12px 0";
+
+/** The switch of macOS's language beside «x1»: its short code on the field's button ground. */
+export const WIDGET_LANGUAGE_PADDING = "0 10px";
+export const WIDGET_LANGUAGE_FONT_SIZE_PX = 11;
+export const WIDGET_LANGUAGE_LETTER_SPACING_PX = 1;

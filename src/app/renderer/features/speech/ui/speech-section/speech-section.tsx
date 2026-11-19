@@ -6,6 +6,9 @@ import { VOICE_RATE_LEAST, VOICE_RATE_MOST, VOICE_RATE_STEP } from "../../../../
 import {
   HEARING_CARD_TITLE,
   ENGLISH_VOICE_SAMPLE,
+  MAC_LOCALE_LABEL,
+  MAC_SECOND_LOCALE_LABEL,
+  MAC_SECOND_LOCALE_NONE_WORDS,
   UKRAINIAN_VOICE_FIELD_LABEL,
   UKRAINIAN_VOICE_SAME_WORDS,
   VOICE_CARD_TITLE,
@@ -69,15 +72,30 @@ export function SpeechSection({
           onOpenModels={onOpenModels}
         />
         {settings.isMacHearing && (
-          <MacLocalePicker
-            locales={mac.locales}
-            locale={settings.macLocale}
-            onChange={(macLocale) =>
-              void save({
-                macLocale,
-              })
-            }
-          />
+          <>
+            <MacLocalePicker
+              label={MAC_LOCALE_LABEL}
+              locales={mac.locales}
+              locale={settings.macLocale}
+              emptyWords={NOT_FILLED_LABEL}
+              onChange={(macLocale) =>
+                void save({
+                  macLocale,
+                })
+              }
+            />
+            <MacLocalePicker
+              label={MAC_SECOND_LOCALE_LABEL}
+              locales={mac.locales}
+              locale={settings.macSecondLocale}
+              emptyWords={MAC_SECOND_LOCALE_NONE_WORDS}
+              onChange={(macSecondLocale) =>
+                void save({
+                  macSecondLocale,
+                })
+              }
+            />
+          </>
         )}
       </SpeechCard>
       <SpeechCard title={VOICE_CARD_TITLE} note={VOICE_MACHINE_NOTE}>

@@ -10,4 +10,6 @@ export interface SpeechSettings {
   isMacHearing: boolean;
   /** The language macOS hears, as a locale (`en-US`). */
   macLocale: string | null;
+  /** The other language the widget switches macOS to, swapping it with `macLocale`; `null` where there is none. */
+  macSecondLocale: string | null;
 }

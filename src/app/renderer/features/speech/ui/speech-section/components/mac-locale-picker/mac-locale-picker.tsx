@@ -9,19 +9,15 @@ import {
   PICKER_ROW_PADDING,
   PICKER_VALUE_COLOR,
 } from "../../../../../../components/picker-shell/constants";
-import { NOT_FILLED_LABEL } from "../../../../../../constants";
 import { localeLabel } from "../../../../words";
-import { MAC_LOCALE_LABEL } from "../../../../constants";
 import type { MacLocalePickerProps } from "./interfaces";
 
-/** The one language macOS hears in (38d); macOS does not guess it, so it is chosen here and written at once. */
-export function MacLocalePicker({ locales, locale, onChange }: MacLocalePickerProps) {
+/** A language macOS hears in (38d); macOS does not guess it, so it is chosen here and written at once. */
+export function MacLocalePicker({ label, locales, locale, emptyWords, onChange }: MacLocalePickerProps) {
   return (
-    <FieldSlot label={MAC_LOCALE_LABEL}>
+    <FieldSlot label={label}>
       <PickerShell
-        field={
-          <span className="flex-fill text-truncate">{locale === null ? NOT_FILLED_LABEL : localeLabel(locale)}</span>
-        }
+        field={<span className="flex-fill text-truncate">{locale === null ? emptyWords : localeLabel(locale)}</span>}
         fieldColor={locale === null ? PICKER_PLACEHOLDER_COLOR : PICKER_VALUE_COLOR}
         items={locales}
         matches={(one, query) => localeLabel(one).toLowerCase().includes(query)}

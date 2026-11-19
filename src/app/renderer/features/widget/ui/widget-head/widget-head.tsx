@@ -3,7 +3,6 @@ import { Mark } from "../../../../components";
 import { FolderGlyph } from "../folder-glyph";
 import { ProjectList } from "../project-list";
 import {
-  FRESH_LABEL,
   PROJECTS_LABEL,
   PROJECT_MENU_LABEL,
   WIDGET_CHIP_BORDER_RADIUS_PX,
@@ -20,7 +19,6 @@ import {
   WIDGET_CHIP_PATH_LETTER_SPACING_PX,
   WIDGET_CHIP_SHADOW,
   WIDGET_BORDER_COLOR,
-  WIDGET_FRESH_COLOR,
   WIDGET_GROUND_COLOR,
   WIDGET_HEAD_GAP_PX,
   WIDGET_HEAD_PADDING,
@@ -34,17 +32,7 @@ import type { WidgetHeadProps } from "../../interfaces";
  * The widget's head (52a, 52k): the project's chip, which opens the list of projects and the quiet acts, and «НОВА
  * РОЗМОВА» at its side. The empty rest of the head is where the window is dragged by.
  */
-export function WidgetHead({
-  name,
-  directory,
-  recent,
-  canBeginAgain,
-  onBeginAgain,
-  onOpenList,
-  onOpen,
-  onOpenFolder,
-  quietActs,
-}: WidgetHeadProps) {
+export function WidgetHead({ name, directory, recent, onOpenList, onOpen, onOpenFolder, quietActs }: WidgetHeadProps) {
   const [isOpen, setIsOpen] = useState(false);
   /** Every act of the list closes it first. */
   const closing = (act: () => void) => () => {
@@ -131,21 +119,6 @@ export function WidgetHead({
           </svg>
         </span>
       </button>
-      {canBeginAgain && (
-        <button
-          type="button"
-          onClick={onBeginAgain}
-          className="flex-shrink-0 widget-no-drag"
-          style={{
-            border: "none",
-            background: "transparent",
-            padding: 0,
-            cursor: "pointer",
-          }}
-        >
-          <Mark color={WIDGET_FRESH_COLOR}>{FRESH_LABEL}</Mark>
-        </button>
-      )}
       {isOpen && (
         <div
           className="position-absolute widget-no-drag"

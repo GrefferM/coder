@@ -7,6 +7,7 @@ export const NOTHING_CHOSEN: SpeechSettings = {
   voiceRate: null,
   isMacHearing: false,
   macLocale: null,
+  macSecondLocale: null,
 };
 
 /** The recording's type where the recorder names none. */

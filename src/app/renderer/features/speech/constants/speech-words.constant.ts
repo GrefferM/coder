@@ -66,6 +66,9 @@ export const MAC_HEARING_WAITING_NOTE = "Чекаємо дозволу macOS";
 /** Said in capitals by hand, since the model's own name after it keeps its case. */
 export const MAC_HEARING_KEPT_PREFIX = "У PROJECT.YAML ЛИШАЄТЬСЯ ";
 export const MAC_LOCALE_LABEL = "МОВА";
+export const MAC_SECOND_LOCALE_LABEL = "ДРУГА МОВА";
+/** The second language's field while none is chosen. */
+export const MAC_SECOND_LOCALE_NONE_WORDS = "Немає";
 export const MAC_LOCALE_FOOT = "Мови, які macOS розпізнає на цій машині";
 /** The language a locale names, in Ukrainian. */
 export const MAC_LOCALE_LANGUAGE = "uk";

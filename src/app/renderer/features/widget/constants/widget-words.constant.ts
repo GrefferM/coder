@@ -21,3 +21,4 @@ export const SEND_LABEL = "Надіслати";
 export const NO_AGENTS_NOTE = "У проєкті немає агентів. Додайте їх на полотні у вікні Coder.";
 export const PROJECT_MENU_LABEL = "Проєкт віджета";
 export const STOP_READING_LABEL = "Зупинити озвучення";
+export const SWITCH_LANGUAGE_LABEL = "Змінити мову розпізнавання";

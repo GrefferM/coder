@@ -5,9 +5,6 @@ export interface WidgetHeadProps {
   name: string;
   directory: string;
   recent: ProjectEntry[];
-  /** «НОВА РОЗМОВА» stands while nothing is out and the sphere has a conversation. */
-  canBeginAgain: boolean;
-  onBeginAgain: () => void;
   onOpenList: () => void;
   onOpen: (directory: string) => void;
   onOpenFolder: () => void;

@@ -1187,7 +1187,9 @@ holds. The language of recognition is not chosen for a model; the model hears it
 machine's choice**, not the project's: choosing it writes nothing to `project.yaml`, the card says
 «Ця машина · у project.yaml не йде», the project's own model stays named under the field («У
 PROJECT.YAML ЛИШАЄТЬСЯ ‹модель›»), and it hears in every project until a model is chosen again.
-Under it «МОВА» chooses the one language macOS hears in, from every language macOS lists on this
+Under it «МОВА» chooses the language macOS hears in, and «ДРУГА МОВА», «Немає» while none is,
+the other one the widget switches to: with both chosen, the widget shows the language's code
+(«EN») beside «x1», and a press swaps the two, so a person can speak English, then Ukrainian; from every language macOS lists on this
 machine, «Англійська · en-US»; none chosen says «НЕ ЗАПОВНЕНО» and the microphone «Розпізнавання не
 налаштоване». Choosing macOS has macOS ask its permission once in its own window — and so does the
 first recording where it was never asked, as after a build signed anew — «ЧЕКАЄМО ДОЗВОЛУ
@@ -1543,10 +1545,10 @@ it 12px down once open; at rest the head, the sphere, the carousel and the field
 buttons. With no project it holds an empty grey sphere and one act (52b), «Відкрити
 проєкт», which unfolds the recent projects and «Відкрити папку». A project open, its head is the
 project's chip — its name and folder, opening the same list with the current one ticked, then
-«Закрити проєкт» and «Відкрити Coder повністю» quiet under a rule — and «НОВА
-РОЗМОВА» at its side once the sphere has a conversation and nothing is out (52k). Under the head on the
-right stand «Відкрити Coder повністю» and a speaker, lit while an end of a walk is read aloud; a
-press silences that reading.
+«Закрити проєкт» and «Відкрити Coder повністю» quiet under a rule. Under the head stands a row:
+«НОВА РОЗМОВА» on the left once the sphere has a conversation and nothing is out (52k), and on the
+right «Відкрити Coder повністю» and a speaker, lit while an end of a walk is read aloud; a press
+silences that reading.
 
 **The chosen agent stands as one big sphere** in the middle, at the Sphere's own 160px, its name in
 Mono 11 and «→ N» under it — how many agents work after it along the lines. Under it every agent of

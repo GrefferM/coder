@@ -24,6 +24,7 @@ export class SpeechService {
       voiceRate: this.numberOf(held, "voiceRate"),
       isMacHearing: this.flagOf(held, "isMacHearing"),
       macLocale: this.textOf(held, "macLocale"),
+      macSecondLocale: this.textOf(held, "macSecondLocale"),
     };
   }
 
@@ -37,6 +38,7 @@ export class SpeechService {
       voiceRate: settings.voiceRate,
       isMacHearing: settings.isMacHearing,
       macLocale: settings.macLocale,
+      macSecondLocale: settings.macSecondLocale,
     };
 
     await mkdir(path.dirname(filePath), {

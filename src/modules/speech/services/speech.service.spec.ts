@@ -115,6 +115,7 @@ describe("SpeechService", () => {
       voiceRate: null,
       isMacHearing: false,
       macLocale: null,
+      macSecondLocale: null,
     });
   });
 
@@ -135,6 +136,7 @@ describe("SpeechService", () => {
       voiceRate: null,
       isMacHearing: false,
       macLocale: null,
+      macSecondLocale: null,
     });
   });
 
@@ -147,6 +149,7 @@ describe("SpeechService", () => {
       voiceRate: null,
       isMacHearing: false,
       macLocale: null,
+      macSecondLocale: null,
     });
 
     assert.deepEqual(await speechService.settings(), {
@@ -155,6 +158,7 @@ describe("SpeechService", () => {
       voiceRate: null,
       isMacHearing: false,
       macLocale: null,
+      macSecondLocale: null,
     });
   });
 
@@ -167,6 +171,7 @@ describe("SpeechService", () => {
       voiceRate: null,
       isMacHearing: true,
       macLocale: "en-GB",
+      macSecondLocale: null,
     });
 
     assert.deepEqual(await speechService.settings(), {
@@ -175,6 +180,7 @@ describe("SpeechService", () => {
       voiceRate: null,
       isMacHearing: true,
       macLocale: "en-GB",
+      macSecondLocale: null,
     });
   });
 

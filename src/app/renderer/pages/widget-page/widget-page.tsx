@@ -23,6 +23,7 @@ import {
   useWidget,
   useWidgetNote,
   useWidgetRepeats,
+  languageCode,
   widgetExchanges,
 } from "../../features/widget";
 import { agentStands, isWalking } from "../../../../contracts";
@@ -188,8 +189,6 @@ export function WidgetPage() {
         name={config.name}
         directory={directory}
         recent={recent}
-        canBeginAgain={!isOut && exchanges.length > 0}
-        onBeginAgain={widget.fresh}
         onOpenList={loadRecent}
         onOpen={(picked) => void open(picked)}
         onOpenFolder={() => void openFolder()}
@@ -205,6 +204,8 @@ export function WidgetPage() {
         ]}
       />
       <WidgetTools
+        canBeginAgain={!isOut && exchanges.length > 0}
+        onBeginAgain={widget.fresh}
         isReading={aloud.readingId !== null}
         onStopReading={aloud.stop}
         onOpenMain={() => void openMainWindow()}
@@ -231,6 +232,19 @@ export function WidgetPage() {
             isWalking={isOut}
             voice={voice}
             attachments={attachments}
+            language={
+              speech.settings.isMacHearing &&
+              speech.settings.macLocale !== null &&
+              speech.settings.macSecondLocale !== null
+                ? languageCode(speech.settings.macLocale)
+                : null
+            }
+            onSwitchLanguage={() =>
+              void speech.save({
+                macLocale: speech.settings.macSecondLocale,
+                macSecondLocale: speech.settings.macLocale,
+              })
+            }
             repeats={repeating.repeats}
             repeating={repeating.repeating}
             onAttach={attach}

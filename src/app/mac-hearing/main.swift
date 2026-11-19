@@ -31,6 +31,9 @@ final class Hearing {
     say(["locales": ids.sorted()])
   }
 
+  /** The recognizer at work, held here until its task has answered. */
+  private var listening: SFSpeechRecognizer? = nil
+
   func hear(recording: String, locale: String) {
     guard SFSpeechRecognizer.authorizationStatus() == .authorized else {
       say(["refused": "permission"])
@@ -46,6 +49,7 @@ final class Hearing {
 
     request.shouldReportPartialResults = false
     request.requiresOnDeviceRecognition = recognizer.supportsOnDeviceRecognition
+    listening = recognizer
 
     recognizer.recognitionTask(with: request) { result, failure in
       if let failure = failure {

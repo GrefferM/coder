@@ -4,6 +4,7 @@ import {
   ASK_PLACEHOLDER_SUFFIX,
   CHOOSE_PLACEHOLDER,
   SEND_LABEL,
+  SWITCH_LANGUAGE_LABEL,
   STOP_LABEL,
   WALKING_PLACEHOLDER,
   WIDGET_BORDER_COLOR,
@@ -22,6 +23,9 @@ import {
   WIDGET_FIELD_HEIGHT_PX,
   WIDGET_FIELD_LINE_HEIGHT,
   WIDGET_FIELD_PADDING,
+  WIDGET_LANGUAGE_FONT_SIZE_PX,
+  WIDGET_LANGUAGE_LETTER_SPACING_PX,
+  WIDGET_LANGUAGE_PADDING,
   WIDGET_SEND_READY_COLOR,
   WIDGET_STOP_COLOR,
   WIDGET_STOP_GAP_PX,
@@ -50,6 +54,8 @@ export function WidgetField({
   isWalking,
   voice,
   attachments,
+  language,
+  onSwitchLanguage,
   repeats,
   repeating,
   onAttach,
@@ -176,6 +182,28 @@ export function WidgetField({
             </button>
           )}
         </span>
+        {language !== null && (
+          <button
+            type="button"
+            aria-label={SWITCH_LANGUAGE_LABEL}
+            title={SWITCH_LANGUAGE_LABEL}
+            onClick={onSwitchLanguage}
+            className="d-flex align-items-center justify-content-center font-monospace"
+            style={{
+              height: WIDGET_BUTTON_SIZE_PX,
+              padding: WIDGET_LANGUAGE_PADDING,
+              border: "none",
+              borderRadius: WIDGET_BUTTON_BORDER_RADIUS_PX,
+              background: WIDGET_BUTTON_BACKGROUND_COLOR,
+              color: WIDGET_BUTTON_ICON_COLOR,
+              fontSize: WIDGET_LANGUAGE_FONT_SIZE_PX,
+              letterSpacing: WIDGET_LANGUAGE_LETTER_SPACING_PX,
+              cursor: "pointer",
+            }}
+          >
+            {language}
+          </button>
+        )}
         <RepeatCount repeats={repeats} repeating={repeating} isShut={agentName === null} onRepeats={onRepeats} />
         {canType && <MicButton standing={voice.standing} onPress={voice.press} />}
         <button

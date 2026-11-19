@@ -23,4 +23,8 @@ export class SaveSpeechDto {
   @IsOptional()
   @IsString()
   declare macLocale: string | null;
+
+  @IsOptional()
+  @IsString()
+  declare macSecondLocale: string | null;
 }
