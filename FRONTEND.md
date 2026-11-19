@@ -24,6 +24,15 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
   same script in `nodemon`, restarting on any change the main process loads — `src/app` outside
   `renderer/`, `src/modules`, `src/contracts`, `src/utils`, specs excepted; a renderer change needs
   no restart, Vite hot-reloads it.
+- Two windows stand on the screen, held by `AppWindows` by what they are, and every push names the
+  one it goes to: the walks of the person's conversation and a changed project file go to the main
+  window, a widget sphere's snapshot to the widget, an answer's pieces to both. `AppStage` opens
+  them: the widget where `widget.json` shows it, the main window unless Coder started at login, and
+  the app menu with «Показувати віджет» and «Запускати з системою». Coder lives while either window
+  is open; with the main window closed its Dock icon goes. The widget is the same renderer loaded
+  under `#widget`, which `main.tsx` mounts as `WidgetPage` instead of `App`; `features/widget` holds
+  its calls, `useWidget` (its settings, its project read again whenever the widget comes back, the
+  chosen sphere and every sphere's walks), `widgetExchanges` and its drawing.
 - The renderer never imports `src/modules`, or anything else Node-only, by value. Every call goes
   through `window.electronApi.invoke(channel, payload)` and `subscribe(channel, listener)`, the one
   generic bridge `src/app/preload.js` exposes via `contextBridge`, so adding a domain never touches

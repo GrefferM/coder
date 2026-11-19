@@ -5,3 +5,4 @@ export * from "./refusal-parts";
 export * from "./hearing-choice";
 export * from "./sound-wave";
 export * from "./wav-bytes";
+export * from "./is-pause-after-speech";

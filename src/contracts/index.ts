@@ -17,3 +17,4 @@ export * from "./shell";
 export * from "./speech";
 export * from "./text";
 export * from "./walks";
+export * from "./widget";

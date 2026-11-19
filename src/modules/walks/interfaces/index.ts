@@ -20,3 +20,6 @@ export * from "./agent-answered.interface";
 export * from "./agent-asked.interface";
 export * from "./project-catalog.interface";
 export * from "./scheduled-conversation.interface";
+export * from "./widget-voice.interface";
+export * from "./widget-walks-parts.interface";
+export * from "./widget-conversation.interface";

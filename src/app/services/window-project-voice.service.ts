@@ -1,16 +1,17 @@
-import { BrowserWindow } from "electron";
 import { PROJECT_CHANGED_CHANNEL } from "../../contracts";
 import type { ProjectChanged } from "../../contracts";
 import type { ProjectVoice } from "../../modules/projects";
+import type { AppWindows } from "./app-windows.service";
 
-/** Tells the one window the open project's file changed on disk; dropped when there is no window. */
+/** Tells the main window the open project's file changed on disk; dropped while it is not open. */
 export class WindowProjectVoice implements ProjectVoice {
+  constructor(private readonly windows: AppWindows) {}
+
   changed(directory: string): void {
-    const [window] = BrowserWindow.getAllWindows();
     const said: ProjectChanged = {
       directory,
     };
 
-    window?.webContents.send(PROJECT_CHANGED_CHANNEL, said);
+    this.windows.toMain(PROJECT_CHANGED_CHANNEL, said);
   }
 }

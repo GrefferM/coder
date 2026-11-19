@@ -1,7 +1,9 @@
 import type { AGENT_CHUNK_CHANNEL } from "../channels/llm.channel";
 import type { PROJECT_CHANGED_CHANNEL } from "../channels/projects.channel";
 import type { WALKS_CHANGED_CHANNEL, WALKS_HEARD_CHANNEL, WALKS_WRITTEN_CHANNEL } from "../channels/walks.channel";
+import type { WIDGET_WALK_CHANGED_CHANNEL } from "../channels/widget.channel";
 import type { AgentChunk } from "../llm";
+import type { WidgetWalk } from "../widget";
 import type { ProviderHeard, WalkSnapshot } from "../walks";
 import type { ProjectChanged } from "./payloads.interface";
 
@@ -12,6 +14,7 @@ export interface PushMap {
   [WALKS_CHANGED_CHANNEL]: WalkSnapshot;
   [WALKS_WRITTEN_CHANNEL]: void;
   [WALKS_HEARD_CHANNEL]: ProviderHeard;
+  [WIDGET_WALK_CHANGED_CHANNEL]: WidgetWalk;
 }
 
 /** Every push channel; a name outside this is not one. */

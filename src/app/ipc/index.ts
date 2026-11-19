@@ -8,3 +8,4 @@ export * from "./deletions";
 export * from "./runs";
 export * from "./schedules";
 export * from "./walks";
+export * from "./widget";

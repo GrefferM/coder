@@ -249,6 +249,15 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   conversation, walks to its end and answers. The window and `npm run agent` build the backend the
   same way, through `createBackend` in `src/app/backend`; only who is spoken to differs.
 
+- **`widget`** — how this machine keeps the desktop widget, in the clear in `widget.json` beside the
+  database: whether it is shown, its project's folder, where it was put, and the sphere each
+  project's walks begin at, by agent id. None of it goes into a project. The main process reads the
+  same service to place the widget's window. The widget's project is read through `projects`' `peek`
+  — remembered among the recent ones and never watched, so the window's watch of its own project is
+  untouched. **`WidgetWalks`** in `walks` holds the widget's conversations, one per sphere, kept
+  between questions and let go when the widget's project changes; each is a `WalkRunner` of its
+  own whose listener, `WidgetEars`, pushes the sphere's snapshot to the widget and what was written
+  to the main window.
 - **`schedules`** — when a schedule's task is put. **`ScheduleClock`** holds one timer for each
   schedule that can run — switched on in its file, its agent standing, its task and interval written
   (`runnableSchedules` in `logic/`) — and puts the task once a whole interval has passed since it

@@ -1,0 +1,24 @@
+/** What the widget says (52a–52k). */
+export const OPEN_PROJECT_LABEL = "Відкрити проєкт";
+export const RECENT_LABEL = "Нещодавні";
+export const PROJECTS_LABEL = "Проєкти";
+export const OPEN_FOLDER_LABEL = "Відкрити папку";
+export const CLOSE_PROJECT_LABEL = "Закрити проєкт";
+export const OPEN_MAIN_LABEL = "Відкрити вікно Coder";
+export const HIDE_WIDGET_LABEL = "Прибрати віджет";
+export const FRESH_LABEL = "Нова розмова";
+export const AGENT_COUNT_SUFFIX = " АГ.";
+export const ONWARD_PREFIX = "→ ";
+export const PERSON_LABEL = "Ви";
+export const STEP_LABEL = "Крок ";
+export const STEP_SEPARATOR = " · ";
+export const WORKING_LABEL = "Працює · ";
+export const ASK_PLACEHOLDER_PREFIX = "Питання для ";
+export const ASK_PLACEHOLDER_SUFFIX = "…";
+export const CHOOSE_PLACEHOLDER = "Оберіть сферу, з якої почнеться хід";
+export const WALKING_PLACEHOLDER = "Ходьба йде — зачекайте або зупиніть";
+export const STOP_LABEL = "Зупинити";
+export const SEND_LABEL = "Надіслати";
+export const NO_AGENTS_NOTE = "У проєкті немає агентів. Додайте їх на полотні у вікні Coder.";
+export const PROJECT_MENU_LABEL = "Проєкт віджета";
+export const STOP_READING_LABEL = "Зупинити озвучення";

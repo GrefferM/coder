@@ -10,4 +10,6 @@ export interface VoiceAskHands {
   onHeard: (words: string, clip: HeardClip) => void;
   onNote: (note: SpeechNote) => void;
   onOpenSpeech: () => void;
+  /** The take ends by itself once speech has gone quiet (52d); otherwise only a second press ends it. */
+  endsOnPause?: boolean;
 }

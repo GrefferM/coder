@@ -4,7 +4,8 @@ import type { ProviderController } from "../../../modules/providers";
 import type { RunController, RunKeeper } from "../../../modules/runs";
 import type { ScheduleController } from "../../../modules/schedules";
 import type { SpeechController } from "../../../modules/speech";
-import type { ProjectCatalog, WalkController, WalkHub } from "../../../modules/walks";
+import type { ProjectCatalog, WalkController, WalkHub, WidgetWalkController } from "../../../modules/walks";
+import type { WidgetController, WidgetSettingsService } from "../../../modules/widget";
 
 /** Everything the backend is made of, wired once: the doors a window knocks on, and what a command line reaches. */
 export interface Backend {
@@ -16,6 +17,10 @@ export interface Backend {
   runController: RunController;
   walkController: WalkController;
   scheduleController: ScheduleController;
+  widgetController: WidgetController;
+  widgetWalkController: WidgetWalkController;
+  /** How this machine keeps the desktop widget, for the stage that places it. */
+  widgetSettings: WidgetSettingsService;
   /** Asked to look again whenever the window comes to the front. */
   watch: ProjectWatch;
   /** Finds a project by the name or folder a command line was given. */

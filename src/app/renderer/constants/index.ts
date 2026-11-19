@@ -11,3 +11,4 @@ export * from "./palette.constant";
 export * from "./person.constant";
 export * from "./tool-groups.constant";
 export * from "./type.constant";
+export * from "./widget-window.constant";

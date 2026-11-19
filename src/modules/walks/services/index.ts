@@ -8,3 +8,5 @@ export * from "./walk-hub.service";
 export * from "./agent-ask.service";
 export * from "./schedule-ears.service";
 export * from "./scheduled-walks.service";
+export * from "./widget-ears.service";
+export * from "./widget-walks.service";

@@ -16,6 +16,7 @@ import {
   LOOK_PROJECT_CHANNEL,
   OPEN_OR_CREATE_PROJECT_CHANNEL,
   OPEN_PROJECT_CHANNEL,
+  PEEK_PROJECT_CHANNEL,
   PROJECT_VIEW_CHANNEL,
   REMEMBER_PROJECT_VIEW_CHANNEL,
   SAVE_PROJECT_CHANNEL,
@@ -25,6 +26,7 @@ import {
 export const PROJECTS_IPC_CHANNELS: IpcChannelMap<ProjectController> = {
   [CREATE_PROJECT_CHANNEL]: (controller, payload) => controller.create(Object.assign(new CreateProjectDto(), payload)),
   [OPEN_PROJECT_CHANNEL]: (controller, payload) => controller.open(Object.assign(new OpenProjectDto(), payload)),
+  [PEEK_PROJECT_CHANNEL]: (controller, payload) => controller.peek(Object.assign(new OpenProjectDto(), payload)),
   [SAVE_PROJECT_CHANNEL]: (controller, payload) => {
     const saveProject = Object.assign(new SaveProjectDto(), payload);
 

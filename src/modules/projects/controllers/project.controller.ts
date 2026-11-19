@@ -1,6 +1,13 @@
 import { Validate } from "../../../utils/dto-validation";
 import { ProjectService } from "../services";
-import { CreateProjectDto, ForgetProjectDto, OpenProjectDto, RememberProjectViewDto, SaveProjectDto } from "../dto";
+import {
+  CreateProjectDto,
+  ForgetProjectDto,
+  OpenProjectDto,
+  ProjectConfigDto,
+  RememberProjectViewDto,
+  SaveProjectDto,
+} from "../dto";
 import { FolderContents, KnownProject, ProjectRead } from "../interfaces";
 
 export class ProjectController {
@@ -14,6 +21,11 @@ export class ProjectController {
   @Validate()
   async open(payload: OpenProjectDto): Promise<ProjectRead> {
     return this.projectService.open(payload);
+  }
+
+  @Validate()
+  async peek(payload: OpenProjectDto): Promise<ProjectConfigDto> {
+    return this.projectService.peek(payload);
   }
 
   @Validate()

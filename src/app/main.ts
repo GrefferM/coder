@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog } from "electron";
+import { app, dialog } from "electron";
 import * as path from "node:path";
 import {
   registerIpcChannels,
@@ -11,40 +11,49 @@ import {
   SHELL_IPC_CHANNELS,
   SPEECH_IPC_CHANNELS,
   WALKS_IPC_CHANNELS,
+  WIDGET_IPC_CHANNELS,
+  WIDGET_SHELL_IPC_CHANNELS,
+  WIDGET_WALK_IPC_CHANNELS,
 } from "./ipc";
-import { SafeStorageCipher, SystemShell, WindowProjectVoice, WindowVoice, WindowWalkVoice } from "./services";
+import {
+  AppStage,
+  AppWindows,
+  SafeStorageCipher,
+  SystemShell,
+  WindowProjectVoice,
+  WindowVoice,
+  WindowWalkVoice,
+  WindowWidgetVoice,
+} from "./services";
 import { createBackend } from "./backend";
 import type { Backend } from "./backend";
-import {
-  APP_ICON_PATH,
-  APP_NAME,
-  DEV_HEARING_APP_PATH,
-  HEARING_APP_NAME,
-  PRELOAD_SCRIPT_PATH,
-  RENDERER_DEV_SERVER_URL,
-  RENDERER_INDEX_PATH,
-  STARTUP_FAILURE_TITLE,
-  WINDOW_BACKGROUND_COLOR,
-  WINDOW_HEIGHT,
-  WINDOW_WIDTH,
-} from "./constants";
+import { APP_ICON_PATH, APP_NAME, DEV_HEARING_APP_PATH, HEARING_APP_NAME, STARTUP_FAILURE_TITLE } from "./constants";
 
 app.setName(APP_NAME);
 
 /** The backend, wired once the app is ready. */
 let backend: Backend | null = null;
 
-/** Wires the backend to the one window and registers every domain's IPC channels. */
-async function initializeIpc(): Promise<void> {
+/** The main window and the widget, by what they are; every push names which one it goes to. */
+const windows = new AppWindows();
+
+/** Wires the backend to the windows and registers every domain's IPC channels; answers with the stage. */
+async function initializeIpc(): Promise<AppStage> {
   const wired = await createBackend({
     userDataPath: app.getPath("userData"),
     cipher: new SafeStorageCipher(),
     voices: {
-      project: new WindowProjectVoice(),
-      agent: new WindowVoice(),
-      walk: new WindowWalkVoice(),
+      project: new WindowProjectVoice(windows),
+      agent: new WindowVoice(windows),
+      walk: new WindowWalkVoice(windows),
+      widget: new WindowWidgetVoice(windows),
     },
     hearingAppPath: app.isPackaged ? path.join(process.resourcesPath, HEARING_APP_NAME) : DEV_HEARING_APP_PATH,
+  });
+  const stage = new AppStage({
+    windows,
+    widgetSettings: wired.widgetSettings,
+    onMainFocus: () => void wired.watch.look(),
   });
 
   backend = wired;
@@ -62,36 +71,12 @@ async function initializeIpc(): Promise<void> {
   registerIpcChannels(wired.runController, RUNS_IPC_CHANNELS);
   registerIpcChannels(wired.walkController, WALKS_IPC_CHANNELS);
   registerIpcChannels(wired.scheduleController, SCHEDULES_IPC_CHANNELS);
+  registerIpcChannels(wired.widgetController, WIDGET_IPC_CHANNELS);
+  registerIpcChannels(wired.widgetWalkController, WIDGET_WALK_IPC_CHANNELS);
+  registerIpcChannels(stage, WIDGET_SHELL_IPC_CHANNELS);
   registerIpcChannels(new SystemShell(), SHELL_IPC_CHANNELS);
-}
 
-/** Opens the app's one window, on the Vite dev server under `npm run dev:app` and on the built renderer otherwise. */
-async function createWindow(): Promise<void> {
-  const window = new BrowserWindow({
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
-    backgroundColor: WINDOW_BACKGROUND_COLOR,
-    icon: APP_ICON_PATH,
-    titleBarStyle: "hiddenInset",
-    webPreferences: {
-      preload: PRELOAD_SCRIPT_PATH,
-      contextIsolation: true,
-      nodeIntegration: false,
-    },
-  });
-
-  // Coming back from an editor, a change the file system did not deliver is read now, not at the next save.
-  window.on("focus", () => {
-    void backend?.watch.look();
-  });
-
-  if (RENDERER_DEV_SERVER_URL !== undefined) {
-    await window.loadURL(RENDERER_DEV_SERVER_URL);
-
-    return;
-  }
-
-  await window.loadFile(RENDERER_INDEX_PATH);
+  return stage;
 }
 
 /** Sets the Dock icon on macOS; a packaged build takes it from the bundle. */
@@ -107,9 +92,13 @@ function failToStart(failure: unknown): void {
 app
   .whenReady()
   .then(async () => {
-    await initializeIpc();
-    await createWindow();
+    const stage = await initializeIpc();
+
     applyDockIcon();
+    await stage.start();
+
+    // A click on the Dock icon with no window up brings the main window back.
+    app.on("activate", () => void stage.openMain());
   })
   .catch(failToStart);
 

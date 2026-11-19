@@ -8,6 +8,7 @@ import { createRunModule } from "../../modules/runs";
 import { createSchedulesModule } from "../../modules/schedules";
 import { createSecretsModule } from "../../modules/secrets";
 import { createSpeechModule } from "../../modules/speech";
+import { createWidgetModule } from "../../modules/widget";
 import { RunRecordStore, createWalksModule } from "../../modules/walks";
 import type { Backend, BackendGround } from "./interfaces";
 
@@ -40,6 +41,7 @@ export async function createBackend({ userDataPath, cipher, voices, hearingAppPa
   const { service: llmService } = createLlmModule(providerService, voices.agent, commandRunner, client, runReader);
   const {
     controller: walkController,
+    widgetController: widgetWalkController,
     hub,
     scheduled,
   } = createWalksModule({
@@ -48,8 +50,10 @@ export async function createBackend({ userDataPath, cipher, voices, hearingAppPa
     providers: providerService,
     servers: client,
     voice: voices.walk,
+    widget: voices.widget,
   });
   const { controller: scheduleController, clock } = createSchedulesModule(scheduled);
+  const { controller: widgetController, settings: widgetSettings } = createWidgetModule(userDataPath);
 
   return {
     projectController,
@@ -60,6 +64,9 @@ export async function createBackend({ userDataPath, cipher, voices, hearingAppPa
     runController,
     walkController,
     scheduleController,
+    widgetController,
+    widgetWalkController,
+    widgetSettings,
     watch,
     finder,
     hub,

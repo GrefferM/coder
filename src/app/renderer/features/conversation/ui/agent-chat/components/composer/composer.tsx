@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { AttachChip, MicButton, RepeatCount, VoiceRow } from "./components";
-import { SoundClip } from "../../../../../speech";
+import { AttachChip, RepeatCount } from "./components";
+import { MicButton, SoundClip, VoiceRow } from "../../../../../speech";
 import { Mark, TextButton } from "../../../../../../components";
 import { useInteraction } from "../../../../../../hooks";
 import { INTERACTION_HOVER_BACKGROUND_COLOR, INTERACTION_TRANSITION } from "../../../../../../constants";

@@ -27,3 +27,6 @@ export const PROJECT_VIEW_CHANNEL = "projects:view";
 export const REMEMBER_PROJECT_VIEW_CHANNEL = "projects:remember-view";
 
 export const SAVE_PROJECT_CHANNEL = "projects:save";
+
+/** Reads a project for the widget: remembered among the recent ones, and not watched. */
+export const PEEK_PROJECT_CHANNEL = "projects:peek";

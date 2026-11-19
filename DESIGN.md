@@ -1522,6 +1522,46 @@ they are drawn — every sphere a line must not land on stands dimmed and takes 
 refuses all three, both when it is read and when it is written. Nothing else is warned about: dead
 ends, islands and missing exits are all normal, and there is no "finish" marker.
 
+## The desktop widget
+
+**The widget is a small borderless window of Coder** (52a), 380 wide, lying among the other windows
+where it was put; it lives while Coder runs, the main window closed or not, and is dragged by its
+empty head. Its top edge stays and its height follows its state: 760 once the sphere has a conversation, and
+otherwise as tall as what stands in it — with no project the sphere, the button, and the list under
+it 12px down once open; at rest the head, the sphere, the carousel and the field, 20px under its
+buttons. With no project it holds an empty grey sphere and one act (52b), «Відкрити
+проєкт», which unfolds the recent projects and «Відкрити папку». A project open, its head is the
+project's chip — its name and folder, opening the same list with the current one ticked, then
+«Закрити проєкт», «Відкрити вікно Coder» and «Прибрати віджет» quiet under a rule — and «НОВА
+РОЗМОВА» at its side once the sphere has a conversation and nothing is out (52k). Under the head on the
+right stands a speaker, lit while an end of a walk is read aloud; a press silences that reading.
+
+**The chosen agent stands as one big sphere** in the middle, at the Sphere's own 160px, its name in
+Mono 11 and «→ N» under it — how many agents work after it along the lines. Under it every agent of
+the project sits in a carousel of 32px spheres scrolling sideways, the chosen one whole and the
+rest dim; a press makes one the big sphere, and the machine remembers the choice for the project.
+A switched-off agent is a grey frame that cannot be chosen. A project with no agents says so and
+leads to the main window (52c). The carousel stays while a walk is out, where 52e draws the run
+graph.
+
+**A question is said or typed.** The microphone records; the big sphere's halo follows the
+loudness (52d, scale 0.94…1.06, brightness 0.34…1), the take ends by itself once 1.5 s have gone
+quiet after speech or at a second press, and what is heard is sent at once, with no field to mend
+it in; words grow in the field only after «РОЗПІЗНАЄМО…». A typed question goes by Enter or the
+arrow, Shift+Enter a new line. The row under the field is the chat's: «+ ПРИКРІПИТИ» on the left,
+the picked files as chips over it, packed under the chosen agent's ceiling as the question goes,
+and «x1», the microphone and the arrow on the right; with «x1» above one the question goes again
+each time its walk ends, the count reading «2/5», and «ЗУПИНИТИ» ends the repeats with the walk. While the walk is out the sphere's halo goes round it and the field
+rests with «Ходьба йде — зачекайте або зупиніть» and «ЗУПИНИТИ». The output is the sphere's
+conversation, newest at the bottom: the «ВИ» card, a step between as one line with «КРОК N ·
+година», a turn out as a working card with its clock, and an end of the walk whole on its card.
+**Each end is read aloud** the moment it comes, in the machine's voice, one after another in the
+order they ended (52f, 52h); ends already standing when the widget opened are not read. What stops
+a question or a reading stands as a line over the field (52j), one without an act going after 12 s.
+Each sphere keeps its conversation between questions (52k). The project chosen here is this
+machine's and the main window may hold another. «Відкрити папку» opens a folder that already is a
+project; an empty one is not made one here.
+
 ## Schedules
 
 A schedule puts one task to one agent every N minutes while the project stands open (frame 51a). Its

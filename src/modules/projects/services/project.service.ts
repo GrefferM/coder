@@ -84,6 +84,21 @@ export class ProjectService {
     return read;
   }
 
+  /** Reads a project for the desktop widget and remembers it among the recent ones, watching nothing. */
+  async peek(payload: OpenProjectDto): Promise<ProjectConfigDto> {
+    const { directory } = payload;
+
+    if (!(await this.projectFileStore.exists(directory))) {
+      throw new Refusal(PROJECT_NOT_FOUND);
+    }
+
+    const config = await this.projectFileStore.read(directory);
+
+    await this.remember(directory, config.name);
+
+    return config;
+  }
+
   /** Closes the open project; the watch goes down with it. */
   close(): void {
     this.projectWatch.unfollow();
