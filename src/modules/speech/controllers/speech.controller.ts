@@ -1,7 +1,7 @@
 import { Validate } from "../../../utils/dto-validation";
 import { SpeechService } from "../services";
 import { HearSpeechDto, SaveSpeechDto } from "../dto";
-import type { SpeechSettings } from "../interfaces";
+import type { MacPermission, SpeechSettings } from "../interfaces";
 
 export class SpeechController {
   constructor(private readonly speechService: SpeechService) {}
@@ -18,5 +18,17 @@ export class SpeechController {
   @Validate()
   async hear(payload: HearSpeechDto): Promise<string> {
     return this.speechService.hear(payload);
+  }
+
+  async macPermission(): Promise<MacPermission> {
+    return this.speechService.macPermission();
+  }
+
+  async allowMac(): Promise<MacPermission> {
+    return this.speechService.allowMac();
+  }
+
+  async macLocales(): Promise<string[]> {
+    return this.speechService.macLocales();
   }
 }

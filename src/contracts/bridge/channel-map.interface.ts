@@ -34,6 +34,10 @@ import type {
   REVEAL_PROJECT_CHANNEL,
   SAVE_TEXT_FILE_CHANNEL,
   OPEN_MICROPHONE_SETTINGS_CHANNEL,
+  OPEN_SPEECH_SETTINGS_CHANNEL,
+  MAC_HEARING_PERMISSION_CHANNEL,
+  ALLOW_MAC_HEARING_CHANNEL,
+  MAC_HEARING_LOCALES_CHANNEL,
   SPEECH_SETTINGS_CHANNEL,
   SAVE_SPEECH_CHANNEL,
   HEAR_SPEECH_CHANNEL,
@@ -61,7 +65,7 @@ import type { McpLook, McpSecretsHeld } from "../mcp";
 import type { CallPlace, RunHit, RunRow, WholeRun } from "../runs";
 import type { AttachmentPick, PackAttachmentsAsk, PackedAttachment, PickAttachmentsAsk } from "../attachments";
 import type { SaveTextAsk } from "../shell";
-import type { HeardSound, SpeechSettings } from "../speech";
+import type { HeardSound, MacPermission, SpeechSettings } from "../speech";
 import type { PutWalkAnswer, WalkSnapshot } from "../walks";
 import type { ScheduleStanding } from "../schedules";
 import type {
@@ -119,6 +123,9 @@ export interface ChannelMap {
   [SAVE_SPEECH_CHANNEL]: { payload: SpeechSettings; answer: void };
   /** The words heard in the recording; empty where none were. */
   [HEAR_SPEECH_CHANNEL]: { payload: HeardSound; answer: string };
+  [MAC_HEARING_PERMISSION_CHANNEL]: { payload: void; answer: MacPermission };
+  [ALLOW_MAC_HEARING_CHANNEL]: { payload: void; answer: MacPermission };
+  [MAC_HEARING_LOCALES_CHANNEL]: { payload: void; answer: string[] };
 
   [LOOK_MCP_SERVER_CHANNEL]: { payload: LookMcpServer; answer: McpLook };
   [SEEN_MCP_SERVER_CHANNEL]: { payload: { id: string }; answer: void };
@@ -170,6 +177,7 @@ export interface ChannelMap {
    */
   [SAVE_TEXT_FILE_CHANNEL]: { payload: SaveTextAsk; answer: string | null };
   [OPEN_MICROPHONE_SETTINGS_CHANNEL]: { payload: void; answer: void };
+  [OPEN_SPEECH_SETTINGS_CHANNEL]: { payload: void; answer: void };
 }
 
 /** Every channel; a name outside this is not one. */

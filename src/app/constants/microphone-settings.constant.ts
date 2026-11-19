@@ -3,3 +3,8 @@ export const MICROPHONE_SETTINGS_PAGES: Partial<Record<NodeJS.Platform, string>>
   darwin: "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone",
   win32: "ms-settings:privacy-microphone",
 };
+
+/** The system's own page of who may recognise speech, by platform; a platform without one is not here. */
+export const SPEECH_SETTINGS_PAGES: Partial<Record<NodeJS.Platform, string>> = {
+  darwin: "x-apple.systempreferences:com.apple.preference.security?Privacy_SpeechRecognition",
+};

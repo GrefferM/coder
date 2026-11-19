@@ -4,3 +4,4 @@ export * from "./spoken-text";
 export * from "./refusal-parts";
 export * from "./hearing-choice";
 export * from "./sound-wave";
+export * from "./wav-bytes";

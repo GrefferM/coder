@@ -3,6 +3,7 @@ import type { SystemShell } from "../../services";
 import {
   CHOOSE_DIRECTORY_CHANNEL,
   OPEN_MICROPHONE_SETTINGS_CHANNEL,
+  OPEN_SPEECH_SETTINGS_CHANNEL,
   PACK_ATTACHMENTS_CHANNEL,
   PICK_ATTACHMENT_CHANNEL,
   REVEAL_PROJECT_CHANNEL,
@@ -21,4 +22,5 @@ export const SHELL_IPC_CHANNELS: IpcChannelMap<SystemShell> = {
   [PACK_ATTACHMENTS_CHANNEL]: (systemShell, payload) => systemShell.pack(<PackAttachmentsAsk>payload),
   [SAVE_TEXT_FILE_CHANNEL]: (systemShell, payload) => systemShell.saveText(<SaveTextAsk>payload),
   [OPEN_MICROPHONE_SETTINGS_CHANNEL]: (systemShell) => systemShell.openMicrophoneSettings(),
+  [OPEN_SPEECH_SETTINGS_CHANNEL]: (systemShell) => systemShell.openSpeechSettings(),
 };

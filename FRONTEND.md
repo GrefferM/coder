@@ -96,13 +96,17 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     off or on at once, an off one's last answer let go — while `ProvidersPanel` keeps what was typed
     per provider in its own state, so a card folded by its chevron, by opening another provider or by
     a switch shows it again at the next opening, and «СКАСУВАТИ» and «ЗБЕРЕГТИ» drop it;
-    `useSpeech`, this machine's voice, read once and changed by laying each change over the settings as
+    `useSpeech`, this machine's voice and macOS's hearing, read once and changed by laying each change over the settings as
     they stand — a change the machine refuses is said on the line and the settings are read again —
     and the OS's voices, told again whenever the OS hands them over; `useSpeechWrites`, the project's
-    choice of its recognition model, written through the project's writer; `useVoiceAsk`, a question
+    choice of its recognition model, written through the project's writer; `useMacHearing`, while
+    macOS is chosen, its languages and its permission, read again when the window comes back, and the
+    one ask for it; `useVoiceAsk`, a question
     said into the field (4j) — the microphone, the recording metered every 100ms for the running wave
-    (`soundLevel`, `levels`), the project's recognition model hearing it (`hearingChoice` finds the
-    model by its id and stands on nothing where it does not stand), and its words written after the
+    (`soundLevel`, `levels`), macOS or the project's recognition model hearing it (`hearingChoice`
+    takes macOS in its language where the machine chose it, else finds the model by its id, and
+    stands on nothing where it does not stand; a recording for macOS is decoded and laid again as WAV
+    by `wavRecording`), and its words written after the
     draft through `heardIntoDraft` with the recording handed over as a `HeardClip` (its own id, sound,
     length and `wavePeaks`), which `useAgentChat` keeps under the field and, once the question goes,
     by the question's id in `heardBy`; every refusal is handed to the page's line as a `SpeechNote`
@@ -254,7 +258,8 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     the pick of files for a question and the pack of them as it goes, `servers/` one holding the
     look at a server, the letting go, the putting out of its news and the asking and giving of
     consent to its run line, `speech/` one holding this machine's voice, its save, the hearing of a
-    recording and the system's page of the microphone, and `models/`, `prompts/` and `commands/` never will, since they are
+    recording, macOS's permission and languages, and the system's pages of the microphone and of
+    speech recognition, and `models/`, `prompts/` and `commands/` never will, since they are
     written through the project's own write path. **No `invoke` stands outside an `api/` at all.**
     What does is the subscriptions, which are not calls and answer nothing — `useProjectFile` on the
     change channel and `useAgentChat` on the walks' channels and the one a turn arrives in piece by

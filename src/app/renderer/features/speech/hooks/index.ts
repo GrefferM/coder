@@ -3,3 +3,4 @@ export * from "./use-speech";
 export * from "./use-speech-writes";
 export * from "./use-voice-ask";
 export * from "./use-sound-player";
+export * from "./use-mac-hearing";

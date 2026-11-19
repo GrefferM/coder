@@ -5,6 +5,7 @@ import {
   ATTACHMENT_PICKER_TITLE,
   DIRECTORY_PICKER_TITLE,
   MICROPHONE_SETTINGS_PAGES,
+  SPEECH_SETTINGS_PAGES,
   TEXT_SAVE_FILTER_LABEL,
   TEXT_SAVE_TITLE,
 } from "../constants";
@@ -19,7 +20,7 @@ import type {
   SaveTextAsk,
 } from "../../contracts";
 
-/** Electron's desktop calls: choosers, file-manager reveal, packing a question's files, and the microphone's page. */
+/** Electron's desktop calls: choosers, file-manager reveal, packing a question's files, and the microphone's and speech recognition's pages. */
 export class SystemShell {
   constructor(private readonly packer = new AttachmentPacker()) {}
 
@@ -94,6 +95,17 @@ export class SystemShell {
   /** Opens the system's page of who may use the microphone; a platform without one opens nothing. */
   async openMicrophoneSettings(): Promise<void> {
     const page = MICROPHONE_SETTINGS_PAGES[process.platform];
+
+    if (page === undefined) {
+      return;
+    }
+
+    await shell.openExternal(page);
+  }
+
+  /** Opens the system's page of who may recognise speech; a platform without one opens nothing. */
+  async openSpeechSettings(): Promise<void> {
+    const page = SPEECH_SETTINGS_PAGES[process.platform];
 
     if (page === undefined) {
       return;

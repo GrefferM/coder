@@ -1,4 +1,5 @@
 export * from "./heard-sound.interface";
+export * from "./mac-permission.type";
 export * from "./recorded-sound.interface";
 export * from "./speech-listeners.constant";
 export * from "./speech-refusals.constant";

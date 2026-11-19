@@ -3,10 +3,15 @@ import type { SpeechSettings } from "../../../../../contracts";
 /** Nothing chosen: what a machine that never wrote its speech holds. */
 export const NOTHING_CHOSEN: SpeechSettings = {
   voiceName: null,
+  isMacHearing: false,
+  macLocale: null,
 };
 
 /** The recording's type where the recorder names none. */
 export const RECORDING_MIME_TYPE = "audio/webm";
+
+/** The type of a recording laid again for macOS. */
+export const WAV_MIME_TYPE = "audio/wav";
 
 /** What stands between the parts of a recorder's type and its parameters. */
 export const MIME_PARAMETERS_SEPARATOR = ";";

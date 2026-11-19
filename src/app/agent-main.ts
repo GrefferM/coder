@@ -1,4 +1,5 @@
 import { app } from "electron";
+import * as path from "node:path";
 import { createBackend } from "./backend";
 import { QuietVoice, SafeStorageCipher } from "./services";
 import {
@@ -8,7 +9,7 @@ import {
   parseAgentArgs,
   sayTo,
 } from "./agent-cli";
-import { APP_NAME } from "./constants";
+import { APP_NAME, DEV_HEARING_APP_PATH, HEARING_APP_NAME } from "./constants";
 import { AgentAsk } from "../modules/walks";
 
 // The same name as the window's app, so the database, the runs and the keys are the ones the window holds.
@@ -20,10 +21,15 @@ app.dock?.hide();
 async function run(): Promise<number> {
   const asked = parseAgentArgs(process.argv.slice(2));
   const quiet = new QuietVoice();
-  const backend = await createBackend(app.getPath("userData"), new SafeStorageCipher(), {
-    project: quiet,
-    agent: quiet,
-    walk: quiet,
+  const backend = await createBackend({
+    userDataPath: app.getPath("userData"),
+    cipher: new SafeStorageCipher(),
+    voices: {
+      project: quiet,
+      agent: quiet,
+      walk: quiet,
+    },
+    hearingAppPath: app.isPackaged ? path.join(process.resourcesPath, HEARING_APP_NAME) : DEV_HEARING_APP_PATH,
   });
 
   try {

@@ -1,16 +1,17 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { HEARING_FILE_NAME, HEARING_FILE_NAMES, HEARING_PATH, HEARING_WAYS, SPEECH_FILE_NAME } from "../constants";
-import { SPEECH_HEARING_FAILED, SPEECH_NOT_SET } from "../interfaces";
+import { MAC_HEARING_ID, SPEECH_HEARING_FAILED, SPEECH_NOT_SET } from "../interfaces";
 import { Refusal } from "../../../utils/refusals";
 import { atProtocol } from "../../../utils/addresses";
-import type { HearingCall, HeardSound, SpeechReach, SpeechSettings } from "../interfaces";
+import type { HearingCall, HeardSound, MacListener, MacPermission, SpeechReach, SpeechSettings } from "../interfaces";
 
 /** What this machine speaks with, kept in the clear beside the database, and recognition itself. */
 export class SpeechService {
   constructor(
     private readonly reach: SpeechReach,
     private readonly userDataDirectory: string,
+    private readonly mac: MacListener,
   ) {}
 
   /** The settings as written; a field missing, or a file missing or not of its shape, reads as `null`. */
@@ -19,6 +20,8 @@ export class SpeechService {
 
     return {
       voiceName: this.textOf(held, "voiceName"),
+      isMacHearing: this.flagOf(held, "isMacHearing"),
+      macLocale: this.textOf(held, "macLocale"),
     };
   }
 
@@ -28,6 +31,8 @@ export class SpeechService {
     const temporaryPath = `${filePath}.tmp`;
     const written: SpeechSettings = {
       voiceName: settings.voiceName,
+      isMacHearing: settings.isMacHearing,
+      macLocale: settings.macLocale,
     };
 
     await mkdir(path.dirname(filePath), {
@@ -37,8 +42,30 @@ export class SpeechService {
     await rename(temporaryPath, filePath);
   }
 
-  /** The words the provider heard in the recording; empty where it heard none. */
+  /** Whether macOS lets Coder recognise speech. */
+  async macPermission(): Promise<MacPermission> {
+    return this.mac.permission();
+  }
+
+  /** Has macOS ask the person once; answers as `macPermission`. */
+  async allowMac(): Promise<MacPermission> {
+    return this.mac.allow();
+  }
+
+  /** The languages macOS recognises on this machine, as locales. */
+  async macLocales(): Promise<string[]> {
+    return this.mac.locales();
+  }
+
+  /** The words heard in the recording, by macOS or by the provider; empty where none were. */
   async hear(sound: HeardSound): Promise<string> {
+    if (sound.providerId === MAC_HEARING_ID) {
+      return this.mac.hear({
+        audio: sound.audio,
+        locale: sound.model,
+      });
+    }
+
     const key = await this.reach.keyOf(sound.providerId);
     const address = await this.hearingAddress(sound.providerId);
 
@@ -128,6 +155,14 @@ export class SpeechService {
     } catch {
       return null;
     }
+  }
+
+  private flagOf(held: unknown, field: keyof SpeechSettings): boolean {
+    if (typeof held !== "object" || held === null) {
+      return false;
+    }
+
+    return (<Record<string, unknown>>held)[field] === true;
   }
 
   private textOf(held: unknown, field: keyof SpeechSettings): string | null {

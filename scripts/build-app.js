@@ -1,10 +1,11 @@
 // Builds what `npm run build:mac` packages: the main process compiled into dist/, the files it reads beside it,
-// and the renderer built into dist/renderer.
+// the renderer built into dist/renderer, and Coder Hearing built into build/.
 //
 // Vite is ESM-only, so its Node API is loaded with dynamic `import()` from this CommonJS script.
 const path = require("node:path");
 const fs = require("node:fs");
 const { execFileSync } = require("node:child_process");
+const { buildHearing } = require("./build-hearing");
 
 const ROOT = path.join(__dirname, "..");
 const DIST = path.join(ROOT, "dist");
@@ -28,6 +29,8 @@ async function main() {
   fs.cpSync(path.join(APP_SOURCE, "assets"), path.join(APP_BUILT, "assets"), {
     recursive: true,
   });
+
+  buildHearing();
 
   const { build } = await import("vite");
 

@@ -5,11 +5,11 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import { SPEECH_FILE_NAME } from "../constants";
-import { SPEECH_HEARING_FAILED, SPEECH_NOT_SET } from "../interfaces";
+import { MAC_HEARING_ID, SPEECH_HEARING_FAILED, SPEECH_NOT_SET } from "../interfaces";
 import { SpeechService } from "./speech.service";
 import type { IncomingMessage, Server, ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
-import type { HeardSound, SpeechReach } from "../interfaces";
+import type { HeardSound, MacListener, MacRecording, SpeechReach } from "../interfaces";
 
 interface HeardRequest {
   url: string;
@@ -61,6 +61,20 @@ function reachOf(key: string | null, address: string | null): SpeechReach {
   };
 }
 
+/** macOS that hears every recording as the words it is given, and keeps what it was handed. */
+function macHearing(words: string, heard: MacRecording[] = []): MacListener {
+  return {
+    permission: async () => "allowed",
+    allow: async () => "allowed",
+    locales: async () => ["en-US"],
+    hear: async (recording) => {
+      heard.push(recording);
+
+      return words;
+    },
+  };
+}
+
 /** A recording to the provider and model the project hears with. */
 function soundFor(providerId: string, model: string): HeardSound {
   return {
@@ -93,15 +107,17 @@ describe("SpeechService", () => {
   });
 
   it("reads no voice where nothing was written", async () => {
-    const speechService = new SpeechService(reachOf(null, null), directory);
+    const speechService = new SpeechService(reachOf(null, null), directory, macHearing(""));
 
     assert.deepEqual(await speechService.settings(), {
       voiceName: null,
+      isMacHearing: false,
+      macLocale: null,
     });
   });
 
   it("reads a voice held as something else as none, and leaves out what is not this machine's", async () => {
-    const speechService = new SpeechService(reachOf(null, null), directory);
+    const speechService = new SpeechService(reachOf(null, null), directory, macHearing(""));
 
     await writeFile(
       path.join(directory, SPEECH_FILE_NAME),
@@ -113,23 +129,61 @@ describe("SpeechService", () => {
 
     assert.deepEqual(await speechService.settings(), {
       voiceName: null,
+      isMacHearing: false,
+      macLocale: null,
     });
   });
 
   it("gives back the voice it saved", async () => {
-    const speechService = new SpeechService(reachOf(null, null), directory);
+    const speechService = new SpeechService(reachOf(null, null), directory, macHearing(""));
 
     await speechService.save({
       voiceName: "Lesya",
+      isMacHearing: false,
+      macLocale: null,
     });
 
     assert.deepEqual(await speechService.settings(), {
       voiceName: "Lesya",
+      isMacHearing: false,
+      macLocale: null,
     });
   });
 
+  it("gives back macOS's hearing and its language as saved", async () => {
+    const speechService = new SpeechService(reachOf(null, null), directory, macHearing(""));
+
+    await speechService.save({
+      voiceName: null,
+      isMacHearing: true,
+      macLocale: "en-GB",
+    });
+
+    assert.deepEqual(await speechService.settings(), {
+      voiceName: null,
+      isMacHearing: true,
+      macLocale: "en-GB",
+    });
+  });
+
+  it("hands a recording for macOS to macOS in its language, asking no provider for a key", async () => {
+    const heard: MacRecording[] = [];
+    const speechService = new SpeechService(reachOf(null, null), directory, macHearing("Hello there", heard));
+    const sound = soundFor(MAC_HEARING_ID, "en-US");
+
+    const words = await speechService.hear(sound);
+
+    assert.equal(words, "Hello there");
+    assert.deepEqual(heard, [
+      {
+        audio: sound.audio,
+        locale: "en-US",
+      },
+    ]);
+  });
+
   it("refuses to hear while the provider holds no key", async () => {
-    const speechService = new SpeechService(reachOf(null, null), directory);
+    const speechService = new SpeechService(reachOf(null, null), directory, macHearing(""));
 
     await assert.rejects(speechService.hear(soundFor("openai", "whisper-1")), {
       code: SPEECH_NOT_SET,
@@ -137,7 +191,7 @@ describe("SpeechService", () => {
   });
 
   it("refuses to hear while RunPod's card holds no address", async () => {
-    const speechService = new SpeechService(reachOf("rpa-1", null), directory);
+    const speechService = new SpeechService(reachOf("rpa-1", null), directory, macHearing(""));
 
     await assert.rejects(speechService.hear(soundFor("runpod-openai", "whisper")), {
       code: SPEECH_NOT_SET,
@@ -152,7 +206,7 @@ describe("SpeechService", () => {
       }),
     );
 
-    const speechService = new SpeechService(reachOf("rpa-1", standIn.address), directory);
+    const speechService = new SpeechService(reachOf("rpa-1", standIn.address), directory, macHearing(""));
     const words = await speechService.hear(soundFor("runpod-openai", "whisper-large"));
     const [request] = standIn.heard;
 
@@ -173,7 +227,7 @@ describe("SpeechService", () => {
       }),
     );
 
-    const speechService = new SpeechService(reachOf("rpa-1", standIn.address), directory);
+    const speechService = new SpeechService(reachOf("rpa-1", standIn.address), directory, macHearing(""));
 
     await assert.rejects(speechService.hear(soundFor("runpod-openai", "whisper-large")), {
       code: SPEECH_HEARING_FAILED,
@@ -184,7 +238,7 @@ describe("SpeechService", () => {
   it("hands on the status where the provider says nothing", async () => {
     standIn = await providerAnswering(503, "");
 
-    const speechService = new SpeechService(reachOf("rpa-1", standIn.address), directory);
+    const speechService = new SpeechService(reachOf("rpa-1", standIn.address), directory, macHearing(""));
 
     await assert.rejects(speechService.hear(soundFor("runpod-openai", "whisper-large")), {
       code: SPEECH_HEARING_FAILED,

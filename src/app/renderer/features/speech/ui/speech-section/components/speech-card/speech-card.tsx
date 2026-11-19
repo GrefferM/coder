@@ -4,6 +4,7 @@ import {
   SPEECH_CARD_BORDER_COLOR,
   SPEECH_CARD_BORDER_RADIUS_PX,
   SPEECH_CARD_GAP_PX,
+  SPEECH_CARD_HEAD_GAP_PX,
   SPEECH_CARD_NOTE_COLOR,
   SPEECH_CARD_PADDING,
   SPEECH_CARD_TITLE_COLOR,
@@ -25,9 +26,14 @@ export function SpeechCard({ title, note, children }: SpeechCardProps) {
         background: SPEECH_CARD_BACKGROUND_COLOR,
       }}
     >
-      <span className="d-flex align-items-center">
+      <span
+        className="d-flex align-items-center"
+        style={{
+          gap: SPEECH_CARD_HEAD_GAP_PX,
+        }}
+      >
         <span
-          className="flex-fill"
+          className="flex-fill flex-shrink-0"
           style={{
             color: SPEECH_CARD_TITLE_COLOR,
             fontSize: SPEECH_CARD_TITLE_FONT_SIZE_PX,
@@ -36,7 +42,11 @@ export function SpeechCard({ title, note, children }: SpeechCardProps) {
         >
           {title}
         </span>
-        {note !== undefined && <Mark color={SPEECH_CARD_NOTE_COLOR}>{note}</Mark>}
+        {note !== undefined && (
+          <Mark color={SPEECH_CARD_NOTE_COLOR} className="text-truncate">
+            {note}
+          </Mark>
+        )}
       </span>
       {children}
     </div>

@@ -1,12 +1,16 @@
 import {
+  ALLOW_MAC_HEARING_CHANNEL,
   HEAR_SPEECH_CHANNEL,
+  MAC_HEARING_LOCALES_CHANNEL,
+  MAC_HEARING_PERMISSION_CHANNEL,
   OPEN_MICROPHONE_SETTINGS_CHANNEL,
+  OPEN_SPEECH_SETTINGS_CHANNEL,
   RECORDING_SOUND_CHANNEL,
   SAVE_SPEECH_CHANNEL,
   SPEECH_SETTINGS_CHANNEL,
 } from "../../../../../contracts";
 import { NOTHING_CHOSEN } from "../constants";
-import type { HeardSound, SpeechSettings } from "../../../../../contracts";
+import type { HeardSound, MacPermission, SpeechSettings } from "../../../../../contracts";
 
 /** What this machine speaks and hears with; an unreachable machine has nothing chosen. */
 export async function readSpeech(): Promise<SpeechSettings> {
@@ -37,4 +41,24 @@ export async function recordingSound(id: string): Promise<Uint8Array | null> {
   return window.electronApi.invoke(RECORDING_SOUND_CHANNEL, {
     id,
   });
+}
+
+/** Opens the system's page of who may recognise speech. */
+export async function openSpeechSettings(): Promise<void> {
+  await window.electronApi.invoke(OPEN_SPEECH_SETTINGS_CHANNEL);
+}
+
+/** Whether macOS lets Coder recognise speech. */
+export async function macHearingPermission(): Promise<MacPermission> {
+  return window.electronApi.invoke(MAC_HEARING_PERMISSION_CHANNEL);
+}
+
+/** Has macOS ask the person once; answers as `macHearingPermission`. */
+export async function allowMacHearing(): Promise<MacPermission> {
+  return window.electronApi.invoke(ALLOW_MAC_HEARING_CHANNEL);
+}
+
+/** The languages macOS recognises on this machine, as locales. */
+export async function macHearingLocales(): Promise<string[]> {
+  return window.electronApi.invoke(MAC_HEARING_LOCALES_CHANNEL);
 }

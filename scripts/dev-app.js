@@ -1,13 +1,16 @@
-// Starts the renderer's Vite dev server, then launches Electron pointed at it.
+// Builds Coder Hearing, starts the renderer's Vite dev server, then launches Electron pointed at it.
 //
 // Vite is ESM-only, so its Node API is loaded with dynamic `import()` from this CommonJS script.
 const path = require("node:path");
 const { spawn } = require("node:child_process");
+const { buildHearing } = require("./build-hearing");
 
 const RENDERER_ROOT = path.join(__dirname, "..", "src", "app", "renderer");
 const BOOTSTRAP_PATH = path.join(__dirname, "..", "src", "app", "bootstrap.js");
 
 async function main() {
+  buildHearing();
+
   const { createServer } = await import("vite");
   const server = await createServer({
     configFile: path.join(RENDERER_ROOT, "vite.config.mts"),

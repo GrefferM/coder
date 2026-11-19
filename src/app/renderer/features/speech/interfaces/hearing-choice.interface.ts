@@ -1,4 +1,4 @@
-/** The model the project hears speech with, as a recording needs it: its provider by id and name, and its own name. */
+/** Who hears speech, as a recording needs it: a provider by id and name and its model, or macOS and its language. */
 export interface HearingChoice {
   providerId: string;
   providerName: string;

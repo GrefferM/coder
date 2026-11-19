@@ -7,10 +7,14 @@ import {
   HEARING_LOST_NAME,
   HEARING_NONE_ACT,
   HEARING_NONE_NOTE,
+  MAC_HEARING_DENIED_NOTE,
+  MAC_HEARING_TITLE,
+  NOTHING_CHOSEN,
   VOICE_LISTEN_LABEL,
   VOICE_MACHINE_NOTE,
 } from "../../constants";
-import { aModel } from "../../../../testing";
+import { aModel, standInBridge } from "../../../../testing";
+import { ALLOW_MAC_HEARING_CHANNEL, MAC_HEARING_LOCALES_CHANNEL } from "../../../../../../contracts";
 import type { ProviderState } from "../../../../interfaces";
 import type { SpeechSectionProps } from "./interfaces";
 
@@ -46,9 +50,7 @@ function props(patch: Partial<SpeechSectionProps> = {}): SpeechSectionProps {
     listenModelId: null,
     providers: [OPENROUTER],
     speech: {
-      settings: {
-        voiceName: null,
-      },
+      settings: NOTHING_CHOSEN,
       voices: [
         {
           name: "Lesya",
@@ -123,6 +125,7 @@ describe("SpeechSection", () => {
       speech: {
         ...props().speech,
         settings: {
+          ...NOTHING_CHOSEN,
           voiceName: "Lesya",
         },
       },
@@ -136,5 +139,49 @@ describe("SpeechSection", () => {
     await userEvent.click(screen.getByText(VOICE_LISTEN_LABEL));
 
     expect(shown.onListen).toHaveBeenCalledTimes(1);
+  });
+
+  it("offers macOS above the catalogue, writes it as this machine's and has macOS ask its permission", async () => {
+    const invoke = vi.fn((channel: string) => new Promise<unknown>(() => channel));
+    const shown = props();
+
+    standInBridge({
+      invoke,
+    });
+    render(<SpeechSection {...shown} />);
+
+    await userEvent.click(screen.getAllByText(NOT_FILLED_LABEL)[0]);
+    await userEvent.click(screen.getByText(MAC_HEARING_TITLE));
+
+    expect(shown.speech.save).toHaveBeenCalledWith({
+      isMacHearing: true,
+    });
+    expect(shown.onChooseListenModel).not.toHaveBeenCalled();
+    expect(invoke).toHaveBeenCalledWith(ALLOW_MAC_HEARING_CHANNEL);
+  });
+
+  it("says what macOS refused, and keeps the project's model named under its field", async () => {
+    standInBridge({
+      invoke: async (channel: string) => (channel === MAC_HEARING_LOCALES_CHANNEL ? ["en-US"] : "denied"),
+    });
+    render(
+      <SpeechSection
+        {...props({
+          listenModelId: "model-whisper",
+          speech: {
+            ...props().speech,
+            settings: {
+              ...NOTHING_CHOSEN,
+              isMacHearing: true,
+              macLocale: "en-US",
+            },
+          },
+        })}
+      />,
+    );
+
+    expect(await screen.findByText(MAC_HEARING_DENIED_NOTE)).toBeInTheDocument();
+    expect(screen.getByText("Англійська · en-US")).toBeInTheDocument();
+    expect(screen.getAllByText(VOICE_MACHINE_NOTE)).toHaveLength(2);
   });
 });

@@ -8,3 +8,6 @@ export const SAVE_TEXT_FILE_CHANNEL = "shell:save-text-file";
 
 /** Opens the system's own page of who may use the microphone. */
 export const OPEN_MICROPHONE_SETTINGS_CHANNEL = "shell:open-microphone-settings";
+
+/** Opens the system's own page of who may recognise speech. */
+export const OPEN_SPEECH_SETTINGS_CHANNEL = "shell:open-speech-settings";

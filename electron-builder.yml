@@ -8,6 +8,10 @@ files:
   - dist/**
   - "!dist/**/*.map"
   - package.json
+# Coder Hearing, macOS's speech recognition, beside the app in its resources.
+extraResources:
+  - from: build/CoderHearing.app
+    to: CoderHearing.app
 extraMetadata:
   main: dist/app/main.js
 mac:

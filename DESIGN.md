@@ -873,7 +873,7 @@ running call, a **running wave** — the microphone's loudness every 100ms as 2p
 high at full, never under 2px, the newest at the right and the oldest going past the left edge, all
 in the accent — then «00:07» in the accent and «СКАСУВАТИ», which drops the recording and leaves the
 field as it was; the microphone is filled with the accent, the arrow is dimmed and ⌘↵ sends nothing.
-Silence draws low bars, so a live microphone shows, and where the pauses were. No red: nothing fell. Then «РОЗПІЗНАЄМО…» while the project's recognition model (38c) hears it, and **the heard words are written into
+Silence draws low bars, so a live microphone shows, and where the pauses were. No red: nothing fell. Then «РОЗПІЗНАЄМО…» while macOS or the project's recognition model (38c, 38d) hears it, and **the heard words are written into
 the field after whatever was typed, never sent**: the hand sends, as always, and can mend them first.
 **The recording itself becomes a chip under the field**, in the attachments' row (4i): «▶» in a 22px
 circle, its wave of 46 bars 16px high, its length «0:07», and «×», which takes the sound off and leaves
@@ -1168,7 +1168,8 @@ the chosen one; the model form's provider picker says it after the provider's ro
 **Speech is a section of its own on the rail** (frame 38c), the last above the rule, its glyph a
 sound wave: what the project recognises speech with travels with the folder. «Розпізнавання» is a
 model of the catalogue whose kind is «Розпізнавання» (49d), chosen from a list that holds only those
-— never typed — and written to `project.yaml` by its id the moment it is chosen; the field names the
+— never typed — or **macOS itself** (38d), the list's first row «macOS · на цій машині» with
+«БЕЗКОШТОВНО · БЕЗ МЕРЕЖІ · КЛЮЧА НЕ ТРЕБА» under it. A model is written to `project.yaml` by its id the moment it is chosen; the field names the
 model's provider at its far end. With no such model in the catalogue the field says «НЕ ЗАПОВНЕНО»
 and «ДО МОДЕЛЕЙ» under it opens the models; a chosen model since deleted is an ordinary broken tie,
 «моделі немає». The list carries no foot sentence, the same as the agent's model picker in the app.
@@ -1176,7 +1177,19 @@ and «ДО МОДЕЛЕЙ» under it opens the models; a chosen model since dele
 says «Ця машина · у project.yaml не йде», it is written the moment it is chosen, and «ПОСЛУХАТИ»
 stands at its label's edge once one is. A change of the voice the machine does not take is said on
 the line over the canvas, «Мовлення не збережено: …», and the card stands again on what the machine
-holds. The language of recognition is not chosen; the model hears it.
+holds. The language of recognition is not chosen for a model; the model hears it. **macOS is this
+machine's choice**, not the project's: choosing it writes nothing to `project.yaml`, the card says
+«Ця машина · у project.yaml не йде», the project's own model stays named under the field («У
+PROJECT.YAML ЛИШАЄТЬСЯ ‹модель›»), and it hears in every project until a model is chosen again.
+Under it «МОВА» chooses the one language macOS hears in, from every language macOS lists on this
+machine, «Англійська · en-US»; none chosen says «НЕ ЗАПОВНЕНО» and the microphone «Розпізнавання не
+налаштоване». Choosing macOS has macOS ask its permission once in its own window, «ЧЕКАЄМО ДОЗВОЛУ
+macOS» standing under the field meanwhile (38e); a refusal turns the field to «macOS · немає
+дозволу» in the broken colour with «macOS не дала дозволу на розпізнавання мовлення. Без нього
+мікрофон не почує.» and «ПАРАМЕТРИ СИСТЕМИ», read again whenever the window comes back, and the
+microphone says «Немає доступу до розпізнавання мовлення» and «ПАРАМЕТРИ СИСТЕМИ». The language
+list carries no foot sentence. English is heard on this machine; a language macOS does not hold
+here, Ukrainian among them, goes to Apple.
 
 **A model has a kind** (frame 49d): right after its name the form carries «ВИД», «Текстова» or
 «Розпізнавання». A text model is 49a's. A recognition model has a name and a provider and nothing

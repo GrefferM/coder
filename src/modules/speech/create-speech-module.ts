@@ -1,9 +1,15 @@
 import { SpeechController } from "./controllers";
-import { SpeechService } from "./services";
+import { MacHearing, SpeechService } from "./services";
 import type { SpeechModule, SpeechReach } from "./interfaces";
 
-export function createSpeechModule(reach: SpeechReach, userDataDirectory: string): SpeechModule {
-  const speechService = new SpeechService(reach, userDataDirectory);
+/** Speech, with macOS heard through Coder Hearing at `hearingAppPath`. */
+export function createSpeechModule(
+  reach: SpeechReach,
+  userDataDirectory: string,
+  hearingAppPath: string,
+): SpeechModule {
+  const macHearing = new MacHearing(hearingAppPath);
+  const speechService = new SpeechService(reach, userDataDirectory, macHearing);
   const speechController = new SpeechController(speechService);
 
   return {

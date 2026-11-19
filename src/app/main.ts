@@ -1,4 +1,5 @@
 import { app, BrowserWindow, dialog } from "electron";
+import * as path from "node:path";
 import {
   registerIpcChannels,
   DELETIONS_IPC_CHANNELS,
@@ -17,6 +18,8 @@ import type { Backend } from "./backend";
 import {
   APP_ICON_PATH,
   APP_NAME,
+  DEV_HEARING_APP_PATH,
+  HEARING_APP_NAME,
   PRELOAD_SCRIPT_PATH,
   RENDERER_DEV_SERVER_URL,
   RENDERER_INDEX_PATH,
@@ -33,10 +36,15 @@ let backend: Backend | null = null;
 
 /** Wires the backend to the one window and registers every domain's IPC channels. */
 async function initializeIpc(): Promise<void> {
-  const wired = await createBackend(app.getPath("userData"), new SafeStorageCipher(), {
-    project: new WindowProjectVoice(),
-    agent: new WindowVoice(),
-    walk: new WindowWalkVoice(),
+  const wired = await createBackend({
+    userDataPath: app.getPath("userData"),
+    cipher: new SafeStorageCipher(),
+    voices: {
+      project: new WindowProjectVoice(),
+      agent: new WindowVoice(),
+      walk: new WindowWalkVoice(),
+    },
+    hearingAppPath: app.isPackaged ? path.join(process.resourcesPath, HEARING_APP_NAME) : DEV_HEARING_APP_PATH,
   });
 
   backend = wired;

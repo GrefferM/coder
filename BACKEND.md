@@ -109,10 +109,18 @@ The modules are flat, one responsibility each, and none of them nests inside ano
   its key and address, `ProviderState.isOff` says so, and `agentReadiness` stops any agent on it
   with `providerOff`. It is the one module a screen asks about providers, so a key is written
   through the provider it belongs to and `secrets` has no channel of its own.
-- **`speech`** — hearing a recording, and the one thing of speech that is this machine's: the OS
-  voice an answer is read with, by name, in the clear in `speech.json` beside `providers.json` (a file
-  missing or not of its shape reads as no voice). Which model hears is the project's (38c): the
-  window sends each recording with that model's provider and name, and only OpenAI, OpenRouter and
+- **`speech`** — hearing a recording, and what of speech is this machine's: the OS voice an answer
+  is read with, by name, and whether macOS hears here and in which language (`isMacHearing`,
+  `macLocale`), in the clear in `speech.json` beside `providers.json` (a file missing or not of its
+  shape reads as nothing chosen). macOS hears through **Coder Hearing** (`MacHearing`), an app of
+  its own built from `src/app/mac-hearing/` into `build/CoderHearing.app` and laid among the built
+  app's resources, so the system asks its own permission alike under `dev:app` and in the build: each
+  call launches it once through `open` and reads the one line of JSON it leaves in a temporary
+  folder — the permission, the languages, or the words of a WAV recording, on the device where macOS
+  hears that language there and through Apple otherwise. A recording macOS is not allowed to hear is
+  refused `SPEECH_MAC_DENIED`. Otherwise which model hears is the project's (38c): the
+  window sends each recording with that model's provider and name (macOS's with `MAC_HEARING_ID`
+  and its locale in their place), and only OpenAI, OpenRouter and
   RunPod OpenAI hear (`SPEECH_LISTEN_PROVIDER_IDS` in `contracts/speech`), all at the OpenAI
   protocol's `/audio/transcriptions`. The key and RunPod's address are asked of `providers` through
   the `SpeechReach` port, inside the main process. A recording whose provider holds no key, or no

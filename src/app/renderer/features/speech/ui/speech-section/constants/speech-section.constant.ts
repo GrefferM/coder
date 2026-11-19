@@ -5,6 +5,8 @@ export const SPEECH_SECTION_PADDING = "14px 16px";
 export const SPEECH_SECTION_GAP_PX = 12;
 export const SPEECH_CARD_PADDING = "12px";
 export const SPEECH_CARD_GAP_PX = 11;
+/** Between the title and the note beside it, which gives way first where the card is narrow. */
+export const SPEECH_CARD_HEAD_GAP_PX = 12;
 export const SPEECH_CARD_BORDER_RADIUS_PX = 10;
 export const SPEECH_CARD_BACKGROUND_COLOR = "#171b26";
 export const SPEECH_CARD_BORDER_COLOR = BORDER_AT_REST_COLOR;

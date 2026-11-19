@@ -8,6 +8,7 @@ export const MICROPHONE_FINISH_LABEL = "Закінчити запис";
 export const SPEECH_NOT_SET_NOTE = "Розпізнавання не налаштоване";
 export const VOICE_NOT_SET_NOTE = "Голос не налаштований";
 export const MICROPHONE_DENIED_NOTE = "Немає доступу до мікрофона";
+export const SPEECH_DENIED_NOTE = "Немає доступу до розпізнавання мовлення";
 export const NOTHING_HEARD_NOTE = "У записі не почуто слів";
 export const HEARING_FAILED_MIDDLE = " не розпізнав: ";
 export const SPEECH_SECTION_ACT = "МОВЛЕННЯ";
@@ -46,3 +47,17 @@ export const PLAYED_SEPARATOR = " / ";
 export const PLAY_CLIP_LABEL = "Програти запис";
 export const STOP_CLIP_LABEL = "Зупинити запис";
 export const DROP_CLIP_LABEL = "Зняти запис";
+
+/** macOS's own hearing, first in the hearing model's list (38c, 38d) and refused by the system (38e). */
+export const MAC_HEARING_NAME = "macOS";
+export const MAC_HEARING_TITLE = "macOS · на цій машині";
+export const MAC_HEARING_ROW_NOTE = "Безкоштовно · без мережі · ключа не треба";
+export const MAC_HEARING_DENIED_TITLE = "macOS · немає дозволу";
+export const MAC_HEARING_DENIED_NOTE = "macOS не дала дозволу на розпізнавання мовлення. Без нього мікрофон не почує.";
+export const MAC_HEARING_WAITING_NOTE = "Чекаємо дозволу macOS";
+/** Said in capitals by hand, since the model's own name after it keeps its case. */
+export const MAC_HEARING_KEPT_PREFIX = "У PROJECT.YAML ЛИШАЄТЬСЯ ";
+export const MAC_LOCALE_LABEL = "МОВА";
+export const MAC_LOCALE_FOOT = "Мови, які macOS розпізнає на цій машині";
+/** The language a locale names, in Ukrainian. */
+export const MAC_LOCALE_LANGUAGE = "uk";

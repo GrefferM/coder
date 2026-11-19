@@ -13,3 +13,5 @@ export * from "./heard-clip.interface";
 export * from "./sound-track.interface";
 export * from "./sound-player.interface";
 export * from "./sound-player-hands.interface";
+export * from "./wav-sound.interface";
+export * from "./mac-hearing-state.interface";

@@ -1,22 +1,33 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { hearSpeech, openMicrophoneSettings } from "../../api";
+import { hearSpeech, openMicrophoneSettings, openSpeechSettings, wavRecording } from "../../api";
 import { recordingType, refusalParts, soundLevel, wavePeaks } from "../../logic";
 import { hearingFailedWords } from "../../words";
 import { errorMessage, providerWords } from "../../../../utils/errors";
-import { SPEECH_HEARING_FAILED, SPEECH_NOT_SET } from "../../../../../../contracts";
+import { MAC_HEARING_ID, SPEECH_HEARING_FAILED, SPEECH_MAC_DENIED, SPEECH_NOT_SET } from "../../../../../../contracts";
 import {
   HEAR_AGAIN_ACT,
   MICROPHONE_DENIED_NOTE,
   MICROPHONE_SETTINGS_ACT,
   NOTHING_HEARD_NOTE,
+  SPEECH_DENIED_NOTE,
   SPEECH_NOT_SET_NOTE,
   SPEECH_SECTION_ACT,
   CLIP_BARS,
   LEVEL_EVERY_MS,
   LIVE_BARS,
+  WAV_MIME_TYPE,
 } from "../../constants";
 import type { HeardSound } from "../../../../../../contracts";
 import type { HeardClip, SpeechNote, VoiceAsk, VoiceAskHands, VoiceStanding } from "../../interfaces";
+
+/** A recording laid again as WAV, the one kind macOS hears. */
+async function macSound(sound: HeardSound): Promise<HeardSound> {
+  return {
+    ...sound,
+    audio: await wavRecording(sound.audio),
+    mimeType: WAV_MIME_TYPE,
+  };
+}
 
 /**
  * A question said rather than typed (4j): the microphone records, the provider hears, and the words go to the field —
@@ -58,6 +69,16 @@ export function useVoiceAsk(hands: VoiceAskHands): VoiceAsk {
     const { code, said } = refusalParts(message);
     const { hearing, onOpenSpeech } = held.current;
 
+    if (code === SPEECH_MAC_DENIED) {
+      return {
+        words: SPEECH_DENIED_NOTE,
+        act: {
+          label: MICROPHONE_SETTINGS_ACT,
+          onPress: () => void openSpeechSettings(),
+        },
+      };
+    }
+
     if (code === SPEECH_NOT_SET) {
       return {
         words: SPEECH_NOT_SET_NOTE,
@@ -87,7 +108,7 @@ export function useVoiceAsk(hands: VoiceAskHands): VoiceAsk {
       let words: string;
 
       try {
-        words = await hearSpeech(sound);
+        words = await hearSpeech(sound.providerId === MAC_HEARING_ID ? await macSound(sound) : sound);
       } catch (failure) {
         setStanding("idle");
         held.current.onNote(failureNote(failure, () => void hear(sound, clip)));

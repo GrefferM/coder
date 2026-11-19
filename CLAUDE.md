@@ -31,7 +31,7 @@ change to its schema is a migration of its own that keeps the rows already there
 
 ## Project structure
 
-- `src/app` — the Electron shell: main process, IPC, `backend/` (`createBackend`, shared by the window and the `npm run agent` command line) and the React renderer under `renderer/`.
+- `src/app` — the Electron shell: main process, IPC, `backend/` (`createBackend`, shared by the window and the `npm run agent` command line), `mac-hearing/` (Coder Hearing, macOS's speech recognition in Swift) and the React renderer under `renderer/`.
 - `src/contracts` — what the renderer and the backend agree on: channel names, the shapes that cross, the rules both hold to (`FRONTEND.md`).
 - `src/modules` — backend modules, one directory per responsibility. See `BACKEND.md` for which
   ones there are.
