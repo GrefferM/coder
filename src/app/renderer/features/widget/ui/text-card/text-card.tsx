@@ -8,7 +8,7 @@ import {
 } from "../../constants";
 import type { TextCardProps } from "../../interfaces";
 
-/** Words on a card of their own: the person's question, or an end of the walk. */
+/** Words on a card of their own, selectable: the person's question, or an end of the walk. */
 export function TextCard({ text, color }: TextCardProps) {
   return (
     <div
@@ -22,6 +22,7 @@ export function TextCard({ text, color }: TextCardProps) {
         lineHeight: WIDGET_TEXT_LINE_HEIGHT,
         whiteSpace: "pre-wrap",
         overflowWrap: "anywhere",
+        userSelect: "text",
       }}
     >
       {text}
