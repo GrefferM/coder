@@ -49,6 +49,8 @@ export function useShownStream(
   const history = useRunHistory(directory, tab === "history", chat.written);
   const search = useRunSearch(directory, query, chat.written);
   const opened = useOpenedRun(openedRunId, chat.written);
+  /** The live conversation's record, which holds what was said into it from the widget. */
+  const recorded = useOpenedRun(openedRunId === null ? chat.runId : null, chat.written);
   const endedRuns = history.runs.filter((run) => run.endedAt !== null);
 
   // An open list marks its news as read.
@@ -164,7 +166,7 @@ export function useShownStream(
 
   return {
     tab,
-    tracks: questionTracks(chat.heardBy, openedRunId === null ? null : opened.run),
+    tracks: questionTracks(chat.heardBy, openedRunId === null ? recorded.run : opened.run),
     showTab: setTab,
     messages: shown,
     agents: shownAgents,

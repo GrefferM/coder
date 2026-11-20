@@ -38,7 +38,7 @@ import {
   languageCode,
   widgetExchanges,
 } from "../../features/widget";
-import { ForgetRunConfirm, ForgetRunsConfirm } from "../../features/record";
+import { ForgetRunConfirm, ForgetRunsConfirm, useLiveRun } from "../../features/record";
 import { agentStands, chatStream, isWalking, walkingKeys } from "../../../../contracts";
 import { thrownWords } from "../../utils/errors";
 import type { HeardClip, ReadAloud } from "../../features/speech";
@@ -67,6 +67,8 @@ export function WidgetPage() {
   const snapshot = widget.walks;
   const isOut = snapshot !== null && isWalking(snapshot);
   const live = snapshot === null ? [] : chatStream(snapshot);
+  /** The live conversation's record, which holds what was said into it from the main window. */
+  const recorded = useLiveRun(history.opened === null ? (snapshot?.flowRunId ?? null) : null);
   /** The conversation on screen: the live one, or a run opened from the history with the live words under it. */
   const messages = history.opened === null ? live : openedStream(history.opened, live);
   const exchanges =
@@ -174,8 +176,8 @@ export function WidgetPage() {
       reading.read(id, text);
     },
   };
-  /** The recordings each question on screen was said with: those of the run opened, and those said here. */
-  const tracks = questionTracks(widget.heardBy, history.opened);
+  /** The recordings each question on screen was said with: the record's, said in either window, and those said here. */
+  const tracks = questionTracks(widget.heardBy, history.opened ?? recorded);
   /** A sphere with a conversation, or the history open, asks the full height; every other state is as tall as it is. */
   const hasTalk = config !== null && config.agents.length > 0 && (exchanges.length > 0 || history.isOpen);
   const height = hasTalk ? WIDGET_WALK_HEIGHT_PX : measured;

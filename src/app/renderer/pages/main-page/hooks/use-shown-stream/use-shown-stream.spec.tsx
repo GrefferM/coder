@@ -115,6 +115,53 @@ describe("useShownStream", () => {
     expect(result.current.shownRunId).toBe("run-live");
   });
 
+  it("gives the live stream the recordings its record holds, as those said into it from the widget", async () => {
+    const invoke = vi.fn(async (channel: string) => {
+      if (channel !== READ_RUN_CHANNEL) {
+        return undefined;
+      }
+
+      return {
+        id: "run-live",
+        questions: [
+          {
+            id: "question-1",
+            recordings: [
+              {
+                id: "recording-1",
+                place: 1,
+                mimeType: "audio/webm",
+                durationMs: 2_000,
+                peaks: [0.2, 1],
+              },
+            ],
+          },
+        ],
+      };
+    });
+
+    standInBridge({
+      invoke: invoke,
+    });
+
+    const { result } = renderHook(() => useShownStream(DIRECTORY, [], chat(), select));
+
+    await waitFor(() =>
+      expect(result.current.tracks["question-1"]).toEqual([
+        {
+          id: "recording-1",
+          mimeType: "audio/webm",
+          durationMs: 2_000,
+          peaks: [0.2, 1],
+          audio: null,
+        },
+      ]),
+    );
+    expect(invoke).toHaveBeenCalledWith(READ_RUN_CHANNEL, {
+      id: "run-live",
+    });
+  });
+
   it("opens a row in the stream's place, aims at whoever walked it, and goes on in its record", async () => {
     // An opened run is writable: the next question continues that record.
     machine([]);

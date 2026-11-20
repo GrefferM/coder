@@ -893,7 +893,8 @@ wave spreads over the track's whole width, and a press anywhere in it moves the 
 plays from there, a paused one too; played to its end, the track rests again. The window has one sound: a recording and an answer
 being read (4k) stop each other, and leaving the stream silences it. The sound lies in the run's record
 on this machine and goes with the run — at thirty days or when it is deleted (26a) — so a run opened
-from the history plays the same. «СПИТАТИ ЩЕ РАЗ» (23m) takes the words; the sound stays on its own
+from the history plays the same, and so does a question said in the widget, whose recording stands
+on its card here as well. «СПИТАТИ ЩЕ РАЗ» (23m) takes the words; the sound stays on its own
 question.
 
 **An answer can be heard** (4k). A speaker stands at the far end of an agent's answer head, after
@@ -1614,7 +1615,8 @@ carries the chat's own speaker at the end of its head, which reads it or stops i
 can be heard again**, as in the chat (4l): its recording stands on the «ВИ» card under the words, 9px
 below them, with «▶» and the pause, the wave and the length, and plays through the widget's one player — a
 recording and a reading stop each other, and Escape stops either. A typed question and a repeat of
-«x1» carry none; a run opened from the history brings its recordings from the record. Frames
+«x1» carry none; a run opened from the history brings its recordings from the record, and so does
+a question said in the main window. Frames
 52e–52k draw the «ВИ» card without it. The words of a
 question and of an answer can be selected and copied; the marks around them cannot. **Each end is
 read aloud** by itself while the speaker is lit, the moment it comes, in the machine's voice, one

@@ -51,7 +51,9 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
   sphere. The speaker over an answer is `speech`'s `AloudButton`, the chat's and the widget's alike,
   and so is the recording under a said question: `useWidget.ask` sends a `WidgetQuestion` with its
   clips and keeps them by the question's id (`heardBy`), `questionTracks` lays them over those of the
-  run opened, and `SoundClip` plays them through the page's own `useSoundPlayer`.
+  run on screen — the one opened, or the live one, whose record `useLiveRun` reads again on every
+  write, so a question said in the main window brings its recording too — and `SoundClip` plays them
+  through the page's own `useSoundPlayer`.
   The two windows are one: `useSharedProject` in `App` opens the project the widget names and names
   the one this window opens or closes, and `useSharedSphere` makes the widget's sphere the chat's
   aim, both ways.
@@ -144,7 +146,8 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     carrying its act; `useSoundPlayer`, the window's one recording (4l), playing a `SoundTrack` from
     the sound at hand or read from the record by its id, following how far it played frame by frame,
     held and gone on with (`isPaused`), and moved to where its wave is pressed, playing from there — `questionTracks` gives each question on screen its tracks,
-    the opened run's from the record and this screen's from `heardBy`; `useReadAloud`, the window's one voice (4k), which reads an answer in runs of one language (`languageSpans`), a run of Ukrainian sentences by the
+    the record's — the opened run's, or the live one's, read again on every write, which is where a question said in the
+    other window has its sound — and this screen's from `heardBy`; `useReadAloud`, the window's one voice (4k), which reads an answer in runs of one language (`languageSpans`), a run of Ukrainian sentences by the
     Ukrainian voice where one is chosen, and
     reads an answer by the message's own id with `spokenParts` leaving the code out and following the word the voice reaches (`spokenWord`) for the card to light, and which the
     sample in «Мовлення» shares — the page composes them, stands `SpeechSection` on the rail after
