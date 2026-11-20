@@ -10,8 +10,11 @@ import Speech
 
 final class Hearing: NSObject, SFSpeechRecognitionTaskDelegate {
   private let out: String
-  /** Each stretch of speech between pauses, as macOS finishes it; a long recording comes in several. */
-  private var heard: [String] = []
+  /**
+   * Each stretch of speech between pauses, as macOS finishes it, with the second of the recording it begins at; a long
+   * recording comes in several, and the last comes twice where the recording ends in a pause.
+   */
+  private var heard: [(begins: TimeInterval, words: String)] = []
 
   init(out: String) {
     self.out = out
@@ -58,12 +61,21 @@ final class Hearing: NSObject, SFSpeechRecognitionTaskDelegate {
   }
 
   func speechRecognitionTask(_ task: SFSpeechRecognitionTask, didFinishRecognition result: SFSpeechRecognitionResult) {
-    heard.append(result.bestTranscription.formattedString)
+    let said = result.bestTranscription
+    let stretch = (begins: said.segments.first?.timestamp ?? 0, words: said.formattedString)
+
+    // A stretch is told by where it begins: one handed over again takes its own place, never a second one.
+    if let last = heard.last, last.begins == stretch.begins {
+      heard[heard.count - 1] = stretch
+      return
+    }
+
+    heard.append(stretch)
   }
 
   /** The whole recording heard: every stretch, in order, as one text. */
   func speechRecognitionTask(_ task: SFSpeechRecognitionTask, didFinishSuccessfully successfully: Bool) {
-    let text = heard.filter { !$0.isEmpty }.joined(separator: " ")
+    let text = heard.map { $0.words }.filter { !$0.isEmpty }.joined(separator: " ")
 
     if successfully || !text.isEmpty {
       say(["text": text])
