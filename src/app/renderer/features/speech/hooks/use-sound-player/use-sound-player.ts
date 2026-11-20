@@ -2,10 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { recordingSound } from "../../api";
 import type { SoundPlayer, SoundPlayerHands, SoundTrack } from "../../interfaces";
 
-/** One recording for the whole window (4l): a new one stops the old, and nothing is left playing when it goes. */
+/**
+ * One recording for the whole window (4l): a new one stops the old, the one playing can be held and gone on with, and
+ * nothing is left playing when the window goes.
+ */
 export function useSoundPlayer(hands: SoundPlayerHands): SoundPlayer {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [playedMs, setPlayedMs] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   /** Held in a ref, so a play begun under old hands silences the reading through the current ones. */
   const held = useRef(hands);
   /** The sound playing, with the address its bytes stand at. */
@@ -28,6 +32,7 @@ export function useSoundPlayer(hands: SoundPlayerHands): SoundPlayer {
 
     setPlayingId(null);
     setPlayedMs(0);
+    setIsPaused(false);
   }, []);
 
   useEffect(() => {
@@ -79,17 +84,31 @@ export function useSoundPlayer(hands: SoundPlayerHands): SoundPlayer {
     [stop],
   );
 
+  /** Goes on with the track held, silencing the reading as a play begun does. */
+  const resume = useCallback(() => {
+    held.current.onPlay();
+    setIsPaused(false);
+    void playing.current?.play();
+  }, []);
+
   const toggle = useCallback(
     (track: SoundTrack) => {
-      if (playingId === track.id) {
-        stop();
+      if (playingId !== track.id || playing.current === null) {
+        void play(track, 0);
 
         return;
       }
 
-      void play(track, 0);
+      if (isPaused) {
+        resume();
+
+        return;
+      }
+
+      playing.current.pause();
+      setIsPaused(true);
     },
-    [playingId, play, stop],
+    [playingId, isPaused, play, resume],
   );
 
   const seek = useCallback(
@@ -105,13 +124,18 @@ export function useSoundPlayer(hands: SoundPlayerHands): SoundPlayer {
 
       made.currentTime = atMs / 1_000;
       setPlayedMs(atMs);
+
+      if (isPaused) {
+        resume();
+      }
     },
-    [playingId, play],
+    [playingId, isPaused, play, resume],
   );
 
   return {
     playingId,
     playedMs,
+    isPaused,
     toggle,
     seek,
     stop,

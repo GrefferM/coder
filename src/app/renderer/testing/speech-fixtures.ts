@@ -28,6 +28,7 @@ export function aSoundPlayer(patch: Partial<SoundPlayer> = {}): SoundPlayer {
   return {
     playingId: null,
     playedMs: 0,
+    isPaused: false,
     toggle: () => {},
     seek: () => {},
     stop: () => {},

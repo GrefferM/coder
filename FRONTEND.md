@@ -142,8 +142,8 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
     length and `wavePeaks`), which `useAgentChat` keeps under the field and, once the question goes,
     by the question's id in `heardBy`; every refusal is handed to the page's line as a `SpeechNote`
     carrying its act; `useSoundPlayer`, the window's one recording (4l), playing a `SoundTrack` from
-    the sound at hand or read from the record by its id, following how far it played frame by frame
-    and seeking where its wave is pressed — `questionTracks` gives each question on screen its tracks,
+    the sound at hand or read from the record by its id, following how far it played frame by frame,
+    held and gone on with (`isPaused`), and moved to where its wave is pressed, playing from there — `questionTracks` gives each question on screen its tracks,
     the opened run's from the record and this screen's from `heardBy`; `useReadAloud`, the window's one voice (4k), which reads an answer in runs of one language (`languageSpans`), a run of Ukrainian sentences by the
     Ukrainian voice where one is chosen, and
     reads an answer by the message's own id with `spokenParts` leaving the code out and following the word the voice reaches (`spokenWord`) for the card to light, and which the

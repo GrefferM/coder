@@ -101,7 +101,56 @@ describe("useSoundPlayer", () => {
     expect(StandInSound.made).toEqual([]);
   });
 
-  it("stops on the second press, and a new recording stops the old", async () => {
+  it("holds the recording on the second press and goes on from there on the third", async () => {
+    const onPlay = vi.fn();
+    const clip = aHeardClip();
+    const { result } = renderHook(() =>
+      useSoundPlayer({
+        onPlay,
+      }),
+    );
+
+    await act(async () => result.current.toggle(clip));
+
+    const [sound] = StandInSound.made;
+
+    sound.currentTime = 2;
+    act(() => result.current.toggle(clip));
+
+    expect(sound.isPlaying).toBe(false);
+    expect(result.current.isPaused).toBe(true);
+    expect(result.current.playingId).toBe("clip-1");
+
+    act(() => result.current.toggle(clip));
+
+    expect(sound.isPlaying).toBe(true);
+    expect(sound.currentTime).toBe(2);
+    expect(result.current.isPaused).toBe(false);
+    expect(StandInSound.made).toHaveLength(1);
+    // Going on silences the reading as a play begun does.
+    expect(onPlay).toHaveBeenCalledTimes(2);
+  });
+
+  it("plays a paused recording from where its wave is pressed", async () => {
+    const clip = aHeardClip();
+    const { result } = renderHook(() =>
+      useSoundPlayer({
+        onPlay: vi.fn(),
+      }),
+    );
+
+    await act(async () => result.current.toggle(clip));
+    act(() => result.current.toggle(clip));
+    act(() => result.current.seek(clip, 0.5));
+
+    const [sound] = StandInSound.made;
+
+    expect(sound.currentTime).toBe(3.5);
+    expect(sound.isPlaying).toBe(true);
+    expect(result.current.isPaused).toBe(false);
+  });
+
+  it("stops the old recording when a new one is played", async () => {
     const { result } = renderHook(() =>
       useSoundPlayer({
         onPlay: vi.fn(),
@@ -119,16 +168,7 @@ describe("useSoundPlayer", () => {
 
     expect(StandInSound.made[0].isPlaying).toBe(false);
     expect(result.current.playingId).toBe("clip-2");
-
-    await act(async () =>
-      result.current.toggle(
-        aHeardClip({
-          id: "clip-2",
-        }),
-      ),
-    );
-
-    expect(result.current.playingId).toBeNull();
+    expect(result.current.isPaused).toBe(false);
   });
 
   it("plays from where the wave was pressed, and moves there while it plays", async () => {

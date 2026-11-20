@@ -886,9 +886,11 @@ field is never touched by a refusal. Leaving the stream drops a recording that i
 
 **A question said aloud can be heard again** (4l). Its recordings stand on the «ВИ» card under the
 words, inside the card's frame, as the same chip with no «×»: once sent, a recording is a record, like
-«ПРИКРІПЛЕНО:». A press plays it: «▶» turns into the stop square in the accent, the bars played turn
-to the accent and the rest stay quiet, the time reads «0:03 / 0:07»; a press in the wave plays from
-there, and a second press on the square stops it. The window has one sound: a recording and an answer
+«ПРИКРІПЛЕНО:». A press plays it: «▶» turns into the pause — two bars — in the accent, the bars played
+turn to the accent and the rest stay quiet, the time reads «0:03 / 0:07». A second press holds it
+where it stands, the played part and the time kept under «▶», and a third goes on from there. The
+wave spreads over the track's whole width, and a press anywhere in it moves the recording there and
+plays from there, a paused one too; played to its end, the track rests again. The window has one sound: a recording and an answer
 being read (4k) stop each other, and leaving the stream silences it. The sound lies in the run's record
 on this machine and goes with the run — at thirty days or when it is deleted (26a) — so a run opened
 from the history plays the same. «СПИТАТИ ЩЕ РАЗ» (23m) takes the words; the sound stays on its own
@@ -1610,7 +1612,7 @@ walk whole on its card; a step that fell stands in `#f0a5ac` in the words it fel
 stopped before it said anything shows «Зупинено» (52i). Every answer
 carries the chat's own speaker at the end of its head, which reads it or stops it. **A question said
 can be heard again**, as in the chat (4l): its recording stands on the «ВИ» card under the words, 9px
-below them, with «▶», the wave and the length, and plays through the widget's one player — a
+below them, with «▶» and the pause, the wave and the length, and plays through the widget's one player — a
 recording and a reading stop each other, and Escape stops either. A typed question and a repeat of
 «x1» carry none; a run opened from the history brings its recordings from the record. Frames
 52e–52k draw the «ВИ» card without it. The words of a

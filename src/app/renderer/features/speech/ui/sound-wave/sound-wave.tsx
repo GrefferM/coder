@@ -6,21 +6,21 @@ import {
 } from "./constants";
 import type { SoundWaveProps } from "./interfaces";
 
-/** A recording's loudness as a row of bars; a press in it says how far along it landed. */
+/**
+ * A recording's loudness as a row of bars: the running wave of a take keeps its bars together at the end, a recording's
+ * spreads them over its whole width, and a press anywhere in it says how far along it landed.
+ */
 export function SoundWave({ peaks, height, played, playedColor, color, isRunning, onPress }: SoundWaveProps) {
-  /** The bars' own width, which a press is measured against rather than the wave's box. */
-  const barsWidth = peaks.length * (SOUND_WAVE_BAR_WIDTH_PX + SOUND_WAVE_BAR_GAP_PX) - SOUND_WAVE_BAR_GAP_PX;
-
   return (
     <span
-      className={`d-flex align-items-center flex-fill ${isRunning ? "justify-content-end" : ""}`}
+      className={`d-flex align-items-center flex-fill ${isRunning ? "justify-content-end" : "justify-content-between"}`}
       onClick={
         onPress === null
           ? undefined
           : (event) => {
-              const left = event.currentTarget.getBoundingClientRect().left;
+              const { left, width } = event.currentTarget.getBoundingClientRect();
 
-              onPress(Math.min(1, Math.max(0, (event.clientX - left) / barsWidth)));
+              onPress(width > 0 ? Math.min(1, Math.max(0, (event.clientX - left) / width)) : 0);
             }
       }
       style={{

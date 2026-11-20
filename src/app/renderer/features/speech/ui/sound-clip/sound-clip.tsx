@@ -3,7 +3,7 @@ import { INTERACTION_TRANSITION } from "../../../../constants";
 import { focusRing } from "../../../../utils/focus";
 import { playedBars } from "../../logic";
 import { playedClock } from "../../words";
-import { DROP_CLIP_LABEL, PLAY_CLIP_LABEL, STOP_CLIP_LABEL } from "../../constants";
+import { DROP_CLIP_LABEL, PAUSE_CLIP_LABEL, PLAY_CLIP_LABEL } from "../../constants";
 import { SoundWave } from "../sound-wave";
 import {
   SOUND_CLIP_BACKGROUND_COLOR,
@@ -27,12 +27,17 @@ import {
 } from "./constants";
 import type { SoundClipProps } from "./interfaces";
 
-/** One recording: «▶» plays it, the wave lights as it plays and a press in it seeks, «×» takes it off the field. */
+/**
+ * One recording: «▶» plays it and the pause holds it where it stands, the wave lights as far as it is played and a press
+ * anywhere in it plays from there, «×» takes it off the field.
+ */
 export function SoundClip({ track, player, onDrop }: SoundClipProps) {
   const play = useInteraction();
   const drop = useInteraction();
-  const isPlaying = player.playingId === track.id;
-  const share = isPlaying && track.durationMs > 0 ? player.playedMs / track.durationMs : 0;
+  /** This recording is the one the player holds, sounding or paused. */
+  const isHeld = player.playingId === track.id;
+  const isSounding = isHeld && !player.isPaused;
+  const share = isHeld && track.durationMs > 0 ? player.playedMs / track.durationMs : 0;
 
   return (
     <span
@@ -50,7 +55,7 @@ export function SoundClip({ track, player, onDrop }: SoundClipProps) {
     >
       <button
         type="button"
-        aria-label={isPlaying ? STOP_CLIP_LABEL : PLAY_CLIP_LABEL}
+        aria-label={isSounding ? PAUSE_CLIP_LABEL : PLAY_CLIP_LABEL}
         onClick={() => player.toggle(track)}
         {...play.handlers}
         className="d-flex align-items-center justify-content-center flex-shrink-0"
@@ -61,7 +66,7 @@ export function SoundClip({ track, player, onDrop }: SoundClipProps) {
           borderRadius: "50%",
           background: SOUND_CLIP_PLAY_BACKGROUND_COLOR,
           border: `1px solid ${SOUND_CLIP_BORDER_COLOR}`,
-          color: isPlaying || play.isLit ? SOUND_CLIP_PLAYING_COLOR : SOUND_CLIP_PLAY_COLOR,
+          color: isSounding || play.isLit ? SOUND_CLIP_PLAYING_COLOR : SOUND_CLIP_PLAY_COLOR,
           cursor: "pointer",
           outline: "none",
           boxShadow: focusRing(play.isFocused),
@@ -74,7 +79,14 @@ export function SoundClip({ track, player, onDrop }: SoundClipProps) {
           viewBox="0 0 24 24"
           fill="currentColor"
         >
-          {isPlaying ? <rect x="6" y="6" width="12" height="12" rx="2" /> : <path d="M7 4.5v15l13-7.5z" />}
+          {isSounding ? (
+            <>
+              <rect x="6" y="5" width="4" height="14" rx="1.5" />
+              <rect x="14" y="5" width="4" height="14" rx="1.5" />
+            </>
+          ) : (
+            <path d="M7 4.5v15l13-7.5z" />
+          )}
         </svg>
       </button>
       <SoundWave
@@ -93,7 +105,7 @@ export function SoundClip({ track, player, onDrop }: SoundClipProps) {
           color: SOUND_CLIP_TIME_COLOR,
         }}
       >
-        {playedClock(isPlaying ? player.playedMs : null, track.durationMs)}
+        {playedClock(isHeld ? player.playedMs : null, track.durationMs)}
       </span>
       {onDrop !== null && (
         <button

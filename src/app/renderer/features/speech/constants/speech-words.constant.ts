@@ -53,7 +53,7 @@ export const SPEECH_SAVE_FAILED_PREFIX = "Мовлення не збережен
 export const CLOCK_SEPARATOR = ":";
 export const PLAYED_SEPARATOR = " / ";
 export const PLAY_CLIP_LABEL = "Програти запис";
-export const STOP_CLIP_LABEL = "Зупинити запис";
+export const PAUSE_CLIP_LABEL = "Призупинити запис";
 export const DROP_CLIP_LABEL = "Зняти запис";
 
 /** macOS's own hearing, first in the hearing model's list (38c, 38d) and refused by the system (38e). */

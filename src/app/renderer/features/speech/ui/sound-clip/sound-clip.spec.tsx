@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { SoundClip } from "./sound-clip";
-import { DROP_CLIP_LABEL, PLAY_CLIP_LABEL, STOP_CLIP_LABEL } from "../../constants";
+import { DROP_CLIP_LABEL, PAUSE_CLIP_LABEL, PLAY_CLIP_LABEL } from "../../constants";
 import { aHeardClip, aSoundPlayer } from "../../../../testing";
 
 describe("SoundClip", () => {
@@ -26,7 +26,7 @@ describe("SoundClip", () => {
     expect(screen.getByText("0:07")).toBeInTheDocument();
   });
 
-  it("says how far it is played while it plays, and «■» stops it", async () => {
+  it("says how far it is played while it plays, and the pause holds it", async () => {
     const toggle = vi.fn();
     const clip = aHeardClip();
 
@@ -46,11 +46,34 @@ describe("SoundClip", () => {
 
     await userEvent.click(
       screen.getByRole("button", {
-        name: STOP_CLIP_LABEL,
+        name: PAUSE_CLIP_LABEL,
       }),
     );
 
     expect(toggle).toHaveBeenCalledWith(clip);
+  });
+
+  it("keeps how far it is played while it is paused, under «▶» again", () => {
+    const clip = aHeardClip();
+
+    render(
+      <SoundClip
+        track={clip}
+        player={aSoundPlayer({
+          playingId: clip.id,
+          playedMs: 3_000,
+          isPaused: true,
+        })}
+        onDrop={null}
+      />,
+    );
+
+    expect(screen.getByText("0:03 / 0:07")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: PLAY_CLIP_LABEL,
+      }),
+    ).toBeInTheDocument();
   });
 
   it("has no × on a question already sent", () => {
