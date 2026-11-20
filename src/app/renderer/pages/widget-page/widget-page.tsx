@@ -27,6 +27,7 @@ import {
   openMainWindow,
   resizeWidget,
   useEndReading,
+  useFocusLetGo,
   useWidget,
   useWidgetHistory,
   useWidgetKeys,
@@ -169,6 +170,8 @@ export function WidgetPage() {
     onStopWalk: stopWalk,
     onStopReading: aloud.stop,
   });
+
+  useFocusLetGo();
 
   useEndReading({
     exchanges,

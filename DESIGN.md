@@ -1595,6 +1595,9 @@ go says why on the line and ends the repeats. While the walk is out the sphere's
 and the field rests with «Ходьба йде — зачекайте або зупиніть» and «ЗУПИНИТИ», which ends the
 repeats with the walk.
 
+**The widget opens with no ring on it**: a button pressed before it hid lets go of the focus as it
+hides, while the field keeps its own.
+
 **Two keys** (52a, 52d). The key of ~, pressed in any app, brings the widget up and begins a question; pressed
 while a question is being said, it ends it and the question goes; while one is being heard it does
 nothing. While Coder runs, that key types nothing in other apps. Escape, in the widget, stops what
