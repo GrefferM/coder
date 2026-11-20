@@ -1608,7 +1608,12 @@ a reading is silenced; a dialog open takes Escape for itself.
 one line with «КРОК N · година», a turn out as a working card with its clock, and an end of the
 walk whole on its card; a step that fell stands in `#f0a5ac` in the words it fell with, and a turn
 stopped before it said anything shows «Зупинено» (52i). Every answer
-carries the chat's own speaker at the end of its head, which reads it or stops it. The words of a
+carries the chat's own speaker at the end of its head, which reads it or stops it. **A question said
+can be heard again**, as in the chat (4l): its recording stands on the «ВИ» card under the words, 9px
+below them, with «▶», the wave and the length, and plays through the widget's one player — a
+recording and a reading stop each other, and Escape stops either. A typed question and a repeat of
+«x1» carry none; a run opened from the history brings its recordings from the record. Frames
+52e–52k draw the «ВИ» card without it. The words of a
 question and of an answer can be selected and copied; the marks around them cannot. **Each end is
 read aloud** by itself while the speaker is lit, the moment it comes, in the machine's voice, one
 after another in the order they ended (52f, 52h). An end that came before the widget opened, or

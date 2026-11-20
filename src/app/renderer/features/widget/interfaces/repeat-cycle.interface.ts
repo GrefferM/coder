@@ -1,10 +1,8 @@
-import type { PackedAttachment } from "../../../../../contracts";
+import type { WidgetQuestion } from "./widget-question.interface";
 
-/** The repeats of one question: the sphere they go to, what goes each time, how many went, and how many in all. */
+/** The repeats of one question: what goes each time and to which sphere, how many went, and how many in all. */
 export interface RepeatCycle {
-  agentId: string;
-  text: string;
-  attached: PackedAttachment[];
+  question: WidgetQuestion;
   sent: number;
   total: number;
 }

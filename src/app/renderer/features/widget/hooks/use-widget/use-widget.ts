@@ -3,9 +3,10 @@ import { changeWidget, peekProject, readWidget } from "../../api";
 import { freshWalks, openWalks, putWalk, stopWalks } from "../../../conversation";
 import { WALKS_CHANGED_CHANNEL, WIDGET_SETTINGS_CHANGED_CHANNEL } from "../../../../../../contracts";
 import { thrownWords } from "../../../../utils/errors";
-import type { PackedAttachment, WalkSnapshot, WidgetSettings } from "../../../../../../contracts";
+import type { WalkSnapshot, WidgetSettings } from "../../../../../../contracts";
 import type { ProjectConfig } from "../../../../interfaces";
-import type { WidgetState } from "../../interfaces";
+import type { HeardClip } from "../../../speech";
+import type { WidgetQuestion, WidgetState } from "../../interfaces";
 
 /**
  * The desktop widget (52a, 52b), one with the main window: the project and the sphere are this machine's settings,
@@ -17,6 +18,7 @@ export function useWidget(): WidgetState {
   const [config, setConfig] = useState<ProjectConfig | null>(null);
   const [trouble, setTrouble] = useState<string | null>(null);
   const [walks, setWalks] = useState<WalkSnapshot | null>(null);
+  const [heardBy, setHeardBy] = useState<Record<string, HeardClip[]>>({});
   /** The settings after the last change, so a change is laid over them and never over an older copy. */
   const held = useRef<WidgetSettings | null>(null);
   const directory = settings === null ? undefined : settings.directory;
@@ -132,13 +134,20 @@ export function useWidget(): WidgetState {
     [change],
   );
 
-  const ask = useCallback(async (agentId: string, text: string, attached: PackedAttachment[]) => {
+  const ask = useCallback(async ({ agentId, text, attached, clips }: WidgetQuestion) => {
     const answer = await putWalk({
       agentId,
       text,
       attached,
-      recordings: [],
+      recordings: clips.map(({ id: _id, ...sound }) => sound),
     });
+
+    if (answer !== null && clips.length > 0) {
+      setHeardBy((standing) => ({
+        ...standing,
+        [answer.questionId]: clips,
+      }));
+    }
 
     return answer !== null;
   }, []);
@@ -172,6 +181,7 @@ export function useWidget(): WidgetState {
     close,
     choose,
     ask,
+    heardBy,
     stop,
     fresh,
   };

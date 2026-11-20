@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { listProviders } from "../../features/providers";
-import { hearingChoice, useReadAloud, useSpeech, useVoiceAsk } from "../../features/speech";
+import { hearingChoice, useReadAloud, useSoundPlayer, useSpeech, useVoiceAsk } from "../../features/speech";
 import {
   openedStream,
   packAttachments,
   packCeiling,
   pickAttachment,
+  questionTracks,
   refusedPickNote,
 } from "../../features/conversation";
 import {
@@ -40,6 +41,7 @@ import {
 import { ForgetRunConfirm, ForgetRunsConfirm } from "../../features/record";
 import { agentStands, chatStream, isWalking, walkingKeys } from "../../../../contracts";
 import { thrownWords } from "../../utils/errors";
+import type { HeardClip, ReadAloud } from "../../features/speech";
 import type { PickedAttachment, ProviderState } from "../../interfaces";
 
 /**
@@ -87,8 +89,8 @@ export function WidgetPage() {
   const repeating = useWidgetRepeats({
     isOutOf: () => isOut,
     // A question the backend refused, or a folder gone, is said on the widget's line, and the repeats end.
-    put: (agentId, text, attached) =>
-      widget.ask(agentId, text, attached).catch((failure: unknown) => {
+    put: (question) =>
+      widget.ask(question).catch((failure: unknown) => {
         say({
           words: thrownWords(failure),
           act: null,
@@ -97,8 +99,11 @@ export function WidgetPage() {
         return false;
       }),
   });
-  /** Packs the picked files under the model's ceiling and puts the question with them, as many times as «x1» says. */
-  const send = async (text: string) => {
+  /**
+   * Packs the picked files under the model's ceiling and puts the question with them, as many times as «x1» says; a
+   * question said goes with its recording.
+   */
+  const send = async (text: string, clips: HeardClip[] = []) => {
     if (chosenAgentId === null) {
       return false;
     }
@@ -113,7 +118,12 @@ export function WidgetPage() {
     // A question asked shows its conversation, not the history over it.
     history.close();
 
-    const went = await repeating.send(chosenAgentId, text, packed);
+    const went = await repeating.send({
+      agentId: chosenAgentId,
+      text,
+      attached: packed,
+      clips,
+    });
 
     if (went) {
       setAttachments([]);
@@ -141,11 +151,11 @@ export function WidgetPage() {
   };
   const voice = useVoiceAsk({
     hearing: config === null ? null : hearingChoice(config, providers, speech.settings),
-    onHeard: (words) => void send(words),
+    onHeard: (words, clip) => void send(words, [clip]),
     onNote: say,
     onOpenSpeech: () => void openMainWindow(),
   });
-  const aloud = useReadAloud({
+  const reading = useReadAloud({
     voiceName: speech.settings.voiceName,
     ukrainianVoiceName: speech.settings.ukrainianVoiceName,
     voiceRate: speech.settings.voiceRate,
@@ -153,6 +163,19 @@ export function WidgetPage() {
     onNote: say,
     onOpenSpeech: () => void openMainWindow(),
   });
+  /** One recording for the widget; it and a reading stop each other, as in the main window (4l). */
+  const player = useSoundPlayer({
+    onPlay: reading.stop,
+  });
+  const aloud: ReadAloud = {
+    ...reading,
+    read: (id, text) => {
+      player.stop();
+      reading.read(id, text);
+    },
+  };
+  /** The recordings each question on screen was said with: those of the run opened, and those said here. */
+  const tracks = questionTracks(widget.heardBy, history.opened);
   /** A sphere with a conversation, or the history open, asks the full height; every other state is as tall as it is. */
   const hasTalk = config !== null && config.agents.length > 0 && (exchanges.length > 0 || history.isOpen);
   const height = hasTalk ? WIDGET_WALK_HEIGHT_PX : measured;
@@ -168,7 +191,10 @@ export function WidgetPage() {
     isWalking: isOut,
     isAsked: history.doomedRun !== null || history.isForgettingAll,
     onStopWalk: stopWalk,
-    onStopReading: aloud.stop,
+    onStopReading: () => {
+      aloud.stop();
+      player.stop();
+    },
   });
 
   useFocusLetGo();
@@ -280,7 +306,15 @@ export function WidgetPage() {
               onForgetAll={history.askToForgetAll}
             />
           ) : (
-            exchanges.length > 0 && <WidgetOutput exchanges={exchanges} agents={config.agents} aloud={aloud} />
+            exchanges.length > 0 && (
+              <WidgetOutput
+                exchanges={exchanges}
+                agents={config.agents}
+                aloud={aloud}
+                tracks={tracks}
+                player={player}
+              />
+            )
           )}
           {note !== null && <WidgetNote note={note} />}
           <WidgetField

@@ -1,5 +1,7 @@
-import type { PackedAttachment, WalkSnapshot } from "../../../../../contracts";
+import type { WalkSnapshot } from "../../../../../contracts";
 import type { ProjectConfig } from "../../../interfaces";
+import type { HeardClip } from "../../speech";
+import type { WidgetQuestion } from "./widget-question.interface";
 
 /**
  * The widget as it stands: the project and sphere it shares with the main window, the one conversation both show,
@@ -23,8 +25,10 @@ export interface WidgetState {
   open: (directory: string) => Promise<void>;
   close: () => Promise<void>;
   choose: (agentId: string) => Promise<void>;
-  /** Puts the words and files to a sphere, by its agent's id; false where they did not go. */
-  ask: (agentId: string, text: string, attached: PackedAttachment[]) => Promise<boolean>;
+  /** Puts the question to its sphere; false where it did not go. */
+  ask: (question: WidgetQuestion) => Promise<boolean>;
+  /** The recordings said in this widget, by the id of the question each went with. */
+  heardBy: Record<string, HeardClip[]>;
   stop: () => void;
   fresh: () => void;
 }

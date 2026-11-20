@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { REPEAT_LEAST } from "../../../conversation";
-import type { PackedAttachment } from "../../../../../../contracts";
-import type { RepeatCycle, WidgetRepeats, WidgetRepeatsHands } from "../../interfaces";
+import type { RepeatCycle, WidgetQuestion, WidgetRepeats, WidgetRepeatsHands } from "../../interfaces";
 
 /**
  * «x1» in the widget, as in the chat: the question goes, and once its walk has ended it goes again to the same sphere,
@@ -13,12 +12,12 @@ export function useWidgetRepeats({ isOutOf, put }: WidgetRepeatsHands): WidgetRe
   const [cycle, setCycle] = useState<RepeatCycle | null>(null);
   /** A question was put and its walk has not been seen out yet, so its end is not mistaken for the last one's. */
   const isAwaiting = useRef(false);
-  const isOut = cycle !== null && isOutOf(cycle.agentId);
+  const isOut = cycle !== null && isOutOf(cycle.question.agentId);
 
   /** Puts one question; one that did not go ends the repeats. */
   const goes = useCallback(
-    async (agentId: string, text: string, attached: PackedAttachment[]) => {
-      const went = await put(agentId, text, attached);
+    async (question: WidgetQuestion) => {
+      const went = await put(question);
 
       if (!went) {
         isAwaiting.current = false;
@@ -52,25 +51,27 @@ export function useWidgetRepeats({ isOutOf, put }: WidgetRepeatsHands): WidgetRe
       ...cycle,
       sent: cycle.sent + 1,
     });
-    void goes(cycle.agentId, cycle.text, cycle.attached);
+    void goes(cycle.question);
   }, [isOut, cycle, goes]);
 
   const send = useCallback(
-    async (agentId: string, text: string, attached: PackedAttachment[]) => {
+    async (question: WidgetQuestion) => {
       isAwaiting.current = true;
+      // What was said is said once: a repeat goes as words alone.
       setCycle(
         repeats > REPEAT_LEAST
           ? {
-              agentId,
-              text,
-              attached,
+              question: {
+                ...question,
+                clips: [],
+              },
               sent: 1,
               total: repeats,
             }
           : null,
       );
 
-      return goes(agentId, text, attached);
+      return goes(question);
     },
     [goes, repeats],
   );

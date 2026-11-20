@@ -48,7 +48,10 @@ The Electron shell and its renderer — `src/app`. Project-wide rules live in
   `walkDrawing` lays out — the layout is the projection's own, given the widget's grid — and
   `routeStanding` says how each agent stands in the walk. `widgetExchanges` lays a stream of messages — the live conversation,
   or an opened run through the chat's `openedStream` — out as the questions asked of the chosen
-  sphere. The speaker over an answer is `speech`'s `AloudButton`, the chat's and the widget's alike.
+  sphere. The speaker over an answer is `speech`'s `AloudButton`, the chat's and the widget's alike,
+  and so is the recording under a said question: `useWidget.ask` sends a `WidgetQuestion` with its
+  clips and keeps them by the question's id (`heardBy`), `questionTracks` lays them over those of the
+  run opened, and `SoundClip` plays them through the page's own `useSoundPlayer`.
   The two windows are one: `useSharedProject` in `App` opens the project the widget names and names
   the one this window opens or closes, and `useSharedSphere` makes the widget's sphere the chat's
   aim, both ways.

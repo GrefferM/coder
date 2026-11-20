@@ -33,3 +33,4 @@ export * from "./widget-keys-hands.interface";
 export * from "./exchanges-asked.interface";
 export * from "./route-standing.type";
 export * from "./run-strip-props.interface";
+export * from "./widget-question.interface";

@@ -17,13 +17,15 @@ import {
 } from "../../constants";
 import type { Agent } from "../../../../interfaces";
 import type { WidgetOutputProps, WidgetStep } from "../../interfaces";
+import { SoundClip } from "../../../speech";
 import type { CardAloud } from "../../../speech";
 
 /**
- * The chosen sphere's conversation (52e, 52k), newest at the bottom: each question on its «ВИ» card, the steps between
+ * The chosen sphere's conversation (52e, 52k), newest at the bottom: each question on its «ВИ» card, a said one with
+ * its recording under the words as in the chat (4l), the steps between
  * as one line each, the turns out as working cards, and an end of the walk whole on its card. Empty, it says nothing.
  */
-export function WidgetOutput({ exchanges, agents, aloud }: WidgetOutputProps) {
+export function WidgetOutput({ exchanges, agents, aloud, tracks, player }: WidgetOutputProps) {
   const { box } = useStayAtBottom<HTMLDivElement>(exchanges[0]?.questionId ?? null);
   const agentOf = (agentId: string): Agent | null => agents.find((agent) => agent.id === agentId) ?? null;
   /** The speaker over an answer, by the answer's own id; a failure or an answer with no words has none. */
@@ -83,7 +85,11 @@ export function WidgetOutput({ exchanges, agents, aloud }: WidgetOutputProps) {
                 {timeLabel(new Date(exchange.question.at))}
               </Mark>
             </span>
-            <TextCard text={exchange.question.text} color={WIDGET_PERSON_COLOR} />
+            <TextCard text={exchange.question.text} color={WIDGET_PERSON_COLOR}>
+              {(tracks[exchange.questionId] ?? []).map((track) => (
+                <SoundClip key={track.id} track={track} player={player} onDrop={null} />
+              ))}
+            </TextCard>
           </div>
           {exchange.steps.map((step) => (
             <StepBlock key={step.id} step={step} agent={agentOf(step.agentId)} aloud={aloudOf(step)} />

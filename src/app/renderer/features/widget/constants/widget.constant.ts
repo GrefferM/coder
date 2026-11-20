@@ -74,6 +74,8 @@ export const WIDGET_TIME_COLOR = "#5c6478";
 export const WIDGET_STEP_NOTE_COLOR = QUIET_MARK_COLOR;
 export const WIDGET_STEP_NOTE_LETTER_SPACING_PX = 1;
 export const WIDGET_CARD_PADDING_PX = 10;
+/** Between a question's words and the recording under them, the chat's own (4l). */
+export const WIDGET_CARD_UNDER_GAP_PX = 9;
 export const WIDGET_CARD_BORDER_RADIUS_PX = 10;
 export const WIDGET_CARD_BACKGROUND_COLOR = "#171b26";
 export const WIDGET_TEXT_FONT_SIZE_PX = 12.5;
